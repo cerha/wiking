@@ -643,7 +643,7 @@ class Config(SettingsManagementModule, wiking.CachingPytisModule):
             F = self._Field
             return (
                 F('site'),
-                F('theme_id', codebook='Themes'),
+                F('theme_id', not_null=True, codebook='Themes'),
                 F('site_title', width=24),
                 F('site_subtitle', width=50),
                 F('webmaster_address',
@@ -783,7 +783,7 @@ class PageStructure(SiteSpecificContentModule):
     """
     class Spec(Specification):
         table = 'cms_pages'
-        fields = (Field('page_id', enumerator='PageTitles'),
+        fields = (Field('page_id', not_null=True, enumerator='PageTitles'),
                   Field('site'),
                   Field('kind'),
                   Field('identifier'),
@@ -882,7 +882,7 @@ class Panels(SiteSpecificContentModule, wiking.CachingPytisModule):
             return (
                 Field('panel_id', width=5, editable=NEVER),
                 Field('site'),
-                Field('lang', _("Language"), codebook='Languages', editable=ONCE,
+                Field('lang', _("Language"), not_null=True, codebook='Languages', editable=ONCE,
                       selection_type=CHOICE, value_column='lang'),
                 # Translators: Title in the meaning of a heading
                 Field('title', _("Title"), width=30, not_null=True),
@@ -1308,7 +1308,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                               "is used for all language variants of one page. A valid "
                               "identifier can only contain letters, digits, dashes and "
                               "underscores.  It must start with a letter.")),
-                Field('lang', _("Language"), editable=ONCE, codebook='Languages',
+                Field('lang', _("Language"), editable=ONCE, not_null=True, codebook='Languages',
                       value_column='lang'),
                 Field('title_or_identifier', _("Title")),
                 Field('title', _("Title"), not_null=True),
@@ -1340,13 +1340,13 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                 # input field.  Determines the position in the sense of order in a
                 # sequence.  What is first and what next.
                 Field('ord', _("Position"),
-                      enumerator=Pages.PagePositionEnumerator(), editable=ALWAYS,
+                      not_null=True, enumerator=Pages.PagePositionEnumerator(), editable=ALWAYS,
                       runtime_arguments=computer(lambda r, site, parent, page_id:
                                                  dict(site=site, parent=parent, page_id=page_id)),
                       computer=computer(Pages.PagePositionEnumerator().last_position),
                       display=lambda x: x.label, # See PageStructure.page_position_selection().
                       descr=_("Select the position within the items of the same level.")),
-                Field('menu_visibility', _("Visibility in menu"),
+                Field('menu_visibility', _("Visibility in menu"), not_null=True,
                       enumerator=Pages.MenuVisibility, selection_type=pp.SelectionType.RADIO,
                       descr=_('When "%(always)s" is selected, unauthorized users see the menu '
                               'item, but still can not open the page.  When "%(authorized)s" '
@@ -1361,7 +1361,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                       descr=_("Check if you want the relevant menu item to be foldable (only makes "
                               "sense for pages, which have subordinary items in the menu).")),
                 Field('tree_order', type=pd.TreeOrder()),
-                Field('creator', _("Creator"), codebook='Users',
+                Field('creator', _("Creator"), not_null=True, codebook='Users',
                       inline_referer='creator_login', inline_display='creator_name'),
                 Field('creator_login'),
                 Field('creator_name'),
@@ -1388,12 +1388,14 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                 # Field('grouping', virtual=True,
                 #      computer=computer(lambda r, tree_order: tree_order.split('.')[1])),
                 # Translators: Label of a selector of a group allowed to access the page read only.
-                Field('read_role_id', _("Read only access"), codebook='ApplicationRoles',
+                Field('read_role_id', _("Read only access"),
+                      not_null=True, codebook='ApplicationRoles',
                       computer=self._parent_field_computer('read_role_id', Roles.ANYONE.id()),
                       editable=ALWAYS,
                       descr=_("Select the role allowed to view the page contents.")),
                 # Translators: Label of a selector of a group allowed to edit the page.
-                Field('write_role_id', _("Read/write access"), codebook='ApplicationRoles',
+                Field('write_role_id', _("Read/write access"),
+                      not_null=True, codebook='ApplicationRoles',
                       computer=self._parent_field_computer('write_role_id',
                                                            Roles.CONTENT_ADMIN.id()),
                       editable=ALWAYS,
@@ -2233,7 +2235,7 @@ class CmsPageExcerpts(EmbeddableCMSModule, BrailleExporter):
         def fields(self):
             return (Field('id', _("Id")),
                     Field('title', _("Title")),
-                    Field('page_id', _("Page"), codebook='PageStructure'),
+                    Field('page_id', _("Page"), not_null=True, codebook='PageStructure'),
                     Field('lang'),
                     ContentField('content', _("Content")),
                     )
@@ -2537,7 +2539,8 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter, PDFExpo
         form = wiking.InputForm(
             req, dict(
                 fields=(
-                    Field('format', _("Format"), enumerator=PublicationExports.Formats),
+                    Field('format', _("Format"), not_null=True,
+                          enumerator=PublicationExports.Formats),
                 ) +
                 self.braille_option_fields() + self.epub_option_fields() + self.pdf_option_fields(),
                 layout=(
@@ -3155,10 +3158,10 @@ class PageHistory(ContentManagementModule):
         def fields(self):
             return (
                 Field('history_id'),
-                Field('page_key', codebook='Pages'),
+                Field('page_key', not_null=True, codebook='Pages'),
                 Field('page_id'),
                 Field('lang'),
-                Field('uid', codebook='Users', inline_referer='login'),
+                Field('uid', not_null=True, codebook='Users', inline_referer='login'),
                 Field('login'),
                 Field('user', _("Changed by"), computer=pp.CbComputer('uid', 'user_')),
                 Field('timestamp', _("Date"), utc=True),
@@ -3299,13 +3302,14 @@ class Attachments(ContentManagementModule):
                       computer=computer(lambda r, attachment_id, lang:
                                         attachment_id and '%d.%s' % (attachment_id, lang))),
                 Field('attachment_id'),
-                Field('page_id', _("Page"), codebook='PageStructure', editable=ALWAYS,
+                Field('page_id', _("Page"),
+                      not_null=True, codebook='PageStructure', editable=ALWAYS,
                       runtime_filter=computer(lambda r: pd.EQ('site',
                                                               pd.sval(wiking.cfg.server_hostname))),
                       descr=_("Select the page where you want to move this attachment.  "
                               "Don't forget to update all explicit links to "
                               "this attachment within page text(s).")),
-                Field('lang', _("Language"), codebook='Languages', editable=ONCE,
+                Field('lang', _("Language"), not_null=True, codebook='Languages', editable=ONCE,
                       value_column='lang'),
                 # Translators: Noun. File on disk. Computer terminology.
                 Field('upload', _("File"), virtual=True, editable=ALWAYS,
@@ -3925,17 +3929,17 @@ class _News(ContentManagementModule, EmbeddableCMSModule, wiking.CachingPytisMod
     class Spec(Specification):
         def fields(self):
             return (
-                Field('page_id', _("Page"), codebook='PageStructure', editable=ONCE,
+                Field('page_id', _("Page"), not_null=True, codebook='PageStructure', editable=ONCE,
                       runtime_filter=computer(lambda r:
                                               pd.EQ('site', pd.sval(wiking.cfg.server_hostname)))),
-                Field('lang', _("Language"), codebook='Languages', editable=ONCE,
+                Field('lang', _("Language"), not_null=True, codebook='Languages', editable=ONCE,
                       selection_type=CHOICE, value_column='lang'),
                 Field('timestamp', _("Date"), type=wiking.DateTime(not_null=True, utc=True),
                       default=now, nocopy=True),
                 Field('title', _("Title"), column_label=_("Message"), width=32,
                       descr=_("The item brief summary.")),
                 ContentField('content', _("Message"), height=6, width=80),
-                Field('author', _("Author"), codebook='Users',
+                Field('author', _("Author"), not_null=True, codebook='Users',
                       inline_referer='author_login', inline_display='author_name'),
                 Field('author_name'),
                 Field('author_login'),
@@ -4680,15 +4684,15 @@ class Discussions(ContentManagementModule, EmbeddableCMSModule):
         def fields(self):
             return (
                 Field('comment_id', editable=NEVER),
-                Field('page_id', codebook='PageStructure', editable=ONCE,
+                Field('page_id', not_null=True, codebook='PageStructure', editable=ONCE,
                       runtime_filter=computer(lambda r:
                                               pd.EQ('site', pd.sval(wiking.cfg.server_hostname)))),
-                Field('lang', codebook='Languages', editable=ONCE,
+                Field('lang', not_null=True, codebook='Languages', editable=ONCE,
                       selection_type=CHOICE, value_column='lang'),
                 Field('in_reply_to'),
                 Field('tree_order', type=pd.TreeOrder()),
                 Field('timestamp', type=wiking.DateTime(not_null=True, utc=True), default=now),
-                Field('author', codebook='Users'),
+                Field('author', not_null=True, codebook='Users'),
                 # Translators: Field label for posting a message to the discussion.
                 Field('text', _("Your comment"), height=6, width=80, compact=True,),
             )
@@ -4933,7 +4937,7 @@ class StyleSheets(SiteSpecificContentModule, StyleManagementModule,
                 # Translators: Heading of a form field determining in
                 # which media the page is displayed. E.g. web, print,
                 # Braille, speech.
-                Field('media', _("Media"), default='all', enumerator=StyleSheets.MediaTypes),
+                Field('media', _("Media"), default='all', not_null=True, enumerator=StyleSheets.MediaTypes),
                 # Translators: Scope of applicability of a stylesheet on different website parts.
                 Field('scope', _("Scope"), enumerator=StyleSheets.Scopes,
                       selection_type=pp.SelectionType.RADIO,

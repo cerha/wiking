@@ -68,8 +68,8 @@ class RoleSets(UserManagementModule, CachingPytisModule):
         table = 'role_sets'
         fields = (
             Field('role_set_id'),
-            Field('role_id', _("Group"), codebook='ApplicationRoles'),
-            Field('member_role_id', _("Gets rights of"), codebook='UserGroups'),
+            Field('role_id', _("Group"), not_null=True, codebook='ApplicationRoles'),
+            Field('member_role_id', _("Gets rights of"), not_null=True, codebook='UserGroups'),
             Field('delete', virtual=True, computer=computer(lambda r: _("Remove"))),
         )
         columns = layout = ('role_id', 'member_role_id')
@@ -224,9 +224,9 @@ class RoleMembers(UserManagementModule):
         def fields(self):
             return (
                 Field('role_member_id'),
-                Field('role_id', _("Group"), codebook='UserGroups'),
+                Field('role_id', _("Group"), not_null=True, codebook='UserGroups'),
                 Field('role_name'),
-                Field('uid', _("User"), codebook='Users',
+                Field('uid', _("User"), not_null=True, codebook='Users',
                       inline_display='user_name', inline_referer='user_login'),
                 Field('user_login'),
                 Field('user_name'),
@@ -1826,7 +1826,7 @@ class SessionLog(UserManagementModule):
             return (
                 Field('log_id'),
                 Field('session_id'),
-                Field('uid', _('User'), codebook='Users',
+                Field('uid', _('User'), not_null=True, codebook='Users',
                       inline_display='uid_user', inline_referer='uid_login'),
                 # Translators: Login name.
                 Field('login', _("Login")),

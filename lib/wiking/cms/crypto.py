@@ -81,9 +81,9 @@ class CryptoKeys(CMSExtensionModule):
         def fields(self):
             return (
                 Field('key_id', _("Id"), editable=Editable.NEVER),
-                Field('name', _("Name"), codebook='CryptoNames', editable=Editable.NEVER),
-                Field('uid', _("User"), codebook='Users', editable=Editable.ONCE),
-                Field('new_uid', _("New user"), codebook='Users', type=pd.Integer, virtual=True,
+                Field('name', _("Name"), not_null=True, codebook='CryptoNames', editable=Editable.NEVER),
+                Field('uid', _("User"), not_null=True, codebook='Users', editable=Editable.ONCE),
+                Field('new_uid', _("New user"), not_null=True, codebook='Users', type=pd.Integer, virtual=True,
                       runtime_filter=computer(self._new_uid_filter)),
                 Field('key', _("Key")),
                 Field('remove', _("Action"), virtual=True,
