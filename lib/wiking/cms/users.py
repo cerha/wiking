@@ -1810,8 +1810,8 @@ class Session(PytisModule, wiking.Session):
     def close(self, req, user, session_key):
         # This deletion will lead to end_time in cms_session_log_data being set to last_access
         # value of the deleted row.  Use delete_many() because we don't know session_id.
-        self._data.delete_many(pd.AND(pd.EQ('uid', pd.Value(pd.Integer(), user.uid())),
-                                      pd.EQ('session_key', pd.Value(pd.DateTime(), session_key))))
+        self._data.delete_many(pd.AND(pd.EQ('uid', pd.ival(user.uid())),
+                                      pd.EQ('session_key', pd.sval(session_key))))
 
 
 class SessionLog(UserManagementModule):
