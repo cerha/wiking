@@ -252,8 +252,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         subtitle = context.application.site_subtitle(context.req())
         content = g.strong(title, cls='title')
         if subtitle:
-            content += (g.strong(lcg.HtmlEscapedUnicode(' &ndash; ', escape=False),
-                                 cls='separator') +
+            content += (g.strong(g.noescape(' &ndash; '), cls='separator') +
                         g.strong(subtitle, cls='subtitle'))
         return content
 
@@ -407,7 +406,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                             name='main-heading', id='main-heading'), 1),
                     self._messages(context),
                     super(Exporter, self)._content(context)), id='content'),
-                g.div(lcg.HtmlEscapedUnicode('&nbsp;', escape=False), id='clearing'))
+                g.div(g.noescape('&nbsp;'), id='clearing'))
 
     def _page_clearing(self, context):
         return lcg.HtmlEscapedUnicode('&nbsp;', escape=False)
