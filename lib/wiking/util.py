@@ -1306,9 +1306,7 @@ class LoginDialog(lcg.Content):
             uri = req.server_uri(force_https=True) + req.uri()
         else:
             uri = req.uri()
-        intro = g.div(g.escape(self._message), cls='errors') if self._message else g.escape('')
-        result = (intro +
-                  g.form(content, method='POST', action=uri, name='login_form', cls='login-form') +
+        result = (g.form(content, method='POST', action=uri, name='login_form', cls='login-form') +
                   g.script("onload_ = window.onload; window.onload = function() { "
                            "if (onload_) onload_(); "
                            "setTimeout(function () { document.login_form.login.focus() }, 0); };"))
