@@ -4775,13 +4775,14 @@ class Discussions(ContentManagementModule, EmbeddableCMSModule):
             if req.check_roles(Roles.USER):
                 # Embed insertion form directly below the message list.
                 content.append(self._form(pw.EditForm, req, action='insert', handler=uri,
-                                      show_reset_button=False))
+                                          show_reset_button=False))
             else:
                 # Translators: The square brackets mark a link.  Please leave the brackets and the
                 # link target '?command=login' untouched and traslate 'log in' to fit into the
                 # sentence.  The user only sees it as 'You need to log in before ...'.
                 msg = _("Note: You need to [?command=login log in] before you can post messages.")
-                content.append(lcg.Container((lcg.p(msg, formatted=True),), name='login-info'))
+                content.append(lcg.Container((lcg.p(req.localize(msg), formatted=True),), 
+                                             name='login-info'))
             # Wrap in a named container to allow css styling.
             content = [lcg.Container(content, name='discussion-list')]
         return content
