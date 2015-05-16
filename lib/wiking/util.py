@@ -17,6 +17,7 @@
 
 import collections
 import datetime
+import json
 import httplib
 import mimetypes
 import os
@@ -1988,9 +1989,7 @@ def ajax_response(req, form):
     if isinstance(response, lcg.Content):
         return response
     else:
-        # There is no `json' defined here, so the original line is commented out
-        # return wiking.Response(json.dumps(response), content_type='application/json')
-        raise wiking.BadRequest()
+        return wiking.Response(json.dumps(response), content_type='application/json')
 
 def timeit(func, *args, **kwargs):
     """Measure the function execution time.
