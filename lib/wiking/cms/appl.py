@@ -355,7 +355,7 @@ class Application(CookieAuthentication, wiking.Application):
         if req.check_roles(Roles.CONTENT_ADMIN):
             def content(renderer, context):
                 g = context.generator()
-                return g.form((g.submit(_("New Panel")),
+                return g.form((g.button(g.span(_("New Panel")), type='submit'),
                                g.hidden('action', 'insert'),
                                g.hidden('_manage_cms_panels', '1')),
                               action='/', method='GET')

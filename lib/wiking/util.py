@@ -1294,7 +1294,7 @@ class LoginDialog(lcg.Content):
             g.hidden(name='__log_in', value='1'),
         ) + tuple(hidden) + (
             # Translators: Login button label - verb in imperative.
-            g.submit(_("Log in"), cls='submit'),)
+            g.button(g.span(_("Log in")), type='submit', cls='submit'),)
         links = [g.li(g.a(label, href=uri)) for label, uri in
                  # Translators: Webpage link leading to registration form.
                  ((_("New user registration"), self._registration_uri),
@@ -1335,7 +1335,8 @@ class DecryptionDialog(lcg.Content):
                     size=18, maxlength=32),
             g.br(),
             # Translators: Web form button.
-            g.submit(_("Send password"), cls='submit'),)
+            g.button(g.span(_("Send password")), type='submit', cls='submit'),
+        )
         if req.https():
             uri = req.uri()
         else:
@@ -1356,7 +1357,7 @@ class ConfirmationDialog(lcg.Container):
         g = context.generator()
         return g.div((super(ConfirmationDialog, self).export(context),
                       # Translators: Confirmation button
-                      g.form(g.submit(_("Continue")),
+                      g.form(g.button(g.span(_("Continue")), type='submit'),
                              method='GET', action=context.req().uri(), cls='confirmation-form')),
                      cls='confirmation-dialog')
 

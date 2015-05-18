@@ -1610,7 +1610,7 @@ class Registration(Module, ActionHandler):
                 g.field(name='query', value=req.param('query'), id='query', tabindex=0, size=32),
                 # Translators: Button name. Computer terminology. Use an appropriate term common
                 # for submitting forms in a computer application.
-                g.submit(_("Submit"), cls='submit'),
+                g.button(g.span(_("Submit")), type='submit', cls='submit'),
                 g.hidden('action', 'remind'),
             )
             return g.form(controls, method='POST', action=req.uri(), cls='password-reminder-form')
@@ -1756,10 +1756,10 @@ class ActivationForm(lcg.Content):
                          g.hidden('uid', self._uid),
                          g.label(_("Enter the activation code:"), field_id),
                          g.field(name='regcode', value=req.param('regcode'), id=field_id),
-                         g.submit(_("Submit"))),
+                         g.button(g.span(_("Submit")), type='submit')),
                         method='POST', action=uri, cls='activation-form')
         if self._allow_bypass:
-            result += g.form((g.submit(_("Continue without activation")),),
+            result += g.form((g.button(g.span(_("Continue without activation")), type='submit'),),
                              method='GET', action=req.uri())
         return result
 
