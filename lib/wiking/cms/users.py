@@ -914,7 +914,7 @@ class Users(UserManagementModule, CachingPytisModule):
 
     def _layout(self, req, action, record=None):
         def cms_text(cms_text):
-            if cms_text.text():
+            if wiking.module.Texts.localized_text(req, cms_text, lang=req.preferred_language()):
                 return wiking.module.Texts.parsed_text(req, cms_text, lang=req.preferred_language())
             else:
                 return None
