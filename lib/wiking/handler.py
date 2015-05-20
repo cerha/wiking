@@ -19,6 +19,7 @@ import os
 import string
 import sys
 import traceback
+import urllib
 import urlparse
 
 import wiking
@@ -262,7 +263,8 @@ class Handler(object):
                         referer_uri = urlparse.urlparse(referer)
                         if ((referer_uri.scheme not in ('', 'http', 'https',) or
                              (referer_uri.netloc and referer_uri.netloc != req.server_hostname()) or
-                             referer_uri.path != urlparse.urlparse(req.uri()).path)):
+                             (urllib.unquote(referer_uri.path) !=
+                              urlparse.urlparse(req.uri()).path))):
                             raise wiking.Redirect(req.server_uri(current=True))
                 result = self._application.handle(req)
                 if isinstance(result, (tuple, list)):
