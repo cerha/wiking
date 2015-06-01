@@ -1675,6 +1675,10 @@ class Registration(Module, ActionHandler):
         uid, query = req.param('uid'), req.param('query')
         if uid or query:
             if uid:
+                try:
+                    uid = int(uid)
+                except (TypeError, ValueError,):
+                    raise wiking.BadRequest("Invalid request parameter `uid': %s" % (uid,))
                 user = wiking.module.Users.user(req, uid=uid)
             elif query.find('@') == -1:
                 user = wiking.module.Users.user(req, login=query)
