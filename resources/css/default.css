@@ -179,7 +179,7 @@ div.table-of-contents ul {
     margin-bottom: 0;
 }
 
-#login, #password { 
+.login-form input {
     border: 1px solid $color.border;
 }
 

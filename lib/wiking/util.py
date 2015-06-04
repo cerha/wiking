@@ -1266,6 +1266,7 @@ class LoginDialog(lcg.Content):
         g = context.generator()
         req = context.req()
         credentials = req.credentials()
+        ids = context.id_generator()
         if credentials:
             login = credentials[0]
         elif req.has_param('login'):
@@ -1281,20 +1282,28 @@ class LoginDialog(lcg.Content):
                 # This may be a file field, or anything else?
                 # TODO: Is it a good idea to leave the field out without a warning?
                 return ''
+        if self._login_is_email:
+            login_label = _("Your e-mail address")
+            login_type = 'email'
+        else:
+            login_label = _("Login name")
+            login_type = 'text'
         hidden = [hidden_field(param, req.param(param)) for param in req.params()
                   if param not in ('command', 'login', 'password', '__log_in')]
         content = (
-            g.label((self._login_is_email and _("Your e-mail address") or _("Login name")) + ':',
-                    'login') + g.br(),
-            g.field(name='login', value=login, id='login', size=18, maxlength=64),
+            g.label(login_label + ':', for_=ids.login) + g.br(),
+            g.input(type=login_type, name='login', value=login, id=ids.login, size=18, maxlength=64,
+                    autocomplete='username', autofocus=True),
             g.br(),
             g.label(_("Password") + ':', 'password') + g.br(),
-            g.field(name='password', id='password', password=True, size=18, maxlength=32),
+            g.input(type='password', name='password', id=ids.password, size=18, maxlength=32,
+                    autocomplete='current-password'),
             g.br(),
             g.hidden(name='__log_in', value='1'),
         ) + tuple(hidden) + (
             # Translators: Login button label - verb in imperative.
-            g.button(g.span(_("Log in")), type='submit', cls='submit'),)
+            g.button(g.span(_("Log in")), type='submit', cls='submit'),
+        )
         links = [g.li(g.a(label, href=uri)) for label, uri in
                  # Translators: Webpage link leading to registration form.
                  ((_("New user registration"), self._registration_uri),
@@ -1308,6 +1317,8 @@ class LoginDialog(lcg.Content):
         else:
             uri = req.uri()
         result = (g.form(content, method='POST', action=uri, name='login_form', cls='login-form') +
+                  # The script below is redundant in browsers supporting <input>
+                  # autofocus attribute but we need it for legacy browsers.
                   g.script("onload_ = window.onload; window.onload = function() { "
                            "if (onload_) onload_(); "
                            "setTimeout(function () { document.login_form.login.focus() }, 0); };"))
