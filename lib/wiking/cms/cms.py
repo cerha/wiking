@@ -2341,6 +2341,10 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter, PDFExpo
                               "digital publication.  These are typically not the authors "
                               "of the content itself, but authors of its digital version. "
                               "One name per line.")),
+                Field('adapted_for', _("Adapted for"), width=40,
+                      descr=_("Name of the organization or project, for which this adaptation "
+                              "has been done.  This field is for a digitalized adaptation "
+                              "an analogy of the Publisher field for the original work.")),
                 Field('cover_image', _("Cover Image"), not_null=False,
                       codebook='Attachments', value_column='attachment_id',
                       inline_referer='cover_image_filename',
@@ -2469,7 +2473,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter, PDFExpo
                 FieldSet(_("Bibliographic Information"),
                          ('author', 'contributor', 'illustrator',
                           'publisher', 'published_year', 'edition',
-                          'original_isbn', 'isbn', 'adapted_by',
+                          'original_isbn', 'isbn', 'adapted_by', 'adapted_for',
                           'copyright_notice', 'notes')),
                 FieldSet(_("Access Rights"),
                          ('read_role_id', 'download_role_id', 'write_role_id', 'owner')),
@@ -2623,7 +2627,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter, PDFExpo
             return lcg.Anchor('watermark-' + name, value)
         basic_fields = fields(('title', 'description', 'author', 'contributor',
                                'illustrator', 'pubinfo', 'original_isbn', 'lang'))
-        extra_fields = fields(('adapted_by', 'isbn',))
+        extra_fields = fields(('adapted_by', 'adapted_for', 'isbn',))
         if record['isbn'].value() is None:
             extra_fields.extend(fields(('uuid',)))
         if online:

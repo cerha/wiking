@@ -770,6 +770,9 @@ class CmsPublications(CommonAccesRights, sql.SQLTable):
                    doc=("people or organization(s), who created this digital "
                         "publication if these are not already mentioned in the "
                         "above fields; full name(s), one name per line")),
+        sql.Column('adapted_for', pytis.data.String(),
+                   doc=("organization or project for which this adaptation of the original "
+                        "work into a digital publication has been done.")),
         sql.Column('cover_image', pytis.data.Integer(),
                    references=sql.a(sql.r.CmsPageAttachments, ondelete='SET NULL')),
         sql.Column('copyright_notice', pytis.data.String()),
