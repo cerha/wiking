@@ -71,12 +71,10 @@
 .pytis-form.edit-form div.help { 
     color: $color.help !important;
 }
-.pytis-form.edit-form .group input.text,
-.pytis-form.edit-form .group input.password,
-.pytis-form.edit-form .group input.file,
-.pytis-form.edit-form .group input.text,
+.pytis-form input.text-search-field,
+.pytis-form.edit-form input.text-field,
 .pytis-form.edit-form textarea,
-.pytis-form.edit-form select, #login, #password { 
+.pytis-form.edit-form select {
     border-color: $color.border !important;
 }
 .pytis-form.list-view div.summary {
