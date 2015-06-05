@@ -1316,7 +1316,8 @@ class LoginDialog(lcg.Content):
             uri = req.server_uri(force_https=True) + req.uri()
         else:
             uri = req.uri()
-        result = (g.form(content, method='POST', action=uri, name='login_form', cls='login-form') +
+        result = (g.form(content, method='POST', action=uri, name='login_form', cls='login-form',
+                         novalidate=True) +
                   # The script below is redundant in browsers supporting <input>
                   # autofocus attribute but we need it for legacy browsers.
                   g.script("onload_ = window.onload; window.onload = function() { "
