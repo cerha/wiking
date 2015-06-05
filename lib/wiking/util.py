@@ -1273,11 +1273,11 @@ class LoginDialog(lcg.Content):
             login = req.param('login')
         else:
             login = None
-        def hidden_field(param, value):
+        def hidden_field(name, value):
             if isinstance(value, basestring):
-                return g.hidden(name=param, value=value)
+                return g.hidden(name=name, value=value)
             elif isinstance(value, (tuple, list)):
-                return lcg.concat([hidden_field(param, v) for v in value], separator="\n")
+                return lcg.concat([hidden_field(name, v) for v in value], separator="\n")
             else:
                 # This may be a file field, or anything else?
                 # TODO: Is it a good idea to leave the field out without a warning?
@@ -1288,9 +1288,10 @@ class LoginDialog(lcg.Content):
         else:
             login_label = _("Login name")
             login_type = 'text'
-        hidden = [hidden_field(param, req.param(param)) for param in req.params()
-                  if param not in ('command', 'login', 'password', '__log_in')]
-        content = (
+        content = [
+            hidden_field(param, req.param(param))
+            for param in req.params() if param not in ('command', 'login', 'password', '__log_in')
+        ] + [
             g.label(login_label + ':', for_=ids.login) + g.br(),
             g.input(type=login_type, name='login', value=login, id=ids.login, size=18, maxlength=64,
                     autocomplete='username', autofocus=True),
@@ -1300,10 +1301,9 @@ class LoginDialog(lcg.Content):
                     autocomplete='current-password'),
             g.br(),
             g.hidden(name='__log_in', value='1'),
-        ) + tuple(hidden) + (
             # Translators: Login button label - verb in imperative.
             g.button(g.span(_("Log in")), type='submit', cls='submit'),
-        )
+        ]
         links = [g.li(g.a(label, href=uri)) for label, uri in
                  # Translators: Webpage link leading to registration form.
                  ((_("New user registration"), self._registration_uri),
@@ -1311,7 +1311,7 @@ class LoginDialog(lcg.Content):
                  # on configuration).
                   (_("Forgot your password?"), self._password_reminder_uri)) if uri]
         if links:
-            content += (g.ul(*links),)
+            content.append(g.ul(*links))
         if not req.https() and wiking.cfg.force_https_login:
             uri = req.server_uri(force_https=True) + req.uri()
         else:
