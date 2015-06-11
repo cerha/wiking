@@ -128,7 +128,7 @@ class Application(CookieAuthentication, wiking.Application):
         wiking.module.Config.configure(req)
         if req.unresolved_path:
             try:
-                modname = self._MAPPING[req.unresolved_path[0]]
+                modname = self._mapping[req.unresolved_path[0]]
             except KeyError:
                 modname = 'Pages'
             else:
@@ -170,9 +170,9 @@ class Application(CookieAuthentication, wiking.Application):
 
         The method bahaves as follows:
 
-          1. Static mapping as defined by the parent class (see
-             'wiking.application._MAPPING') is searched first.  If the module
-             is found there, the corresponding path is returned.
+          1. Static URI mapping (see 'wiking.Application._MAPPING') is searched
+             first.  If the module is found there, the corresponding path is
+             returned.
           2. If the above fails, the module is searched within CMS pages as
              their extension module.  If the module is found as an extension
              module of a particular page, the path to that page (including the

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2006-2014 Brailcom, o.p.s.
+# Copyright (C) 2006-2015 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -66,7 +66,15 @@ class Application(wiking.Module):
     
     def __init__(self, *args, **kwargs):
         super(Application, self).__init__(*args, **kwargs)
+        self._mapping = dict(self._MAPPING)
         self._reverse_mapping = dict([(v, k) for k, v in self._MAPPING.items()])
+        uri = self._reverse_mapping.get('Resources')
+        if wiking.cfg.resources_version is not None and uri is not None:
+            del self._mapping[uri]
+            uri += '-' + wiking.cfg.resources_version
+            self._mapping[uri] = 'Resources'
+            self._reverse_mapping['Resources'] = uri
+
 
     def initialize(self, req):
         """Perform application specific initialization.
@@ -137,7 +145,7 @@ class Application(wiking.Module):
                 raise wiking.Forbidden()
         identifier = req.unresolved_path[0]
         try:
-            modname = self._MAPPING[identifier]
+            modname = self._mapping[identifier]
         except KeyError:
             raise wiking.NotFound()
         mod = wiking.module(modname)

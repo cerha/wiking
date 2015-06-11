@@ -4478,7 +4478,7 @@ class NewsletterEditions(CMSModule):
                 title=newsletter_row['title'].export(),
                 sender=newsletter_row['sender'].export(),
                 edition_uri=edition_uri + '?action=preview',
-                resources_uri=abs_uri('/_resources'),
+                resources_uri=abs_uri(req.module_uri('Resources')),
                 server_uri=server_uri,
                 unsubscribe_uri=newsletter_uri + ('?action=unsubscribe;email=%(email)s;'
                                                   'code=%(code)s'),

@@ -33,8 +33,8 @@ class MinimalExporter(lcg.HtmlExporter):
         except:
             uri = '_resources'
         return super(MinimalExporter, self)._head(context) + \
-            [g.ling(rel='stylesheet', type='text/css', href="/%s/%s" % (uri, style))
-             for style in ('default.css', 'layout.css')]
+            [g.link(rel='stylesheet', type='text/css', href="/%s/%s" % (uri, filename))
+             for filename in ('default.css', 'layout.css')]
     
     def _meta(self, context):
         import wiking
@@ -392,16 +392,19 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
     def _main(self, context):
         g = self._generator
         if context.req().maximized():
-            label = g.img('/_resources/minimize.png', alt=_("Minimize"))
+            icon = 'minimize.png'
+            label = _("Minimize")
             tooltip = _("Exit the maximized mode.")
             href = '?maximize=0'
         else:
-            label = g.img('/_resources/maximize.png', alt=_("Maximize"))
+            icon = 'maximize.png'
+            label = _("Maximize")
             tooltip = _("Maximize the main content to the full size of the browser window.")
             href = '?maximize=1'
         return (g.hr(cls='hidden'),
                 g.div((
-                    g.a(label, href=href, title=tooltip, id='maximized-mode-control'),
+                    g.a(g.img(context.uri(context.resource(icon)), alt=label),
+                        href=href, title=tooltip, id='maximized-mode-control'),
                     g.h(g.a(context.node().page_heading(), tabindex=0,
                             name='main-heading', id='main-heading'), 1),
                     self._messages(context),

@@ -543,6 +543,23 @@ class Configuration(pytis.util.Configuration):
                 "by Apache and lighttpd servers.")
         _DEFAULT = ()
 
+    class _Option_resources_version(pc.StringOption):
+        _DESCR = "String denoting version of serverd resource files."
+        _DOC = ("This option makes it possible to defend against aggressive caching "
+                "of resource files by some browsers or proxy servers (this sometimes "
+                "happens even though the resource should be reloaded according to "
+                "HTTP headers and may render the application unusable after an upgrade). "
+                "When set, the resources served by a Wiking application will get "
+                "a unique URI containing the given string.  For example, when not "
+                "set, a CSS file has the URI '/_resources/default.css', but when "
+                "'resources_version' is set to '2.0-beta', the URI will "
+                "automatically change to '/_resources-2.0-beta/default.css'. "
+                "So by changing the version all clients will be forced to reload "
+                "all resources.  You will typically want to change the version on "
+                "each deployment of a new version of an application on a "
+                "production server.")
+        _DEFAULT = None
+
 
 class ApplicationConfiguration(pytis.util.Configuration):
     """Base class for application specific configuration.
