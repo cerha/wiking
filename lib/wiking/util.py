@@ -1386,7 +1386,7 @@ class HtmlContent(lcg.TextContent):
         return self._text
 
 
-class HtmlTraceback(HtmlContent):
+class HtmlTraceback(lcg.Content):
     """LCG content element displaying a Python exception traceback in HTML.
 
     Accepts the exception information as returned by 'sys.exc_info()' as the
@@ -1396,18 +1396,20 @@ class HtmlTraceback(HtmlContent):
     def __init__(self, einfo, **kwargs):
         # Generete the traceback in constructor to avoid storing references
         # to einfo (see sys.exc_info() documentation).
-        U = lcg.HtmlEscapedUnicode
+        self._einfo = einfo
+        super(HtmlTraceback, self).__init__(**kwargs)
+
+    def export(self, context):
+        g =context.generator()
         try:
             # cgitb sometimes fails when the introspection touches
             # something sensitive, such as database objects.
             import cgitb
-            html = U(cgitb.html(einfo), escape=False)
+            return g.noescape(cgitb.html(self._einfo))
         except:
             import traceback
-            html = (U("<pre>", escape=False) +
-                    U("".join(traceback.format_exception(*einfo)), escape=True) +
-                    U("</pre>", escape=False))
-        super(HtmlTraceback, self).__init__(html, **kwargs)
+            return g.pre("".join(traceback.format_exception(*self._einfo)))
+        
 
 
 class HtmlRenderer(lcg.Content):
