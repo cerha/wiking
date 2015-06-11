@@ -238,7 +238,7 @@ div.panel form { margin: 0.3em 0; }
     text-decoration: none;
     white-space: nowrap;
     margin: 0 0.3em;
-    background-image: url(/_resources/login.png);
+    background-image: url(login.png);
     background-position: 1px center;
     background-repeat: no-repeat;
 }
@@ -246,7 +246,7 @@ div.panel form { margin: 0.3em 0; }
     background-color: $color.highlight-bg;
 }
 #panel-login.logged a.login-ctrl {
-    background-image: url(/_resources/logout.png);
+    background-image: url(logout.png);
 }
 #panel-login div.panel-content {
     padding: 0.3em;

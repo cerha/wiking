@@ -80,7 +80,7 @@ div.discussion-list div.login-info p {
     padding-left: 28px;
     border: dotted 2px $color.message-border;
     /* background-color: $color.background; */
-    background-image: url(/_resources/info.png);
+    background-image: url(info.png);
     background-position: left center;
     background-repeat: no-repeat;
 }
