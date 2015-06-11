@@ -31,12 +31,11 @@ _ = lcg.TranslatableTextFactory('wiking-cms')
 
 class Application(CookieAuthentication, wiking.Application):
     
-    _MAPPING = {'_doc': 'Documentation',
-                '_wmi': 'WikingManagementInterface',
-                '_resources': 'Resources',
-                '_registration': 'Registration',
-                'favicon.ico': 'SiteIcon',
-                'robots.txt': 'Robots'}
+    _MAPPING = dict(
+        wiking.Application._MAPPING,
+        _wmi='WikingManagementInterface',
+        _registration='Registration',
+    )
 
     _PREVIEW_MODE_COOKIE = 'wiking_cms_preview_mode'
     _PREVIEW_MODE_PARAM = '_wiking_cms_preview_mode'

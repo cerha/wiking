@@ -37,7 +37,7 @@ class Application(wiking.Module):
 
     """
 
-    _MAPPING = {'doc': 'Documentation',
+    _MAPPING = {'_doc': 'Documentation',
                 '_resources': 'Resources',
                 'favicon.ico': 'SiteIcon',
                 'robots.txt': 'Robots',
