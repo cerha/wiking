@@ -381,8 +381,8 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         messages = context.req().messages()
         if messages:
             g = self._generator
-            return g.div([g.div((type == wiking.Request.WARNING and _("Warning") + ': ' or '') +
-                                g.escape(message),
+            return g.div([g.div((_("Warning") + ': ' if type == wiking.Request.WARNING else '') +
+                                message,
                                 cls=self._MESSAGE_TYPE_CLASS[type])
                           for message, type in messages],
                          id='messages')
@@ -409,7 +409,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                 g.div(g.noescape('&nbsp;'), id='clearing'))
 
     def _page_clearing(self, context):
-        return lcg.HtmlEscapedUnicode('&nbsp;', escape=False)
+        return self._generator.noescape('&nbsp;')
     
     def _last_change(self, context):
         # Currently unused, left here just to have the translation.
