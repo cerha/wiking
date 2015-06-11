@@ -356,12 +356,7 @@ class Application(wiking.Module):
         info).
 
         """
-        uri = req.module_uri('Resources')
-        if uri is not None:
-            return [lcg.Stylesheet(file, uri=uri + '/' + file, media=media)
-                    for file, media in self._STYLESHEETS]
-        else:
-            return []
+        return [lcg.Stylesheet(filename, media=media) for filename, media in self._STYLESHEETS]
 
     def registration_uri(self, req):
         """Return the URI for new user registration or None if registration is not allowed."""

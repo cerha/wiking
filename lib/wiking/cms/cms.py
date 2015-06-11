@@ -4969,26 +4969,23 @@ class StyleSheets(SiteSpecificContentModule, StyleManagementModule,
     _cache_ids = ('default', 'single',)
 
     def stylesheets(self, req):
-        base_uri = req.module_uri('Resources')
-        return self._get_value((None, base_uri, req.wmi))
+        return self._get_value((None, req.wmi))
 
     def stylesheet(self, req, filename):
-        return self._get_value((filename, None, None), cache_id='single')
+        return self._get_value((filename, None), cache_id='single')
 
     def _load_value(self, key, transaction=None):
-        identifier, base_uri, wmi = key
-        if identifier is None:
+        filename, wmi = key
+        if filename is None:
             scopes = (None, wmi and 'wmi' or 'website')
-            return [lcg.Stylesheet(row['identifier'].value(),
-                                   uri=base_uri + '/' + row['identifier'].value(),
-                                   media=row['media'].value())
+            return [lcg.Stylesheet(row['identifier'].value(), media=row['media'].value())
                     for row in self._data.get_rows(site=wiking.cfg.server_hostname,
                                                    active=True,
                                                    condition=pd.OR(*[pd.EQ('scope', pd.sval(s))
                                                                      for s in scopes]),
                                                    sorting=self._sorting)]
         else:
-            row = self._data.get_row(identifier=identifier, active=True,
+            row = self._data.get_row(identifier=filename, active=True,
                                      site=wiking.cfg.server_hostname)
             if row:
                 return row['content'].value()
