@@ -38,7 +38,7 @@ class Application(wiking.Module):
     """
 
     _MAPPING = {'doc': 'Documentation',
-                'css': 'Stylesheets',
+                '_resources': 'Resources',
                 'favicon.ico': 'SiteIcon',
                 'robots.txt': 'Robots',
                 }
@@ -58,9 +58,8 @@ class Application(wiking.Module):
     _STYLESHEETS = (('default.css', 'all'), ('layout.css', 'screen'), ('print.css', 'print'))
     """Static list of available style sheets used by the 'stylesheets()' method.
 
-    The list consists of pairs (FILENAME, MEDIA), where FILENAME will be
-    prefixed by the current URI of the 'Stylesheets' module and MEDIA
-    corresponds to the 'lcg.Stylesheet' constructor argument of the same name.
+    The list consists of pairs (FILENAME, MEDIA), corresponding to the
+    'lcg.Stylesheet' constructor arguments of the same name.
 
     """
     _PREFERRED_LANGUAGE_COOKIE = 'wiking_preferred_language'
@@ -348,16 +347,16 @@ class Application(wiking.Module):
     def stylesheets(self, req):
         """Return the list of all available style sheets as 'lcg.Stylesheet' instances.
 
-        The application is responsible for handling the stylesheets (by their
-        URIs) correctly.  Wiking provides a generic 'Stylesheets' module for
-        this purpose.
+        The application is responsible for handling the returned stylesheets
+        (serving them to clients).  Wiking provides a generic 'Resources'
+        module for this purpose.
 
         The default implementation returns the list of style sheets defined by
         the '_STYLESHEETS' constant of the class (see its docstring for more
         info).
 
         """
-        uri = req.module_uri('Stylesheets') or req.module_uri('Resources')
+        uri = req.module_uri('Resources')
         if uri is not None:
             return [lcg.Stylesheet(file, uri=uri + '/' + file, media=media)
                     for file, media in self._STYLESHEETS]

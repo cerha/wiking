@@ -391,23 +391,8 @@ class Resources(Module, RequestHandler):
     def resource_provider(self):
         """Return the global resource provider as 'lcg.ResourceProvider' instance."""
         return self._provider
+
         
-class Stylesheets(Resources):
-    """Serve installed stylesheets.
-
-    The default implementation serves stylesheet files from the wiking
-    resources directory.  Consider using a more generic 'Resources' module
-    which also handles style sheets.  Map the module to a particular URI within
-    your application to use it.
-
-    """
-    def _handle_resource(self, req, filename):
-        if filename.endswith('.css'):
-            return super(Stylesheets, self)._handle_resource(req, filename)
-        else:
-            raise NotFound()
-
-
 class SiteIcon(Module, RequestHandler):
     """Serve site icon according to the configuration option 'site_icon'.
 
