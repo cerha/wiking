@@ -854,7 +854,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         """Retrun True it table cell of given column id in given record is editable inline."""
         return False
 
-    def _expand_row(self, req, record):
+    def _expand_row(self, req, record, form):
         """Return lcg.Content for expansion of given record in BrowseForm.
         
         Row expansion is additional content which may be displayed within table
@@ -872,10 +872,10 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         content is controlled by '_expand_row_view_form_content()'.
 
         """
-        form = self._form(pw.ShowForm, req, record=record,
-                          layout=self._expand_row_layout(req, record),
-                          actions=self._form_actions_argument(req, exclude=('list',)))
-        return lcg.Container(self._expand_row_view_form_content(req, form, record))
+        view_form = self._form(pw.ShowForm, req, record=record,
+                               layout=self._expand_row_layout(req, record),
+                               actions=self._form_actions_argument(req, exclude=('list',)))
+        return lcg.Container(self._expand_row_view_form_content(req, view_form, record))
 
     def _expand_row_layout(self, req, record):
         """Return layout of ShowForm displayed by default '_expand_row()' implementation."""
