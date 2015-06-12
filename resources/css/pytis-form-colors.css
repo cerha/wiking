@@ -19,6 +19,7 @@
     color: $color.foreground !important;
 }
 .pytis-form.browse-form table.data-table tr.data-row td,
+.pytis-form.browse-form table.data-table tr.row-expansion td,
 .pytis-form.browse-form table.data-table tr.column-headings th,
 .pytis-form.browse-form table.data-table tr.group-heading th {
     border-color: $color.border !important;
@@ -26,6 +27,7 @@
 @media print {
     .pytis-form.browse-form table.data-table,
     .pytis-form.browse-form table.data-table tr.data-row td,
+    .pytis-form.browse-form table.data-table tr.row-expansion td,
     .pytis-form.browse-form table.data-table tr.column-headings th,
     .pytis-form.browse-form table.data-table tr.group-heading th {
 	border-color: #ddd !important;
@@ -35,7 +37,8 @@
 .pytis-form.browse-form table.data-table tr.group-heading th {
     background-color: $color.heading-bg !important;
 }
-.pytis-form.browse-form table.data-table tr.data-row {
+.pytis-form.browse-form table.data-table tr.data-row,
+.pytis-form.browse-form table.data-table tr.row-expansion {
     background-color: $color.table-cell !important;
 }
 .pytis-form.browse-form table.data-table tr.data-row.even {
