@@ -786,24 +786,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         else:
             uri = self._current_base_uri(req, record)
         if issubclass(form_cls, pw.BrowseForm):
-            default_kwargs = dict(
-                limits=self._BROWSE_FORM_LIMITS,
-                limit=self._BROWSE_FORM_DEFAULT_LIMIT,
-                allow_text_search=self._ALLOW_QUERY_SEARCH or self._ALLOW_TEXT_SEARCH,
-                permanent_text_search=self._PERMANENT_TEXT_SEARCH,
-                top_actions=self._TOP_ACTIONS,
-                bottom_actions=self._BOTTOM_ACTIONS,
-                row_actions=self._ROW_ACTIONS,
-                async_load=self._ASYNC_LOAD,
-                immediate_filters=wiking.cfg.immediate_filters,
-                actions=(), # Display no actions by default, rather than just spec actions.
-                cell_editable=lambda *args: self._cell_editable(req, *args),
-                expand_row=((lambda *args: self._expand_row(req, *args))
-                            if self._ROW_EXPANSION else None),
-                async_row_expansion = self._ASYNC_ROW_EXPANSION,
-                on_update_row=lambda record: self._do_update(req, record)
-            )
-            kwargs = dict(default_kwargs, **kwargs)
+            kwargs = dict(self._list_form_kwargs(req, form_cls), **kwargs)
         layout = kwargs.get('layout')
         if layout is not None and not isinstance(layout, pp.GroupSpec):
             kwargs['layout'] = self._layout_instance(layout)
@@ -1439,6 +1422,25 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         else:
             result = None
         return result
+
+    def _list_form_kwargs(self, req, form_cls):
+        return dict(
+            limits=self._BROWSE_FORM_LIMITS,
+            limit=self._BROWSE_FORM_DEFAULT_LIMIT,
+            allow_text_search=self._ALLOW_QUERY_SEARCH or self._ALLOW_TEXT_SEARCH,
+            permanent_text_search=self._PERMANENT_TEXT_SEARCH,
+            top_actions=self._TOP_ACTIONS,
+            bottom_actions=self._BOTTOM_ACTIONS,
+            row_actions=self._ROW_ACTIONS,
+            async_load=self._ASYNC_LOAD,
+            immediate_filters=wiking.cfg.immediate_filters,
+            actions=(), # Display no actions by default, rather than just spec actions.
+            cell_editable=lambda *args: self._cell_editable(req, *args),
+            expand_row=((lambda *args: self._expand_row(req, *args))
+                        if self._ROW_EXPANSION else None),
+            async_row_expansion = self._ASYNC_ROW_EXPANSION,
+            on_update_row=lambda record: self._do_update(req, record),
+        )
 
     def _list_form_content(self, req, form, uri=None):
         """Return the page content for the 'list' action form as a list of 'lcg.Content' instances.

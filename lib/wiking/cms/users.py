@@ -84,12 +84,13 @@ class RoleSets(UserManagementModule, CachingPytisModule):
     def _layout(self, req, action, record=None):
         return (self._TITLE_COLUMN,)
     
-    def _form(self, form, req, *args, **kwargs):
-        if issubclass(form, pw.ItemizedView) and req.check_roles(Roles.USER_ADMIN):
+    def _list_form_kwargs(self, req, form_cls):
+        kwargs = super(RoleSets, self)._list_form_kwargs(req, form_cls)
+        if issubclass(form_cls, pw.ItemizedView) and req.check_roles(Roles.USER_ADMIN):
             template = lcg.HtmlEscapedUnicode("%(" + self._TITLE_COLUMN + ")s [%(delete)s]",
                                               escape=False)
             kwargs['template'] = lcg.TranslatableText(template)
-        return super(RoleSets, self)._form(form, req, *args, **kwargs)
+        return kwargs
     
     def _link_provider(self, req, uri, record, cid, **kwargs):
         if cid is None:
@@ -242,13 +243,14 @@ class RoleMembers(UserManagementModule):
     def _layout(self, req, action, record=None):
         return (self._TITLE_COLUMN,)
     
-    def _form(self, form, req, *args, **kwargs):
-        if issubclass(form, pw.ItemizedView) and req.check_roles(Roles.USER_ADMIN):
+    def _list_form_kwargs(self, req, form_cls):
+        kwargs = super(RoleMembers, self)._list_form_kwargs(req, form_cls)
+        if issubclass(form_cls, pw.ItemizedView) and req.check_roles(Roles.USER_ADMIN):
             template = lcg.HtmlEscapedUnicode("%(" + self._TITLE_COLUMN + ")s [%(delete)s]",
                                               escape=False)
             kwargs['template'] = lcg.TranslatableText(template)
-        return super(RoleMembers, self)._form(form, req, *args, **kwargs)
-    
+        return kwargs
+
     def _link_provider(self, req, uri, record, cid, **kwargs):
         if cid is None:
             return self._link_provider(req, uri, record, self._TITLE_COLUMN, **kwargs)
