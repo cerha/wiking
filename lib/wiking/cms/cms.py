@@ -3643,7 +3643,7 @@ class Attachments(ContentManagementModule):
             # binding prefill, see PublicationChapters.Spec.bindings...
             fw = self._binding_forward(req)
             binding, record = fw.arg('binding'), fw.arg('record')
-            column, value = 'page_id', binding.prefill()(record)['page_id'].value()
+            column, value = 'page_id', binding.prefill()(record)['page_id']
         return column, value
 
     def _save_attachment_file(self, record):
