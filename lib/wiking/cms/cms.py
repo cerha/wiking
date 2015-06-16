@@ -2839,7 +2839,7 @@ class PublicationChapters(NavigablePages):
                     condition=(lambda r:
                                pd.EQ('page_id', pd.ival(r.req().publication_record['page_id']
                                                         .value()))),
-                    prefill=lambda r: dict(page_id=r.req().publication_record['page_id'])),
+                    prefill=lambda r: dict(page_id=r.req().publication_record['page_id'].value())),
         ) + tuple([_b for _b in Pages.Spec.bindings if _b.id() != 'attachments']) + (
             Binding('excerpts', _("Excerpts"), 'CmsPageExcerpts', 'page_id'),
         )
@@ -3349,7 +3349,7 @@ class Attachments(ContentManagementModule):
                 Field('ext', virtual=True, computer=computer(self._ext)),
                 # Translators: Size of a file, in number of bytes, kilobytes etc.
                 Field('bytesize', _("Size"),
-                      computer=computer(lambda r, upload: upload and len(upload)),
+                      computer=computer(self._bytesize),
                       formatter=format_byte_size),
                 Field('thumbnail', '', type=pd.Image(), computer=computer(self._thumbnail)),
                 # Translators: Thumbnail is a small image preview in computer terminology.
@@ -3481,6 +3481,12 @@ class Attachments(ContentManagementModule):
                 return now()
             else:
                 return record['last_modified'].value()
+
+        def _bytesize(self, record, upload):
+            if upload:
+                return len(upload)
+            else:
+                return None
 
         columns = ('filename', 'title', 'bytesize', 'created', 'last_modified',
                    'in_gallery', 'listed', 'page_id')
