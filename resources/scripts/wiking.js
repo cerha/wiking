@@ -59,9 +59,7 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
 	    var main_menu = new wiking.MainMenu(menu);
 	    var submenu = $('submenu');
 	    if (submenu) {
-		var tree_element = submenu.down('.foldable-tree-widget');
-		tree_element.setAttribute('aria-label', wiking._("Hierarchical navigation menu"));
-		var tree_menu = lcg.widget_instance(tree_element);
+		var tree_menu = lcg.widget_instance(submenu.down('.foldable-tree-widget'));
 		// Bind given lcg.TreeMenu instance as a descendant of this menu in
 		// keyboard traversal.
 		var parent_item = main_menu.selected_item();

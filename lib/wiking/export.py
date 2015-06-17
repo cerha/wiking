@@ -324,7 +324,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         else:
             heading = _("Main navigation")
             heading_id = 'main-navigation'
-        tree = lcg.FoldableTree(context.node().top(),
+        tree = lcg.FoldableTree(context.node().top(), label=_("Hierarchical navigation menu"),
                                 tooltip=_("Expand/collapse complete menu hierarchy"))
         content = tree.export(context)
         extra_content = application.menu_panel_bottom_content(req)
