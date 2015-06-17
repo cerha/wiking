@@ -173,6 +173,14 @@ wiking.MainMenu = Class.create(lcg.Menu, {
     },
     
     init_items: function ($super, ul, parent) {
+	// By setting the role to 'menubar', the menubar becomes an "item"
+	// in the surrounding 'navigation' element.  This disturbs VoiceOver 
+	// presentation and requires the user to go through two elements
+	// (first "navigation, one item" and second "menubar n items")
+	// where the first is redundant and misleading.  When the role is
+	// left unset, the menu items become items of the 'navigation'.
+	// Their number is announced correctly and they can be navigated
+	// easily.
 	this.element.setAttribute('role', 'menubar');
 	ul.setAttribute('role', 'presentation');
 	return $super(ul, parent);
