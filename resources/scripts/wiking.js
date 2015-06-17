@@ -181,7 +181,7 @@ wiking.MainMenu = Class.create(lcg.Menu, {
 	// left unset, the menu items become items of the 'navigation'.
 	// Their number is announced correctly and they can be navigated
 	// easily.
-	this.element.setAttribute('role', 'menubar');
+	//this.element.setAttribute('role', 'menubar');
 	ul.setAttribute('role', 'presentation');
 	return $super(ul, parent);
     },
