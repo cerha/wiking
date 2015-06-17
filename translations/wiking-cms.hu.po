@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-06-04 17:59+0200\n"
+"POT-Creation-Date: 2015-06-17 08:21+0200\n"
 "PO-Revision-Date: 2010-02-04 00:15+0100\n"
 "Last-Translator: Hostomský Károly <khostomsky@gmail.com>\n"
 "Language-Team: Hungarian <wiking@lists.freebsoft.org>\n"
@@ -16,15 +16,15 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../lib/wiking/cms/appl.py:49
+#: ../lib/wiking/cms/appl.py:48
 msgid "Manage this site"
 msgstr "Karbantartani a weboldalt"
 
-#: ../lib/wiking/cms/appl.py:50
+#: ../lib/wiking/cms/appl.py:49
 msgid "Enter the Wiking Management Interface"
 msgstr "Belépés a Wiking kezelőfelületbe"
 
-#: ../lib/wiking/cms/appl.py:52
+#: ../lib/wiking/cms/appl.py:51
 msgid "Leave the Management Interface"
 msgstr "Kilépés a Wiking kezelőfelületből"
 
@@ -36,52 +36,52 @@ msgstr "Kilépés a Wiking kezelőfelületből"
 #. administrators until it is published.  Please make sure you
 #. translate these two modes consistently acros all their
 #. occurences.
-#: ../lib/wiking/cms/appl.py:70
+#: ../lib/wiking/cms/appl.py:69
 msgid "Production mode"
 msgstr ""
 
 #. See "Production mode"
-#: ../lib/wiking/cms/appl.py:72
+#: ../lib/wiking/cms/appl.py:71
 #, fuzzy
 msgid "Preview mode"
 msgstr "Előnézet"
 
-#: ../lib/wiking/cms/appl.py:117
+#: ../lib/wiking/cms/appl.py:116
 #, fuzzy
 msgid "Switching to preview mode"
 msgstr "Előnézet"
 
-#: ../lib/wiking/cms/appl.py:119
+#: ../lib/wiking/cms/appl.py:118
 #, fuzzy
 msgid "Switching to production mode"
 msgstr "Oldal kívülállók számára láthatatlanná tétele"
 
-#: ../lib/wiking/cms/appl.py:152
+#: ../lib/wiking/cms/appl.py:151
 msgid "Welcome to Wiking CMS"
 msgstr ""
 
-#: ../lib/wiking/cms/appl.py:155 ../lib/wiking/cms/cms.py:1473
+#: ../lib/wiking/cms/appl.py:154 ../lib/wiking/cms/cms.py:1473
 msgid "Create a new page"
 msgstr ""
 
-#: ../lib/wiking/cms/appl.py:157
+#: ../lib/wiking/cms/appl.py:156
 msgid ""
 "There are no published pages. You need to switch to the Preview mode to be "
 "able to access the unpublished pages."
 msgstr ""
 
-#: ../lib/wiking/cms/appl.py:254
+#: ../lib/wiking/cms/appl.py:253
 msgid "Wiking Management Interface"
 msgstr "Wiking kezelőfelület"
 
-#: ../lib/wiking/cms/appl.py:300 ../lib/wiking/cms/users.py:1042
+#: ../lib/wiking/cms/appl.py:299 ../lib/wiking/cms/users.py:1044
 #, python-format
 msgid ""
 "User %s is already registered for another site. Please, confirm the account "
 "for this site."
 msgstr ""
 
-#: ../lib/wiking/cms/appl.py:358
+#: ../lib/wiking/cms/appl.py:357
 #, fuzzy
 msgid "New Panel"
 msgstr "Új oldal"
@@ -176,8 +176,8 @@ msgstr "Hibás aktivációs kód."
 msgid "Manage user and other kinds of certificates."
 msgstr "Intézmények és egyéb szervezetek irányítása."
 
-#: ../lib/wiking/cms/certificates.py:228 ../lib/wiking/cms/cms.py:5375
-#: ../lib/wiking/cms/cms.py:5555
+#: ../lib/wiking/cms/certificates.py:228 ../lib/wiking/cms/cms.py:5378
+#: ../lib/wiking/cms/cms.py:5558
 msgid "Subject"
 msgstr "Tárgy"
 
@@ -185,16 +185,16 @@ msgstr "Tárgy"
 #. Form field label, noun.
 #: ../lib/wiking/cms/certificates.py:230 ../lib/wiking/cms/cms.py:1057
 #: ../lib/wiking/cms/cms.py:1098 ../lib/wiking/cms/cms.py:1184
-#: ../lib/wiking/cms/cms.py:4837 ../lib/wiking/cms/crypto.py:43
-#: ../lib/wiking/cms/crypto.py:84 ../lib/wiking/cms/users.py:337
-#: ../lib/wiking/cms/users.py:338
+#: ../lib/wiking/cms/cms.py:4843 ../lib/wiking/cms/crypto.py:43
+#: ../lib/wiking/cms/crypto.py:84 ../lib/wiking/cms/users.py:339
+#: ../lib/wiking/cms/users.py:340
 msgid "Name"
 msgstr "Név"
 
 #. E-mail address. Registration form field.
 #: ../lib/wiking/cms/certificates.py:232 ../lib/wiking/cms/cms.py:2662
-#: ../lib/wiking/cms/cms.py:4245 ../lib/wiking/cms/cms.py:4266
-#: ../lib/wiking/cms/cms.py:4839 ../lib/wiking/cms/users.py:582
+#: ../lib/wiking/cms/cms.py:4251 ../lib/wiking/cms/cms.py:4272
+#: ../lib/wiking/cms/cms.py:4845 ../lib/wiking/cms/users.py:584
 msgid "E-mail"
 msgstr "E-mail"
 
@@ -395,16 +395,16 @@ msgstr ""
 "Kezelő panelok - kis ablakok, melyek az oldalak szélén helyezkednek el."
 
 #: ../lib/wiking/cms/cms.py:885 ../lib/wiking/cms/cms.py:1311
-#: ../lib/wiking/cms/cms.py:3316 ../lib/wiking/cms/cms.py:3939
-#: ../lib/wiking/cms/cms.py:4118
+#: ../lib/wiking/cms/cms.py:3316 ../lib/wiking/cms/cms.py:3945
+#: ../lib/wiking/cms/cms.py:4124
 msgid "Language"
 msgstr "Nyelv"
 
 #. Title in the meaning of a heading
 #: ../lib/wiking/cms/cms.py:888 ../lib/wiking/cms/cms.py:1313
 #: ../lib/wiking/cms/cms.py:1314 ../lib/wiking/cms/cms.py:2237
-#: ../lib/wiking/cms/cms.py:3340 ../lib/wiking/cms/cms.py:3943
-#: ../lib/wiking/cms/cms.py:4117 ../lib/wiking/cms/cms.py:4605
+#: ../lib/wiking/cms/cms.py:3340 ../lib/wiking/cms/cms.py:3949
+#: ../lib/wiking/cms/cms.py:4123 ../lib/wiking/cms/cms.py:4611
 msgid "Title"
 msgstr "Cím"
 
@@ -413,7 +413,7 @@ msgstr "Cím"
 #. Unique identifier of a stylesheet.
 #. Form field label.
 #: ../lib/wiking/cms/cms.py:891 ../lib/wiking/cms/cms.py:1303
-#: ../lib/wiking/cms/cms.py:4939 ../lib/wiking/cms/users.py:335
+#: ../lib/wiking/cms/cms.py:4945 ../lib/wiking/cms/users.py:337
 msgid "Identifier"
 msgstr "Azonosító"
 
@@ -424,8 +424,8 @@ msgid ""
 msgstr ""
 
 #. Order in the meaning of sequence. A noun, not verb.
-#: ../lib/wiking/cms/cms.py:897 ../lib/wiking/cms/cms.py:4606
-#: ../lib/wiking/cms/cms.py:4958
+#: ../lib/wiking/cms/cms.py:897 ../lib/wiking/cms/cms.py:4612
+#: ../lib/wiking/cms/cms.py:4964
 msgid "Order"
 msgstr "Sorrend"
 
@@ -467,8 +467,8 @@ msgstr ""
 
 #. Content of a page (text or something else)
 #: ../lib/wiking/cms/cms.py:915 ../lib/wiking/cms/cms.py:1318
-#: ../lib/wiking/cms/cms.py:2240 ../lib/wiking/cms/cms.py:4609
-#: ../lib/wiking/cms/cms.py:4962
+#: ../lib/wiking/cms/cms.py:2240 ../lib/wiking/cms/cms.py:4615
+#: ../lib/wiking/cms/cms.py:4968
 msgid "Content"
 msgstr "Tartalom"
 
@@ -562,11 +562,11 @@ msgstr "Közönséges oldalszínek"
 #: ../lib/wiking/cms/cms.py:1118 ../lib/wiking/cms/cms.py:1133
 #: ../lib/wiking/cms/cms.py:1141 ../lib/wiking/cms/cms.py:1148
 #: ../lib/wiking/cms/cms.py:1157 ../lib/wiking/cms/cms.py:1161
-#: ../lib/wiking/cms/cms.py:1165 ../lib/wiking/cms/cms.py:4137
-#: ../lib/wiking/cms/cms.py:4141 ../lib/wiking/cms/cms.py:4144
-#: ../lib/wiking/cms/cms.py:5078 ../lib/wiking/cms/cms.py:5079
-#: ../lib/wiking/cms/cms.py:5081 ../lib/wiking/cms/cms.py:5083
-#: ../lib/wiking/cms/cms.py:5556
+#: ../lib/wiking/cms/cms.py:1165 ../lib/wiking/cms/cms.py:4143
+#: ../lib/wiking/cms/cms.py:4147 ../lib/wiking/cms/cms.py:4150
+#: ../lib/wiking/cms/cms.py:5081 ../lib/wiking/cms/cms.py:5082
+#: ../lib/wiking/cms/cms.py:5084 ../lib/wiking/cms/cms.py:5086
+#: ../lib/wiking/cms/cms.py:5559
 msgid "Text"
 msgstr "Szöveg"
 
@@ -574,8 +574,8 @@ msgstr "Szöveg"
 #: ../lib/wiking/cms/cms.py:1120 ../lib/wiking/cms/cms.py:1134
 #: ../lib/wiking/cms/cms.py:1142 ../lib/wiking/cms/cms.py:1149
 #: ../lib/wiking/cms/cms.py:1158 ../lib/wiking/cms/cms.py:1162
-#: ../lib/wiking/cms/cms.py:1166 ../lib/wiking/cms/cms.py:4140
-#: ../lib/wiking/cms/cms.py:4143 ../lib/wiking/cms/cms.py:4146
+#: ../lib/wiking/cms/cms.py:1166 ../lib/wiking/cms/cms.py:4146
+#: ../lib/wiking/cms/cms.py:4149 ../lib/wiking/cms/cms.py:4152
 msgid "Background"
 msgstr "Háttér"
 
@@ -797,7 +797,7 @@ msgstr ""
 "tartalmazhat. Betűvel kell, hogy kezdődjön."
 
 #: ../lib/wiking/cms/cms.py:1315 ../lib/wiking/cms/cms.py:3343
-#: ../lib/wiking/cms/cms.py:4120 ../lib/wiking/cms/cms.py:4940
+#: ../lib/wiking/cms/cms.py:4126 ../lib/wiking/cms/cms.py:4946
 #: ../lib/wiking/cms/crypto.py:44
 msgid "Description"
 msgstr "Leírás"
@@ -878,13 +878,13 @@ msgid ""
 "for pages, which have subordinary items in the menu)."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1364 ../lib/wiking/cms/cms.py:4364
+#: ../lib/wiking/cms/cms.py:1364 ../lib/wiking/cms/cms.py:4370
 msgid "Creator"
 msgstr ""
 
 #: ../lib/wiking/cms/cms.py:1368 ../lib/wiking/cms/cms.py:2640
 #: ../lib/wiking/cms/cms.py:2953 ../lib/wiking/cms/cms.py:3346
-#: ../lib/wiking/cms/cms.py:4365
+#: ../lib/wiking/cms/cms.py:4371
 msgid "Created"
 msgstr ""
 
@@ -909,7 +909,7 @@ msgid "Status"
 msgstr "Állapot"
 
 #. Label of a selector of a group allowed to access the page read only.
-#: ../lib/wiking/cms/cms.py:1391 ../lib/wiking/cms/cms.py:4128
+#: ../lib/wiking/cms/cms.py:1391 ../lib/wiking/cms/cms.py:4134
 msgid "Read only access"
 msgstr ""
 
@@ -918,7 +918,7 @@ msgid "Select the role allowed to view the page contents."
 msgstr ""
 
 #. Label of a selector of a group allowed to edit the page.
-#: ../lib/wiking/cms/cms.py:1397 ../lib/wiking/cms/cms.py:4133
+#: ../lib/wiking/cms/cms.py:1397 ../lib/wiking/cms/cms.py:4139
 msgid "Read/write access"
 msgstr ""
 
@@ -1247,7 +1247,7 @@ msgid "Id"
 msgstr ""
 
 #: ../lib/wiking/cms/cms.py:2238 ../lib/wiking/cms/cms.py:3309
-#: ../lib/wiking/cms/cms.py:3936
+#: ../lib/wiking/cms/cms.py:3942
 msgid "Page"
 msgstr "Oldal"
 
@@ -1277,7 +1277,7 @@ msgstr ""
 msgid "Select the role allowed to edit the publication."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2320 ../lib/wiking/cms/cms.py:3946
+#: ../lib/wiking/cms/cms.py:2320 ../lib/wiking/cms/cms.py:3952
 msgid "Author"
 msgstr "Szerző"
 
@@ -1541,8 +1541,8 @@ msgid "Authorized Person"
 msgstr ""
 
 #: ../lib/wiking/cms/cms.py:2663 ../lib/wiking/cms/cms.py:3171
-#: ../lib/wiking/cms/cms.py:3941 ../lib/wiking/cms/cms.py:3950
-#: ../lib/wiking/cms/cms.py:4067 ../lib/wiking/cms/cms.py:5557
+#: ../lib/wiking/cms/cms.py:3947 ../lib/wiking/cms/cms.py:3956
+#: ../lib/wiking/cms/cms.py:4073 ../lib/wiking/cms/cms.py:5560
 msgid "Date"
 msgstr "Dátum"
 
@@ -1599,7 +1599,7 @@ msgid "EPUB"
 msgstr ""
 
 #. Braille as a type of media
-#: ../lib/wiking/cms/cms.py:2923 ../lib/wiking/cms/cms.py:4912
+#: ../lib/wiking/cms/cms.py:2923 ../lib/wiking/cms/cms.py:4918
 msgid "Braille"
 msgstr "Braille sajtó"
 
@@ -1742,7 +1742,7 @@ msgstr "Megváltoztatva"
 msgid "Change Summary"
 msgstr "Jelszó megváltoztatása"
 
-#: ../lib/wiking/cms/cms.py:3212 ../lib/wiking/cms/cms.py:4165
+#: ../lib/wiking/cms/cms.py:3212 ../lib/wiking/cms/cms.py:4171
 #, fuzzy
 msgid "Colors"
 msgstr "Színsémák"
@@ -1869,7 +1869,7 @@ msgstr ""
 msgid "Archive"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:3386 ../lib/wiking/cms/cms.py:3495
+#: ../lib/wiking/cms/cms.py:3386 ../lib/wiking/cms/cms.py:3501
 msgid "Upload multiple attachments at once as a ZIP, TAR or TAR.GZ archive."
 msgstr ""
 
@@ -1911,136 +1911,136 @@ msgid "Large"
 msgstr ""
 
 #. Button label
-#: ../lib/wiking/cms/cms.py:3493
+#: ../lib/wiking/cms/cms.py:3499
 msgid "Move"
 msgstr "Áthelyez"
 
-#: ../lib/wiking/cms/cms.py:3493
+#: ../lib/wiking/cms/cms.py:3499
 msgid "Move the attachment to another page."
 msgstr "Helyezd át a csatolmányt más oldalhoz."
 
-#: ../lib/wiking/cms/cms.py:3494
+#: ../lib/wiking/cms/cms.py:3500
 msgid "Upload Archive"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:3555
+#: ../lib/wiking/cms/cms.py:3561
 msgid "New attachment"
 msgstr "Új csatolmány"
 
-#: ../lib/wiking/cms/cms.py:3561
+#: ../lib/wiking/cms/cms.py:3567
 msgid "Attachment of the same file name already exists for this page."
 msgstr "Azonos nevű csatolmány már létezik az oldalhoz."
 
-#: ../lib/wiking/cms/cms.py:3563
+#: ../lib/wiking/cms/cms.py:3569
 msgid "Attachment file name exceeds the maximal length 64 characters."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:3733
+#: ../lib/wiking/cms/cms.py:3739
 #, python-format
 msgid "Attachment '%s' not found!"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:3840
+#: ../lib/wiking/cms/cms.py:3846
 msgid "Multiple files match"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:3886
+#: ../lib/wiking/cms/cms.py:3892
 #, python-format
 msgid "Unknow archive file type: %s"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:3888
+#: ../lib/wiking/cms/cms.py:3894
 #, python-format
 msgid "Unable to read archive: %s"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:3920
+#: ../lib/wiking/cms/cms.py:3926
 #, python-format
 msgid "%d attachment succesfully inserted"
 msgid_plural "%d attachments succesfully inserted"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../lib/wiking/cms/cms.py:3923
+#: ../lib/wiking/cms/cms.py:3929
 #, python-format
 msgid "%d attachment succesfully updated"
 msgid_plural "%d attachments succesfully updated"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../lib/wiking/cms/cms.py:3943 ../lib/wiking/cms/cms.py:3945
+#: ../lib/wiking/cms/cms.py:3949 ../lib/wiking/cms/cms.py:3951
 msgid "Message"
 msgstr "Üzenet"
 
-#: ../lib/wiking/cms/cms.py:3944
+#: ../lib/wiking/cms/cms.py:3950
 msgid "The item brief summary."
 msgstr "Az elem tömör összefoglalója."
 
-#: ../lib/wiking/cms/cms.py:3951
+#: ../lib/wiking/cms/cms.py:3957
 msgid "Date of the news item creation."
 msgstr "Új elem létrejöttének időpontja."
 
-#: ../lib/wiking/cms/cms.py:4008
+#: ../lib/wiking/cms/cms.py:4014
 #, fuzzy
 msgid "Recent news"
 msgstr "Fölötte álló elem"
 
-#: ../lib/wiking/cms/cms.py:4009
+#: ../lib/wiking/cms/cms.py:4015
 #, fuzzy
 msgid "Archive of older news"
 msgstr "Inaktív mappa"
 
 #. Section title and menu item
-#: ../lib/wiking/cms/cms.py:4014
+#: ../lib/wiking/cms/cms.py:4020
 msgid "News"
 msgstr "Hírek"
 
 #. Help string describing more precisely the meaning of the "News" section.
-#: ../lib/wiking/cms/cms.py:4016
+#: ../lib/wiking/cms/cms.py:4022
 msgid "Publish site news."
 msgstr "Hírek közlése."
 
-#: ../lib/wiking/cms/cms.py:4021
+#: ../lib/wiking/cms/cms.py:4027
 #, fuzzy
 msgid "Displayed days"
 msgstr "Megjelenítendő név"
 
-#: ../lib/wiking/cms/cms.py:4022
+#: ../lib/wiking/cms/cms.py:4028
 msgid "Number of days the item stays displayed in news."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:4031 ../lib/wiking/cms/users.py:1868
+#: ../lib/wiking/cms/cms.py:4037 ../lib/wiking/cms/users.py:1874
 msgid "Show"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:4032
+#: ../lib/wiking/cms/cms.py:4038
 #, fuzzy
 msgid "All items"
 msgstr "Minden típus"
 
 #. Button label for creating a new message in "News".
-#: ../lib/wiking/cms/cms.py:4045
+#: ../lib/wiking/cms/cms.py:4051
 msgid "New message"
 msgstr "Új üzenet"
 
 #. Section heading and menu item
-#: ../lib/wiking/cms/cms.py:4057
+#: ../lib/wiking/cms/cms.py:4063
 msgid "Planner"
 msgstr "Tervező"
 
-#: ../lib/wiking/cms/cms.py:4058
+#: ../lib/wiking/cms/cms.py:4064
 msgid "Announce future events by date in a callendar-like listing."
 msgstr "Jelentsd a jövőbeli eseményeket dátum szerint, a naptárszerű listában."
 
-#: ../lib/wiking/cms/cms.py:4062
+#: ../lib/wiking/cms/cms.py:4068
 msgid "Event"
 msgstr "Esemény"
 
-#: ../lib/wiking/cms/cms.py:4062
+#: ../lib/wiking/cms/cms.py:4068
 msgid "The event brief summary."
 msgstr "Az esemény tömör összefoglalója."
 
-#: ../lib/wiking/cms/cms.py:4070
+#: ../lib/wiking/cms/cms.py:4076
 #, fuzzy, python-format
 msgid ""
 "The date when the planned event begins. Enter the date including year.  "
@@ -2049,11 +2049,11 @@ msgstr ""
 "Az időpont, amikor a tervezett esemény kezdődik. Adja meg a dátumot a "
 "évszámmal együtt. Például: %(date)s"
 
-#: ../lib/wiking/cms/cms.py:4071
+#: ../lib/wiking/cms/cms.py:4077
 msgid "End date"
 msgstr "Záró dátum"
 
-#: ../lib/wiking/cms/cms.py:4072
+#: ../lib/wiking/cms/cms.py:4078
 msgid ""
 "The date when the event ends if it is not the same as the start date (for "
 "events which last several days)."
@@ -2061,142 +2061,142 @@ msgstr ""
 "Az esemény záródátuma, abban az esetben, ha nem egyezik a kezdődátummal "
 "(több napos események esetében)."
 
-#: ../lib/wiking/cms/cms.py:4089
+#: ../lib/wiking/cms/cms.py:4095
 msgid "Date in the past"
 msgstr "Múltbeli dátum"
 
-#: ../lib/wiking/cms/cms.py:4091
+#: ../lib/wiking/cms/cms.py:4097
 msgid "End date precedes start date"
 msgstr "A záródátum megelőzi a kezdődátumot"
 
 #. Button label for creating a new event in "Planner".
-#: ../lib/wiking/cms/cms.py:4093
+#: ../lib/wiking/cms/cms.py:4099
 #, fuzzy
 msgid "New event"
 msgstr "Új csatolmány"
 
-#: ../lib/wiking/cms/cms.py:4111
+#: ../lib/wiking/cms/cms.py:4117
 msgid "E-mail Newsletters"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:4121
+#: ../lib/wiking/cms/cms.py:4127
 msgid "Description of the newsletter purpose and estimated target audience."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:4123 ../lib/wiking/cms/cms.py:4610
+#: ../lib/wiking/cms/cms.py:4129 ../lib/wiking/cms/cms.py:4616
 msgid "Image"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:4126
+#: ../lib/wiking/cms/cms.py:4132
 #, fuzzy
 msgid "Sender"
 msgstr "Küldés"
 
 #. Post address. Registration form field.
-#: ../lib/wiking/cms/cms.py:4127 ../lib/wiking/cms/users.py:586
+#: ../lib/wiking/cms/cms.py:4133 ../lib/wiking/cms/users.py:588
 msgid "Address"
 msgstr "Postacím"
 
-#: ../lib/wiking/cms/cms.py:4130
+#: ../lib/wiking/cms/cms.py:4136
 msgid ""
 "Select the role allowed to read the newsletter online and subscribe for e-"
 "mail distribution."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:4135
+#: ../lib/wiking/cms/cms.py:4141
 msgid "Select the role allowed create and send the newsletter editions."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:4138 ../lib/wiking/cms/cms.py:4142
-#: ../lib/wiking/cms/cms.py:4145
+#: ../lib/wiking/cms/cms.py:4144 ../lib/wiking/cms/cms.py:4148
+#: ../lib/wiking/cms/cms.py:4151
 #, fuzzy
 msgid "Links"
 msgstr "Link"
 
-#: ../lib/wiking/cms/cms.py:4139
+#: ../lib/wiking/cms/cms.py:4145
 #, fuzzy
 msgid "Headings"
 msgstr "Küldés"
 
-#: ../lib/wiking/cms/cms.py:4159
+#: ../lib/wiking/cms/cms.py:4165
 #, fuzzy
 msgid "Editions"
 msgstr "Leírás"
 
-#: ../lib/wiking/cms/cms.py:4161
+#: ../lib/wiking/cms/cms.py:4167
 msgid "Subscribers"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:4166 ../lib/wiking/cms/cms.py:4261
+#: ../lib/wiking/cms/cms.py:4172 ../lib/wiking/cms/cms.py:4267
 msgid "Subscribe"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:4167 ../lib/wiking/cms/cms.py:4264
-#: ../lib/wiking/cms/cms.py:4498
+#: ../lib/wiking/cms/cms.py:4173 ../lib/wiking/cms/cms.py:4270
+#: ../lib/wiking/cms/cms.py:4504
 msgid "Unsubscribe"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:4194
+#: ../lib/wiking/cms/cms.py:4200
 msgid "Top Bar"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:4196
+#: ../lib/wiking/cms/cms.py:4202
 msgid "Footer"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:4243 ../lib/wiking/cms/crypto.py:85
-#: ../lib/wiking/cms/users.py:231 ../lib/wiking/cms/users.py:568
-#: ../lib/wiking/cms/users.py:1834
+#: ../lib/wiking/cms/cms.py:4249 ../lib/wiking/cms/crypto.py:85
+#: ../lib/wiking/cms/users.py:232 ../lib/wiking/cms/users.py:570
+#: ../lib/wiking/cms/users.py:1840
 msgid "User"
 msgstr "Felhasználó"
 
-#: ../lib/wiking/cms/cms.py:4246
+#: ../lib/wiking/cms/cms.py:4252
 msgid "Since"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:4262
+#: ../lib/wiking/cms/cms.py:4268
 #, python-format
 msgid "Subscribe to %s"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:4265 ../lib/wiking/cms/cms.py:4323
+#: ../lib/wiking/cms/cms.py:4271 ../lib/wiking/cms/cms.py:4329
 #, python-format
 msgid "Unsubscribe from %s"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:4287
+#: ../lib/wiking/cms/cms.py:4293
 #, python-format
 msgid "The e-mail address %s has been subscribed succesfully."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:4290
+#: ../lib/wiking/cms/cms.py:4296
 msgid "You have been subscribed succesfully."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:4308
+#: ../lib/wiking/cms/cms.py:4314
 #, python-format
 msgid "The e-mail address %s has been unsubscribed succesfully."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:4309
+#: ../lib/wiking/cms/cms.py:4315
 #, fuzzy, python-format
 msgid "The e-mail address %s is not subscribed."
 msgstr "A küldő email címe."
 
-#: ../lib/wiking/cms/cms.py:4312
+#: ../lib/wiking/cms/cms.py:4318
 msgid "You have been unsubscribed succesfully."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:4313
+#: ../lib/wiking/cms/cms.py:4319
 msgid "You are not subscribed."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:4318
+#: ../lib/wiking/cms/cms.py:4324
 #, python-format
 msgid "Cannot unsubscribe: %s."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:4330
+#: ../lib/wiking/cms/cms.py:4336
 #, python-format
 msgid ""
 "Use the following link to confirm your unsubscription from %(newsletter)s at "
@@ -2206,13 +2206,13 @@ msgid ""
 "\n"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:4333 ../lib/wiking/cms/users.py:1065
-#: ../lib/wiking/cms/users.py:1322
+#: ../lib/wiking/cms/cms.py:4339 ../lib/wiking/cms/users.py:1067
+#: ../lib/wiking/cms/users.py:1324
 #, fuzzy
 msgid "Failed sending e-mail:"
 msgstr "E-mail figyelmeztetés küldése sikertelen:"
 
-#: ../lib/wiking/cms/cms.py:4334
+#: ../lib/wiking/cms/cms.py:4340
 #, fuzzy
 msgid ""
 "Please try repeating your request later or contact the administrator if the "
@@ -2221,231 +2221,231 @@ msgstr ""
 "Kérem, próbálja meg a kérését megismételni, vagy lépjen érintkezésbe az "
 "adminisztátorral!"
 
-#: ../lib/wiking/cms/cms.py:4337
+#: ../lib/wiking/cms/cms.py:4343
 #, python-format
 msgid ""
 "Unsubscription confirmation has been sent to %s. Please, check your mail and "
 "click on the link to finish unsubscription."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:4342
+#: ../lib/wiking/cms/cms.py:4348
 #, fuzzy
 msgid "Invalid unsubscription code."
 msgstr "Hibás aktivációs kód."
 
 #. State of processing of an email message (e.g. Pending, Sending, Sent)
-#: ../lib/wiking/cms/cms.py:4367 ../lib/wiking/cms/cms.py:5567
+#: ../lib/wiking/cms/cms.py:4373 ../lib/wiking/cms/cms.py:5570
 msgid "Sent"
 msgstr "Elküldött"
 
-#: ../lib/wiking/cms/cms.py:4379
+#: ../lib/wiking/cms/cms.py:4385
 #, python-format
 msgid "Unpublished edition from %s"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:4388
+#: ../lib/wiking/cms/cms.py:4394
 msgid "Posts"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:4391
+#: ../lib/wiking/cms/cms.py:4397
 #, fuzzy
 msgid "Preview"
 msgstr "Előnézet"
 
-#: ../lib/wiking/cms/cms.py:4392 ../lib/wiking/cms/cms.py:4579
+#: ../lib/wiking/cms/cms.py:4398 ../lib/wiking/cms/cms.py:4585
 #, fuzzy
 msgid "Send"
 msgstr "Küldés"
 
-#: ../lib/wiking/cms/cms.py:4393
+#: ../lib/wiking/cms/cms.py:4399
 msgid "Test"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:4396
+#: ../lib/wiking/cms/cms.py:4402
 msgid "Overview of Editions"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:4433
+#: ../lib/wiking/cms/cms.py:4439
 #, python-format
 msgid "%s: Post template not found!"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:4446
+#: ../lib/wiking/cms/cms.py:4452
 #, python-format
 msgid "%s: Image template sections not found!"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:4493
+#: ../lib/wiking/cms/cms.py:4499
 msgid "Like"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:4494
+#: ../lib/wiking/cms/cms.py:4500
 msgid "Tweet"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:4495
+#: ../lib/wiking/cms/cms.py:4501
 msgid "Share"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:4496
+#: ../lib/wiking/cms/cms.py:4502
 msgid "Thank you for your attention."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:4497
+#: ../lib/wiking/cms/cms.py:4503
 msgid "Not interested in this newsletter anymore:"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:4499
+#: ../lib/wiking/cms/cms.py:4505
 msgid "Web version"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:4509
+#: ../lib/wiking/cms/cms.py:4515
 #, fuzzy, python-format
 msgid "%s: Invalid template variable: %s"
 msgstr "Érvénytelen e-mail cím: %s"
 
-#: ../lib/wiking/cms/cms.py:4553
+#: ../lib/wiking/cms/cms.py:4559
 #, python-format
 msgid "The newsletter has been sent to %d recipients."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:4555
+#: ../lib/wiking/cms/cms.py:4561
 #, python-format
 msgid ""
 "Sending to %d recipients failed. Details can be found in servers error log."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:4572
+#: ../lib/wiking/cms/cms.py:4578
 #, fuzzy
 msgid "Addresses"
 msgstr "Postacím"
 
-#: ../lib/wiking/cms/cms.py:4574
+#: ../lib/wiking/cms/cms.py:4580
 msgid ""
 "Type in e-mail addresses separated by colons, spaces or new lines. The "
 "newsletter will be sent to given addresses only, not to regular subscribers"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:4590
+#: ../lib/wiking/cms/cms.py:4596
 msgid "Test Send to Given Addresses"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:4596
+#: ../lib/wiking/cms/cms.py:4602
 msgid "Left"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:4597
+#: ../lib/wiking/cms/cms.py:4603
 #, fuzzy
 msgid "Right"
 msgstr "Magasság"
 
-#: ../lib/wiking/cms/cms.py:4608
+#: ../lib/wiking/cms/cms.py:4614
 #, fuzzy
 msgid "Number denoting the order of the post on the page."
 msgstr "A panel az oldalon levő sorrendjét jelző szám."
 
-#: ../lib/wiking/cms/cms.py:4611
+#: ../lib/wiking/cms/cms.py:4617
 #, fuzzy
 msgid "Image Position"
 msgstr "Leírás"
 
 #. Name of the extension module for simple forum-like discussions.
-#: ../lib/wiking/cms/cms.py:4684
+#: ../lib/wiking/cms/cms.py:4690
 msgid "Discussions"
 msgstr "Fórum"
 
 #. Help string describing more precisely the meaning of the "News" section.
-#: ../lib/wiking/cms/cms.py:4686
+#: ../lib/wiking/cms/cms.py:4692
 msgid "Allow logged in users to post messages as in a simple forum."
 msgstr ""
 "A bejelentkezett felhasználók küldhetnek üzeneteket, mint egy egyszerű "
 "fórumba."
 
 #. Field label for posting a message to the discussion.
-#: ../lib/wiking/cms/cms.py:4701
+#: ../lib/wiking/cms/cms.py:4707
 msgid "Your comment"
 msgstr "Saját hozzászólás"
 
-#: ../lib/wiking/cms/cms.py:4741
+#: ../lib/wiking/cms/cms.py:4747
 msgid "Your comment was posted to the discussion."
 msgstr "A hozzászólásod el lett küldve a fórumba."
 
 #. The square brackets mark a link.  Please leave the brackets and the
 #. link target '?command=login' untouched and traslate 'log in' to fit into the
 #. sentence.  The user only sees it as 'You need to log in before ...'.
-#: ../lib/wiking/cms/cms.py:4787
+#: ../lib/wiking/cms/cms.py:4793
 msgid "Note: You need to [?command=login log in] before you can post messages."
 msgstr ""
 "Megjegyzés: [?command=login Be kell jelentkeznie] mielőtt üzenetet hagyna."
 
 #. Section heading and menu item. Computer terminology idiom.
-#: ../lib/wiking/cms/cms.py:4799
+#: ../lib/wiking/cms/cms.py:4805
 msgid "Site Map"
 msgstr "Honlaptérkép"
 
-#: ../lib/wiking/cms/cms.py:4806
+#: ../lib/wiking/cms/cms.py:4812
 #, fuzzy
 msgid "Contact Form"
 msgstr "Elérhetőségek"
 
-#: ../lib/wiking/cms/cms.py:4808
+#: ../lib/wiking/cms/cms.py:4814
 #, fuzzy
 msgid "Your Name"
 msgstr "Saját hozzászólás"
 
-#: ../lib/wiking/cms/cms.py:4809
+#: ../lib/wiking/cms/cms.py:4815
 #, fuzzy
 msgid "Company or Organization"
 msgstr "Szervezetek"
 
-#: ../lib/wiking/cms/cms.py:4810
+#: ../lib/wiking/cms/cms.py:4816
 #, fuzzy
 msgid "Your e-mail address"
 msgstr "A webmester email címe"
 
-#: ../lib/wiking/cms/cms.py:4811
+#: ../lib/wiking/cms/cms.py:4817
 msgid "Your phone number"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:4812
+#: ../lib/wiking/cms/cms.py:4818
 #, fuzzy
 msgid "Your Message"
 msgstr "Üzenet"
 
-#: ../lib/wiking/cms/cms.py:4824
+#: ../lib/wiking/cms/cms.py:4830
 msgid "Thank you for contacting us!"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:4826
+#: ../lib/wiking/cms/cms.py:4832
 msgid "We will process your enquiry at the nearest occasion."
 msgstr ""
 
 #. Button name. Computer terminology. Use an appropriate term common
 #. for submitting forms in a computer application.
-#: ../lib/wiking/cms/cms.py:4830 ../lib/wiking/cms/users.py:1614
-#: ../lib/wiking/cms/users.py:1760
+#: ../lib/wiking/cms/cms.py:4836 ../lib/wiking/cms/users.py:1616
+#: ../lib/wiking/cms/users.py:1766
 msgid "Submit"
 msgstr "Elküld"
 
-#: ../lib/wiking/cms/cms.py:4838
+#: ../lib/wiking/cms/cms.py:4844
 msgid "Company"
 msgstr ""
 
 #. Telephone number. Registration form field.
-#: ../lib/wiking/cms/cms.py:4840 ../lib/wiking/cms/users.py:584
+#: ../lib/wiking/cms/cms.py:4846 ../lib/wiking/cms/users.py:586
 msgid "Phone"
 msgstr "Telefon"
 
-#: ../lib/wiking/cms/cms.py:4845
+#: ../lib/wiking/cms/cms.py:4851
 #, fuzzy, python-format
 msgid "Contact Form Enquiry from %s"
 msgstr "Elérhetőségek"
 
-#: ../lib/wiking/cms/cms.py:4848
+#: ../lib/wiking/cms/cms.py:4854
 msgid "Error sending your enquiry!"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:4850
+#: ../lib/wiking/cms/cms.py:4856
 #, python-format
 msgid ""
 "Please, try sending the form later. If the problem persists, contact %s."
@@ -2457,78 +2457,78 @@ msgstr ""
 #. interface (the area where only administrators are allowed), pages
 #. (everything outside the management interface) or both ("Global"
 #. scope).
-#: ../lib/wiking/cms/cms.py:4906
+#: ../lib/wiking/cms/cms.py:4912
 msgid "Website"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:4907
+#: ../lib/wiking/cms/cms.py:4913
 #, fuzzy
 msgid "Management interface"
 msgstr "Wiking kezelőfelület"
 
-#: ../lib/wiking/cms/cms.py:4910
+#: ../lib/wiking/cms/cms.py:4916
 msgid "All types"
 msgstr "Minden típus"
 
 #. Handheld device. Small computer.
-#: ../lib/wiking/cms/cms.py:4915
+#: ../lib/wiking/cms/cms.py:4921
 msgid "Handheld"
 msgstr "Kéziszámítógép"
 
 #. Print as a type of media (print, speech...)
-#: ../lib/wiking/cms/cms.py:4917
+#: ../lib/wiking/cms/cms.py:4923
 msgid "Print"
 msgstr "Nyomtatott sajtó"
 
 #. Meaning computer screen
-#: ../lib/wiking/cms/cms.py:4920
+#: ../lib/wiking/cms/cms.py:4926
 msgid "Screen"
 msgstr "Képernyő"
 
 #. Speech as a type of media (print, speech...)
-#: ../lib/wiking/cms/cms.py:4922
+#: ../lib/wiking/cms/cms.py:4928
 msgid "Speech"
 msgstr "Élőbeszéd"
 
 #. Section heading and menu item. Meaning the visual appearance. Computer
 #. terminology.
-#: ../lib/wiking/cms/cms.py:4930
+#: ../lib/wiking/cms/cms.py:4936
 #, fuzzy
 msgid "Style sheets"
 msgstr "Stíluslapok"
 
 #. Help string. Cascading Style Sheet (CSS) is computer terminology idiom.
-#: ../lib/wiking/cms/cms.py:4933
+#: ../lib/wiking/cms/cms.py:4939
 msgid "Manage available Cascading Style Sheets."
 msgstr "Elérhető CSS kezelése."
 
 #. Table column heading.
 #. Whether the account is active. Values are yes/no.
-#: ../lib/wiking/cms/cms.py:4941 ../lib/wiking/cms/users.py:1849
+#: ../lib/wiking/cms/cms.py:4947 ../lib/wiking/cms/users.py:1855
 msgid "Active"
 msgstr "Aktív"
 
 #. Heading of a form field determining in
 #. which media the page is displayed. E.g. web, print,
 #. Braille, speech.
-#: ../lib/wiking/cms/cms.py:4945
+#: ../lib/wiking/cms/cms.py:4951
 msgid "Media"
 msgstr "Média típusa"
 
 #. Scope of applicability of a stylesheet on different website parts.
-#: ../lib/wiking/cms/cms.py:4947
+#: ../lib/wiking/cms/cms.py:4953
 msgid "Scope"
 msgstr ""
 
 #. Global scope (applies to all parts of the website).
-#: ../lib/wiking/cms/cms.py:4950
+#: ../lib/wiking/cms/cms.py:4956
 msgid "Global"
 msgstr ""
 
 #. Description of scope options.  Make sure you
 #. use the same terms as in the options themselves, which are
 #. defined a few items above.
-#: ../lib/wiking/cms/cms.py:4954
+#: ../lib/wiking/cms/cms.py:4960
 msgid ""
 "Determines where this style sheet is applicable. The \"Management interface"
 "\" is the area for CMS administration, \"Website\" means the regular pages "
@@ -2537,100 +2537,100 @@ msgstr ""
 
 #. Precedence meaning position in a sequence of importance or
 #. priority.
-#: ../lib/wiking/cms/cms.py:4961
+#: ../lib/wiking/cms/cms.py:4967
 msgid "Number denoting the style sheet precedence."
 msgstr "A stíluslap (fontossági) sorrendjét jelző szám."
 
-#: ../lib/wiking/cms/cms.py:5069
+#: ../lib/wiking/cms/cms.py:5072
 msgid "Label"
 msgstr "Címke"
 
-#: ../lib/wiking/cms/cms.py:5072
+#: ../lib/wiking/cms/cms.py:5075
 msgid "Purpose"
 msgstr "Cél"
 
-#: ../lib/wiking/cms/cms.py:5103
+#: ../lib/wiking/cms/cms.py:5106
 msgid ""
 "This text is no longer in use by the application. Do you want to remove it?"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:5208
+#: ../lib/wiking/cms/cms.py:5211
 msgid "System Texts"
 msgstr "Rendszerüzenetek"
 
-#: ../lib/wiking/cms/cms.py:5209
+#: ../lib/wiking/cms/cms.py:5212
 msgid "Edit miscellaneous system texts."
 msgstr "Különféle rendszerüzenetek szerkesztése."
 
-#: ../lib/wiking/cms/cms.py:5368
+#: ../lib/wiking/cms/cms.py:5371
 msgid "E-mails"
 msgstr "E-mailek"
 
-#: ../lib/wiking/cms/cms.py:5369
+#: ../lib/wiking/cms/cms.py:5372
 msgid "Edit e-mail texts."
 msgstr "E-mail szöveg szerkesztése."
 
-#: ../lib/wiking/cms/cms.py:5376
+#: ../lib/wiking/cms/cms.py:5379
 msgid "Additional recipients"
 msgstr "További címzettek"
 
-#: ../lib/wiking/cms/cms.py:5377
+#: ../lib/wiking/cms/cms.py:5380
 msgid "Comma separated list of e-mail addresses."
 msgstr "Vesszővel elválasztott e-mail címek listája."
 
 #. Section title and menu item. Sending emails to multiple recipients.
-#: ../lib/wiking/cms/cms.py:5543
+#: ../lib/wiking/cms/cms.py:5546
 msgid "Bulk E-mails"
 msgstr "Tömeges emailek"
 
-#: ../lib/wiking/cms/cms.py:5548
+#: ../lib/wiking/cms/cms.py:5551
 msgid "Sender address"
 msgstr "A küldő címe"
 
-#: ../lib/wiking/cms/cms.py:5550
+#: ../lib/wiking/cms/cms.py:5553
 msgid "E-mail address of the sender."
 msgstr "A küldő email címe."
 
 #. List of recipients of an email message
-#: ../lib/wiking/cms/cms.py:5552
+#: ../lib/wiking/cms/cms.py:5555
 msgid "Recipients"
 msgstr "Címzettek"
 
 #. All users are intended recipients of an email message
-#: ../lib/wiking/cms/cms.py:5554
+#: ../lib/wiking/cms/cms.py:5557
 #, fuzzy
 msgid "All users"
 msgstr "Minden típus"
 
 #. The state of the user account (e.g. Enabled vs Disabled).  Column
 #. heading and field label.
-#: ../lib/wiking/cms/cms.py:5560 ../lib/wiking/cms/users.py:605
+#: ../lib/wiking/cms/cms.py:5563 ../lib/wiking/cms/users.py:607
 msgid "State"
 msgstr "Állapot"
 
 #. State of processing of an email message (e.g. Pending, Sending, Sent)
-#: ../lib/wiking/cms/cms.py:5570
+#: ../lib/wiking/cms/cms.py:5573
 msgid "Sending"
 msgstr "Küldés"
 
 #. State of processing of an email message (e.g. Pending, Sending, Sent)
-#: ../lib/wiking/cms/cms.py:5573
+#: ../lib/wiking/cms/cms.py:5576
 #, fuzzy
 msgid "Pending"
 msgstr "Küldés"
 
-#: ../lib/wiking/cms/cms.py:5580
+#: ../lib/wiking/cms/cms.py:5583
 #, python-format
 msgid "%(subject)s"
 msgstr "%(subject)s"
 
 #. Button label meaning save this email text for later repeated usage
-#: ../lib/wiking/cms/cms.py:5583
+#: ../lib/wiking/cms/cms.py:5586
 msgid "Use as a Template"
 msgstr "Mentsd el sablonként"
 
 #. Description of button for creating a template of an email
-#: ../lib/wiking/cms/cms.py:5585
+#: ../lib/wiking/cms/cms.py:5588
 msgid "Edit this mail for repeated use"
 msgstr "Mentsd el a mailt sablonként"
 
@@ -2715,7 +2715,7 @@ msgid "Users and Encryption Keys"
 msgstr ""
 
 #. Button label.
-#: ../lib/wiking/cms/crypto.py:86 ../lib/wiking/cms/users.py:888
+#: ../lib/wiking/cms/crypto.py:86 ../lib/wiking/cms/users.py:890
 msgid "New user"
 msgstr "Új felhasználó"
 
@@ -2729,7 +2729,7 @@ msgid "Action"
 msgstr "Helyszín"
 
 #: ../lib/wiking/cms/crypto.py:90 ../lib/wiking/cms/crypto.py:95
-#: ../lib/wiking/cms/users.py:73 ../lib/wiking/cms/users.py:235
+#: ../lib/wiking/cms/users.py:73 ../lib/wiking/cms/users.py:236
 #, fuzzy
 msgid "Remove"
 msgstr "Visszaállítás"
@@ -2739,11 +2739,11 @@ msgstr "Visszaállítás"
 msgid "Current password"
 msgstr "Új jelszó"
 
-#: ../lib/wiking/cms/crypto.py:93 ../lib/wiking/cms/users.py:551
+#: ../lib/wiking/cms/crypto.py:93 ../lib/wiking/cms/users.py:553
 msgid "New password"
 msgstr "Új jelszó"
 
-#: ../lib/wiking/cms/crypto.py:105 ../lib/wiking/cms/users.py:744
+#: ../lib/wiking/cms/crypto.py:105 ../lib/wiking/cms/users.py:746
 msgid "Change password"
 msgstr "Jelszó megváltoztatása"
 
@@ -2764,19 +2764,19 @@ msgstr ""
 msgid "Create key"
 msgstr ""
 
-#: ../lib/wiking/cms/crypto.py:202
+#: ../lib/wiking/cms/crypto.py:203
 msgid "New key not created. Maybe it already exists?"
 msgstr ""
 
-#: ../lib/wiking/cms/crypto.py:212
+#: ../lib/wiking/cms/crypto.py:213
 msgid "Password not changed. Maybe invalid old password?"
 msgstr ""
 
-#: ../lib/wiking/cms/crypto.py:221
+#: ../lib/wiking/cms/crypto.py:222
 msgid "User not added. Maybe invalid old password?"
 msgstr ""
 
-#: ../lib/wiking/cms/crypto.py:231
+#: ../lib/wiking/cms/crypto.py:232
 msgid "The user couldn't be deleted. Maybe he is the last key holder?"
 msgstr ""
 
@@ -2894,7 +2894,7 @@ msgid ""
 "Default value of the Copyright Notice field for newly created publications."
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:71 ../lib/wiking/cms/users.py:229
+#: ../lib/wiking/cms/users.py:71 ../lib/wiking/cms/users.py:230
 #, fuzzy
 msgid "Group"
 msgstr "Felhasználók"
@@ -2907,51 +2907,51 @@ msgstr ""
 msgid "Add rights of group"
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:118
+#: ../lib/wiking/cms/users.py:119
 #, python-format
 msgid "Users of group '%s' automatically gain rights of the following groups:"
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:121
+#: ../lib/wiking/cms/users.py:122
 #, python-format
 msgid "Users of the following groups automatically get rights of group '%s':"
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:218
+#: ../lib/wiking/cms/users.py:219
 msgid "Add rights to another group"
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:224
+#: ../lib/wiking/cms/users.py:225
 #, fuzzy
 msgid "User Roles"
 msgstr "Felhasználók"
 
-#: ../lib/wiking/cms/users.py:240
+#: ../lib/wiking/cms/users.py:241
 msgid "Add member"
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:315
+#: ../lib/wiking/cms/users.py:317
 msgid "Add to group"
 msgstr ""
 
 #. Form heading.
-#: ../lib/wiking/cms/users.py:328
+#: ../lib/wiking/cms/users.py:330
 #, fuzzy
 msgid "User Groups"
 msgstr "Felhasználók"
 
 #. Form field label, adjective related to a "User group" (use the
 #. appropriate gender.
-#: ../lib/wiking/cms/users.py:341
+#: ../lib/wiking/cms/users.py:343
 #, fuzzy
 msgid "System"
 msgstr "Rendszerüzenetek"
 
-#: ../lib/wiking/cms/users.py:342
+#: ../lib/wiking/cms/users.py:344
 msgid "Automatic"
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:362
+#: ../lib/wiking/cms/users.py:364
 msgid ""
 "This is a special system group with no explicit members. The system decides "
 "automatically which users belong into the group. Thus you can not manage "
@@ -2959,45 +2959,45 @@ msgid ""
 "groups to it."
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:368
+#: ../lib/wiking/cms/users.py:370
 msgid ""
 "This is a system group defined by one of the installed applications. You "
 "cannot change or delete this group, but you can manage membership of users "
 "and add rights of other groups to it."
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:373
+#: ../lib/wiking/cms/users.py:375
 msgid ""
 "This is a user defined group. You can manage membership of users and add "
 "rights of other groups to it as well as modify or delete the group itself."
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:382
+#: ../lib/wiking/cms/users.py:384
 msgid "Gets Rights of Groups"
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:384
+#: ../lib/wiking/cms/users.py:386
 msgid "Passes Rights to Groups"
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:387
+#: ../lib/wiking/cms/users.py:389
 msgid "Members"
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:507
+#: ../lib/wiking/cms/users.py:509
 msgid "User Management"
 msgstr "Felhasználók kezelése"
 
-#: ../lib/wiking/cms/users.py:508
+#: ../lib/wiking/cms/users.py:510
 msgid "Manage registered users and their privileges."
 msgstr "Regisztrált felhasználók és jogaik kezelése."
 
 #. Login name for a website. Registration form field.
-#: ../lib/wiking/cms/users.py:528 ../lib/wiking/cms/users.py:1713
+#: ../lib/wiking/cms/users.py:530 ../lib/wiking/cms/users.py:1719
 msgid "Login name"
 msgstr "Felhasználói név"
 
-#: ../lib/wiking/cms/users.py:533
+#: ../lib/wiking/cms/users.py:535
 #, fuzzy
 msgid ""
 "A valid login name can only contain letters, digits, underscores, dashes, at "
@@ -3006,31 +3006,31 @@ msgstr ""
 "Az érvényes felhasználói név csak betűket, számjegyeket, aláhúzást, "
 "kötőjelet és pontot tartalmazat, miközben betűvel kell kezdődnie."
 
-#: ../lib/wiking/cms/users.py:536
+#: ../lib/wiking/cms/users.py:538
 #, fuzzy
 msgid "Generate Password"
 msgstr "Új jelszó"
 
-#: ../lib/wiking/cms/users.py:538
+#: ../lib/wiking/cms/users.py:540
 msgid ""
 "If checked, the password will be generated automatically and sent to the "
 "user's e-mail address."
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:540 ../lib/wiking/cms/users.py:1714
+#: ../lib/wiking/cms/users.py:542 ../lib/wiking/cms/users.py:1720
 msgid "Password"
 msgstr "Jelszó"
 
-#: ../lib/wiking/cms/users.py:543 ../lib/wiking/cms/users.py:552
+#: ../lib/wiking/cms/users.py:545 ../lib/wiking/cms/users.py:554
 msgid ""
 "Please, write the password into each of the two fields to eliminate typos."
 msgstr "Kérem, írd be a jelszót mindkét mezőbe az elírások elkerülése végett."
 
-#: ../lib/wiking/cms/users.py:546
+#: ../lib/wiking/cms/users.py:548
 msgid "Old password"
 msgstr "Régi jelszó"
 
-#: ../lib/wiking/cms/users.py:548
+#: ../lib/wiking/cms/users.py:550
 msgid "Verify your identity by entering your original (current) password."
 msgstr "Igazold kilétedet a (aktuális) jelszavad beütésével."
 
@@ -3040,30 +3040,30 @@ msgstr "Igazold kilétedet a (aktuális) jelszavad beütésével."
 #. visible to the admin and to the user himself, so it requires a dynamic
 #. 'view'
 #. layout.
-#: ../lib/wiking/cms/users.py:561
+#: ../lib/wiking/cms/users.py:563
 msgid "Last password change"
 msgstr ""
 
 #. Full name of a person. Registration form field.
-#: ../lib/wiking/cms/users.py:565
+#: ../lib/wiking/cms/users.py:567
 msgid "Full Name"
 msgstr "Teljes név"
 
-#: ../lib/wiking/cms/users.py:570
+#: ../lib/wiking/cms/users.py:572
 msgid "First name"
 msgstr "Keresztnév"
 
-#: ../lib/wiking/cms/users.py:571
+#: ../lib/wiking/cms/users.py:573
 msgid "Surname"
 msgstr "Vezetéknév"
 
 #. Name of a user to display on a website if he doesn't want the
 #. default "Name Surname". Registration form field.
-#: ../lib/wiking/cms/users.py:574
+#: ../lib/wiking/cms/users.py:576
 msgid "Displayed name"
 msgstr "Megjelenítendő név"
 
-#: ../lib/wiking/cms/users.py:575
+#: ../lib/wiking/cms/users.py:577
 msgid ""
 "Leave blank if you want to be referred by your full name or enter an "
 "alternate name, such as nickname or monogram."
@@ -3071,21 +3071,21 @@ msgstr ""
 "Hagyd üresen, ha a teljes nevedet szeretnéd használni, vagy írj be egy "
 "alternatív nevet, mint a becenév vagy monogram."
 
-#: ../lib/wiking/cms/users.py:577
+#: ../lib/wiking/cms/users.py:579
 msgid "Gender"
 msgstr ""
 
 #. Do not translate (means Uniform Resource Identifier).
-#: ../lib/wiking/cms/users.py:588
+#: ../lib/wiking/cms/users.py:590
 msgid "URI"
 msgstr "URI"
 
 #. Generic note for further information. Registration form field.
-#: ../lib/wiking/cms/users.py:590
+#: ../lib/wiking/cms/users.py:592
 msgid "Note"
 msgstr "Megjegyzés"
 
-#: ../lib/wiking/cms/users.py:591
+#: ../lib/wiking/cms/users.py:593
 msgid ""
 "Optional message for the administrator.  If you summarize briefly why you "
 "register, what role you expect in the system or whom you have talked to, "
@@ -3094,11 +3094,11 @@ msgstr ""
 
 #. Label of a checkbox to confirm usage conditions or a
 #. similar kind of agreement specific for given website.
-#: ../lib/wiking/cms/users.py:596
+#: ../lib/wiking/cms/users.py:598
 msgid "I agree"
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:597
+#: ../lib/wiking/cms/users.py:599
 msgid ""
 "Please check if (and only if) you have read the conditions above and you "
 "agree with them."
@@ -3106,221 +3106,221 @@ msgstr ""
 
 #. Since when the user is registered. Table column heading
 #. and field label for a date/time value.
-#: ../lib/wiking/cms/users.py:601
+#: ../lib/wiking/cms/users.py:603
 msgid "Registered since"
 msgstr "Regisztráció ideje"
 
-#: ../lib/wiking/cms/users.py:695
+#: ../lib/wiking/cms/users.py:697
 msgid "Enter your current password."
 msgstr "Írd be az érvényes jelszavat."
 
-#: ../lib/wiking/cms/users.py:697
+#: ../lib/wiking/cms/users.py:699
 msgid "Invalid password."
 msgstr "Érvénytelen jelszó."
 
-#: ../lib/wiking/cms/users.py:703
+#: ../lib/wiking/cms/users.py:705
 msgid "Enter the new password."
 msgstr "Írd be az új jelszavat."
 
-#: ../lib/wiking/cms/users.py:705
+#: ../lib/wiking/cms/users.py:707
 msgid "The new password is the same as the old one."
 msgstr "Az új jelszó megegyezik a régivel."
 
-#: ../lib/wiking/cms/users.py:711
+#: ../lib/wiking/cms/users.py:713
 #, fuzzy
 msgid "User's Groups"
 msgstr "Felhasználók"
 
 #. Heading for an overview when and how the user has accessed the application.
-#: ../lib/wiking/cms/users.py:713 ../lib/wiking/cms/users.py:1827
+#: ../lib/wiking/cms/users.py:715 ../lib/wiking/cms/users.py:1833
 msgid "Login History"
 msgstr "Bejelentkezési napló"
 
-#: ../lib/wiking/cms/users.py:715
+#: ../lib/wiking/cms/users.py:717
 msgid "Crypto Keys"
 msgstr ""
 
 #. Name of group of users who have full access to the system.
-#: ../lib/wiking/cms/users.py:725 ../lib/wiking/cms/users.py:1583
+#: ../lib/wiking/cms/users.py:727 ../lib/wiking/cms/users.py:1585
 msgid "Active users"
 msgstr "Aktív felhasználók"
 
 #. Name for a group of users accounts, who were not yet approved by the
 #. administrator.
-#: ../lib/wiking/cms/users.py:729
+#: ../lib/wiking/cms/users.py:731
 msgid "Unapproved accounts (pending admin approvals)"
 msgstr "Nem jóváhagyott fiókok (függőben levő jóváhagyások az adminnál)"
 
-#: ../lib/wiking/cms/users.py:734
+#: ../lib/wiking/cms/users.py:736
 msgid "Unfinished registration requests (activation code not confirmed)"
 msgstr ""
 "Befejezetlen regisztrációs kérelmek (aktivációs kód nem lett megerősítve)"
 
 #. Name for a group of users whose accounts were blocked.
-#: ../lib/wiking/cms/users.py:737
+#: ../lib/wiking/cms/users.py:739
 msgid "Disabled users"
 msgstr "Felfüggesztett felhasználók"
 
 #. Accounts as in user accounts (computer terminology).
-#: ../lib/wiking/cms/users.py:740
+#: ../lib/wiking/cms/users.py:742
 msgid "All accounts"
 msgstr "Összes regisztráció"
 
-#: ../lib/wiking/cms/users.py:744
+#: ../lib/wiking/cms/users.py:746
 msgid "Change user's password"
 msgstr "A felhasználó jelszavának megváltoztatása"
 
 #. Button label.  Used to approve user's account by the administrator.
-#: ../lib/wiking/cms/users.py:746
+#: ../lib/wiking/cms/users.py:748
 msgid "Approve"
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:746
+#: ../lib/wiking/cms/users.py:748
 #, fuzzy
 msgid "Aprove this account"
 msgstr "Fiók beindítása"
 
 #. Button label. Computer terminology. Use common word and form.
-#: ../lib/wiking/cms/users.py:753
+#: ../lib/wiking/cms/users.py:755
 msgid "Enable"
 msgstr "Bekapcsolva"
 
-#: ../lib/wiking/cms/users.py:753
+#: ../lib/wiking/cms/users.py:755
 msgid "Enable this account"
 msgstr "Fiók beindítása"
 
 #. Button label. Computer terminology. Use common word and form.
-#: ../lib/wiking/cms/users.py:758
+#: ../lib/wiking/cms/users.py:760
 #, fuzzy
 msgid "Disable"
 msgstr "kikapcsolva"
 
-#: ../lib/wiking/cms/users.py:758
+#: ../lib/wiking/cms/users.py:760
 #, fuzzy
 msgid "Disable this account"
 msgstr "Fiók beindítása"
 
-#: ../lib/wiking/cms/users.py:762
+#: ../lib/wiking/cms/users.py:764
 msgid "Resend activation code"
 msgstr "Aktivációs kód újraküldése"
 
-#: ../lib/wiking/cms/users.py:762
+#: ../lib/wiking/cms/users.py:764
 msgid "Re-send registration mail"
 msgstr "Regisztrációs e-mail újraküldése"
 
-#: ../lib/wiking/cms/users.py:764
+#: ../lib/wiking/cms/users.py:766
 #, fuzzy
 msgid "Delete"
 msgstr "Alapértelmezett"
 
-#: ../lib/wiking/cms/users.py:764
+#: ../lib/wiking/cms/users.py:766
 msgid "Remove the account completely"
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:796
+#: ../lib/wiking/cms/users.py:798
 msgid "New account"
 msgstr "Új fiók"
 
-#: ../lib/wiking/cms/users.py:797
+#: ../lib/wiking/cms/users.py:799
 #, fuzzy
 msgid "Unapproved account"
 msgstr "Új fiók"
 
 #. Dialog title (account in the meaning of user account).
-#: ../lib/wiking/cms/users.py:798 ../lib/wiking/cms/users.py:1797
+#: ../lib/wiking/cms/users.py:800 ../lib/wiking/cms/users.py:1803
 msgid "Account disabled"
 msgstr "Fiók kikapcsolva"
 
-#: ../lib/wiking/cms/users.py:799
+#: ../lib/wiking/cms/users.py:801
 #, fuzzy
 msgid "Active account"
 msgstr "Új fiók"
 
-#: ../lib/wiking/cms/users.py:810
+#: ../lib/wiking/cms/users.py:812
 msgid "Male"
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:811
+#: ../lib/wiking/cms/users.py:813
 msgid "Female"
 msgstr ""
 
 #. Button label.
-#: ../lib/wiking/cms/users.py:890
+#: ../lib/wiking/cms/users.py:892
 msgid "Edit profile"
 msgstr "Profil szerkesztése"
 
 #. Button label. Modify the users data (email, address...)
-#: ../lib/wiking/cms/users.py:892
+#: ../lib/wiking/cms/users.py:894
 msgid "Modify user's record"
 msgstr "Személyes adatok módosítása"
 
 #. Personal data -- first name, surname, nickname ...
-#: ../lib/wiking/cms/users.py:932 ../lib/wiking/cms/users.py:947
-#: ../lib/wiking/cms/users.py:959
+#: ../lib/wiking/cms/users.py:934 ../lib/wiking/cms/users.py:949
+#: ../lib/wiking/cms/users.py:961
 msgid "Personal data"
 msgstr "Személyes adatok"
 
 #. Contact information -- email, phone, address...
-#: ../lib/wiking/cms/users.py:933 ../lib/wiking/cms/users.py:948
-#: ../lib/wiking/cms/users.py:961
+#: ../lib/wiking/cms/users.py:935 ../lib/wiking/cms/users.py:950
+#: ../lib/wiking/cms/users.py:963
 msgid "Contact information"
 msgstr "Elérhetőségek"
 
 #. Others is a label for a group of unspecified form fields
 #. (as in Personal data, Contact information, Others).
-#: ../lib/wiking/cms/users.py:934 ../lib/wiking/cms/users.py:952
-#: ../lib/wiking/cms/users.py:964
+#: ../lib/wiking/cms/users.py:936 ../lib/wiking/cms/users.py:954
+#: ../lib/wiking/cms/users.py:966
 msgid "Others"
 msgstr "Egyéb"
 
-#: ../lib/wiking/cms/users.py:935
+#: ../lib/wiking/cms/users.py:937
 #, fuzzy
 msgid "Account state"
 msgstr "Fiók kikapcsolva"
 
-#: ../lib/wiking/cms/users.py:951
+#: ../lib/wiking/cms/users.py:953
 msgid "Login information"
 msgstr "Belépési információk"
 
 #. Confirmation of website terms&conditions. Form label.
-#: ../lib/wiking/cms/users.py:956 ../lib/wiking/cms/users.py:971
+#: ../lib/wiking/cms/users.py:958 ../lib/wiking/cms/users.py:973
 #, fuzzy
 msgid "Confirmation"
 msgstr "Megerősít"
 
-#: ../lib/wiking/cms/users.py:1047
+#: ../lib/wiking/cms/users.py:1049
 msgid ""
 "This e-mail address is already registered. Just log in. Use the password "
 "reminder link under the log in form if you forgot your password."
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:1052
+#: ../lib/wiking/cms/users.py:1054
 msgid "This login name is already taken.  Please choose another."
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:1081
+#: ../lib/wiking/cms/users.py:1083
 #, fuzzy
 msgid "Registration completed. You can log in now."
 msgstr "Regisztráció megerősítve"
 
-#: ../lib/wiking/cms/users.py:1084
+#: ../lib/wiking/cms/users.py:1086
 #, fuzzy
 msgid "The account has been created."
 msgstr "A fiók megnyílt."
 
 #. Follows an email addres, e.g. ``... was sent to
 #. joe@brailcom.org''
-#: ../lib/wiking/cms/users.py:1088 ../lib/wiking/cms/users.py:1097
+#: ../lib/wiking/cms/users.py:1090 ../lib/wiking/cms/users.py:1099
 #, fuzzy, python-format
 msgid "The generated password was sent to %s."
 msgstr "Az új jelszó megegyezik a régivel."
 
-#: ../lib/wiking/cms/users.py:1090 ../lib/wiking/cms/users.py:1324
+#: ../lib/wiking/cms/users.py:1092 ../lib/wiking/cms/users.py:1326
 #, fuzzy, python-format
 msgid "The activation code was sent to %s."
 msgstr "Aktivációs kód elküldve: %s."
 
-#: ../lib/wiking/cms/users.py:1101
+#: ../lib/wiking/cms/users.py:1103
 #, fuzzy, python-format
 msgid ""
 "To finish your registration, please confirm the activation code that was "
@@ -3329,12 +3329,12 @@ msgstr ""
 "A regisztráció ekkor veszti érvényét: %(date)s. A felhasználó nem hagyta "
 "jóvá az aktivációs kódot, amelyet a megadott e-mail címére küldtünk."
 
-#: ../lib/wiking/cms/users.py:1102
+#: ../lib/wiking/cms/users.py:1104
 #, fuzzy
 msgid "Registration completed"
 msgstr "Regisztráció megerősítve"
 
-#: ../lib/wiking/cms/users.py:1115
+#: ../lib/wiking/cms/users.py:1117
 #, python-format
 msgid ""
 "Your account at %(server_hostname)s was created.\n"
@@ -3349,7 +3349,7 @@ msgid ""
 "\n"
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:1123
+#: ../lib/wiking/cms/users.py:1125
 #, python-format
 msgid ""
 "To finish your registration at %(server_hostname)s, click on the following "
@@ -3359,37 +3359,37 @@ msgid ""
 "\n"
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:1125
+#: ../lib/wiking/cms/users.py:1127
 #, python-format
 msgid "Your registration at %s"
 msgstr "Az Ön regisztrációja %s"
 
-#: ../lib/wiking/cms/users.py:1148
+#: ../lib/wiking/cms/users.py:1150
 msgid "User registration already confirmed."
 msgstr "A regisztráció sikeresen meg lett erősítve."
 
-#: ../lib/wiking/cms/users.py:1151
+#: ../lib/wiking/cms/users.py:1153
 msgid "Invalid activation code."
 msgstr "Hibás aktivációs kód."
 
-#: ../lib/wiking/cms/users.py:1152 ../lib/wiking/cms/users.py:1799
+#: ../lib/wiking/cms/users.py:1154 ../lib/wiking/cms/users.py:1805
 #, fuzzy
 msgid "Account not activated"
 msgstr "Fiók kikapcsolva"
 
-#: ../lib/wiking/cms/users.py:1158
+#: ../lib/wiking/cms/users.py:1160
 #, fuzzy
 msgid "New user account:"
 msgstr "Új fiók"
 
-#: ../lib/wiking/cms/users.py:1161
+#: ../lib/wiking/cms/users.py:1163
 #, fuzzy, python-format
 msgid "New user %(fullname)s registered at %(server_hostname)s."
 msgstr ""
 "Új felhasználó %(fullname)s regisztrálva lett a %(server_hostname)s. Kérem "
 "hagyja jóvá a fiókot: %(uri)s"
 
-#: ../lib/wiking/cms/users.py:1168
+#: ../lib/wiking/cms/users.py:1170
 #, fuzzy, python-format
 msgid ""
 "New account for %(fullname)s was created by %(admin_name)s at "
@@ -3398,35 +3398,35 @@ msgstr ""
 "Új felhasználó %(fullname)s regisztrálva lett a %(server_hostname)s. Kérem "
 "hagyja jóvá a fiókot: %(uri)s"
 
-#: ../lib/wiking/cms/users.py:1172
+#: ../lib/wiking/cms/users.py:1174
 msgid "The account was enabled with an automatically generated password."
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:1174
+#: ../lib/wiking/cms/users.py:1176
 msgid "The account was approved automatically according to server setup."
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:1177
+#: ../lib/wiking/cms/users.py:1179
 #, fuzzy
 msgid "Please approve the account:"
 msgstr "Fiók beindítása"
 
-#: ../lib/wiking/cms/users.py:1179
+#: ../lib/wiking/cms/users.py:1181
 #, fuzzy
 msgid "Note:"
 msgstr "Megjegyzés"
 
-#: ../lib/wiking/cms/users.py:1184
+#: ../lib/wiking/cms/users.py:1186
 #, fuzzy
 msgid "E-mail notification has been sent to server administrators."
 msgstr "E-mailes értesítés elküldve az szerveradminisztrátorhoz."
 
-#: ../lib/wiking/cms/users.py:1193
+#: ../lib/wiking/cms/users.py:1195
 #, python-format
 msgid "You can use %s to log in next time."
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:1200
+#: ../lib/wiking/cms/users.py:1202
 msgid ""
 "The activation code was not yet confirmed by the user. Therefore it is not "
 "possible to trust that given e-mail address belongs to the person who "
@@ -3436,7 +3436,7 @@ msgstr ""
 "megállapítani, hogy az adott e-mail cím a regisztrálódó személyhez tartozik-"
 "e."
 
-#: ../lib/wiking/cms/users.py:1207
+#: ../lib/wiking/cms/users.py:1209
 #, python-format
 msgid ""
 "The activation code will expire on %(date)s and the user will not be able to "
@@ -3445,7 +3445,7 @@ msgstr ""
 "Az aktivációs kód %(date)s -án elveszti érvényét, és a felhasználó ezután "
 "nem tudja befejezni a regisztrációját."
 
-#: ../lib/wiking/cms/users.py:1209
+#: ../lib/wiking/cms/users.py:1211
 msgid ""
 "Use the button \"Resend activation code\" below to remind the user of his "
 "pending registration."
@@ -3453,7 +3453,7 @@ msgstr ""
 "Használd a \"Aktivációs kód újraküldése\" gombot a felhasználó "
 "emlékeztetésére a függőben levő regisztrációjáról."
 
-#: ../lib/wiking/cms/users.py:1215
+#: ../lib/wiking/cms/users.py:1217
 #, python-format
 msgid ""
 "The registration expired on %(date)s.  The user didn't confirm the "
@@ -3462,7 +3462,7 @@ msgstr ""
 "A regisztráció ekkor veszti érvényét: %(date)s. A felhasználó nem hagyta "
 "jóvá az aktivációs kódot, amelyet a megadott e-mail címére küldtünk."
 
-#: ../lib/wiking/cms/users.py:1217
+#: ../lib/wiking/cms/users.py:1219
 msgid ""
 "The account should be deleted automatically if the server maintenence script "
 "is installed correctly.  Otherwise you can delete the account manually."
@@ -3470,11 +3470,11 @@ msgstr ""
 "A fiók automatikusan törlődik, ha a szerver karbantartási szkript helyesen "
 "van instalálva. Máskülönben manuálisan törölhető."
 
-#: ../lib/wiking/cms/users.py:1221
+#: ../lib/wiking/cms/users.py:1223
 msgid "The activation code was succesfully confirmed."
 msgstr "Az aktivációs kód igazolása sikeresen megtörtént."
 
-#: ../lib/wiking/cms/users.py:1224
+#: ../lib/wiking/cms/users.py:1226
 msgid ""
 "Therefore it was verified that given e-mail address belongs to the person "
 "who requested the registration."
@@ -3482,7 +3482,7 @@ msgstr ""
 "Ellenőrízve lett, hogy az adott e-mail cím tulajdonosa már kervényezte a "
 "regisztrációt."
 
-#: ../lib/wiking/cms/users.py:1226
+#: ../lib/wiking/cms/users.py:1228
 msgid ""
 "The user is now able to log in, but still has no rights (other than an "
 "anonymous user)."
@@ -3490,31 +3490,31 @@ msgstr ""
 "A felhasználó már be tud lépni, de még mindig nincsenek jogai (több, mint "
 "bármely anonym felhasználónak)."
 
-#: ../lib/wiking/cms/users.py:1228
+#: ../lib/wiking/cms/users.py:1230
 #, fuzzy
 msgid "The account now awaits administrator's action to be approved."
 msgstr "A fiók a rendszergazda lépésére vár, a belépési jogok megadására."
 
-#: ../lib/wiking/cms/users.py:1230
+#: ../lib/wiking/cms/users.py:1232
 msgid ""
 "The account is blocked.  The user is able to log in, but has no access to "
 "protected services until the administrator enables the account again."
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:1254
+#: ../lib/wiking/cms/users.py:1256
 msgid "Registration confirmed"
 msgstr "Regisztráció megerősítve"
 
-#: ../lib/wiking/cms/users.py:1267
+#: ../lib/wiking/cms/users.py:1269
 #, fuzzy
 msgid "Registration completed successfuly."
 msgstr "Regisztráció megerősítve"
 
-#: ../lib/wiking/cms/users.py:1280
+#: ../lib/wiking/cms/users.py:1282
 msgid "The account was enabled."
 msgstr "A fiók megnyílt."
 
-#: ../lib/wiking/cms/users.py:1284
+#: ../lib/wiking/cms/users.py:1286
 #, python-format
 msgid ""
 "Your account at %(uri)s has been enabled. Please log in with username "
@@ -3523,44 +3523,44 @@ msgstr ""
 "Az Ön fiókja a %(uri)s-n elindult. Kérem jelentkezzen be a felhasználói "
 "nevével '%(login)s' és jelszavával."
 
-#: ../lib/wiking/cms/users.py:1285
+#: ../lib/wiking/cms/users.py:1287
 msgid "Your account has been enabled."
 msgstr "Az Ön felhasználói fiókja létrejött."
 
-#: ../lib/wiking/cms/users.py:1288 ../lib/wiking/cms/users.py:1721
+#: ../lib/wiking/cms/users.py:1290 ../lib/wiking/cms/users.py:1727
 msgid "Failed sending e-mail notification:"
 msgstr "E-mail figyelmeztetés küldése sikertelen:"
 
-#: ../lib/wiking/cms/users.py:1290
+#: ../lib/wiking/cms/users.py:1292
 msgid "E-mail notification has been sent to:"
 msgstr "E-mail értesítő el lett küldve:"
 
-#: ../lib/wiking/cms/users.py:1292
+#: ../lib/wiking/cms/users.py:1294
 #, fuzzy
 msgid "The account was disabled."
 msgstr "A fiók megnyílt."
 
-#: ../lib/wiking/cms/users.py:1299
+#: ../lib/wiking/cms/users.py:1301
 #, fuzzy, python-format
 msgid "The registration expired on %(date)s."
 msgstr "A regisztráció sikeresen meg lett erősítve."
 
-#: ../lib/wiking/cms/users.py:1301
+#: ../lib/wiking/cms/users.py:1303
 #, fuzzy
 msgid "Continue"
 msgstr "Tartalom"
 
 #. Button label to get to a previous state.
-#: ../lib/wiking/cms/users.py:1303
+#: ../lib/wiking/cms/users.py:1305
 msgid "Back"
 msgstr "Vissza"
 
-#: ../lib/wiking/cms/users.py:1304
+#: ../lib/wiking/cms/users.py:1306
 #, fuzzy
 msgid "The registration code was not confirmed by the user!"
 msgstr "A regisztráció sikeresen meg lett erősítve."
 
-#: ../lib/wiking/cms/users.py:1305
+#: ../lib/wiking/cms/users.py:1307
 #, fuzzy
 msgid ""
 "Please enable the account only if you are sure that the e-mail address "
@@ -3569,42 +3569,42 @@ msgstr ""
 "Kérem csak abban az esetben hagyja jóvá a fiókot, ha biztos benne, hogy az e-"
 "mail cím az adott felhasználóhoz tartozik."
 
-#: ../lib/wiking/cms/users.py:1584
+#: ../lib/wiking/cms/users.py:1586
 msgid "Listing of all active user accounts."
 msgstr "Az összes aktív felhasználói fiók listája."
 
-#: ../lib/wiking/cms/users.py:1610
+#: ../lib/wiking/cms/users.py:1612
 msgid "Enter your login name or e-mail address"
 msgstr "Add meg a felhasználóneved vagy e-mail címed"
 
-#: ../lib/wiking/cms/users.py:1675
+#: ../lib/wiking/cms/users.py:1677
 msgid "Password reminder"
 msgstr "Jelszó emlékeztető"
 
-#: ../lib/wiking/cms/users.py:1689
+#: ../lib/wiking/cms/users.py:1695
 msgid "Multiple user accounts found for given email address."
 msgstr "Több felhasználói fiók tartozik a megadott e-mail címhez."
 
-#: ../lib/wiking/cms/users.py:1690
+#: ../lib/wiking/cms/users.py:1696
 msgid "Please, select the account for which you want to remind:"
 msgstr "Kérem válassza ki a fiókot, amelyhez emlékeztetőt kér:"
 
 #. Credentials such as password...
-#: ../lib/wiking/cms/users.py:1703
+#: ../lib/wiking/cms/users.py:1709
 msgid "Your credentials were reset to:"
 msgstr "Az Ön bejelentkezési adatai vissza lettek állítva a következőre:"
 
 #. Credentials such as password...
-#: ../lib/wiking/cms/users.py:1707
+#: ../lib/wiking/cms/users.py:1713
 msgid "Your credentials are:"
 msgstr "Az Ön bejelentkezési adatai:"
 
-#: ../lib/wiking/cms/users.py:1710
+#: ../lib/wiking/cms/users.py:1716
 #, python-format
 msgid "A password reminder request has been made at %(server_uri)s."
 msgstr "A jelszóemlékeztető kérés a %(server_uri)s-n történt."
 
-#: ../lib/wiking/cms/users.py:1716
+#: ../lib/wiking/cms/users.py:1722
 msgid ""
 "We strongly recommend you change your password at nearest occassion, since "
 "it has been exposed to an unsecure channel."
@@ -3612,100 +3612,100 @@ msgstr ""
 "Erősen javasoljuk, hogy amint lehet változtassa meg a jelszavát, mivel "
 "veszélyes csatorna környékezte."
 
-#: ../lib/wiking/cms/users.py:1722
+#: ../lib/wiking/cms/users.py:1728
 msgid "Please try repeating your request later or contact the administrator!"
 msgstr ""
 "Kérem, próbálja meg a kérését megismételni, vagy lépjen érintkezésbe az "
 "adminisztátorral!"
 
-#: ../lib/wiking/cms/users.py:1724
+#: ../lib/wiking/cms/users.py:1730
 msgid "E-mail information has been sent to your email address."
 msgstr "E-mail információ el lett küldve az e-mail címére."
 
-#: ../lib/wiking/cms/users.py:1727
+#: ../lib/wiking/cms/users.py:1733
 msgid "No user account for your query."
 msgstr "Az Ön kérésének nem felel meg egy felhasználói fiók sem."
 
-#: ../lib/wiking/cms/users.py:1758
+#: ../lib/wiking/cms/users.py:1764
 #, fuzzy
 msgid "Enter the activation code:"
 msgstr "Aktivációs kód újraküldése"
 
-#: ../lib/wiking/cms/users.py:1763
+#: ../lib/wiking/cms/users.py:1769
 #, fuzzy
 msgid "Continue without activation"
 msgstr "Aktivációs kód újraküldése"
 
-#: ../lib/wiking/cms/users.py:1801
+#: ../lib/wiking/cms/users.py:1807
 #, fuzzy
 msgid "Account not approved"
 msgstr "Fiók kikapcsolva"
 
-#: ../lib/wiking/cms/users.py:1828
+#: ../lib/wiking/cms/users.py:1834
 msgid "History of successful login sessions and unsuccessful login attempts."
 msgstr "A sikeres belépések és sikertelen próbálkozások naplója."
 
 #. Login name.
-#: ../lib/wiking/cms/users.py:1837
+#: ../lib/wiking/cms/users.py:1843
 msgid "Login"
 msgstr "Felhasználói név"
 
 #. Form field saying whether the users attempt was succesful.
 #. Values are Yes/No.
-#: ../lib/wiking/cms/users.py:1840
+#: ../lib/wiking/cms/users.py:1846
 msgid "Success"
 msgstr "Belépés"
 
 #. Table column heading.
 #. Time of the start of user session, followed by a date and time.
-#: ../lib/wiking/cms/users.py:1843
+#: ../lib/wiking/cms/users.py:1849
 msgid "Start time"
 msgstr "Belépés ideje"
 
 #. Table column heading. The length of user session. Contains time.
-#: ../lib/wiking/cms/users.py:1846
+#: ../lib/wiking/cms/users.py:1852
 msgid "Duration"
 msgstr "Eltöltött idő"
 
-#: ../lib/wiking/cms/users.py:1850
+#: ../lib/wiking/cms/users.py:1856
 msgid "IP address"
 msgstr "IP cím"
 
 #. Internet name of the remote computer (computer terminology).
-#: ../lib/wiking/cms/users.py:1852
+#: ../lib/wiking/cms/users.py:1858
 msgid "Hostname"
 msgstr "Hostnév"
 
 #. "User agent" is a generalized name for browser or more precisely the
 #. software which produced the HTTP request (was used to access the website).
-#: ../lib/wiking/cms/users.py:1855
+#: ../lib/wiking/cms/users.py:1861
 msgid "User agent"
 msgstr "User agent"
 
 #. Meaning where the user came from. Computer terminology.
 #. Do not translate
 #. "HTTP" and if unsure, don't translate at all (it is a very technical term).
-#: ../lib/wiking/cms/users.py:1859
+#: ../lib/wiking/cms/users.py:1865
 msgid "HTTP Referer"
 msgstr "HTTP Referer"
 
-#: ../lib/wiking/cms/users.py:1869
+#: ../lib/wiking/cms/users.py:1875
 msgid "Successful logins"
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:1870
+#: ../lib/wiking/cms/users.py:1876
 msgid "Unsuccessful attempts"
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:1871
+#: ../lib/wiking/cms/users.py:1877
 msgid "Everything"
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:1872
+#: ../lib/wiking/cms/users.py:1878
 msgid "From"
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:1873
+#: ../lib/wiking/cms/users.py:1879
 msgid "To"
 msgstr ""
 

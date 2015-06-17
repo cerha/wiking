@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-06-04 17:59+0200\n"
+"POT-Creation-Date: 2015-06-17 08:21+0200\n"
 "PO-Revision-Date: 2010-02-02 15:44+0100\n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: French <wiking@lists.freebsoft.org>\n"
@@ -18,26 +18,26 @@ msgstr ""
 
 #. Website idiom. This is followed by information on the underlying software
 #. tools.  Means: This website runs on [...this and that software...].
-#: ../lib/wiking/application.py:419
+#: ../lib/wiking/application.py:421
 msgid "Powered by"
 msgstr "Propulsé par"
 
-#: ../lib/wiking/application.py:437
+#: ../lib/wiking/application.py:439
 msgid "Accessibility Statement"
 msgstr "Déclaration d'accessibilité"
 
 #. Heading of webpage left side hierarchical navigation
 #. menu containing a list of links to pages in this web section
-#: ../lib/wiking/application.py:450
+#: ../lib/wiking/application.py:452
 msgid "In this section:"
 msgstr "Dans cette section :"
 
-#: ../lib/wiking/application.py:459 ../lib/wiking/export.py:111
+#: ../lib/wiking/application.py:461 ../lib/wiking/export.py:111
 #: ../lib/wiking/export.py:280
 msgid "Local navigation"
 msgstr "Navigation locale"
 
-#: ../lib/wiking/application.py:503
+#: ../lib/wiking/application.py:505
 msgid "Contact:"
 msgstr "Contact :"
 
@@ -254,27 +254,27 @@ msgstr "Le dossier a été supprimé."
 msgid "Unable to perform a database operation:"
 msgstr "Impossible d'effectuer une opération de base de données."
 
-#: ../lib/wiking/db.py:2096
+#: ../lib/wiking/db.py:2098
 msgid "Back"
 msgstr "En arrière"
 
 #. Back button label. Standard computer terminology.
 #. RSS channel is a computer idiom, see Wikipedia.
-#: ../lib/wiking/db.py:2303 ../lib/wiking/db.py:2459
+#: ../lib/wiking/db.py:2305 ../lib/wiking/db.py:2461
 msgid "An RSS channel is available for this section:"
 msgstr "Un canal RSS est disponible pour cette section :"
 
 #. RSS channel is a computer idiom, see Wikipedia.  Don't translateg 'RSS'.
-#: ../lib/wiking/db.py:2307 ../lib/wiking/db.py:2457
+#: ../lib/wiking/db.py:2309 ../lib/wiking/db.py:2459
 msgid "more about RSS"
 msgstr "plus d'informations sur RSS"
 
-#: ../lib/wiking/db.py:2452
+#: ../lib/wiking/db.py:2454
 #, fuzzy, python-format
 msgid "RSS channel \"%s\""
 msgstr "Le canal RSS"
 
-#: ../lib/wiking/db.py:2462
+#: ../lib/wiking/db.py:2464
 #, fuzzy
 msgid "RSS channels are available for this section"
 msgstr "Un canal RSS est disponible pour cette section :"
@@ -322,41 +322,41 @@ msgstr ""
 
 #. Panels are small windows on the side of the page. This is a label
 #. for a link that shows/hides the panels.
-#: ../lib/wiking/export.py:345
+#: ../lib/wiking/export.py:346
 msgid "Show panels"
 msgstr "Afficher les panneaux"
 
-#: ../lib/wiking/export.py:346
+#: ../lib/wiking/export.py:347
 msgid "Hide panels"
 msgstr "Masquer les panneaux"
 
 #. ``RSS channel'' is terminology idiom, see Wikipedia
-#: ../lib/wiking/export.py:358
+#: ../lib/wiking/export.py:359
 msgid "RSS channel"
 msgstr "Le canal RSS"
 
-#: ../lib/wiking/export.py:384
+#: ../lib/wiking/export.py:385
 msgid "Warning"
 msgstr "Le message d'avertissement"
 
-#: ../lib/wiking/export.py:395
+#: ../lib/wiking/export.py:397
 msgid "Minimize"
 msgstr ""
 
-#: ../lib/wiking/export.py:396
+#: ../lib/wiking/export.py:398
 msgid "Exit the maximized mode."
 msgstr ""
 
-#: ../lib/wiking/export.py:399
+#: ../lib/wiking/export.py:402
 msgid "Maximize"
 msgstr ""
 
-#: ../lib/wiking/export.py:400
+#: ../lib/wiking/export.py:403
 msgid "Maximize the main content to the full size of the browser window."
 msgstr ""
 
 #. Information about last change of a webpage (when and who)
-#: ../lib/wiking/export.py:417
+#: ../lib/wiking/export.py:421
 #, python-format
 msgid "Last change: %(date)s, %(user)s"
 msgstr "Dernier changement : %(date)s, %(user)s"
@@ -364,56 +364,56 @@ msgstr "Dernier changement : %(date)s, %(user)s"
 #. Meaning that the system (webpage) does not work now
 #. because we are updating/fixing something but will work again after
 #. the maintaince is finished.
-#: ../lib/wiking/handler.py:228
+#: ../lib/wiking/handler.py:229
 #, fuzzy
 msgid "Maintenance Mode"
 msgstr "Le mode de maintenance"
 
-#: ../lib/wiking/handler.py:229
+#: ../lib/wiking/handler.py:230
 msgid "The system is temporarily down for maintenance."
 msgstr "Le système est temporairement hors service pour maintenance."
 
-#: ../lib/wiking/modules.py:547
+#: ../lib/wiking/modules.py:532
 msgid "Enter your login name, please!"
 msgstr "Veuillez entrer votre nom d'utilisateur."
 
-#: ../lib/wiking/modules.py:549
+#: ../lib/wiking/modules.py:534
 msgid "Enter your password, please!"
 msgstr "Veuillez entrer votre mot de passe, s'il vous plaît !"
 
-#: ../lib/wiking/modules.py:553
+#: ../lib/wiking/modules.py:538
 msgid "Invalid login!"
 msgstr "Identifiant non valide !"
 
-#: ../lib/wiking/modules.py:667
+#: ../lib/wiking/modules.py:652
 msgid "Searching"
 msgstr "La recherche"
 
-#: ../lib/wiking/modules.py:668
+#: ../lib/wiking/modules.py:653
 msgid "Search results"
 msgstr "Résultats de recherche"
 
-#: ../lib/wiking/modules.py:669
+#: ../lib/wiking/modules.py:654
 msgid "Given search term doesn't contain any searchable term."
 msgstr "Le mot recherché ne correspond à aucun terme trouvable."
 
-#: ../lib/wiking/modules.py:673
+#: ../lib/wiking/modules.py:658
 msgid "Search words:"
 msgstr "Mots de recherche :"
 
-#: ../lib/wiking/modules.py:674
+#: ../lib/wiking/modules.py:659
 msgid "Search"
 msgstr "Recherche"
 
-#: ../lib/wiking/modules.py:730
+#: ../lib/wiking/modules.py:715
 msgid "Nothing found."
 msgstr "Rien de trouvé."
 
-#: ../lib/wiking/modules.py:787
+#: ../lib/wiking/modules.py:772
 msgid "The following modules were successfully reloaded:"
 msgstr "Les modules suivants ont été rechargés avec succès :"
 
-#: ../lib/wiking/modules.py:789
+#: ../lib/wiking/modules.py:774
 msgid "Reload"
 msgstr "Recharger"
 
@@ -629,7 +629,7 @@ msgstr ""
 msgid "Login name"
 msgstr "Identifiant"
 
-#: ../lib/wiking/util.py:1298
+#: ../lib/wiking/util.py:1299
 msgid "Password"
 msgstr "Mot de passe"
 
@@ -645,46 +645,46 @@ msgid "Forgot your password?"
 msgstr "Vous avez oublié votre mot de passe ?"
 
 #. Web form label and message
-#: ../lib/wiking/util.py:1342
+#: ../lib/wiking/util.py:1343
 #, python-format
 msgid "Decryption password for '%s'"
 msgstr ""
 
 #. Web form button.
-#: ../lib/wiking/util.py:1349
+#: ../lib/wiking/util.py:1350
 #, fuzzy
 msgid "Send password"
 msgstr "Mot de passe"
 
 #. Confirmation button
-#: ../lib/wiking/util.py:1371
+#: ../lib/wiking/util.py:1372
 msgid "Continue"
 msgstr ""
 
-#: ../lib/wiking/util.py:2230
+#: ../lib/wiking/util.py:2233
 #, fuzzy
 msgid "Invalid e-mail address format."
 msgstr "Format invalide"
 
 #. Computer terminology. `gmail.com' is a domain name in email address
 #. `joe@gmail.com'.
-#: ../lib/wiking/util.py:2238 ../lib/wiking/util.py:2246
+#: ../lib/wiking/util.py:2241 ../lib/wiking/util.py:2249
 #, fuzzy
 msgid "Domain not found."
 msgstr "Le domaine n'a pas été trouvé."
 
 #. Computer terminology.  Don't translate the acronym `DNS'.
-#: ../lib/wiking/util.py:2241 ../lib/wiking/util.py:2249
+#: ../lib/wiking/util.py:2244 ../lib/wiking/util.py:2252
 #, python-format
 msgid "Unable to retrieve DNS records: %s"
 msgstr ""
 
-#: ../lib/wiking/util.py:2277
+#: ../lib/wiking/util.py:2280
 #, python-format
 msgid "Invalid e-mail address: %s"
 msgstr ""
 
-#: ../lib/wiking/util.py:2279
+#: ../lib/wiking/util.py:2282
 #, python-format
 msgid ""
 "Unable to verify e-mail address: Mail servers for '%s' are temporarily "
@@ -715,6 +715,11 @@ msgstr ""
 #: ../resources/scripts/discussion.js:121
 msgid "Cancel"
 msgstr ""
+
+#: ../resources/scripts/wiking.js:63
+#, fuzzy
+msgid "Hierarchical navigation menu"
+msgstr "Navigation locale"
 
 #, fuzzy
 #~ msgid "%d warning"
