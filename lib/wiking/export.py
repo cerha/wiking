@@ -320,17 +320,18 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             # If there is the main menu, this is its submenu, but if the main
             # menu is empty, this menu acts as the main menu.
             heading = application.menu_panel_title(req)
-            name = 'local-navigation'
+            heading_id = 'local-navigation'
         else:
             heading = _("Main navigation")
-            name = 'main-navigation'
+            heading_id = 'main-navigation'
         tree = lcg.FoldableTree(context.node().top(),
                                 tooltip=_("Expand/collapse complete menu hierarchy"))
         content = tree.export(context)
         extra_content = application.menu_panel_bottom_content(req)
         if extra_content:
             content += extra_content.export(context)
-        return g.div((g.h(g.a(heading, name=name, accesskey="3"), 3), content),
+        return g.div((g.h(heading, 3, id=heading_id, accesskey="3"),
+                      content),
                      cls='menu-panel')
 
     def _panels(self, context):
