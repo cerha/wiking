@@ -1186,8 +1186,8 @@ class Users(UserManagementModule, CachingPytisModule):
             # HACK: Update login in session cookies to let the session continue after login change.
             # See also comment in wiking.CookieAuthentication._set_session_cookies().
             req.set_cookie(wiking.module.Application._LOGIN_COOKIE, record['login'].value(),
-                                  expires=(730 * 24 * 3600),
-                                  secure=wiking.module.Application._SECURE_AUTH_COOKIES)
+                           expires=(730 * 24 * 3600),
+                           secure=wiking.module.Application._SECURE_AUTH_COOKIES)
             req.message(_("You can use %s to log in next time.", record['login'].value()))
         return super(Users, self)._redirect_after_update(req, record)
 
@@ -1338,7 +1338,7 @@ class Users(UserManagementModule, CachingPytisModule):
 
         'Predefined special roles' are application defined roles which can not
         be assigned explicitly to a particular user by the administrator, but
-        the application logic decides which users belong to them. 
+        the application logic decides which users belong to them.
 
         See the docstring of L{wiking.Role} class for a more precise definition.
 
@@ -1900,9 +1900,10 @@ class SessionLog(UserManagementModule):
     def log(self, req, time, session_id, uid, login):
         if login is not None and len(login) > 64:
             login = login[:61] + '...'
+        ip_address = req.header('X-Forwarded-For') or req.remote_host() or '?'
         row = self._data.make_row(session_id=session_id, uid=uid, login=login,
                                   success=session_id is not None, start_time=time,
-                                  ip_address=req.header('X-Forwarded-For') or req.remote_host(),
+                                  ip_address=ip_address,
                                   referer=req.header('Referer'),
                                   user_agent=req.header('User-Agent'))
         self._data.insert(row)
