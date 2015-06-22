@@ -167,9 +167,7 @@ class CryptoKeys(CMSExtensionModule):
     def _list_form_kwargs(self, req, form_cls):
         kwargs = super(CryptoKeys, self)._list_form_kwargs(req, form_cls)
         if issubclass(form_cls, pw.ItemizedView) and req.check_roles(Roles.USER_ADMIN):
-            template = lcg.HtmlEscapedUnicode("%(" + self._TITLE_COLUMN + ")s [%(delete)s]",
-                                              escape=False)
-            kwargs['template'] = lcg.TranslatableText(template)
+            kwargs['template'] = lcg.TranslatableText("%%(%s)s [%%(delete)s]" % self._TITLE_COLUMN)
         return kwargs
 
     def related(self, req, binding, record, uri):
