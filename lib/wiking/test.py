@@ -95,10 +95,15 @@ class Test(object):
             return links
         return links[index]
             
-    def _click(self, response, description=None, index=None, status=None, verbose=False):
+    def _click(self, response, description=None, index=None, status=None, verbose=False,
+               follow=False):
         url = self._find_link(response.html, description=description, index=index,
                               verbose=verbose)
-        return self._get(url, status=status)
+        if follow:
+            result = self._get_follow(url)
+        else:
+            result = self._get(url, status=status)
+        return result
 
     def _click_all(self, response, visited=None, status=None, verbose=False):
         host = response.request.host
