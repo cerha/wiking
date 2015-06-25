@@ -43,6 +43,8 @@ class Test(object):
         return dict(headers=self._headers, extra_environ=self._environment)
         
     def _get(self, path, status=None):
+        if self._options.verbose:
+            sys.stdout.write('GET: %s\n' % (path,))
         return self._application.get(path, status=status, **self._default_request_kwargs())
 
     def _get_follow(self, path):
@@ -132,6 +134,8 @@ def parse_options():
                       help="use given USER in login forms", metavar='USER')
     parser.add_option('-p', '--password', dest='password',
                       help="use given PASSWORD in login forms", metavar='PASSWORD')
+    parser.add_option('-v', '--verbose', dest='verbose', action="store_true", default=False,
+                      help="be verbose about some actions")
     options, args = parser.parse_args()
     if len(args) != 2:
         parser.error("invalid number of arguments")
