@@ -83,11 +83,13 @@ class Test(object):
                 continue
             log("  Accepted")
             links.append(href)
+        def exception_args():
+            return (description, html,) if self._options.verbose else ()
         if not links:
-            raise IndexError("No matching link found")
+            raise IndexError("No matching link found", *exception_args())
         if index is None:
             if len(links) > 1:
-                raise IndexError("Multiple matching links")
+                raise IndexError("Multiple matching links", *exception_args())
             index = 0
         if index is True:
             return links
