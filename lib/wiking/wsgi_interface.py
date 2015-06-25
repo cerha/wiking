@@ -62,7 +62,7 @@ class WsgiRequest(wiking.Request):
         return self._uri
 
     def unparsed_uri(self):
-        return self._environ['REQUEST_URI']
+        return wsgiref.util.request_uri(self._environ)
         
     def param(self, name, default=None):
         def param_value(value):
