@@ -2,6 +2,7 @@ import cookielib
 import optparse
 import re
 import sys
+import urlparse
 
 import webtest
 
@@ -86,12 +87,27 @@ class Test(object):
             if len(links) > 1:
                 raise IndexError("Multiple matching links")
             index = 0
+        if index is True:
+            return links
         return links[index]
             
     def _click(self, response, description=None, index=None, status=None, verbose=False):
         url = self._find_link(response.html, description=description, index=index,
                               verbose=verbose)
         return self._get(url, status=status)
+
+    def _click_all(self, response, visited=None, status=None, verbose=False):
+        host = response.request.host
+        all_responses = []
+        for url in self._find_link(response.html, index=True):
+            hostname = urlparse.urlparse(url).hostname
+            if hostname and hostname != host:
+                continue
+            if visited is None or url not in visited:
+                if visited is not None:
+                    visited.add(url)
+                all_responses.append(self._get(url, status=status))
+        return all_responses
 
     def _submit_form(self, form, **kwargs):
         form_kwargs = self._default_request_kwargs()
