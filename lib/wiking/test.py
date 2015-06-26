@@ -1,5 +1,6 @@
 import cookielib
 import optparse
+import random
 import re
 import sys
 import urlparse
@@ -10,6 +11,50 @@ import wiking.wsgi_interface
 
 class Test(object):
 
+    class _Visited(set):
+
+        def __call__(self, url):
+            if url in self:
+                visited = True
+            else:
+                self.add(url)
+                visited = False
+            return visited
+
+    class _RandomlyVisited(object):
+
+        def __init__(self, transform=None):
+            self._visited = dict()
+            if transform is None:
+                transform = lambda url: None
+            self._transform = transform
+            
+        def __call__(self, url):
+            transformed_url = self._transform(url)
+            if transformed_url == url:
+                visited = transformed_url in self._visited
+                self._visited[transformed_url] = True
+            else:
+                n = self._visited.get(transformed_url, 0) + 1
+                self._visited[transformed_url] = n
+                if n == 1:
+                    visited = False
+                else:
+                    visited = random.random() > 1.0 / n
+            return visited
+
+        def add(self, url):
+            url = self._transform(url)
+            self._visited[url] = self._visited.get(url, 0) + 1
+
+        _numeric_suffix_regexp = re.compile('^(.*/)[0-9]+$')
+        @classmethod
+        def numeric_suffix_transformer(class_, url):
+            match = class_._numeric_suffix_regexp.match(url)
+            if match is not None:
+                url = url[:match.end(1)] + '*'
+            return url
+            
     def __init__(self, config_file, host, options=None):
         self._config_file = config_file
         self._host = host
@@ -63,7 +108,7 @@ class Test(object):
             content_matcher = re.compile(description).search
         def log(message):
             if verbose:
-                print message
+                sys.stdout.write('%s\n' % (message,))
         links = []
         for element in html.find_all('a'):
             attrs = element
@@ -105,16 +150,16 @@ class Test(object):
             result = self._get(url, status=status)
         return result
 
-    def _click_all(self, response, visited=None, status=None, verbose=False):
+    def _click_all(self, response, visited=None, status=None, verbose=False, ignored=None):
         host = response.request.host
         all_responses = []
         for url in self._find_link(response, index=True):
             hostname = urlparse.urlparse(url).hostname
             if hostname and hostname != host:
                 continue
-            if visited is None or url not in visited:
-                if visited is not None:
-                    visited.add(url)
+            if ignored is not None and ignored(url):
+                continue
+            if visited is None or not visited(url):
                 all_responses.append(self._get(url, status=status))
         return all_responses
 
