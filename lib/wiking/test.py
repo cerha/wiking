@@ -55,7 +55,8 @@ class Test(object):
             response = response.follow(headers=self._headers)
         raise Exception("Too many redirections", path)
 
-    def _find_link(self, html, description=None, index=None, verbose=False):
+    def _find_link(self, response, description=None, index=None, verbose=False):
+        html = response.html
         if description is None:
             content_matcher = None
         else:
@@ -97,8 +98,7 @@ class Test(object):
             
     def _click(self, response, description=None, index=None, status=None, verbose=False,
                follow=False):
-        url = self._find_link(response.html, description=description, index=index,
-                              verbose=verbose)
+        url = self._find_link(response, description=description, index=index, verbose=verbose)
         if follow:
             result = self._get_follow(url)
         else:
@@ -108,7 +108,7 @@ class Test(object):
     def _click_all(self, response, visited=None, status=None, verbose=False):
         host = response.request.host
         all_responses = []
-        for url in self._find_link(response.html, index=True):
+        for url in self._find_link(response, index=True):
             hostname = urlparse.urlparse(url).hostname
             if hostname and hostname != host:
                 continue
