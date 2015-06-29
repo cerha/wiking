@@ -41,6 +41,7 @@ import os
 import re
 import string
 import sys
+import unicodedata
 import urllib
 import operator
 import json
@@ -1906,6 +1907,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
         else:
             text = record['content'].value()
         if text:
+            text = unicodedata.normalize('NFC', text)
             if self._SEPARATOR.search(text):
                 pre, post = self._SEPARATOR.split(text, maxsplit=2)
             else:
@@ -4039,7 +4041,7 @@ class News(_News):
         def condition_provider(self, query_fields={}, **kwargs):
             f = query_fields['filter'].value()
             recent = pd.FunctionCondition('cms_recent_timestamp', 'timestamp', 'days_displayed')
-            if f ==  'recent':
+            if f == 'recent':
                 condition = recent
             elif f == 'archive':
                 condition = pd.NOT(recent)
@@ -4791,7 +4793,7 @@ class Discussions(ContentManagementModule, EmbeddableCMSModule):
                 # link target '?command=login' untouched and traslate 'log in' to fit into the
                 # sentence.  The user only sees it as 'You need to log in before ...'.
                 msg = _("Note: You need to [?command=login log in] before you can post messages.")
-                content.append(lcg.Container((lcg.p(req.localize(msg), formatted=True),), 
+                content.append(lcg.Container((lcg.p(req.localize(msg), formatted=True),),
                                              name='login-info'))
             # Wrap in a named container to allow css styling.
             content = [lcg.Container(content, name='discussion-list')]
@@ -4948,7 +4950,8 @@ class StyleSheets(SiteSpecificContentModule, StyleManagementModule,
                 # Translators: Heading of a form field determining in
                 # which media the page is displayed. E.g. web, print,
                 # Braille, speech.
-                Field('media', _("Media"), default='all', not_null=True, enumerator=StyleSheets.MediaTypes),
+                Field('media', _("Media"), default='all', not_null=True,
+                      enumerator=StyleSheets.MediaTypes),
                 # Translators: Scope of applicability of a stylesheet on different website parts.
                 Field('scope', _("Scope"), enumerator=StyleSheets.Scopes,
                       selection_type=pp.SelectionType.RADIO,
