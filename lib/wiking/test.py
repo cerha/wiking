@@ -124,6 +124,9 @@ class Test(object):
             if href.startswith('javascript:'):
                 log("  Skipped: JavaScript link")
                 continue
+            if href.startswith('mailto:'):
+                log("  Skipped: mail link")
+                continue
             if content_matcher is not None and content_matcher(content) is None:
                 log("  Skipped: doesn't match")
                 continue
