@@ -658,7 +658,10 @@ class Users(UserManagementModule, CachingPytisModule):
                 password = initial_password
             else:
                 password = new_password
-            return self._stored_password(password)
+            if password is not None:
+                storage = wiking.cms.cfg.password_storage
+                password = storage.stored_password(password)
+            return password
 
         def _lang(self, record):
             if record.new():
@@ -676,22 +679,15 @@ class Users(UserManagementModule, CachingPytisModule):
                 if not ok:
                     return ('email', error)
                     
-        def _stored_password(self, plaintext_password):
-            if plaintext_password is None:
-                return None
-            elif wiking.cms.cfg.password_storage == 'md5':
-                from hashlib import md5
-                return md5(plaintext_password).hexdigest()
-            else:
-                return plaintext_password
-
         def _check_old_password(self, record):
             req = record.req()
             if req.param('action') == 'passwd' and req.user().uid() == record['uid'].value():
-                old_password = self._stored_password(record['old_password'].value())
+                old_password = record['old_password'].value()
                 if not old_password:
                     return ('old_password', _(u"Enter your current password."))
-                elif old_password != record.original_row()['password'].value():
+                stored_old_password = record.original_row()['password'].value()
+                storage = wiking.cms.cfg.password_storage
+                if not storage.check_password(old_password, stored_old_password):
                     return ('old_password', _(u"Invalid password."))
 
         def _check_new_password(self, record):
@@ -1486,16 +1482,16 @@ class Users(UserManagementModule, CachingPytisModule):
         return ''.join(random.sample(string.digits + string.ascii_letters, 10))
 
     def reset_password(self, user):
-        """Reset md5 password for given 'User' instance and return the new password.
+        """Reset the password for given 'User' instance and return the new password.
 
         May raise 'pd.DBException' if the database operation fails.
 
         """
-        from hashlib import md5
         record = user.data()
-        password = self.generate_password()
-        record.update(password=md5(password).hexdigest(), last_password_change=now())
-        return password
+        new_password = self.generate_password()
+        storage = wiking.cms.cfg.password_storage
+        record.update(password=storage.stored_password(new_password), last_password_change=now())
+        return new_password
 
     def regenerate_registration_code(self, user):
         """Generate a new registration code for given user and store it in the database.
@@ -1695,25 +1691,19 @@ class Registration(Module, ActionHandler):
                                        for u in users]))
                     return Document(title, content)
             if user:
-                if wiking.cms.cfg.password_storage == 'md5':
-                    try:
-                        password = wiking.module.Users.reset_password(user)
-                    except pd.DBException as e:
-                        req.message(unicode(e), req.ERROR)
-                        return Document(title, self.ReminderForm())
-                    # Translators: Credentials such as password...
-                    intro_text = _("Your credentials were reset to:")
-                else:
-                    password = user.data()['password'].value()
-                    # Translators: Credentials such as password...
-                    intro_text = _("Your credentials are:")
+                try:
+                    new_password = wiking.module.Users.reset_password(user)
+                except pd.DBException as e:
+                    req.message(unicode(e), req.ERROR)
+                    return Document(title, self.ReminderForm())
+                # Translators: Credentials such as password...
                 text = lcg.concat(
                     _("A password reminder request has been made at %(server_uri)s.",
                       server_uri=req.server_uri()),
                     '',
-                    intro_text,
+                    _("Your credentials were reset to:"),
                     '   ' + _("Login name") + ': ' + user.login(),
-                    '   ' + _("Password") + ': ' + password,
+                    '   ' + _("Password") + ': ' + new_password,
                     '',
                     _("We strongly recommend you change your password at nearest occassion, "
                       "since it has been exposed to an unsecure channel."),

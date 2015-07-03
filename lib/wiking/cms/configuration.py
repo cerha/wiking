@@ -23,8 +23,10 @@ Management System.
 
 """
 
+import lcg
+import wiking
+
 from wiking import ApplicationConfiguration as cfg
-import lcg, os
 
 _ = lcg.TranslatableTextFactory('wiking-cms')
 
@@ -66,13 +68,24 @@ class CMSConfiguration(cfg):
         _DEFAULT = 3*1024*1024
 
     class _Option_password_storage(cfg.StringOption):
-        _DESCR = "Form of storing user passwords in the database"
+        _DESCR = "Subclass of  for storing user passwords in the database"
         _DOC = ("This option defines in which way user passwords are stored in a database. "
-                "The allowed values are the strings 'plain' "
-                "(passwords are stored in the plain text form), "
-                "and 'md5' (passwords are stored in the form of MD5 hashes).")
-        _DEFAULT = 'plain'
- 
+                "The value is an instance of 'wiking.PasswordStorage' subclass.")
+        _DEFAULT = wiking.UniversalPasswordStorage()
+
+        def value(self):
+            # Temporary hack: Automatically upgrade the legacy values 'plain' and 'md5'
+            # to the new UniversalPasswordStorage instance.  This instance is compatible
+            # with existing passwords when upgrade.72.sql was applied.
+            value = super(CMSConfiguration._Option_password_storage, self).value()
+            if value in ('plain', 'md5'):
+                from pytis.util import OPERATIONAL, log
+                log(OPERATIONAL,
+                    ("Value '%s' of configuration option 'password_storage' is not valid anymore. "
+                     "Using 'wiking.UniversalPasswordStorage() instead.") % value)
+                value = wiking.UniversalPasswordStorage()
+            return value
+
     class _Option_password_strength(cfg.Option):
         _DESCR = "Specification of password strength checking."
         _DOC = ("If 'None', no special checks are performed.  If 'True', default "

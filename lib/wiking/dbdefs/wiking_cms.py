@@ -170,7 +170,7 @@ class Users(CommonAccesRights, Base_CachingTable):
     name = 'users'
     fields = (sql.PrimaryColumn('uid', pytis.data.Serial(not_null=True)),
               sql.Column('login', pytis.data.String(maxlen=64, not_null=True), unique=True),
-              sql.Column('password', pytis.data.String(maxlen=32)),
+              sql.Column('password', pytis.data.String(not_null=True)),
               sql.Column('firstname',
                          pytis.data.String(not_null=name_is_not_null.value(globals()))),
               sql.Column('surname',
@@ -207,7 +207,7 @@ class CmsFInsertOrUpdateUser(sql.SQLPlFunction):
     name = 'cms_f_insert_or_update_user'
     arguments = (sql.Column('uid_', pytis.data.Integer()),
                  sql.Column('login_', pytis.data.String(maxlen=64)),
-                 sql.Column('password_', pytis.data.String(maxlen=32)),
+                 sql.Column('password_', pytis.data.String()),
                  sql.Column('firstname_', pytis.data.String()),
                  sql.Column('surname_', pytis.data.String()),
                  sql.Column('nickname_', pytis.data.String()),

@@ -26,6 +26,7 @@ import string
 import sys
 import time
 import urllib
+import itertools
 from xml.sax import saxutils
 
 import pytis.data as pd
@@ -1150,6 +1151,208 @@ class RssWriter(object):
         """Call exactly once to write the final data into the stream."""
         self._stream.write('</channel>\n</rss>\n')
 
+
+class PasswordStorage(object):
+    """Abstract base class for various methods of transforming passwords for storage.
+
+    Defines the API for conversion of user passwords before storing and
+    checking user passwords against their stored representations.  Passwords are
+    typically not stored in plain text but rather as their hashes to improve
+    security.  The main purpose of this class is having a single API for
+    various methods of such password transformations.  This class actually does
+    not store the passwords anywhere, only transforms them for storage and
+    verification.
+
+    The derived class must implement the methods 'stored_password()' and
+    'check_password()' according to their docstring.
+
+    """
+
+    def stored_password(self, password):
+        """Return the transformed representation of given password for storing.
+
+        Arguments:
+          password -- the password to transform in clear text as a basestring.
+        
+        Returns the transformed representation of the password as a basestring.
+
+        """
+        raise NotImplementedError()
+    
+    def check_password(self, password, stored_password):
+        """Verify that given password is the correct original of the stored password.
+        
+        Arguments:
+          password -- the password to check in clear text as a basestring.
+          stored_password -- the stored version of the correct password as a basestring.
+        
+        Returns True if the password is correct. False otherwise.
+
+        """
+        raise NotImplementedError()
+        
+    def _equals(self, string1, string2):
+        """Compare two strings in length-constant time.
+
+        Comparison using the Python == operator takes longer when the strings
+        are similar, which allows a timing attack.  This simple method avoids
+        this problem.  The comparison takes always the same time.
+
+        Returns True if both strings arrays are equal. False otherwise.
+
+        """
+        diff = len(string1) ^ len(string2)
+        for a, b in itertools.izip(string1, string2):
+            diff |= ord(a) ^ ord(b)
+        return diff == 0
+
+
+class PlainTextPasswordStorage(PasswordStorage):
+    """Basic password storage storing passwords in plain text.
+
+    Only use when security does not matter at all.
+
+    """
+    def stored_password(self, password):
+        return password
+    
+    def check_password(self, password, stored_password):
+        return self._equals(password, stored_password)
+
+
+class UnsaltedMd5PasswordStorage(PasswordStorage):
+    """Basic password storage storing passwords as unsalted MD5 hashes.
+
+    Only use when security does not really matter, because the stored passwords
+    are not salted.  The main purpose is handling the existing passwords which
+    were created by older applications.
+
+    """
+    def _md5(self, password):
+        if isinstance(password, unicode):
+            password = password.encode('utf-8')
+        try:
+            from hashlib import md5
+        except ImportError:
+            from md5 import md5
+        return md5(password).hexdigest()
+
+    def stored_password(self, password):
+        return self._md5(password)
+
+    def check_password(self, password, stored_password):
+        return self._equals(self._md5(password), stored_password)
+        
+
+class Pbkdf2PasswordStorage(PasswordStorage):
+    """Password storage storing passwords as salted PBKDF2 hashes.
+
+    Secure password storage implementation inspired by
+    https://crackstation.net/hashing-security.htm
+
+    Constructor options allow selection of the appropriate security measures in
+    a forward compatible manner (when changed, the existing stored passwords
+    don't need to be updated).
+
+    """
+    def __init__(self, salt_length=32, hash_length=32, iterations=1000):
+        """Arguments:
+          salt_length -- length of the salt as int (number of characters)
+          hash_length -- length of the hash itself as int (number of characters)
+          iterations -- number of iterations of the PBKDF2 algorithm
+
+        All parameters may be changed without breaking existing hashes (stored
+        in the database).  Only newly created hashes will respect new
+        parameters.
+
+        The lengths given by 'salt_length' and 'hash_length' are character
+        lengths of the resulting strings.  The strings are hex encoded so each
+        byte is represented by two characters.  Thus the actual byte size
+        determining strength is a half of the length.
+
+        """
+        assert isinstance(salt_length, int), salt_length
+        assert isinstance(hash_length, int), hash_length
+        assert isinstance(iterations, int), iterations
+        self._salt_length = salt_length
+        self._hash_length = hash_length
+        self._iterations = iterations
+
+    def stored_password(self, password):
+        salt = generate_random_string(self._salt_length)
+        iterations = self._iterations
+        hashed_password = self._pbkdf2_hash(password, salt, iterations, self._hash_length)
+        return ':'.join((str(iterations), salt, hashed_password))
+        
+    def check_password(self, password, stored_password):
+        iterations, salt, stored_hash = stored_password.split(':')
+        try:
+            iterations = int(iterations)
+        except ValueError:
+            return False
+        test_hash = self._pbkdf2_hash(password, salt, iterations, len(stored_hash))
+        return self._equals(test_hash, stored_hash)
+
+    def _pbkdf2_hash(self, password, salt, iterations, output_characters):
+        import pbkdf2
+        output_bytes = pbkdf2.PBKDF2(password, salt, iterations).read(output_characters / 2 + 1)
+        return output_bytes.encode('hex')[:output_characters]
+
+
+class Pbkdf2Md5PasswordStorage(Pbkdf2PasswordStorage, UnsaltedMd5PasswordStorage):
+    """Special storage for passwords converted from unsalted MD5 to PBKDF2.
+
+    This storage is used by UniversalPasswordStorage internally for checking
+    the passwords converted from unsalted MD5 hashes to salted PBKDF2 hashes.
+    It is only useful for conversion of old databases and you will probalby
+    never want to use it directly.
+
+    When the original database contains unsalted MD5 hashes and we want to
+    improve the security by adding salt to the stored passwords, we need to
+    apply salting and hashing on top of the already hashed passwords since we
+    don't have access to the original plain text passwords.
+
+    """
+
+    def stored_password(self, password):
+        return super(Pbkdf2Md5PasswordStorage, self).stored_password(self._md5(password))
+
+    def check_password(self, password, stored_password):
+        return super(Pbkdf2Md5PasswordStorage, self).check_password(self._md5(password),
+                                                                    stored_password)
+
+
+class UniversalPasswordStorage(PasswordStorage):
+    """Universal password storage capable of handling passwords in multiple formats.
+
+    This storage stores passwords together with a prefix which determines the
+    algorithm used to create the stored version of the password.  This allows
+    changing the preferred storage algorithm without breaking the existing
+    stored passwords -- they are still checked according to the old algorithm
+    even if new passwords are stored with another algorithm.
+
+    """
+    
+    def __init__(self, **kwargs):
+        self._storage = {
+            'plain': PlainTextPasswordStorage(),
+            'md5u': UnsaltedMd5PasswordStorage(),
+            'pbkdf2': Pbkdf2PasswordStorage(**kwargs),
+            'pbkdf2/md5': Pbkdf2Md5PasswordStorage(**kwargs),
+        }
+        # The storage used for creation of new stored passwords
+        # (PBKDF2 is currently the most secure option).
+        self._default_prefix = 'pbkdf2'
+        self._default_storage = self._storage[self._default_prefix]
+
+    def check_password(self, password, stored_password):
+        prefix, stored_password = stored_password.split(':', 1)
+        storage = self._storage[prefix]
+        return storage.check_password(password, stored_password)
+
+    def stored_password(self, password):
+        return self._default_prefix + ':' + self._default_storage.stored_password(password)
+    
 
 # ============================================================================
 # Classes derived from LCG components

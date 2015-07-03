@@ -301,21 +301,8 @@ class Application(CookieAuthentication, wiking.Application):
                                   action='reinsert', login=user.login(), regcode=regcode)
 
     def _auth_check_password(self, user, password):
-        record = user.data()
-        password_storage = wiking.cms.cfg.password_storage
-        if password_storage == 'plain':
-            pass
-        elif password_storage == 'md5':
-            if isinstance(password, unicode):
-                password = password.encode('utf-8')
-            try:
-                from hashlib import md5
-            except ImportError:
-                from md5 import md5
-            password = md5(password).hexdigest()
-        else:
-            raise Exception("Invalid password storage option", password_storage)
-        return password == record['password'].value()
+        storage = wiking.cms.cfg.password_storage
+        return storage.check_password(password, user.data()['password'].value())
 
     def _logout_hook(self, req, user):
         super(Application, self)._logout_hook(req, user)
