@@ -1205,7 +1205,7 @@ class Themes(StyleManagementModule, wiking.CachingPytisModule):
             if menu:
                 uri = menu[0].id()
             else:
-                uri = '/_wmi/Users'
+                uri = req.module_uri('Users')
             uri += '?preview_theme=%d' % record['theme_id'].value()
             return wiking.IFrame(uri, width=800, height=220)
 
