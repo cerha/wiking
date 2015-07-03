@@ -4033,7 +4033,8 @@ class News(_News):
         sorting = (('timestamp', DESC),)
         columns = ('title', 'timestamp', 'author')
         layout = ('timestamp', 'days_displayed', 'title', 'content')
-        list_layout = pp.ListLayout('title', meta=('timestamp', 'author'), content=('content',),
+        list_layout = pp.ListLayout('title', meta=('timestamp', 'author', 'news_id'),
+                                    content=lambda r: text2content(r.req(), r['content'].value()),
                                     anchor="item-%s", popup_actions=True)
         def query_fields(self):
             return (Field('filter', _("Show"), enumerator=News.Filters,
