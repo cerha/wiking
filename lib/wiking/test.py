@@ -143,6 +143,16 @@ class Test(object):
         if index is True:
             return links
         return links[index]
+
+    def _find_form(self, response, fields=()):
+        for form_id in response.forms:
+            form = response.forms[form_id]
+            for name in fields:
+                if form.get(name, index=0, default=None) is None:
+                    break
+            else:
+                return form
+        return None
             
     def _click(self, response, description=None, index=None, status=None, verbose=False,
                follow=False):
