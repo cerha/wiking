@@ -596,8 +596,7 @@ class Users(UserManagementModule, CachingPytisModule):
                               "and you agree with them.")),
                 # Translators: Since when the user is registered. Table column heading
                 # and field label for a date/time value.
-                Field('since', _("Registered since"), type=wiking.DateTime(show_time=False),
-                      default=now),
+                Field('since', _("Registered since"), default=now),
                 # Translators: The state of the user account (e.g. Enabled vs Disabled).  Column
                 # heading and field label.
                 Field('state', _("State"), computer=computer(self._default_state),
