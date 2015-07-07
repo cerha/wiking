@@ -694,7 +694,8 @@ class Users(UserManagementModule, CachingPytisModule):
                 new_password = record['new_password'].value()
                 if not new_password:
                     return ('new_password', _(u"Enter the new password."))
-                elif record['password'].value() == record.original_row()['password'].value():
+                storage = wiking.cms.cfg.password_storage
+                if storage.check_password(new_password, record.original_row()['password'].value()):
                     return ('new_password', _(u"The new password is the same as the old one."))
 
         def check(self):
