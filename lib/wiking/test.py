@@ -89,7 +89,7 @@ class Test(object):
         
     def _get(self, path, status=None):
         if self._options.verbose:
-            sys.stdout.write('GET: %s\n' % (path,))
+            self._info('GET: %s' % (path,))
         return self._application.get(path, status=status, **self._default_request_kwargs())
 
     def _get_follow(self, path):
@@ -106,31 +106,28 @@ class Test(object):
             content_matcher = None
         else:
             content_matcher = re.compile(description).search
-        def log(message):
-            if verbose:
-                sys.stdout.write('%s\n' % (message,))
         links = []
         for element in html.find_all('a'):
             attrs = element
             href = attrs.get('href')
-            log("Element: %s" % (element,))
+            self._info("Element: %s" % (element,))
             if not attrs.get('href'):
-                log("  Skipped: no href")
+                self._info("  Skipped: no href")
                 continue
             content = element.decode_contents()
             if href.startswith('#'):
-                log("  Skipped: internal link")
+                self._info("  Skipped: internal link")
                 continue
             if href.startswith('javascript:'):
-                log("  Skipped: JavaScript link")
+                self._info("  Skipped: JavaScript link")
                 continue
             if href.startswith('mailto:'):
-                log("  Skipped: mail link")
+                self._info("  Skipped: mail link")
                 continue
             if content_matcher is not None and content_matcher(content) is None:
-                log("  Skipped: doesn't match")
+                self._info("  Skipped: doesn't match")
                 continue
-            log("  Accepted")
+            self._info("  Accepted")
             links.append(href)
         def exception_args():
             return (description, html,) if self._options.verbose else ()
@@ -180,6 +177,10 @@ class Test(object):
         form_kwargs = self._default_request_kwargs()
         form_kwargs.update(kwargs)
         return form.submit(**form_kwargs)
+
+    def _info(self, message):
+        if self._options.verbose:
+            sys.stdout.write('%s\n' % (message,))
 
     def _warning(self, message):
         sys.stderr.write('WARNING: %s\n' % (message,))
