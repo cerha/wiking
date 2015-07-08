@@ -55,9 +55,10 @@ class Test(object):
                 url = url[:match.end(1)] + '*'
             return url
             
-    def __init__(self, config_file, host, options=None):
+    def __init__(self, config_file, host, tests=(), options=None):
         self._config_file = config_file
         self._host = host
+        self._tests = tests
         self._options = self._process_options(options)
         self._headers = self._make_headers()
         self._environment = self._make_environment()
@@ -186,13 +187,15 @@ class Test(object):
         sys.stderr.write('WARNING: %s\n' % (message,))
 
     def run(self):
+        tests = self._tests
         response = None
         for f in dir(self):
-            if f.startswith('test_'):
+            if f.startswith('test_') and (not tests or f in tests):
+                self._info('*** %s ***' % (f,))
                 response = getattr(self, f)(response)
 
 def parse_options():
-    usage = "usage: %prog [ OPTIONS ] CONFIG-FILE HOST"
+    usage = "usage: %prog [ OPTIONS ] CONFIG-FILE HOST [ TEST-METHOD ... ]"
     parser = optparse.OptionParser(usage)
     parser.add_option('-l', '--language', dest='language',
                       help="set Accept-Language header to LANGUAGE", metavar='LANGUAGE')
@@ -203,10 +206,13 @@ def parse_options():
     parser.add_option('-v', '--verbose', dest='verbose', action="store_true", default=False,
                       help="be verbose about some actions")
     options, args = parser.parse_args()
-    if len(args) != 2:
+    if len(args) < 2:
         parser.error("invalid number of arguments")
     return options, args
     
 def main(test_class):
     options, args = parse_options()
-    test_class(*args, options=options).run()
+    config_file = args[0]
+    host = args[1]
+    tests = args[2:]
+    test_class(config_file, host, tests=tests, options=options).run()
