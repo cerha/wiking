@@ -348,7 +348,7 @@ class Request(ServerInterface):
         if stored:
             lines = stored.splitlines()
             uri = urllib.unquote(lines[0]).decode(self._encoding)
-            if uri == self.server_uri(current=True) + self.unparsed_uri():
+            if uri == self.unparsed_uri():
                 # Storing data on client side is always problematic.  In case of
                 # messages there is not much danger in it, but still it may
                 # allow interesting tricks.  Storing the messages in the
