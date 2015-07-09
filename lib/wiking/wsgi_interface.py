@@ -18,6 +18,7 @@
 import cgi
 import httplib
 import os
+import urlparse
 import wsgiref.util
 import wsgiref.headers
 import wiking
@@ -62,7 +63,10 @@ class WsgiRequest(wiking.Request):
         return self._uri
 
     def unparsed_uri(self):
-        return wsgiref.util.request_uri(self._environ)
+        uri = wsgiref.util.request_uri(self._environ)
+        if uri:
+            uri = urlparse.urlunsplit(('', '',) + urlparse.urlsplit(uri)[2:])
+        return uri
         
     def param(self, name, default=None):
         def param_value(value):
