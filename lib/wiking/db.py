@@ -502,7 +502,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                 title = self._TITLE_TEMPLATE.interpolate(lambda key:
                                                          pw.localizable_export(record[key]))
             else:
-                title = record[self._title_column].export()
+                title = pw.localizable_export(record[self._title_column])
         else:
             if self._HONOUR_SPEC_TITLE:
                 title = self._view.title()
