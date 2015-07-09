@@ -168,7 +168,7 @@ class AuthenticationError(RequestError):
         if self.args:
             req.message(self.args[0], req.ERROR)
         return LoginDialog(registration_uri=appl.registration_uri(req),
-                           password_reminder_uri=appl.password_reminder_uri(req),
+                           forgotten_password_uri=appl.forgotten_password_uri(req),
                            extra_content=appl.login_dialog_content(req),
                            login_is_email=appl.login_is_email(req))
 
@@ -1457,10 +1457,10 @@ class LoginCtrl(lcg.Content):
 
 class LoginDialog(lcg.Content):
     """Login dialog for entering login name and password."""
-    def __init__(self, registration_uri=None, password_reminder_uri=None,
+    def __init__(self, registration_uri=None, forgotten_password_uri=None,
                  extra_content=None, login_is_email=False):
         self._registration_uri = registration_uri
-        self._password_reminder_uri = password_reminder_uri
+        self._forgotten_password_uri = forgotten_password_uri
         self._extra_content = extra_content
         self._login_is_email = login_is_email
         super(LoginDialog, self).__init__()
@@ -1512,7 +1512,7 @@ class LoginDialog(lcg.Content):
                  ((_("New user registration"), self._registration_uri),
                   # Translators: Login dialog link to password change or password reminder (depends
                  # on configuration).
-                  (_("Forgot your password?"), self._password_reminder_uri)) if uri]
+                  (_("Forgot your password?"), self._forgotten_password_uri)) if uri]
         if links:
             content.append(g.ul(*links))
         if not req.https() and wiking.cfg.force_https_login:

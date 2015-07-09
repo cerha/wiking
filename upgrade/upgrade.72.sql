@@ -7,12 +7,13 @@ alter table public.users alter column last_password_change type timestamp(0) wit
 alter table public.users alter column since type timestamp(0) with time zone;
 alter table public.users alter column since set default timezone('GMT', current_timestamp(0));
 alter table public.users alter column regexpire type timestamp(0) with time zone;
+alter table public.users alter column regcode type text;
+alter table public.users add column passexpire timestamp(0) with time zone;
+alter table public.users add column passcode text;
 
-DROP FUNCTION "public"."cms_f_insert_or_update_user" ("uid_" INTEGER, "login_" VARCHAR(64), "password_" VARCHAR(64), "firstname_" TEXT, "surname_" TEXT, "nickname_" TEXT, "user__" TEXT, "email_" TEXT, "phone_" TEXT, "address_" TEXT, "uri_" TEXT, "state_" TEXT, "last_password_change_" TIMESTAMP(0) WITHOUT TIME ZONE, "since_" TIMESTAMP(0) WITHOUT TIME ZONE, "lang_" CHAR(2), "regexpire_" TIMESTAMP(0) WITHOUT TIME ZONE, "regcode_" CHAR(16), "certauth_" BOOLEAN, "note_" TEXT, "confirm_" BOOLEAN, "gender_" CHAR(1));
+drop function "public"."cms_f_insert_or_update_user" ("uid_" INTEGER, "login_" VARCHAR(64), "password_" VARCHAR(64), "firstname_" TEXT, "surname_" TEXT, "nickname_" TEXT, "user__" TEXT, "email_" TEXT, "phone_" TEXT, "address_" TEXT, "uri_" TEXT, "state_" TEXT, "last_password_change_" TIMESTAMP(0) WITHOUT TIME ZONE, "since_" TIMESTAMP(0) WITHOUT TIME ZONE, "lang_" CHAR(2), "regexpire_" TIMESTAMP(0) WITHOUT TIME ZONE, "regcode_" CHAR(16), "certauth_" BOOLEAN, "note_" TEXT, "confirm_" BOOLEAN, "gender_" CHAR(1));
 
-SET SEARCH_PATH TO "public";
-
-CREATE OR REPLACE FUNCTION "public"."cms_f_insert_or_update_user"("uid_" INTEGER, "login_" VARCHAR(64), "password_" TEXT, "firstname_" TEXT, "surname_" TEXT, "nickname_" TEXT, "user__" TEXT, "email_" TEXT, "phone_" TEXT, "address_" TEXT, "uri_" TEXT, "state_" TEXT, "last_password_change_" TIMESTAMP(0) WITH TIME ZONE, "since_" TIMESTAMP(0) WITH TIME ZONE, "lang_" CHAR(2), "regexpire_" TIMESTAMP(0) WITH TIME ZONE, "regcode_" CHAR(16), "certauth_" BOOLEAN, "note_" TEXT, "confirm_" BOOLEAN, "gender_" CHAR(1)) RETURNS void LANGUAGE plpgsql AS $$
+CREATE OR REPLACE FUNCTION "public"."cms_f_insert_or_update_user"("uid_" INTEGER, "login_" VARCHAR(64), "password_" TEXT, "firstname_" TEXT, "surname_" TEXT, "nickname_" TEXT, "user__" TEXT, "email_" TEXT, "phone_" TEXT, "address_" TEXT, "uri_" TEXT, "state_" TEXT, "last_password_change_" TIMESTAMP(0) WITH TIME ZONE, "since_" TIMESTAMP(0) WITH TIME ZONE, "lang_" CHAR(2), "regexpire_" TIMESTAMP(0) WITH TIME ZONE, "regcode_" TEXT, "passexpire_" TIMESTAMP(0) WITH TIME ZONE, "passcode_" TEXT, "certauth_" BOOLEAN, "note_" TEXT, "confirm_" BOOLEAN, "gender_" CHAR(1)) RETURNS void LANGUAGE plpgsql AS $$
 declare
   row record;
 begin

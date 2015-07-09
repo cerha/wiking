@@ -323,8 +323,8 @@ class Application(CookieAuthentication, wiking.Application):
             return req.make_uri(req.module_uri('Registration'), action='insert')
         return None
 
-    def password_reminder_uri(self, req):
-        return req.make_uri(req.module_uri('Registration'), action='remind')
+    def forgotten_password_uri(self, req):
+        return req.make_uri(req.module_uri('Registration'), action='reset_password')
 
     def login_panel_content(self, req):
         content = []

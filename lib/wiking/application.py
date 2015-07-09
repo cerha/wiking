@@ -370,8 +370,8 @@ class Application(wiking.Module):
         """Return the URI for new user registration or None if registration is not allowed."""
         return None
 
-    def password_reminder_uri(self, req):
-        """Return the forgotten password link URI or None if password reminder not implemented."""
+    def forgotten_password_uri(self, req):
+        """Return the forgotten password link URI or None if password reset is not implemented."""
         return None
 
     def password_change_uri(self, req):

@@ -512,7 +512,7 @@ class Users(UserManagementModule, CachingPytisModule):
                 return firstname or surname or login
         def _registration_expiry(self):
             expiry_days = wiking.cms.cfg.registration_expiry_days
-            return pd.DateTime.datetime() + datetime.timedelta(days=expiry_days)
+            return now() + datetime.timedelta(days=expiry_days)
         @staticmethod
         def _generate_registration_code():
             return wiking.generate_random_string(16)
@@ -964,9 +964,9 @@ class Users(UserManagementModule, CachingPytisModule):
                         regconfirm_fields = (cms_text(wiking.cms.texts.regconfirm_confirmed),)
                     layout.append(FieldSet(_("Confirmation"), regconfirm_fields))
                 return layout
-            elif action == 'passwd' and record is not None:
+            elif action in ('passwd', 'reset_password') and record is not None:
                 layout = ['new_password']
-                if req.user().uid() == record['uid'].value():
+                if action == 'passwd' and req.user().uid() == record['uid'].value():
                     # Don't require old password for admin, unless he is changing his own password.
                     layout.insert(0, 'old_password')
                 if not wiking.cms.cfg.login_is_email:
@@ -1012,6 +1012,8 @@ class Users(UserManagementModule, CachingPytisModule):
                 # (typically when the current aplication has
                 # 'wiking.cms.cfg.login_is_email' = True)
                 fields.append(('login', req.param('login')))
+        if action == 'reset_password':
+            fields.append(('passcode', req.param('passcode'),))
         return fields
 
     def _insert_transaction(self, req, record):
@@ -1039,7 +1041,7 @@ class Users(UserManagementModule, CachingPytisModule):
                 else:
                     if wiking.cms.cfg.login_is_email:
                         msg = _("This e-mail address is already registered. Just log in. "
-                                "Use the password reminder link under the log in form if you "
+                                "Use the forgotten password link under the log in form if you "
                                 "forgot your password.")
                         column = 'email'
                     else:
@@ -1185,12 +1187,20 @@ class Users(UserManagementModule, CachingPytisModule):
                            expires=(730 * 24 * 3600),
                            secure=wiking.module.Application._SECURE_AUTH_COOKIES)
             req.message(_("You can use %s to log in next time.", record['login'].value()))
+        if req.param('action') == 'reset_password':
+            req.message(_("You can log in now with the new password."), req.SUCCESS)
+            raise wiking.Redirect('/', command='login')
         return super(Users, self)._redirect_after_update(req, record)
+
+    def _action_subtitle(self, req, action, record=None):
+        if action == 'reset_password':
+            return _("Forgotten Password Reset")
+        return super(Users, self)._action_subtitle(req, action, record=record)
 
     def _state_info(self, req, record):
         state = record['state'].value()
         if state == Users.AccountState.NEW:
-            if record['regexpire'].value() > pd.DateTime.datetime():
+            if record['regexpire'].value() > now():
                 texts = (_("The activation code was not yet confirmed by the user. Therefore "
                            "it is not possible to trust that given e-mail address belongs to "
                            "the person who requested the registration."),
@@ -1288,7 +1298,7 @@ class Users(UserManagementModule, CachingPytisModule):
 
     def action_enable(self, req, record):
         if record['state'].value() == self.AccountState.NEW and not req.param('submit'):
-            if record['regexpire'].value() <= pd.DateTime.datetime():
+            if record['regexpire'].value() <= now():
                 req.message(_("The registration expired on %(date)s.",
                               date=record['regexpire'].export()), req.WARNING)
             form = self._form(pw.ShowForm, req, record, layout=self._layout(req, 'view', record),
@@ -1309,6 +1319,111 @@ class Users(UserManagementModule, CachingPytisModule):
 
     def action_passwd(self, req, record):
         return self.action_update(req, record, action='passwd')
+        
+    def action_reset_password(self, req):
+        title = _("Forgotten Password Reset")
+        expiry_minutes = 15
+        uid, query = req.param('uid'), req.param('query')
+        if uid or query:
+            if uid:
+                try:
+                    uid = int(uid)
+                except (TypeError, ValueError,):
+                    raise wiking.BadRequest(_("Invalid password reset request."))
+                user = wiking.module.Users.user(req, uid=uid)
+            elif query.find('@') == -1:
+                user = wiking.module.Users.user(req, login=query)
+            else:
+                users = wiking.module.Users.find_users(req, query)
+                if not users:
+                    user = None
+                elif len(users) == 1:
+                    user = users[0]
+                else:
+                    return Document(title, (
+                        lcg.p(_("Multiple user accounts found for given email address.")),
+                        lcg.p(_("Please, select the account for which you want to reset "
+                                "the password:")),
+                        lcg.ul([lcg.link(req.make_uri(req.uri(), action='reset_password',
+                                                      uid=u.uid()), u.name())
+                                for u in users]),
+                    ))
+            if user:
+                record = user.data()
+                passcode = req.param('passcode')
+                if passcode:
+                    passexpire = record['passexpire'].value()
+                    if passexpire is None or record['passcode'].value() != passcode:
+                        raise wiking.BadRequest(_("Invalid password reset request."))
+                    elif passexpire < now():
+                        req.message(_("The request has expired. Please, repeat the "
+                                      "request and finish the procedure in %d minutes.",
+                                      expiry_minutes), req.ERROR)
+                    else:
+                        record = self._record(req, user.data().row())
+                        if not req.param('submit'):
+                            req.message(_("Security code verified. "
+                                          "You can change your password now."), req.SUCCESS)
+                        return self.action_update(req, record, action='reset_password')
+                else:
+                    passcode = wiking.generate_random_string(32)
+                    try:
+                        record.update(passcode=passcode,
+                                      passexpire=now() + datetime.timedelta(minutes=expiry_minutes))
+                    except pd.DBException as e:
+                        req.message(unicode(e), req.ERROR)
+                    else:
+                        # Translators: Credentials such as password...
+                        text = lcg.concat(
+                            _("A password reset request has been made at %(server_uri)s.",
+                              server_uri=req.server_uri()),
+                            '',
+                            _("Please follow this link to reset the password for user %s:",
+                              user.name()),
+                            req.make_uri(req.server_uri() + req.module_uri('Registration'),
+                                         action='reset_password', uid=user.uid(),
+                                         passcode=passcode),
+                            '',
+                            _("The link expires in %d minutes. You need to act immediately.",
+                              expiry_minutes),
+                            '',
+                            _("If you didn't request to reset your password at %(server_uri)s, "
+                              "it is possible that someone is trying to break into your account. "
+                              "Contact the administrator if in doubt.",
+                              server_uri=req.server_uri()),
+                            '', separator='\n')
+                        err = send_mail(user.email(), title, text, lang=req.preferred_language())
+                        if err:
+                            req.message(_("Failed sending e-mail:") + ' ' + err, req.ERROR)
+                            msg = _("Please try repeating your request later "
+                                    "or contact the administrator if the problem persists.")
+                        else:
+                            msg = _("E-mail with a security code has been sent to your "
+                                    "e-mail address.  Please, check your inbox and follow "
+                                    "the link within %d minutes to be able reset your "
+                                    "password.", expiry_minutes)
+                        return Document(title, lcg.p(msg))
+            else:
+                req.message(_("No user account for your query."), req.ERROR)
+        class PasswordResetForm(lcg.Content):
+            def export(self, context):
+                g = context.generator()
+                ids = context.id_generator()
+                req = context.req()
+                return g.form((
+                    g.strong(g.label(_("Enter your login name or e-mail address") + ':',
+                                     ids.query)),
+                    g.div((
+                        g.field(name='query', value=req.param('query'), id=ids.query, 
+                                tabindex=0, size=60),
+                        g.noescape('&nbsp;'),
+                        # Translators: Button name. Computer terminology. Use an appropriate term common
+                        # for submitting forms in a computer application.
+                        g.button(g.span(_("Submit")), type='submit', cls='submit'),
+                    )),
+                    g.hidden('action', 'reset_password'),
+                ), method='POST', action=req.uri(), cls='password-reset-form')
+        return Document(title, PasswordResetForm())
 
     def action_regreminder(self, req, record):
         err = self._send_registration_email(req, record)
@@ -1403,7 +1518,7 @@ class Users(UserManagementModule, CachingPytisModule):
         return user
 
     def find_user(self, req, query):
-        """Return the user record for given uid, login or email address (for password reminder).
+        """Return the user record for given uid, login or email address (for password reset).
 
         This method is DEPRECATED because it doesn't follow proper
         encapsulation and doesn't work for queries based on email (it
@@ -1481,18 +1596,6 @@ class Users(UserManagementModule, CachingPytisModule):
         random.seed()
         return ''.join(random.sample(string.digits + string.ascii_letters, 10))
 
-    def reset_password(self, user):
-        """Reset the password for given 'User' instance and return the new password.
-
-        May raise 'pd.DBException' if the database operation fails.
-
-        """
-        record = user.data()
-        new_password = self.generate_password()
-        storage = wiking.cms.cfg.password_storage
-        record.update(password=storage.stored_password(new_password), last_password_change=now())
-        return new_password
-
     def regenerate_registration_code(self, user):
         """Generate a new registration code for given user and store it in the database.
 
@@ -1557,12 +1660,6 @@ class Users(UserManagementModule, CachingPytisModule):
                     n += 1
         return n, errors
 
-    def handle_registration_action(self, req, action, **kwargs):
-        # We can not use the record from req.user().data() directly as it
-        # doesn't contain reference to the current request (cached instance).
-        record = self._record(req, req.user().data().row())
-        method = getattr(self, 'action_' + action)
-        return method(req, record, **kwargs)
 
 class ActiveUsers(Users, EmbeddableCMSModule):
     """User listing to be embedded into page content.
@@ -1587,7 +1684,7 @@ class Registration(Module, ActionHandler):
     """User registration and account management.
 
     This module is statically mapped by Wiking CMS to the reserved `_registration' URI to always
-    provide an interface for new user registration, password reminder, password change and other
+    provide an interface for new user registration, password reset, password change and other
     user account related operations.
 
     All these operations are in fact provided by the 'Users' module.  The 'Users' module, however,
@@ -1596,22 +1693,9 @@ class Registration(Module, ActionHandler):
     requests to the 'Users' module).
 
     """
-    class ReminderForm(lcg.Content):
-        def export(self, context):
-            g = context.generator()
-            req = context.req()
-            controls = (
-                g.label(_("Enter your login name or e-mail address") + ':', 'query'),
-                g.field(name='query', value=req.param('query'), id='query', tabindex=0, size=32),
-                # Translators: Button name. Computer terminology. Use an appropriate term common
-                # for submitting forms in a computer application.
-                g.button(g.span(_("Submit")), type='submit', cls='submit'),
-                g.hidden('action', 'remind'),
-            )
-            return g.form(controls, method='POST', action=req.uri(), cls='password-reminder-form')
 
     def _authorized(self, req, action, **kwargs):
-        if action in ('view', 'insert', 'remind', 'confirm'):
+        if action in ('view', 'insert', 'reset_password', 'confirm'):
             return True
         elif action == 'list':
             return False
@@ -1638,9 +1722,14 @@ class Registration(Module, ActionHandler):
         else:
             return super(Registration, self)._handle(req, action, **kwargs)
 
+    def _user_record(self, req):
+        # We can not use the record from user.data() directly as it
+        # doesn't contain reference to the current request (cached instance).
+        return wiking.module.Users._record(req, req.user().data().row())
+
     def action_view(self, req):
         if req.user():
-            return wiking.module.Users.handle_registration_action(req, 'view')
+            return wiking.module.Users.action_view(req, self._user_record(req))
         elif req.param('command') == 'logout':
             raise wiking.Redirect('/')
         else:
@@ -1657,70 +1746,17 @@ class Registration(Module, ActionHandler):
         return wiking.module.Users.action_reinsert(req)
 
     def action_update(self, req):
-        return wiking.module.Users.handle_registration_action(req, 'update')
+        return wiking.module.Users.action_update(req, self._user_record(req))
 
     def action_passwd(self, req):
-        return wiking.module.Users.handle_registration_action(req, 'passwd')
+        return wiking.module.Users.action_passwd(req, self._user_record(req))
 
     def action_confirm(self, req):
         return wiking.module.Users.action_confirm(req)
 
-    def action_remind(self, req):
-        title = _("Password reminder")
-        uid, query = req.param('uid'), req.param('query')
-        if uid or query:
-            if uid:
-                try:
-                    uid = int(uid)
-                except (TypeError, ValueError,):
-                    raise wiking.BadRequest("Invalid request parameter `uid': %s" % (uid,))
-                user = wiking.module.Users.user(req, uid=uid)
-            elif query.find('@') == -1:
-                user = wiking.module.Users.user(req, login=query)
-            else:
-                users = wiking.module.Users.find_users(req, query)
-                if not users:
-                    user = None
-                elif len(users) == 1:
-                    user = users[0]
-                else:
-                    content = (lcg.p(_("Multiple user accounts found for given email address.")),
-                               lcg.p(_("Please, select the account for which you want to remind:")),
-                               lcg.ul([lcg.link(req.make_uri(req.uri(), action='remind',
-                                                             uid=u.uid()), u.name())
-                                       for u in users]))
-                    return Document(title, content)
-            if user:
-                try:
-                    new_password = wiking.module.Users.reset_password(user)
-                except pd.DBException as e:
-                    req.message(unicode(e), req.ERROR)
-                    return Document(title, self.ReminderForm())
-                # Translators: Credentials such as password...
-                text = lcg.concat(
-                    _("A password reminder request has been made at %(server_uri)s.",
-                      server_uri=req.server_uri()),
-                    '',
-                    _("Your credentials were reset to:"),
-                    '   ' + _("Login name") + ': ' + user.login(),
-                    '   ' + _("Password") + ': ' + new_password,
-                    '',
-                    _("We strongly recommend you change your password at nearest occassion, "
-                      "since it has been exposed to an unsecure channel."),
-                    '', separator='\n')
-                err = send_mail(user.email(), title, text, lang=req.preferred_language())
-                if err:
-                    req.message(_("Failed sending e-mail notification:") + ' ' + err, req.ERROR)
-                    msg = _("Please try repeating your request later or contact the administrator!")
-                else:
-                    msg = _("E-mail information has been sent to your email address.")
-                content = lcg.p(msg)
-            else:
-                req.message(_("No user account for your query."), req.ERROR)
-                content = self.ReminderForm()
-        else:
-            content = self.ReminderForm()
-        return Document(title, content)
+    def action_reset_password(self, req):
+        return wiking.module.Users.action_reset_password(req)
+
 
 
 class ActivationForm(lcg.Content):
@@ -1793,7 +1829,7 @@ class Session(PytisModule, wiking.Session):
             abort(_("Account not approved"), wiking.cms.texts.unapproved)
 
     def failure(self, req, user, login):
-        wiking.module.SessionLog.log(req, pd.DateTime.datetime(), None,
+        wiking.module.SessionLog.log(req, now(), None,
                                      user and user.uid(), login[:64])
 
     def check(self, req, user, session_key):
