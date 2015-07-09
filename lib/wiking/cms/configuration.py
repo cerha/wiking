@@ -107,10 +107,18 @@ class CMSConfiguration(cfg):
         _DEFAULT = False
  
     class _Option_registration_expiry_days(cfg.NumericOption):
-        _DESCR = "Number of days after unanswered user registration expires"
+        _DESCR = "Number of days after which an unanswered user registration expires"
         _DOC = ("When registration by e-mail is enabled, each newly registered user is required "
                 "to answer the registration e-mail within the limit given here.")
         _DEFAULT = 2
+ 
+    class _Option_reset_password_expiry_minutes(cfg.NumericOption):
+        _DESCR = "Number of minutes after which an unanswered password reset request expires"
+        _DOC = ("Forgotten password can be reset using an e-mail loop. The user is required "
+                "to follow the link in e-mail within the limit given here.  Extending this "
+                "limit gives more space to attackers, so you should rarely set it to more "
+                "than the default (15 minutes).")
+        _DEFAULT = 15
  
     class _Option_autoapprove_new_users(cfg.StringOption):
         # Change in this option requires server restart to take full effect (the

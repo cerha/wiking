@@ -1322,7 +1322,7 @@ class Users(UserManagementModule, CachingPytisModule):
         
     def action_reset_password(self, req):
         title = _("Forgotten Password Reset")
-        expiry_minutes = 15
+        expiry_minutes = wiking.cms.cfg.reset_password_expiry_minutes
         uid, query = req.param('uid'), req.param('query')
         if uid or query:
             if uid:
