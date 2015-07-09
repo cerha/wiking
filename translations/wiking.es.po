@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-06-17 08:21+0200\n"
+"POT-Creation-Date: 2015-07-09 12:09+0200\n"
 "PO-Revision-Date: 2010-01-19 16:23+0100\n"
 "Last-Translator: david <rohozka@gmail.com>\n"
 "Language-Team: Spanish <wiking@lists.freebsoft.org>\n"
@@ -297,7 +297,7 @@ msgstr "Pie de página"
 
 #. Title of a dialog on a webpage
 #: ../lib/wiking/export.py:114 ../lib/wiking/export.py:282
-#: ../lib/wiking/util.py:345
+#: ../lib/wiking/util.py:349
 msgid "Language selection"
 msgstr "Selección de idioma"
 
@@ -314,6 +314,11 @@ msgstr "Saltar en la página"
 #: ../lib/wiking/export.py:291
 msgid "You are here:"
 msgstr "Usted está aquí:"
+
+#: ../lib/wiking/export.py:327
+#, fuzzy
+msgid "Hierarchical navigation menu"
+msgstr "Navegación local"
 
 #: ../lib/wiking/export.py:328
 msgid "Expand/collapse complete menu hierarchy"
@@ -434,29 +439,29 @@ msgstr ""
 
 #. '%(code)d' is replaced by error number and
 #. '%(name)s' by error title.
-#: ../lib/wiking/util.py:98
+#: ../lib/wiking/util.py:99
 #, python-format
 msgid "Error %(code)d: %(name)s"
 msgstr "Error %(code)d: %(name)s"
 
 #. This is a warning on a webpage which is only accessible for logged in users
-#: ../lib/wiking/util.py:127
+#: ../lib/wiking/util.py:128
 msgid "Authentication required"
 msgstr "Autentificación necesaria"
 
 #. Login dialog page title (use a noun).
 #. Login info label (noun) followed by login name and other info.
-#: ../lib/wiking/util.py:179 ../lib/wiking/util.py:772
-#: ../lib/wiking/util.py:1251
+#: ../lib/wiking/util.py:180 ../lib/wiking/util.py:776
+#: ../lib/wiking/util.py:1457
 msgid "Login"
 msgstr "Iniciar sesión"
 
 #. Information text on login panel.
-#: ../lib/wiking/util.py:221 ../lib/wiking/util.py:749
+#: ../lib/wiking/util.py:222 ../lib/wiking/util.py:753
 msgid "Your password expired"
 msgstr "Su contraseña ha caducado"
 
-#: ../lib/wiking/util.py:224
+#: ../lib/wiking/util.py:225
 msgid ""
 "Your password expired.  Access to the application is now blocked for "
 "security reasons until you change your password."
@@ -466,29 +471,29 @@ msgstr ""
 
 #. This is a link on a webpage
 #. Link on login panel on the webpage.
-#: ../lib/wiking/util.py:229 ../lib/wiking/util.py:757
+#: ../lib/wiking/util.py:230 ../lib/wiking/util.py:761
 msgid "Change your password"
 msgstr "Cambie su contraseña"
 
-#: ../lib/wiking/util.py:246
+#: ../lib/wiking/util.py:247
 #, python-format
 msgid "The item '%s' is not available."
 msgstr "El registro '%s' no está disponible."
 
-#: ../lib/wiking/util.py:247
+#: ../lib/wiking/util.py:248
 msgid "The item exists on the server, but can not be accessed."
 msgstr "El registro existe en el servidor, pero no puede dar acceso."
 
 #. An error message
-#: ../lib/wiking/util.py:265
+#: ../lib/wiking/util.py:266
 msgid "Access Denied"
 msgstr "Acceso Denegado"
 
-#: ../lib/wiking/util.py:268
+#: ../lib/wiking/util.py:269
 msgid "You don't have sufficient privilegs for this action."
 msgstr "Usted no tiene autorización suficiente para hacer esta acción."
 
-#: ../lib/wiking/util.py:269
+#: ../lib/wiking/util.py:270
 #, python-format
 msgid ""
 "If you are sure that you are logged in under the right account and you "
@@ -499,18 +504,24 @@ msgstr ""
 "correcto y cree que es un problema de acceso, por favor envíe un correo "
 "electrónico al administrador en %s."
 
-#: ../lib/wiking/util.py:306
+#: ../lib/wiking/util.py:307
 msgid "Invalid request arguments."
 msgstr "Argumentos solicitados no válidos."
 
+#: ../lib/wiking/util.py:308
+msgid ""
+"Please, contact the administrator if you got this response after a "
+"legitimate action."
+msgstr ""
+
 #. The word 'item' is intentionaly very generic, since it may mean a page,
 #. image, streaming video, RSS channel or anything else.
-#: ../lib/wiking/util.py:317
+#: ../lib/wiking/util.py:321
 #, python-format
 msgid "The item '%s' does not exist on this server or cannot be served."
 msgstr "El registro '%s' no existe en este servidor o no puede ser dado."
 
-#: ../lib/wiking/util.py:318
+#: ../lib/wiking/util.py:322
 #, python-format
 msgid ""
 "If you are sure the web address is correct, but are encountering this error, "
@@ -520,7 +531,7 @@ msgstr ""
 "encuentra este error, por favor envíe un correo electrónico al administrador "
 "a %s."
 
-#: ../lib/wiking/util.py:350
+#: ../lib/wiking/util.py:354
 #, python-format
 msgid ""
 "The resource '%s' is not available in either of the requested languages."
@@ -529,15 +540,15 @@ msgstr ""
 
 #. Meaning language variants. A selection of links to various language
 #. versions follows.
-#: ../lib/wiking/util.py:354
+#: ../lib/wiking/util.py:358
 msgid "The available variants are:"
 msgstr "Las variantes disponibles son:"
 
-#: ../lib/wiking/util.py:359
+#: ../lib/wiking/util.py:363
 msgid "Your browser is configured to accept only the following languages:"
 msgstr "Su buscador está configurado para aceptar sólo los siguientes idiomas:"
 
-#: ../lib/wiking/util.py:361
+#: ../lib/wiking/util.py:365
 msgid ""
 "If you want to accept other languages permanently, setup the language "
 "preferences in your browser or contact your system administrator."
@@ -546,40 +557,40 @@ msgstr ""
 "preferencias de idioma en su buscador o contacte con su administrador de "
 "sistema."
 
-#: ../lib/wiking/util.py:368
+#: ../lib/wiking/util.py:372
 msgid "Internal Server Error"
 msgstr "Error interno del servidor"
 
-#: ../lib/wiking/util.py:375
+#: ../lib/wiking/util.py:379
 msgid "Unable to perform a database operation."
 msgstr ""
 
-#: ../lib/wiking/util.py:400
+#: ../lib/wiking/util.py:404
 msgid "The server was unable to complete your request."
 msgstr "El servidor no ha sido capaz de completar su solicitud."
 
-#: ../lib/wiking/util.py:401 ../lib/wiking/util.py:415
+#: ../lib/wiking/util.py:405 ../lib/wiking/util.py:419
 #, python-format
 msgid "Please inform the server administrator, %s if the problem persists."
 msgstr ""
 "Por favor informe al administrador del servidor, %s si el problema persiste."
 
-#: ../lib/wiking/util.py:403
+#: ../lib/wiking/util.py:407
 msgid "The error message was:"
 msgstr "El mensaje de error ha sido:"
 
-#: ../lib/wiking/util.py:409
+#: ../lib/wiking/util.py:413
 msgid "Service Unavailable"
 msgstr ""
 
-#: ../lib/wiking/util.py:413
+#: ../lib/wiking/util.py:417
 msgid ""
 "The requested function is currently unavailable. Try repeating your request "
 "later."
 msgstr ""
 
 #. Login panel info. '%(date)s' is replaced by a concrete date.
-#: ../lib/wiking/util.py:753
+#: ../lib/wiking/util.py:757
 #, python-format
 msgid "Your password expires on %(date)s"
 msgstr "Su contraseña caduca el %(date)s"
@@ -588,97 +599,97 @@ msgstr "Su contraseña caduca el %(date)s"
 #. user to obtain access to the website/application by submitting his personal
 #. details.
 #. Webpage link leading to registration form.
-#: ../lib/wiking/util.py:764 ../lib/wiking/util.py:1309
+#: ../lib/wiking/util.py:768 ../lib/wiking/util.py:1515
 msgid "New user registration"
 msgstr "Registro de nuevo usuario"
 
-#: ../lib/wiking/util.py:773
+#: ../lib/wiking/util.py:777
 msgid "Login Panel"
 msgstr "Iniciar sesión"
 
-#: ../lib/wiking/util.py:1233
+#: ../lib/wiking/util.py:1439
 msgid "Go to your profile"
 msgstr "Ir a su perfil"
 
 #. Logout button label (verb in imperative).
-#: ../lib/wiking/util.py:1235
+#: ../lib/wiking/util.py:1441
 msgid "log out"
 msgstr "cerrar sesión"
 
 #. Login status info.  If logged, the username is displayed instead.
-#: ../lib/wiking/util.py:1238
+#: ../lib/wiking/util.py:1444
 msgid "not logged"
 msgstr "sesión no iniciada"
 
 #. Login button label (verb in imperative).
-#: ../lib/wiking/util.py:1240
+#: ../lib/wiking/util.py:1446
 msgid "log in"
 msgstr "iniciar sesión"
 
-#: ../lib/wiking/util.py:1286
+#: ../lib/wiking/util.py:1492
 msgid "Your e-mail address"
 msgstr ""
 
-#: ../lib/wiking/util.py:1289
+#: ../lib/wiking/util.py:1495
 msgid "Login name"
 msgstr "Nombre de usuario"
 
-#: ../lib/wiking/util.py:1299
+#: ../lib/wiking/util.py:1505
 msgid "Password"
 msgstr "Contraseña"
 
 #. Login button label - verb in imperative.
-#: ../lib/wiking/util.py:1305
+#: ../lib/wiking/util.py:1511
 msgid "Log in"
 msgstr "Iniciar sesión"
 
 #. Login dialog link to password change or password reminder (depends
 #. on configuration).
-#: ../lib/wiking/util.py:1312
+#: ../lib/wiking/util.py:1518
 msgid "Forgot your password?"
 msgstr "¿Olvidó su contraseña?"
 
 #. Web form label and message
-#: ../lib/wiking/util.py:1343
+#: ../lib/wiking/util.py:1549
 #, python-format
 msgid "Decryption password for '%s'"
 msgstr ""
 
 #. Web form button.
-#: ../lib/wiking/util.py:1350
+#: ../lib/wiking/util.py:1556
 #, fuzzy
 msgid "Send password"
 msgstr "Contraseña"
 
 #. Confirmation button
-#: ../lib/wiking/util.py:1372
+#: ../lib/wiking/util.py:1578
 msgid "Continue"
 msgstr ""
 
-#: ../lib/wiking/util.py:2233
+#: ../lib/wiking/util.py:2439
 #, fuzzy
 msgid "Invalid e-mail address format."
 msgstr "Formato inválido"
 
 #. Computer terminology. `gmail.com' is a domain name in email address
 #. `joe@gmail.com'.
-#: ../lib/wiking/util.py:2241 ../lib/wiking/util.py:2249
+#: ../lib/wiking/util.py:2447 ../lib/wiking/util.py:2455
 #, fuzzy
 msgid "Domain not found."
 msgstr "Nada encontrado."
 
 #. Computer terminology.  Don't translate the acronym `DNS'.
-#: ../lib/wiking/util.py:2244 ../lib/wiking/util.py:2252
+#: ../lib/wiking/util.py:2450 ../lib/wiking/util.py:2458
 #, python-format
 msgid "Unable to retrieve DNS records: %s"
 msgstr ""
 
-#: ../lib/wiking/util.py:2280
+#: ../lib/wiking/util.py:2486
 #, python-format
 msgid "Invalid e-mail address: %s"
 msgstr ""
 
-#: ../lib/wiking/util.py:2282
+#: ../lib/wiking/util.py:2488
 #, python-format
 msgid ""
 "Unable to verify e-mail address: Mail servers for '%s' are temporarily "
@@ -709,11 +720,6 @@ msgstr ""
 #: ../resources/scripts/discussion.js:121
 msgid "Cancel"
 msgstr ""
-
-#: ../resources/scripts/wiking.js:63
-#, fuzzy
-msgid "Hierarchical navigation menu"
-msgstr "Navegación local"
 
 #, fuzzy
 #~ msgid "%d warning"
