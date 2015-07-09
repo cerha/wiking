@@ -4085,7 +4085,8 @@ class Planner(_News):
         sorting = (('start_date', ASC),)
         columns = ('title', 'date', 'author')
         layout = ('start_date', 'end_date', 'title', 'content')
-        list_layout = pp.ListLayout('date_title', meta=('author', 'timestamp'), content='content',
+        list_layout = pp.ListLayout('date_title', meta=('author', 'timestamp'),
+                                    content=lambda r: text2content(r.req(), r['content'].value()),
                                     anchor="item-%s")
         def _date(self, record, start_date, end_date):
             date = lcg.LocalizableDateTime(start_date.isoformat(), show_weekday=True)
