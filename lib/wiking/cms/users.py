@@ -1351,16 +1351,22 @@ class Users(UserManagementModule, CachingPytisModule):
                 record = user.data()
                 passcode = req.param('passcode')
                 if passcode:
-                    passexpire = record['passexpire'].value()
-                    if passexpire is None or record['passcode'].value() != passcode:
+                    if record['passexpire'].value() is None or record['passcode'].value() is None:
+                        req.message(_("This password reset request has already been processed."),
+                                    req.ERROR)
+                        return Document(title, lcg.p(_("Can not repeat the action.")))
+                    elif passcode != record['passcode'].value():
                         raise wiking.BadRequest(_("Invalid password reset request."))
-                    elif passexpire < now():
+                    elif record['passexpire'].value() < now():
                         req.message(_("The request has expired. Please, repeat the "
                                       "request and finish the procedure in %d minutes.",
                                       expiry_minutes), req.ERROR)
                     else:
                         record = self._record(req, user.data().row())
-                        if not req.param('submit'):
+                        if req.param('submit'):
+                            record['passcode'] = pd.Value(record.type('passcode'), None)
+                            record['passexpire'] = pd.Value(record.type('passexpire'), None)
+                        else:
                             req.message(_("Security code verified. "
                                           "You can change your password now."), req.SUCCESS)
                         return self.action_update(req, record, action='reset_password')
