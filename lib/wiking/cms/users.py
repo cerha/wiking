@@ -914,7 +914,7 @@ class Users(UserManagementModule, CachingPytisModule):
                 return None
         if action not in self._LAYOUT: # Allow overriding this layout in derived classes.
             if action == 'view':
-                account_state = ['state']
+                account_state = ['state', 'last_password_change']
                 regconfirm = cms_text(wiking.cms.texts.regconfirm)
                 if regconfirm:
                     if record['confirm'].value():
