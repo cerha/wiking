@@ -294,7 +294,7 @@ class BadRequest(RequestError):
     More precise error description may be optionally passed as constructor
     argument.  This message will be printed into user's browser window.  If
     no argument is passed, the default message `Invalid request arguments.'
-    is printed.  If more arguments are passed, each message is printed as
+    is printed.  If more arguments are passed, each message is printed as a
     separate paragraph.
 
     """
@@ -302,9 +302,12 @@ class BadRequest(RequestError):
     
     def content(self, req):
         if self.args:
-            return lcg.coerce([lcg.p(arg) for arg in self.args])
+            messages = self.args
         else:
-            return lcg.p(_("Invalid request arguments."))
+            messages = (_("Invalid request arguments."),)
+        messages += (_("Please, contact the administrator if you got this "
+                       "response after a legitimate action."),)
+        return [lcg.p(msg) for msg in messages]
 
         
 class NotFound(RequestError):
