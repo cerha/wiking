@@ -1383,7 +1383,7 @@ class Users(UserManagementModule, CachingPytisModule):
                             _("A password reset request has been made at %(server_uri)s.",
                               server_uri=req.server_uri()),
                             '',
-                            _("Please follow this link to reset the password for user %s:",
+                            _("Please, follow this link to reset the password for user %s:",
                               user.name()),
                             req.make_uri(req.server_uri() + req.module_uri('Registration'),
                                          action='reset_password', uid=user.uid(),
@@ -1400,13 +1400,14 @@ class Users(UserManagementModule, CachingPytisModule):
                         err = send_mail(user.email(), title, text, lang=req.preferred_language())
                         if err:
                             req.message(_("Failed sending e-mail:") + ' ' + err, req.ERROR)
-                            msg = _("Please try repeating your request later "
+                            msg = _("Please, try repeating your request later "
                                     "or contact the administrator if the problem persists.")
                         else:
                             msg = _("E-mail with a security code has been sent to your "
-                                    "e-mail address.  Please, check your inbox and follow "
-                                    "the link within %d minutes to be able reset your "
-                                    "password.", expiry_minutes)
+                                    "e-mail address for verification of the request. "
+                                    "Please, check your inbox and follow the link "
+                                    "within %d minutes to be able reset your password.", 
+                                    expiry_minutes)
                         return Document(title, lcg.p(msg))
             else:
                 req.message(_("No user account for your query."), req.ERROR)
