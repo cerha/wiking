@@ -3946,8 +3946,7 @@ class _News(ContentManagementModule, EmbeddableCMSModule, wiking.CachingPytisMod
                                               pd.EQ('site', pd.sval(wiking.cfg.server_hostname)))),
                 Field('lang', _("Language"), not_null=True, codebook='Languages', editable=ONCE,
                       selection_type=CHOICE, value_column='lang'),
-                Field('timestamp', _("Date"), type=wiking.DateTime(not_null=True, utc=True),
-                      default=now, nocopy=True),
+                Field('timestamp', _("Date"), default=now, nocopy=True),
                 Field('title', _("Title"), column_label=_("Message"), width=32,
                       descr=_("The item brief summary.")),
                 ContentField('content', _("Message"), height=6, width=80),
@@ -3960,7 +3959,7 @@ class _News(ContentManagementModule, EmbeddableCMSModule, wiking.CachingPytisMod
                 Field('date_title', virtual=True, computer=computer(self._date_title)),
             )
         def _date(self, record, timestamp):
-            return record['timestamp'].export(show_time=False)
+            return pw.localizable_export(pd.dval(record['timestamp'].value().date()))
         def _date_title(self, record, date, title):
             if title:
                 return date + ': ' + title
@@ -4032,7 +4031,8 @@ class News(_News):
             return extra + self._inherited_fields(News.Spec)
         sorting = (('timestamp', DESC),)
         columns = ('title', 'timestamp', 'author')
-        layout = ('timestamp', 'days_displayed', 'title', 'content')
+        # TODO: timestamp can not be editable because editation confuses time zone!
+        layout = ('days_displayed', 'title', 'content')
         list_layout = pp.ListLayout('title', meta=('timestamp', 'author', 'news_id'),
                                     content=lambda r: text2content(r.req(), r['content'].value()),
                                     anchor="item-%s", popup_actions=True)
@@ -4073,11 +4073,11 @@ class Planner(_News):
             sample_date = datetime.datetime.today() + datetime.timedelta(weeks=1)
             extra = (
                 Field('planner_id', editable=NEVER),
-                Field('start_date', _("Date"), width=10, type=wiking.Date(not_null=True),
+                Field('start_date', _("Date"), width=10,
                       descr=_("The date when the planned event begins. Enter the date "
                               "including year.  Example: %(date)s",
                               date=lcg.LocalizableDateTime(sample_date.date().isoformat()))),
-                Field('end_date', _("End date"), width=10, type=wiking.Date(),
+                Field('end_date', _("End date"), width=10,
                       descr=_("The date when the event ends if it is not the same as the "
                               "start date (for events which last several days).")),
             )
@@ -4088,9 +4088,9 @@ class Planner(_News):
         list_layout = pp.ListLayout('date_title', meta=('author', 'timestamp'), content='content',
                                     anchor="item-%s")
         def _date(self, record, start_date, end_date):
-            date = record['start_date'].export(show_weekday=True)
+            date = lcg.LocalizableDateTime(start_date.isoformat(), show_weekday=True)
             if end_date:
-                date += ' - ' + record['end_date'].export(show_weekday=True)
+                date += ' - ' + lcg.LocalizableDateTime(end_date.isoformat(), show_weekday=True)
             return date
         def check(self, record):
             start_date, end_date = record['start_date'].value(), record['end_date'].value()
@@ -4106,8 +4106,7 @@ class Planner(_News):
     def _condition(self, req):
         scondition = super(Planner, self)._condition(req)
         today = pd.Date.datetime()
-        condition = pd.OR(pd.GE('start_date', pd.Value(pd.Date(), today)),
-                          pd.GE('end_date', pd.Value(pd.Date(), today)))
+        condition = pd.OR(pd.GE('start_date', pd.dval(today)), pd.GE('end_date', pd.dval(today)))
         if scondition:
             return pd.AND(scondition, condition)
         else:
@@ -4704,7 +4703,7 @@ class Discussions(ContentManagementModule, EmbeddableCMSModule):
                       selection_type=CHOICE, value_column='lang'),
                 Field('in_reply_to'),
                 Field('tree_order', type=pd.TreeOrder()),
-                Field('timestamp', type=wiking.DateTime(not_null=True, utc=True), default=now),
+                Field('timestamp', default=now),
                 Field('author', not_null=True, codebook='Users'),
                 # Translators: Field label for posting a message to the discussion.
                 Field('text', _("Your comment"), height=6, width=80, compact=True,),
@@ -5561,7 +5560,7 @@ class EmailSpool(MailManagementModule):
                       codebook='UserGroups', null_display=_("All users")),
                 Field('subject', _("Subject")),
                 ContentField('content', _("Text"), width=80, height=10),
-                Field('date', _("Date"), type=wiking.DateTime(), default=now, editable=NEVER),
+                Field('date', _("Date"), default=now, editable=NEVER),
                 Field('pid', editable=NEVER),
                 Field('finished', editable=NEVER),
                 Field('state', _("State"), type=pytis.data.String(), editable=NEVER,

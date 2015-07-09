@@ -557,7 +557,6 @@ class Users(UserManagementModule, CachingPytisModule):
                 # visible to the admin and to the user himself, so it requires a dynamic 'view'
                 # layout.
                 Field('last_password_change', _("Last password change"),
-                      type=wiking.DateTime(utc=True),
                       default=now, computer=computer(self._last_password_change)),
                 # Translators: Full name of a person. Registration form field.
                 Field('fullname', _("Full Name"), virtual=True, editable=NEVER,
@@ -604,7 +603,7 @@ class Users(UserManagementModule, CachingPytisModule):
                       display=self._module.AccountState.label, prefer_display=True,
                       style=self._state_style),
                 Field('lang', computer=computer(self._lang)),
-                Field('regexpire', default=self._registration_expiry, type=wiking.DateTime()),
+                Field('regexpire', default=self._registration_expiry),
                 Field('regcode', default=self._generate_registration_code),
             )
 
@@ -1208,15 +1207,15 @@ class Users(UserManagementModule, CachingPytisModule):
                          # expiration.
                          _("The activation code will expire on %(date)s and the user will "
                            "not be able to complete the registration anymore.",
-                           date=record['regexpire'].export()))
+                           date=pw.localizable_export(record['regexpire'])))
                 if req.check_roles(Roles.USER_ADMIN):
                     texts += _("Use the button \"Resend activation code\" below to remind the "
                                "user of his pending registration."),
             else:
                 # Translators: %(date)s is replaced by date and time of registration expiration.
-                texts = _("The registration expired on %(date)s.  The user didn't confirm the "
-                          "activation code sent to the declared e-mail address in time.",
-                          date=record['regexpire'].export()),
+                texts = (_("The registration expired on %(date)s.  The user didn't confirm the "
+                           "activation code sent to the declared e-mail address in time.",
+                           date=pw.localizable_export(record['regexpire'])),)
                 if req.check_roles(Roles.USER_ADMIN):
                     texts += _("The account should be deleted automatically if the server "
                                "maintenence script is installed correctly.  Otherwise you can "
@@ -1300,7 +1299,7 @@ class Users(UserManagementModule, CachingPytisModule):
         if record['state'].value() == self.AccountState.NEW and not req.param('submit'):
             if record['regexpire'].value() <= now():
                 req.message(_("The registration expired on %(date)s.",
-                              date=record['regexpire'].export()), req.WARNING)
+                              date=pw.localizable_export(record['regexpire'])), req.WARNING)
             form = self._form(pw.ShowForm, req, record, layout=self._layout(req, 'view', record),
                               actions=(Action('enable', _("Continue"), submit=1),
                                        # Translators: Button label to get to a previous state.
@@ -1868,8 +1867,7 @@ class SessionLog(UserManagementModule):
                 Field('success', _("Success")),
                 # Translators: Table column heading.
                 # Time of the start of user session, followed by a date and time.
-                Field('start_time', _("Start time"),
-                      type=wiking.DateTime(exact=True, not_null=True)),
+                Field('start_time', _("Start time")),
                 # Translators: Table column heading. The length of user session. Contains time.
                 Field('duration', _("Duration"), type=pytis.data.TimeInterval()),
                 # Translators: Table column heading.

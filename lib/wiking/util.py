@@ -1943,7 +1943,7 @@ wiking.cfg.resolver directly are deprecated.
 
     
 class DateTime(pytis.data.DateTime):
-    """Pytis DateTime type which exports as a 'lcg.LocalizableDateTime'."""
+    """Deprecated.  Use 'pytis.data.DateTime' directly."""
     
     def _init(self, show_time=True, exact=False, leading_zeros=True, **kwargs):
         self._exact = exact
@@ -1968,7 +1968,7 @@ class DateTime(pytis.data.DateTime):
 # We need three types, because we need to derive from two different base classes.
 
 class Date(pytis.data.Date):
-    """Pytis Date type which exports as a 'lcg.LocalizableDateTime'."""
+    """Deprecated.  Use 'pytis.data.Date' directly."""
 
     def _init(self, leading_zeros=True, **kwargs):
         self._leading_zeros = leading_zeros
@@ -1980,7 +1980,7 @@ class Date(pytis.data.Date):
                                        leading_zeros=self._leading_zeros)
 
 class Time(pytis.data.Time):
-    """Pytis Time type which exports as a 'lcg.LocalizableTime'."""
+    """Deprecated.  Use 'pytis.data.Time' directly."""
 
     def _init(self, exact=False, **kwargs):
         self._exact = exact
