@@ -3,13 +3,14 @@ import optparse
 import random
 import re
 import sys
+import unittest
 import urlparse
 
 import webtest
 
 import wiking.wsgi_interface
 
-class Test(object):
+class Test(unittest.TestCase):
 
     class _Visited(set):
 
@@ -54,12 +55,15 @@ class Test(object):
             if match is not None:
                 url = url[:match.end(1)] + '*'
             return url
+
+    @classmethod
+    def set_options(class_, config_file, host, options=None):
+        class_._config_file = config_file
+        class_._host = host
+        class_._options = options
             
-    def __init__(self, config_file, host, tests=(), options=None):
-        self._config_file = config_file
-        self._host = host
-        self._tests = tests
-        self._options = self._process_options(options)
+    def setUp(self):
+        self._options = self._process_options(self.__class__._options)
         self._headers = self._make_headers()
         self._environment = self._make_environment()
         self._cookies = cookielib.CookieJar()
@@ -95,6 +99,9 @@ class Test(object):
 
     def _get_follow(self, path):
         response = self._get(path)
+        return self._follow(response, path=path)
+
+    def _follow(self, response, path=None):
         for i in range(10):
             if response.status_int != 302:
                 return response
@@ -145,8 +152,15 @@ class Test(object):
     def _find_form(self, response, fields=()):
         for form_id in response.forms:
             form = response.forms[form_id]
-            for name in fields:
-                if form.get(name, index=0, default=None) is None:
+            for f in fields:
+                if isinstance(f, tuple):
+                    name, value = f
+                else:
+                    name, value = f, None
+                form_field = form.get(name, index=0, default=None)
+                if form_field is None:
+                    break
+                if value is not None and form_field.value != value:
                     break
             else:
                 return form
@@ -186,14 +200,6 @@ class Test(object):
     def _warning(self, message):
         sys.stderr.write('WARNING: %s\n' % (message,))
 
-    def run(self):
-        tests = self._tests
-        response = None
-        for f in dir(self):
-            if f.startswith('test_') and (not tests or f in tests):
-                self._info('*** %s ***' % (f,))
-                response = getattr(self, f)(response)
-
 def parse_options():
     usage = "usage: %prog [ OPTIONS ] CONFIG-FILE HOST [ TEST-METHOD ... ]"
     parser = optparse.OptionParser(usage)
@@ -210,9 +216,10 @@ def parse_options():
         parser.error("invalid number of arguments")
     return options, args
     
-def main(test_class):
+def main():
     options, args = parse_options()
     config_file = args[0]
     host = args[1]
-    tests = args[2:]
-    test_class(config_file, host, tests=tests, options=options).run()
+    Test.set_options(config_file, host, options=options)
+    argv = [sys.argv[0]] + args[2:]
+    unittest.main(argv=argv)
