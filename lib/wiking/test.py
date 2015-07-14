@@ -89,6 +89,25 @@ class Test(unittest.TestCase):
     def _make_environment(self):
         return {'wiking.config_file': self._config_file}
 
+    def _credentials(self, index=0):
+        user_string = self._options.user
+        if user_string is None:
+            return None, None
+        users = user_string.split(':')
+        try:
+            the_user = users[index]
+        except IndexError:
+            the_user = users[0]
+        password_string = self._options.password
+        if password_string is None:
+            return the_user, None
+        passwords = password_string.split(':')
+        try:
+            the_password = passwords[index]
+        except IndexError:
+            the_password = passwords[0]
+        return the_user, the_password
+
     def _default_request_kwargs(self):
         return dict(headers=self._headers, extra_environ=self._environment)
         
@@ -206,9 +225,9 @@ def parse_options():
     parser.add_option('-l', '--language', dest='language',
                       help="set Accept-Language header to LANGUAGE", metavar='LANGUAGE')
     parser.add_option('-u', '--user', dest='user',
-                      help="use given USER in login forms", metavar='USER')
+                      help="use given USER(s) in login forms", metavar='USER[:USER...]')
     parser.add_option('-p', '--password', dest='password',
-                      help="use given PASSWORD in login forms", metavar='PASSWORD')
+                      help="use given PASSWORD(s) in login forms", metavar='PASSWORD[:PASSWORD...]')
     parser.add_option('-v', '--verbose', dest='verbose', action="store_true", default=False,
                       help="be verbose about some actions")
     options, args = parser.parse_args()
