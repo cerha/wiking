@@ -125,7 +125,10 @@ class WsgiRequest(wiking.Request):
         self._response_headers.add_header(name, value.encode(self._encoding), **params)
 
     def port(self):
-        return int(self._environ['SERVER_PORT'])
+        port = self._environ['SERVER_PORT']
+        if not port:
+            return None
+        return int(port)
         
     def https(self):
         return self._environ['wsgi.url_scheme'] == 'https'
