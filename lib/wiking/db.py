@@ -787,9 +787,6 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
             uri = self._current_base_uri(req, record)
         if issubclass(form_cls, pw.BrowseForm):
             kwargs = dict(self._list_form_kwargs(req, form_cls), **kwargs)
-        layout = kwargs.get('layout')
-        if layout is not None and not isinstance(layout, pp.GroupSpec):
-            kwargs['layout'] = self._layout_instance(layout)
         form_record = self._record(req, record and record.row(), prefill=prefill, new=new)
         if action:
             hidden_fields += tuple(self._hidden_fields(req, action, form_record))
@@ -893,9 +890,10 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         The returned value may be a 'pytis.presentation.GroupSpec' instance, a
         sequence of field identifiers or 'pytis.presentation.GroupSpec'
         instances or 'None' to use the default layout defined by specification.
+        
         If you ever need to call this method (you most often just define it),
-        use the '_layout_instance()' method to convert the returned value into
-        a 'pytis.presentation.GroupSpec' instance.
+        you may need the method '_layout_instance()' to convert the returned
+        value into a 'pytis.presentation.GroupSpec' instance.
 
         The default implementation returns one of (statical) layouts defined in
         '_LAYOUTS' (dictionary keyed by action name) or None if no specific
@@ -2008,13 +2006,12 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         # TODO: Redirect handler to HTTPS if wiking.cfg.force_https_login is true?
         # The primary motivation is to protect registration form data.  The
         # same would apply for action_edit.
-        layout = self._layout_instance(self._layout(req, action))
         if req.param('submit'):
             prefill = self._prefill(req)
         else:
             prefill = dict(self._prefill(req), **(prefill or {}))
         form = self._form(pw.EditForm, req, new=True, action=action,
-                          layout=layout,
+                          layout=self._layout(req, action),
                           prefill=prefill,
                           submit_buttons=self._submit_buttons(req, action),
                           show_cancel_button=True)
@@ -2062,9 +2059,8 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         return self.action_insert(req, prefill=prefill, action=action)
 
     def action_update(self, req, record, action='update'):
-        layout = self._layout_instance(self._layout(req, action, record))
         form = self._form(pw.EditForm, req, record=record, action=action,
-                          layout=layout,
+                          layout=self._layout(req, action, record),
                           submit_buttons=self._submit_buttons(req, action, record),
                           show_cancel_button=True)
         if form.is_ajax_request(req):
