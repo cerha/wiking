@@ -207,6 +207,13 @@ class Configuration(pytis.util.Configuration):
                 "production environment.  It is only intended for developers.")
         _DEFAULT = False
 
+    class _Option_debug_transactions(pc.BooleanOption):
+        _DESCR = "Debug pending transactions"
+        _DOC = ("Turn on logging tracebacks of pending transactions after each request. "
+                "This option should be used for development only.  Application in production "
+                "environment should have no pending transactions when a request is finished.")
+        _DEFAULT = False
+
     class _Option_profile(pc.BooleanOption):
         _DESCR = "Profiling mode"
         _DOC = ("Turn on the profiling mode to log profiling information. "
