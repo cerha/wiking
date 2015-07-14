@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2015-07-09 12:09+0200\n"
-"PO-Revision-Date: 2015-06-17 08:22+0200\n"
+"PO-Revision-Date: 2015-07-14 14:09+0200\n"
 "Last-Translator: Hynek Hanke <hanke@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
 "Language: cs\n"
@@ -532,7 +532,7 @@ msgstr "Neplatné argumenty dotazu."
 msgid ""
 "Please, contact the administrator if you got this response after a "
 "legitimate action."
-msgstr ""
+msgstr "Kontaktujte prosím správce serveru, pokud jste dostali tuto odezvu po legitimní akci."
 
 #. The word 'item' is intentionaly very generic, since it may mean a page,
 #. image, streaming video, RSS channel or anything else.
