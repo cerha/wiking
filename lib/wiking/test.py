@@ -220,7 +220,7 @@ class Test(unittest.TestCase):
         sys.stderr.write('WARNING: %s\n' % (message,))
 
 def parse_options():
-    usage = "usage: %prog [ OPTIONS ] CONFIG-FILE HOST [ TEST-METHOD ... ]"
+    usage = "usage: %prog [ OPTIONS ] CONFIG-FILE HOST [ UNITTEST-OPTIONS ]"
     parser = optparse.OptionParser(usage)
     parser.add_option('-l', '--language', dest='language',
                       help="set Accept-Language header to LANGUAGE", metavar='LANGUAGE')
