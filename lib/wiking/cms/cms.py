@@ -4915,66 +4915,41 @@ class StyleSheets(SiteSpecificContentModule, StyleManagementModule,
             ('website', _("Website")),
             ('wmi', _("Management interface")),
         )
-    class MediaTypes(pp.Enumeration):
-        enumeration = (('all', _("All types")),
-                       # Translators: Braille as a type of media
-                       ('braille', _("Braille")), # braille tactile feedback devices
-                       # ('embossed', _("Embossed") # for paged braille printers
-                       # Translators: Handheld device. Small computer.
-                       ('handheld', _("Handheld")),  # typically small screen, limited bandwidth
-                       # Translators: Print as a type of media (print, speech...)
-                       ('print', _("Print")), # paged material
-                       # ('projection', _(""))), # projected presentations, for example projectors
-                       # Translators: Meaning computer screen
-                       ('screen', _("Screen")), # color computer screens
-                       # Translators: Speech as a type of media (print, speech...)
-                       ('speech', _("Speech")), # for speech synthesizers
-                       # ('tty', _(""))), # media using a fixed-pitch character grid
-                       # ('tv', _(""))), # television-type devices
-                       )
 
     class Spec(Specification):
         # Translators: Section heading and menu item. Meaning the visual appearance. Computer
         # terminology.
         title = _("Style sheets")
-        table = 'cms_stylesheets'
+        table = wiking.dbdefs.CmsStylesheets
         # Translators: Help string. Cascading Style Sheet (CSS) is computer terminology idiom.
         help = _("Manage available Cascading Style Sheets.")
-        def fields(self):
-            return (
-                Field('stylesheet_id'),
-                Field('site'),
-                # Translators: Unique identifier of a stylesheet.
-                Field('identifier', _("Identifier"), width=16),
-                Field('description', _("Description"), width=50),
-                Field('active', _("Active"), default=True),
-                # Translators: Heading of a form field determining in
-                # which media the page is displayed. E.g. web, print,
-                # Braille, speech.
-                Field('media', _("Media"), default='all', not_null=True,
-                      enumerator=StyleSheets.MediaTypes),
-                # Translators: Scope of applicability of a stylesheet on different website parts.
-                Field('scope', _("Scope"), enumerator=StyleSheets.Scopes,
-                      selection_type=pp.SelectionType.RADIO,
-                      # Translators: Global scope (applies to all parts of the website).
-                      null_display=_("Global"), not_null=False,
-                      # Translators: Description of scope options.  Make sure you
-                      # use the same terms as in the options themselves, which are
-                      # defined a few items above.
-                      descr=_("Determines where this style sheet is applicable. "
-                              'The "Management interface" is the area for CMS administration, '
-                              '"Website" means the regular pages outside the management interface '
-                              'and "Global" means both.')),
-                Field('ord', _("Order"), width=5,
-                      # Translators: Precedence meaning position in a sequence of importance or
-                      # priority.
-                      descr=_("Number denoting the style sheet precedence.")),
-                Field('content', _("Content"), height=20, width=80),
-            )
-        layout = ('identifier', 'active', 'media', 'scope', 'ord', 'description', 'content')
-        columns = ('identifier', 'active', 'media', 'scope', 'ord', 'description')
+        def _customize_fields(self, fields):
+            field = lambda f, label, **kwargs: fields.modify(f, label=label, **kwargs)
+            field('filename', label=_("File Name"), width=16)
+            field('description', _("Description"), width=50)
+            field('active', _("Active"), default=True)
+            # Translators: Scope of applicability of a stylesheet on different website parts.
+            field('scope', _("Scope"), enumerator=StyleSheets.Scopes,
+                  selection_type=pp.SelectionType.RADIO,
+                  # Translators: Global scope (applies to all parts of the website).
+                  null_display=_("Global"), not_null=False,
+                  # Translators: Description of scope options.  Make sure you
+                  # use the same terms as in the options themselves, which are
+                  # defined a few items above.
+                  descr=_("Determines where this style sheet is applicable. "
+                          'The "Management interface" is the area for CMS administration, '
+                          '"Website" means the regular pages outside the management interface '
+                          'and "Global" means both.'))
+            field('ord', _("Order"), width=5,
+                  # Translators: Precedence meaning position in a sequence of importance or
+                  # priority.
+                  descr=_("Number denoting the style sheet precedence."))
+            field('content', _("Content"), height=20, width=80)
+
+        layout = ('filename', 'active', 'scope', 'ord', 'description', 'content')
+        columns = ('filename', 'active', 'scope', 'ord', 'description')
         sorting = (('ord', ASC),)
-    _REFERER = 'identifier'
+    _REFERER = 'filename'
 
     _cache_ids = ('default', 'single',)
 
@@ -4988,14 +4963,14 @@ class StyleSheets(SiteSpecificContentModule, StyleManagementModule,
         filename, wmi = key
         if filename is None:
             scopes = (None, wmi and 'wmi' or 'website')
-            return [lcg.Stylesheet(row['identifier'].value(), media=row['media'].value())
+            return [lcg.Stylesheet(row['filename'].value())
                     for row in self._data.get_rows(site=wiking.cfg.server_hostname,
                                                    active=True,
                                                    condition=pd.OR(*[pd.EQ('scope', pd.sval(s))
                                                                      for s in scopes]),
                                                    sorting=self._sorting)]
         else:
-            row = self._data.get_row(identifier=filename, active=True,
+            row = self._data.get_row(filename=filename, active=True,
                                      site=wiking.cfg.server_hostname)
             if row:
                 return row['content'].value()

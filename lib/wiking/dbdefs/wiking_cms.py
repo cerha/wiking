@@ -1155,9 +1155,8 @@ class CmsStylesheets(CommonAccesRights, Base_CachingTable):
               sql.Column('site', pytis.data.String(not_null=True),
                          references=sql.a(sql.r.CmsConfig.site,
                                           onupdate='CASCADE', ondelete='CASCADE')),
-              sql.Column('identifier', pytis.data.String(maxlen=32, not_null=True)),
+              sql.Column('filename', pytis.data.String(maxlen=32, not_null=True)),
               sql.Column('active', pytis.data.Boolean(not_null=True), default=True),
-              sql.Column('media', pytis.data.String(maxlen=12, not_null=True), default='all'),
               sql.Column('scope', pytis.data.String()),
               sql.Column('description', pytis.data.String()),
               sql.Column('content', pytis.data.String()),
@@ -1167,8 +1166,6 @@ class CmsStylesheets(CommonAccesRights, Base_CachingTable):
     init_columns = ('identifier', 'site', 'media', 'ord',)
     init_values = (
         ('default.css', '*', 'all', 10),
-        ('layout.css', '*', 'screen', 20),
-        ('print.css', '*', 'print', 30),
     )
 
 

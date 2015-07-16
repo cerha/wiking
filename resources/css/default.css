@@ -1,4 +1,4 @@
-/* Wiking generic page content styles (to be used with media="all") */
+/* Wiking generic page content styles */
 
 #messages .info, #messages .success, #messages .error, #messages .warning {
     border-style: solid;
@@ -339,4 +339,535 @@ span.diff_sub, span.field.id-diff_sub { background-color: #ffaaaa; }
 }
 .export-progress-summary .label {
     font-weight: bold;
+}
+
+/* Screen layout */
+@media screen {
+
+body {
+    font-family: arial, verdana, sans-serif, helvetica;
+    color: $color.top-fg;
+    background-color: $color.top-bg;
+    font-size: 0.8em;
+    margin: 2pt 6pt;
+}
+button, input, select {
+    /* Avoid dual application of 0.8em defined above in some elements */
+    font-size: 1em;
+}
+
+p {
+    margin: 0.4em 0;
+}
+h1, h2, h3 {
+    color: $color.heading-fg;
+    font-weight: bold;
+    text-align: left;
+}
+h1 {
+    background-color: $color.heading-bg;
+    padding: 1pt;
+    border: solid $color.border;
+    border-width: 1px 0px;
+}
+h2 {
+    border: solid $color.heading-line 0px;
+    border-bottom-width: 1px;
+}
+h1 { font-size: 1.5em; }
+h2 { font-size: 1.5em; }
+h3 { font-size: 1.4em; }
+h4 { font-size: 1.2em; }
+h5,h6,h7,h8,h9 { font-size: 1.1em; }
+
+a:link    { color: $color.link; }
+a:visited { color: $color.link-visited; }
+a:link:hover, a:visited:hover { color: $color.link-hover; }
+
+h1 a { outline: none; }
+
+#top hr { display: none; }
+
+#site-title {
+    font-size: 1.1em;
+    max-width: 70%;
+}
+
+#page {
+    padding-top: 0.3em;
+    min-width: 100%;
+    margin-top: 0.9em;
+}
+body.non-maximized #page.with-menu {
+    margin-top: 0;
+}
+
+#links {
+    display: none;
+}
+
+#breadcrumbs {
+    display: none;
+    /* The rest is a prototype for the case that breadcrumbs are displayed */
+    background-color: $color.frame-bg;
+    border: solid $color.frame-border 1px;
+    border-width: 1px 0;
+    padding: 1px 0;
+    margin-bottom: 0.3em;
+}
+
+#language-selection {
+    position: absolute;
+    top: .5em;
+    right: .8em;
+    max-width: 50%;
+    font-size: 0.9em;
+    /*white-space: nowrap;*/
+}
+#language-selection a.current { background-color: $color.highlight-bg; }
+
+#maximized-mode-control {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+}
+#maximized-mode-control img {
+    border: none;
+}
+body.maximized #top,
+body.maximized #menu,
+body.maximized #submenu,
+body.maximized #panels {
+    display: none;
+}
+
+/* Horizontal menu with folders */
+
+#page.with-menu #menu {
+    border-bottom: 1px solid $color.top-border;
+    padding-left: 0.2em;
+    /* leave some space for language selection and panel controls */
+    padding-right: 6em;
+}
+body.non-maximized #page.with-menu #main {
+    border-top: 0px; /* The top border is part of the navigation bar when it is displayed. */
+}
+#page.with-menu #panels {
+    top: -1px;
+}
+#page.with-menu #language-selection {
+    top: 2pt;
+    right: 6pt;
+}
+
+#menu h3 {
+    display: none;
+}
+#menu ul {
+    margin: 0;
+    padding: 0;
+}
+#menu li {
+    display: inline;
+    white-space: nowrap;
+    margin-right: 0.3em;
+}
+#menu a.navigation-link {
+    border: solid $color.top-border 1px;
+    padding: 0 0.6em; /* 0.1em 0.6em; */
+    background-color: $color.inactive-folder;
+    text-decoration: none; /* ??? */
+}
+#menu a.navigation-link.current {
+    background-color: $color.background;
+    border-bottom: solid $color.background 1px;
+}
+
+/* Hierarchical submenu */
+
+body.non-maximized #page.with-submenu #main {
+    padding-left: 12em;
+}
+
+#submenu {
+    position: relative;
+    z-index: 1;
+    float: left;
+    width: 12em;
+}
+#submenu div.menu-panel  {
+    position: relative;
+    border: 1px solid $color.top-border;
+    margin: 0.8em 0.5em 0.5em 0.8em;
+    padding: 0;
+}
+#submenu h3 {
+    margin: 0;
+    font-size: 1.1em;
+    padding: 0.1em 0.2em;
+    background-color: $color.heading-bg;
+    border-bottom: 1px solid $color.top-border;
+}
+#submenu button.toggle-menu-expansion {
+    position: absolute;
+    top: 0.45em;
+    right: 0.3em;
+}
+* html #submenu button.toggle-menu-expansion { right: 0.8em; } /* MSIE hack */
+
+/* This makes panels to skip in Firefox when page content is too wide...
+#submenu li a:hover {
+    outline: solid 1px $color.heading-line;
+}*/
+
+/* Panels */
+body.non-maximized #page.with-panels {
+    float: left; /* Force the main div to fit its content. */
+}
+body.non-maximized #page.with-panels #main {
+    margin-right: 17em;
+}
+#page.with-panels #menu {
+    margin-right: 17em;
+    padding-right: 0;
+}
+#panels {
+    position: relative;
+    right: 0.1em; /* Needed for MSIE when page is too wide */
+    z-index: 1;
+    float: right;
+    width: 17em;
+}
+#panels a.panel-control {
+    position: absolute;
+    top: -1.4em;
+    font-size: 0.8em;
+    right: 0;
+}
+div#panels-menu-item {
+    margin-left: 0.5em;
+}
+
+div.panel {
+    margin: 0 0em 0.5em 0.5em;
+    color: $color.foreground;
+    border: 1px solid $color.top-border;
+    background-color: $color.background;
+}
+div.panels-bottom-content {
+    margin: 0 0em 0.5em 0.5em;
+}
+div.panel h3 {
+    padding: 0.1em 0.2em;
+    margin: 0;
+    font-size: 1.1em;
+    position: relative;
+    background-color: $color.heading-bg;
+    border-bottom: 1px solid $color.top-border;
+}
+div.panel div.panel-content {
+    padding: 0.05em 0.2em;
+}
+div.panel ul, div.panel ol {
+    padding-left: 1.5em;
+    margin: 0;
+}
+div.panel form { margin: 0.3em 0; }
+
+#panel-login a.login-ctrl {
+    color: $color.foreground;
+    border: 1px solid $color.top-border;
+    background-color: $color.heading-bg;
+    padding: 0 0.5em 0 20px;
+    text-decoration: none;
+    white-space: nowrap;
+    margin: 0 0.3em;
+    background-image: url(login.png);
+    background-position: 1px center;
+    background-repeat: no-repeat;
+}
+#panel-login a.login-ctrl:hover {
+    background-color: $color.highlight-bg;
+}
+#panel-login.logged a.login-ctrl {
+    background-image: url(logout.png);
+}
+#panel-login div.panel-content {
+    padding: 0.3em;
+    line-height: 1.3em;
+}
+
+
+/* The actual page content */
+
+#main {
+    position: relative;
+    color: $color.foreground;
+    background-color: $color.background;
+    border: 1px solid $color.top-border;
+    padding: 0.8em;
+    margin-bottom: 0.5em;
+}
+#main h1 {
+    margin-top: 0;
+    margin-bottom: 0.8em;
+    padding-right: 24px; /* Space for the maximize/minimize button. */
+}
+#content {
+    position: relative; /* fix MSIE background painting */
+    width: 100%;
+}
+#clearing {
+    height: 0;
+    font-size: 0;
+    clear: left;
+}
+#page-clearing {
+    height: 0;
+    font-size: 0;
+}
+
+/* Bottom part of the page */
+
+#bottom {
+    clear: both;
+    margin: 1em 0;
+}
+#bottom-bar {
+    text-align: right;
+    font-size: 0.9em;
+    border: solid $color.top-border;
+    border-width: 1px 0px;
+    background-color: $color.heading-bg;
+}
+#bottom-bar { text-align: right; }
+#bottom-bar span.left { float: left; }
+#bottom-bar div.left { text-align: left; }
+#bottom-bar a { text-decoration: none; }
+#bottom-bar hr { display: none; }
+
+#last-change {
+    text-align: right;
+    font-size: 0.75em;
+}
+
+#shared-audio-player {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    z-index: 1;
+}
+div#shared-audio-player {
+    color: $color.error-fg;
+    background-color: $color.error-bg;
+    border: solid 1px $color.error-border;
+    padding: .1em;
+}
+
+#footer { font-size: 0.9em; text-align: center; margin: 0pt; }
+#footer p { margin: 1pt 0pt; }
+#footer img { margin: 5pt; }
+#footer hr { display: none; }
+
+/* Special controls */
+
+#login-controls {
+    position: absolute;
+    top: 0.7em;
+    right: 0.9em;
+    padding: 0.2em 0 0.3em 0;
+}
+
+form.login-form {
+    background-color: $color.frame-bg;
+    border: 1px solid $color.frame-border;
+    border-width: 1px 0;
+    padding: .8em 2em;
+    margin: 0 2.5em 1em 0;
+}
+form.login-form input {
+    margin-bottom: 0.5em;
+}
+form.login-form ul {
+    margin-top: 1em;
+}
+form.login-form label {
+    font-weight: bold;
+}
+
+} /* End of @media screen. */
+
+/* Print specific styles */
+@media print {
+
+body {
+    color : #000;
+    background : #fff;
+    font-family : "Times New Roman", Times, serif;
+    font-size : 10pt;
+}
+table td, table th, input { font-size: 10pt; }
+
+a {
+    text-decoration : underline;
+    color : #00f;
+}
+a.backref, a:link.backref, h1 a { 
+    color: #000 !important; /* important needed for MSIE */
+    text-decoration: none;
+}
+form.browse-form table td, form.browse-form table th {
+    border-color: #000;
+}
+
+h1 { font-size: 1.6em; }
+h2 { font-size: 1.4em; }
+h3 { font-size: 1.3em; }
+h4 { font-size: 1.2em; }
+h5 { font-size: 1.1em; }
+h6 { font-size: 1.1em; }
+h7 { font-size: 1.1em; }
+
+#links, #menu, #submenu, #panels, #language-selection, #bottom, 
+form.list-form-controls .paging-controls {
+    display: none;
+}
+
+#maximized-mode-control {
+    display: none;
+}
+
+} /* End of @media print. */
+
+/* Override default LCG widget colors by Wiking color theme colors */
+
+.foldable-tree-widget li a.current span {
+    background-color: $color.heading-bg !important;
+}
+.notebook-widget ul.notebook-switcher {
+    border-bottom-color: $color.top-border !important;
+}
+.notebook-widget li.notebook-tab a {
+    border-color: $color.top-border !important;
+}
+@media print {
+    .notebook-widget ul.notebook-switcher {
+	border-bottom-color: #aaa !important;
+    }
+    .notebook-widget li.notebook-tab a {
+	border-color: #aaa !important;
+    }
+}
+.notebook-widget li.notebook-tab a.current {
+    background-color: $color.background !important;
+    border-bottom-color: $color.background !important;
+}
+.popup-menu-widget {
+    background-color: $color.frame-bg !important;
+    border-color: $color.top-border !important;
+}
+.popup-menu-widget li.active a {
+    color: $color.foreground !important;
+}
+.popup-menu-widget li.active:hover {
+    background-color: $color.highlight-bg !important;
+}
+.dropdown-selection-widget {
+    background-color: $color.background !important;
+    border-color: $color.top-border !important;
+}
+.dropdown-selection-widget li.active a {
+    color: $color.foreground !important;
+}
+
+/* Override default Pytis form colors by current Wiking color theme colors. */
+
+.pytis-form.edit-form .errors,
+.pytis-form.query-fields-form .errors {
+    color: $color.error-fg !important;
+    background-color: $color.error-bg !important;
+    border-color: $color.error-border !important;
+}
+
+.pytis-form .group, .pytis-form div.submit, .pytis-form .paging-controls {
+    background-color: $color.frame-bg !important;
+    border-color: $color.frame-border !important;
+}
+.pytis-form.query-fields-form .group {
+    background: none !important;
+    border: none !important;
+}
+* html .pytis-form fieldset.group legend { 
+    color: $color.foreground !important;
+}
+.pytis-form.browse-form table.data-table tr.data-row td,
+.pytis-form.browse-form table.data-table tr.row-expansion td,
+.pytis-form.browse-form table.data-table tr.column-headings th,
+.pytis-form.browse-form table.data-table tr.group-heading th {
+    border-color: $color.border !important;
+}
+@media print {
+    .pytis-form.browse-form table.data-table,
+    .pytis-form.browse-form table.data-table tr.data-row td,
+    .pytis-form.browse-form table.data-table tr.row-expansion td,
+    .pytis-form.browse-form table.data-table tr.column-headings th,
+    .pytis-form.browse-form table.data-table tr.group-heading th {
+	border-color: #ddd !important;
+    }
+}
+.pytis-form.browse-form table.data-table tr.column-headings th.column-heading,
+.pytis-form.browse-form table.data-table tr.group-heading th {
+    background-color: $color.heading-bg !important;
+}
+.pytis-form.browse-form table.data-table tr.data-row,
+.pytis-form.browse-form table.data-table tr.row-expansion {
+    background-color: $color.table-cell !important;
+}
+.pytis-form.browse-form table.data-table tr.data-row.even {
+    background-color: $color.table-cell2 !important;
+}
+
+.pytis-form.browse-form table.data-table tfoot td {
+    background-color: $color.frame-bg !important;
+    border-color: $color.frame-border !important;
+}
+.pytis-form.browse-form #found-record {
+    background-color: $color.highlight-bg !important;
+}
+.pytis-form.list-view div.tree-indent {
+    border-left-color: $color.frame-border
+}
+.pytis-form.list-view #found-record h3 {
+    background-color: $color.highlight-bg !important;
+}
+.pytis-form.list-view div.list-item div.meta {
+    color: $color.meta-fg !important;
+    background-color: $color.meta-bg !important;
+}
+.pytis-form .field-label.disabled { 
+    color: $color.help !important; 
+}
+.pytis-form .group span.color-display { 
+    border-color: $color.border !important;
+}
+.pytis-form.show-form .group textarea, .pytis-form.list-view .group textarea {
+    background-color: $color.frame-bg !important;
+}
+.pytis-form.edit-form div.help { 
+    color: $color.help !important;
+}
+.pytis-form input.text-search-field,
+.pytis-form.edit-form input.text-field,
+.pytis-form.edit-form textarea,
+.pytis-form.edit-form select {
+    border-color: $color.border !important;
+}
+.pytis-form.list-view div.summary {
+    border-top-color: $color.frame-border !important;
+}
+/*.pytis-form .invalid {
+    background-color: $color.error-bg !important;
+}*/
+.actions button[disabled] span, .list-form-controls button[disabled] span {
+    color: $color.foreground !important;
 }

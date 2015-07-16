@@ -33,13 +33,13 @@ class MinimalExporter(lcg.HtmlExporter):
         except:
             uri = '_resources'
         return super(MinimalExporter, self)._head(context) + \
-            [g.link(rel='stylesheet', type='text/css', href="/%s/%s" % (uri, filename))
-             for filename in ('default.css', 'layout.css')]
+            [g.link(rel='stylesheet', type='text/css', href='/%s/default.css' % uri)]
     
     def _meta(self, context):
         import wiking
         return (('generator', 'Wiking %s, LCG %s, Pytis %s' %
                  (wiking.__version__, lcg.__version__, pytis.__version__)),)
+
     def _main(self, context):
         g = context.generator()
         return (g.h(context.node().title(), 1),
@@ -74,10 +74,6 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                 self.resource(filename)
             if self.lang() != 'en':
                 self.resource('wiking.%s.po' % self.lang()) # Translations for Javascript
-            # TODO: Load these stylesheets conditionally (only when
-            # lcg-widgets.css/pytis-forms.css are loaded).
-            self.resource('lcg-widget-colors.css')
-            self.resource('pytis-form-colors.css')
 
         def req(self):
             """Return the current request as a 'wiking.Request' instance.
