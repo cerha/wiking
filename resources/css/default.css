@@ -740,134 +740,139 @@ form.list-form-controls .paging-controls {
 } /* End of @media print. */
 
 /* Override default LCG widget colors by Wiking color theme colors */
+/* Original selectors must be duplicated here and prefixed by #page to get more specificity. */
 
-.foldable-tree-widget li a.current span {
-    background-color: $color.heading-bg !important;
+#page .foldable-tree-widget li a.current span {
+    background-color: $color.heading-bg
 }
-.notebook-widget ul.notebook-switcher {
-    border-bottom-color: $color.top-border !important;
+#page .notebook-widget ul.notebook-switcher {
+    border-bottom-color: $color.top-border;
 }
-.notebook-widget li.notebook-tab a {
-    border-color: $color.top-border !important;
+#page .notebook-widget li.notebook-tab a {
+    border-color: $color.top-border;
 }
 @media print {
-    .notebook-widget ul.notebook-switcher {
-	border-bottom-color: #aaa !important;
+    #page .notebook-widget ul.notebook-switcher {
+	border-bottom-color: #aaa;
     }
-    .notebook-widget li.notebook-tab a {
-	border-color: #aaa !important;
+    #page .notebook-widget li.notebook-tab a {
+	border-color: #aaa;
     }
 }
-.notebook-widget li.notebook-tab a.current {
-    background-color: $color.background !important;
-    border-bottom-color: $color.background !important;
+.#page .notebook-widget li.notebook-tab a.current {
+    background-color: $color.background;
+    border-bottom-color: $color.background;
 }
-.popup-menu-widget {
-    background-color: $color.frame-bg !important;
-    border-color: $color.top-border !important;
+#page .popup-menu-widget {
+    background-color: $color.frame-bg;
+    border-color: $color.top-border;
 }
-.popup-menu-widget li.active a {
-    color: $color.foreground !important;
+#page .popup-menu-widget li.active a {
+    color: $color.foreground;
 }
-.popup-menu-widget li.active:hover {
-    background-color: $color.highlight-bg !important;
+#page .popup-menu-widget li.active:hover {
+    background-color: $color.highlight-bg;
 }
-.dropdown-selection-widget {
-    background-color: $color.background !important;
-    border-color: $color.top-border !important;
+#page .dropdown-selection-widget {
+    background-color: $color.background;
+    border-color: $color.top-border;
 }
-.dropdown-selection-widget li.active a {
-    color: $color.foreground !important;
+#page .dropdown-selection-widget li.active a {
+    color: $color.foreground;
 }
 
 /* Override default Pytis form colors by current Wiking color theme colors. */
 
-.pytis-form.edit-form .errors,
-.pytis-form.query-fields-form .errors {
-    color: $color.error-fg !important;
-    background-color: $color.error-bg !important;
-    border-color: $color.error-border !important;
+#page .pytis-form.edit-form .errors,
+#page .pytis-form.query-fields-form .errors {
+    color: $color.error-fg;
+    background-color: $color.error-bg;
+    border-color: $color.error-border;
 }
 
-.pytis-form .group, .pytis-form div.submit, .pytis-form .paging-controls {
-    background-color: $color.frame-bg !important;
-    border-color: $color.frame-border !important;
+#page .pytis-form .group, 
+#page .pytis-form div.submit,
+#page .pytis-form .paging-controls {
+    background-color: $color.frame-bg;
+    border-color: $color.frame-border;
 }
-.pytis-form.query-fields-form .group {
-    background: none !important;
-    border: none !important;
+#page .pytis-form.query-fields-form .group {
+    background: none;
+    border: none;
 }
-* html .pytis-form fieldset.group legend { 
-    color: $color.foreground !important;
+* html #page .pytis-form fieldset.group legend { 
+    color: $color.foreground;
 }
-.pytis-form.browse-form table.data-table tr.data-row td,
-.pytis-form.browse-form table.data-table tr.row-expansion td,
-.pytis-form.browse-form table.data-table tr.column-headings th,
-.pytis-form.browse-form table.data-table tr.group-heading th {
-    border-color: $color.border !important;
+#page .pytis-form.browse-form table.data-table tr.data-row td,
+#page .pytis-form.browse-form table.data-table tr.row-expansion td,
+#page .pytis-form.browse-form table.data-table tr.column-headings th,
+#page .pytis-form.browse-form table.data-table tr.group-heading th {
+    border-color: $color.border;
 }
 @media print {
-    .pytis-form.browse-form table.data-table,
-    .pytis-form.browse-form table.data-table tr.data-row td,
-    .pytis-form.browse-form table.data-table tr.row-expansion td,
-    .pytis-form.browse-form table.data-table tr.column-headings th,
-    .pytis-form.browse-form table.data-table tr.group-heading th {
-	border-color: #ddd !important;
+    #page .pytis-form.browse-form table.data-table,
+    #page .pytis-form.browse-form table.data-table tr.data-row td,
+    #page .pytis-form.browse-form table.data-table tr.row-expansion td,
+    #page .pytis-form.browse-form table.data-table tr.column-headings th,
+    #page .pytis-form.browse-form table.data-table tr.group-heading th {
+	border-color: #ddd;
     }
 }
-.pytis-form.browse-form table.data-table tr.column-headings th.column-heading,
-.pytis-form.browse-form table.data-table tr.group-heading th {
-    background-color: $color.heading-bg !important;
+#page .pytis-form.browse-form table.data-table tr.column-headings th.column-heading,
+#page .pytis-form.browse-form table.data-table tr.group-heading th {
+    background-color: $color.heading-bg;
 }
-.pytis-form.browse-form table.data-table tr.data-row,
-.pytis-form.browse-form table.data-table tr.row-expansion {
-    background-color: $color.table-cell !important;
+#page .pytis-form.browse-form table.data-table tr.data-row,
+#page .pytis-form.browse-form table.data-table tr.row-expansion {
+    background-color: $color.table-cell;
 }
-.pytis-form.browse-form table.data-table tr.data-row.even {
-    background-color: $color.table-cell2 !important;
+#page .pytis-form.browse-form table.data-table tr.data-row.even {
+    background-color: $color.table-cell2;
 }
 
-.pytis-form.browse-form table.data-table tfoot td {
-    background-color: $color.frame-bg !important;
-    border-color: $color.frame-border !important;
+#page .pytis-form.browse-form table.data-table tfoot td {
+    background-color: $color.frame-bg;
+    border-color: $color.frame-border;
 }
-.pytis-form.browse-form #found-record {
-    background-color: $color.highlight-bg !important;
+#page .pytis-form.browse-form #found-record {
+    background-color: $color.highlight-bg;
 }
-.pytis-form.list-view div.tree-indent {
+#page .pytis-form.list-view div.tree-indent {
     border-left-color: $color.frame-border
 }
-.pytis-form.list-view #found-record h3 {
-    background-color: $color.highlight-bg !important;
+#page .pytis-form.list-view #found-record h3 {
+    background-color: $color.highlight-bg;
 }
-.pytis-form.list-view div.list-item div.meta {
-    color: $color.meta-fg !important;
-    background-color: $color.meta-bg !important;
+#page .pytis-form.list-view div.list-item div.meta {
+    color: $color.meta-fg;
+    background-color: $color.meta-bg;
 }
-.pytis-form .field-label.disabled { 
-    color: $color.help !important; 
+#page .pytis-form .field-label.disabled { 
+    color: $color.help; 
 }
-.pytis-form .group span.color-display { 
-    border-color: $color.border !important;
+#page .pytis-form .group span.color-display { 
+    border-color: $color.border;
 }
-.pytis-form.show-form .group textarea, .pytis-form.list-view .group textarea {
-    background-color: $color.frame-bg !important;
+#page .pytis-form.show-form .group textarea,
+#page .pytis-form.list-view .group textarea {
+    background-color: $color.frame-bg;
 }
-.pytis-form.edit-form div.help { 
-    color: $color.help !important;
+#page .pytis-form.edit-form div.help { 
+    color: $color.help;
 }
-.pytis-form input.text-search-field,
-.pytis-form.edit-form input.text-field,
-.pytis-form.edit-form textarea,
-.pytis-form.edit-form select {
-    border-color: $color.border !important;
+#page .pytis-form input.text-search-field,
+#page .pytis-form.edit-form input.text-field,
+#page .pytis-form.edit-form textarea,
+#page .pytis-form.edit-form select {
+    border-color: $color.border;
 }
-.pytis-form.list-view div.summary {
-    border-top-color: $color.frame-border !important;
+#page .pytis-form.list-view div.summary {
+    border-top-color: $color.frame-border;
 }
 /*.pytis-form .invalid {
-    background-color: $color.error-bg !important;
+    background-color: $color.error-bg;
 }*/
-.actions button[disabled] span, .list-form-controls button[disabled] span {
-    color: $color.foreground !important;
+#page .actions button[disabled] span,
+#page .list-form-controls button[disabled] span {
+    color: $color.foreground;
 }
