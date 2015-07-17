@@ -349,6 +349,12 @@ class BrowserTest(_TestBase):
                 raise KeyError(field, text)
         select_field.select(value)
 
+    def _attach_file(self, form, field, filename):
+        form.attach_file(field, filename)
+
+    def _click_element(self, element):
+        element.click()
+
     def _submit_form(self, form, attributes=None):
         if attributes is None:
             attributes = {}
