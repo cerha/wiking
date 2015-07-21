@@ -1,5 +1,5 @@
+import argparse
 import cookielib
-import optparse
 import os
 import random
 import re
@@ -370,27 +370,27 @@ class BrowserTest(_TestBase):
         return browser.is_text_present(text)
             
 def parse_options():
-    usage = "usage: %prog [ OPTIONS ] CONFIG-FILE HOST [ UNITTEST-OPTIONS ]"
-    parser = optparse.OptionParser(usage)
-    parser.add_option('-l', '--language', dest='language',
-                      help="try to use given LANGUAGE", metavar='LANGUAGE')
-    parser.add_option('--profile', dest='profile',
-                      help="use given web browser PROFILE", metavar='PROFILE')
-    parser.add_option('-u', '--user', dest='user',
-                      help="use given USER(s) in login forms", metavar='USER[:USER...]')
-    parser.add_option('-p', '--password', dest='password',
-                      help="use given PASSWORD(s) in login forms", metavar='PASSWORD[:PASSWORD...]')
-    parser.add_option('-v', '--verbose', dest='verbose', action="store_true", default=False,
-                      help="be verbose about some actions")
-    options, args = parser.parse_args()
-    if len(args) < 2:
-        parser.error("invalid number of arguments")
-    return options, args
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-l', '--language', dest='language', metavar='LANGUAGE',
+                        help="try to use given LANGUAGE")
+    parser.add_argument('--profile', dest='profile', metavar='PROFILE',
+                        help="use given web browser PROFILE")
+    parser.add_argument('-u', '--user', dest='user', metavar='USER[:USER...]',
+                        help="use given USER(s) in login forms")
+    parser.add_argument('-p', '--password', dest='password', metavar='PASSWORD[:PASSWORD...]',
+                        help="use given PASSWORD(s) in login forms")
+    parser.add_argument('-v', '--verbose', dest='verbose', action='store_true', default=False,
+                        help="be verbose about some actions")
+    parser.add_argument('config_file', metavar='CONFIG-FILE',
+                        help="Wiking application configuration file")
+    parser.add_argument('host', metavar='HOST',
+                        help="HTTP host name")
+    parser.add_argument('unittest_options', metavar='UNITTEST-OPTIONS', nargs='*')
+    args = parser.parse_args()
+    return args
     
 def main():
-    options, args = parse_options()
-    config_file = args[0]
-    host = args[1]
-    _TestBase.set_options(config_file, host, options=options)
-    argv = [sys.argv[0]] + args[2:]
+    args = parse_options()
+    _TestBase.set_options(args.config_file, args.host, options=args)
+    argv = [sys.argv[0]] + args.unittest_options
     unittest.main(argv=argv)
