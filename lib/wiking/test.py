@@ -211,7 +211,7 @@ class Test(_TestBase):
     def _find_all_links(self, response):
         return response.html.find_all('a')
 
-    def _find_form(self, response, fields=()):
+    def _find_form(self, response, fields=(), check_found=True):
         for form_id in response.forms:
             form = response.forms[form_id]
             for f in fields:
@@ -226,6 +226,7 @@ class Test(_TestBase):
                     break
             else:
                 return form
+        self.assertFalse(check_found)
         return None
 
     def _find_elements(self, response, tag, attributes=None):
@@ -313,7 +314,7 @@ class BrowserTest(_TestBase):
     def _find_all_links(self, browser):
         return browser.find_link_by_partial_text('')
 
-    def _find_form(self, browser, fields=()):
+    def _find_form(self, browser, fields=(), check_found=True):
         for form in browser.find_by_tag('form'):
             for f in fields:
                 if isinstance(f, tuple):
@@ -327,6 +328,7 @@ class BrowserTest(_TestBase):
                     break
             else:
                 return form
+        self.assertFalse(check_found)
         return None
 
     def _attribute(self, element, name):
