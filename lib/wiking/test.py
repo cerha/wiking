@@ -5,6 +5,7 @@ import random
 import re
 import string
 import sys
+import time
 import unittest
 import urlparse
 
@@ -132,6 +133,9 @@ class _TestBase(unittest.TestCase):
         if index is True:
             return links
         return links[index]
+
+    def _ajax_delay(self):
+        pass
             
     def _click(self, browser, description=None, index=None, status=None, verbose=False,
                follow=False):
@@ -274,6 +278,8 @@ class BrowserTest(_TestBase):
         import splinter
         self._browser = splinter.Browser(**kwargs)
         self._set_language()
+        self._ajax_delay_seconds = 1
+        self._ajax_timeout_seconds = 10
 
     def tearDown(self):
         self._browser.quit()
@@ -352,6 +358,14 @@ class BrowserTest(_TestBase):
             else:
                 raise KeyError(field, text)
         select_field.select(value)
+        
+    def _ajax_delay(self, seconds=None, text=None):
+        if text is None:
+            time.sleep(seconds or self._ajax_delay_seconds)
+        else:
+            if seconds is None:
+                seconds = self._ajax_timeout_seconds
+            self._browser.is_text_present(text, wait_time=seconds)
 
     def _attach_file(self, form, field, filename):
         form.attach_file(field, filename)
