@@ -316,6 +316,8 @@ class BrowserTest(_TestBase):
 
     def _find_form(self, browser, fields=(), check_found=True):
         for form in browser.find_by_tag('form'):
+            if not form.visible:
+                continue
             for f in fields:
                 if isinstance(f, tuple):
                     name, value = f
