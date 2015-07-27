@@ -259,6 +259,11 @@ class Test(_TestBase):
     def _contains(self, response, text):
         return text in response
 
+    def _search(self, response, regexp):
+        if isinstance(regexp, basestring):
+            regexp = re.compile(regexp)
+        return regexp.search(response.text)
+
 class BrowserTest(_TestBase):
 
     def setUp(self):
@@ -386,6 +391,11 @@ class BrowserTest(_TestBase):
 
     def _contains(self, browser, text):
         return browser.is_text_present(text)
+
+    def _search(self, browser, regexp):
+        if isinstance(regexp, basestring):
+            regexp = re.compile(regexp)
+        return regexp.search(browser.html)
             
 def parse_options():
     parser = argparse.ArgumentParser()
