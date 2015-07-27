@@ -134,6 +134,15 @@ class _TestBase(unittest.TestCase):
             return links
         return links[index]
 
+    def _filter_form(self, browser, options):
+        form_fields = [o[0] for o in options]
+        for field, text in options:
+            form = self._find_form(browser, fields=form_fields)
+            self._set_select_field(form, field, text=text)
+            self._ajax_delay()
+        form = self._find_form(browser, fields=form_fields)
+        return self._submit_form(form, {'class': 'apply-filters'})
+
     def _ajax_delay(self):
         pass
             
