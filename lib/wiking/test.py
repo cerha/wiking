@@ -142,9 +142,6 @@ class _TestBase(unittest.TestCase):
             self._ajax_delay()
         form = self._find_form(browser, fields=form_fields)
         return self._submit_form(form, {'class': 'apply-filters'})
-
-    def _ajax_delay(self):
-        pass
             
     def _click(self, browser, description=None, index=None, status=None, verbose=False,
                follow=False):
@@ -379,7 +376,7 @@ class BrowserTest(_TestBase):
         else:
             if seconds is None:
                 seconds = self._ajax_timeout_seconds
-            self._browser.is_text_present(text, wait_time=seconds)
+            return self._browser.is_text_present(text, wait_time=seconds)
 
     def _attach_file(self, form, field, filename):
         form.attach_file(field, filename)
