@@ -1,5 +1,6 @@
 import argparse
 import cookielib
+import copy
 import os
 import random
 import re
@@ -258,9 +259,13 @@ class Test(_TestBase):
         kwargs = dict(text=text) if text is not None else dict(value=value)
         form[field].select(**kwargs)
 
-    def _submit_form(self, form):
-        form_kwargs = self._default_request_kwargs()
-        return form.submit(**form_kwargs)
+    def _submit_form(self, form, follow=True, **kwargs):
+        form_kwargs = copy.copy(self._default_request_kwargs())
+        form_kwargs.update(kwargs)
+        response = form.submit(**form_kwargs)
+        if follow and response:
+            response = response.maybe_follow()
+        return response
 
     def _contains(self, response, text):
         return text in response
@@ -384,7 +389,7 @@ class BrowserTest(_TestBase):
     def _click_element(self, element):
         element.click()
 
-    def _submit_form(self, form, attributes=None):
+    def _submit_form(self, form, attributes=None, follow=None):
         if attributes is None:
             attributes = {}
         if 'type' not in attributes:
