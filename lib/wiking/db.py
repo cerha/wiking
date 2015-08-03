@@ -21,6 +21,7 @@ import datetime
 import cStringIO as StringIO
 import re
 import string
+import urlparse
 import weakref
 import json
 
@@ -1826,7 +1827,30 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
 
     def action_list(self, req, record=None):
         if record is not None:
-            raise Redirect(self._current_base_uri(req, record), action='list',
+            uri = self._current_base_uri(req, record)
+            # Back action returning to some menu item?
+            http_referer = req.header('Referer')
+            if http_referer:
+                path = urlparse.urlparse(http_referer).path[1:]
+                menu = wiking.module.Application.menu(req)
+                def find(menu, menu_path):
+                    for m in menu:
+                        if m.id() == path:
+                            return menu_path
+                        found = find(m.submenu(), menu_path + [m])
+                        if found is not None:
+                            return found
+                    return None
+                menu_path = find(menu, [])
+                return_path = None
+                while menu_path:
+                    m = menu_path.pop()
+                    if not m.hidden():
+                        return_path = m.id()
+                        break
+                if return_path is not None:
+                    uri = req.server_uri() + '/' + return_path
+            raise Redirect(uri, action='list',
                            search=record[self._key].export(), form_name=self.name())
         # Here we need to get dirty accessing pytis forms's internal parameters to be
         # able to detect form ajax requests because we don't want to rediredt these requests
