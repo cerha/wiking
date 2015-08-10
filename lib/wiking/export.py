@@ -289,12 +289,6 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
     def _links(self, context):
         g = self._generator
         links = [g.a(_("Main content"), href='#main-heading', accesskey="2")]
-        if context.has_menu or context.has_submenu:
-            links.append(g.a(_("Main navigation"), href='#main-navigation'))
-            if context.has_menu and context.has_submenu:
-                links.append(g.a(_("Local navigation"), href='#local-navigation'))
-        if len(context.node().variants()) > 1:
-            links.append(g.a(_("Language selection"), href='#language-selection-anchor'))
         if context.req().show_panels():
             for panel in context.panels():
                 links.append(g.a(panel.accessible_title(), href='#panel-%s-anchor ' % panel.id()))
