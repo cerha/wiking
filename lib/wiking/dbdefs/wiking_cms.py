@@ -323,21 +323,22 @@ class RoleSetsTriggerAfter(sql.SQLPlFunction, sql.SQLTrigger):
 
 class CmsSessionLog(CommonAccesRights, sql.SQLTable):
     name = 'cms_session_log'
-    fields = (sql.PrimaryColumn('log_id', pytis.data.Serial(not_null=True)),
-              sql.Column('session_id', pytis.data.Integer(),
-                         references=sql.a(sql.r.CmsSession, ondelete='SET NULL')),
-              sql.Column('uid', pytis.data.Integer(),
-                         references=sql.a(sql.r.Users, ondelete='CASCADE'),
-                         doc="may be null for invalid logins"),
-              sql.Column('login', pytis.data.String(maxlen=64, not_null=True),
-                         doc="useful when uid is null or login changes"),
-              sql.Column('success', pytis.data.Boolean(not_null=True)),
-              sql.Column('start_time', pytis.data.DateTime(not_null=True)),
-              sql.Column('end_time', pytis.data.DateTime()),
-              sql.Column('ip_address', pytis.data.String(not_null=True)),
-              sql.Column('user_agent', pytis.data.String()),
-              sql.Column('referer', pytis.data.String()),
-              )
+    fields = (
+        sql.PrimaryColumn('log_id', pytis.data.Serial(not_null=True)),
+        sql.Column('session_id', pytis.data.Integer(),
+                   references=sql.a(sql.r.CmsSession, ondelete='SET NULL')),
+        sql.Column('uid', pytis.data.Integer(),
+                   references=sql.a(sql.r.Users, ondelete='CASCADE'),
+                   doc="May be null for invalid logins."),
+        sql.Column('login', pytis.data.String(not_null=True),
+                   doc="Useful when uid is null (invalid login) or when login changes."),
+        sql.Column('success', pytis.data.Boolean(not_null=True)),
+        sql.Column('start_time', pytis.data.DateTime(not_null=True)),
+        sql.Column('end_time', pytis.data.DateTime()),
+        sql.Column('ip_address', pytis.data.String(not_null=True)),
+        sql.Column('user_agent', pytis.data.String()),
+        sql.Column('referer', pytis.data.String()),
+    )
 
 class CmsSession(CommonAccesRights, sql.SQLTable):
     name = 'cms_session'
