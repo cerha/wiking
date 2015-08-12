@@ -312,13 +312,14 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             top = context.node().top()
             first = menu[0][0]
             items = [g.li((g.a(node.title() + 
-                               (g.span('', cls='menu-dropdown-ctrl', role='presentation')
-                                if dropdown and node is not top else ''),
+                               (g.span('', cls='menu-dropdown-ctrl', role='presentation',
+                                       title=_("Expand drop-down submenu of this item."))
+                                if dropdown else ''),
                                href=self._uri_node(context, node),
                                title=node.descr(), accesskey=(node is first and '1' or None),
                                cls=('navigation-link' +
                                     (' current' if node is top else '') +
-                                    (' with-dropdown' if dropdown and node is not top else ''))),
+                                    (' with-dropdown' if dropdown else ''))),
                            dropdown or ''),
                           cls='main-menu-item')
                      for node, dropdown in menu]

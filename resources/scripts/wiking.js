@@ -195,20 +195,18 @@ wiking.MainMenu = Class.create(lcg.Menu, {
     init_item: function ($super, item, prev, parent) {
 	$super(item, prev, parent);
 	item.setAttribute('role', 'menuitem');
-	if (!item.hasClassName('current')) {
-	    var dropdown = item.up().down('.menu-dropdown');
-            if (dropdown) {
-		// This is commented out, because the slide down effect
-		// doesn't work reliably in this case in Firefox (really wierd).
-      		// item.observe('contextmenu', function (event) { 
-		//    this.toggle_dropdown(dropdown);
-		//    event.stop();
-		//}.bind(this));
-		item.down('.menu-dropdown-ctrl').observe('click', function (event) { 
-		    this.toggle_dropdown(dropdown);
-		    event.stop();
-		}.bind(this));
-	    }
+	var dropdown = item.up().down('.menu-dropdown');
+        if (dropdown) {
+	    // This is commented out, because the slide down effect
+	    // doesn't work reliably in this case in Firefox (really wierd).
+      	    // item.observe('contextmenu', function (event) { 
+	    //    this.toggle_dropdown(dropdown);
+	    //    event.stop();
+	    //}.bind(this));
+	    item.down('.menu-dropdown-ctrl').observe('click', function (event) { 
+		this.toggle_dropdown(dropdown);
+		event.stop();
+	    }.bind(this));
 	}
     },
     
