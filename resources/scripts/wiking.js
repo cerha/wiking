@@ -156,6 +156,12 @@ wiking.MainMenu = Class.create(lcg.Menu, {
 
     _MANAGE_TABINDEX: false,
     
+    initialize: function ($super, element_id) {
+	this.visible_dropdown = null;
+	$super(element_id);
+	$(document).observe('click', this.on_document_click.bind(this));
+    },
+
     keymap: function () {
 	// Arrow keys are duplicated with Ctrl-Shift- to get them accessible to VoiceOver
 	// users as VO doesn't pass single arrow keypresses to the application.
@@ -189,8 +195,48 @@ wiking.MainMenu = Class.create(lcg.Menu, {
     init_item: function ($super, item, prev, parent) {
 	$super(item, prev, parent);
 	item.setAttribute('role', 'menuitem');
+	if (!item.hasClassName('current')) {
+	    var dropdown = item.up().down('.menu-dropdown');
+            if (dropdown) {
+		// This is commented out, because the slide down effect
+		// doesn't work reliably in this case in Firefox (really wierd).
+      		// item.observe('contextmenu', function (event) { 
+		//    this.toggle_dropdown(dropdown);
+		//    event.stop();
+		//}.bind(this));
+		item.down('.menu-dropdown-ctrl').observe('click', function (event) { 
+		    this.toggle_dropdown(dropdown);
+		    event.stop();
+		}.bind(this));
+	    }
+	}
     },
     
+    toggle_dropdown: function (dropdown) {
+	if (this.visible_dropdown && this.visible_dropdown != dropdown) {
+	    this.toggle_dropdown(this.visible_dropdown);
+	}
+	if (!dropdown.visible()) {
+	    // Reset the style to the initial state (when clicking too fast, the effects
+	    // may overlap and leave a messy final style).
+	    dropdown.setAttribute('style', 'display: none;'); 
+	    this.visible_dropdown = dropdown;
+	    Effect.SlideDown(dropdown, {duration: 0.2});
+	} else {
+	    this.visible_dropdown = null;
+	    Effect.SlideUp(dropdown, {duration: 0.2});
+	}
+    },
+
+    on_document_click: function (event) {
+	if (this.visible_dropdown) {
+	    if (event.findElement('.menu-dropdown') !== this.visible_dropdown) {
+		this.toggle_dropdown(this.visible_dropdown);
+		event.stop();
+	    }
+	}
+    },
+
     cmd_submenu: function (item) {
 	if (item._lcg_submenu !== null) {
 	    this.set_focus(item._lcg_submenu[0]);

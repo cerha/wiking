@@ -71,7 +71,6 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             # Allow simple access to some often used data through context attributes ...
             # These attributes are not the part of the official context extension (such as the
             # 'req()' method, so their use should be limited to this module only!
-            self.has_menu = any(not n.hidden() for n in node.root().children())
             self.has_submenu = any(not n.hidden() for n in top_node.children())
             self.application = application
             # Make sure that Prototype.js is always loaded first, so that it is
@@ -301,47 +300,52 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         
     def _menu(self, context):
         g = self._generator
-        items = [item for item in context.node().root().children() if not item.hidden()]
-        if items:
-            top = context.top_node()
-            n = len(items)
-            style = "width: %d%%" % (100 / n)
-            last_style = "width: %d%%" % (100 - (100 / n * (n - 1)))
-            first, last = items[0], items[-1]
-            menu = [g.li(g.a(item.title(), href=self._uri_node(context, item),
-                             title=item.descr(), accesskey=(item is first and '1' or None),
-                             cls='navigation-link' + (item is top and ' current' or ''),
-                             ) + (item is top and self._hidden(' *') or ''),
-                         style=(item is last and last_style or style))
-                    for item in items]
-            title = g.a(_("Main navigation") + ':', name='main-navigation', accesskey="3")
-            return lcg.concat(g.h(title, 3), g.div(g.ul(*menu), id='main-menu'))
+        def dropdown(node):
+            if all(n.hidden() for n in node.children()):
+                return None
+            else:
+                tree = lcg.FoldableTree(node, label=_("Hierarchical navigation menu"))
+                return g.div(tree.export(context), cls='menu-dropdown', style='display: none')
+        menu = [(node, dropdown(node))
+                for node in context.node().root().children() if not node.hidden()]
+        if menu:
+            top = context.node().top()
+            first = menu[0][0]
+            items = [g.li((g.a(node.title() + 
+                               (g.span('', cls='menu-dropdown-ctrl', role='presentation')
+                                if dropdown and node is not top else ''),
+                               href=self._uri_node(context, node),
+                               title=node.descr(), accesskey=(node is first and '1' or None),
+                               cls=('navigation-link' +
+                                    (' current' if node is top else '') +
+                                    (' with-dropdown' if dropdown and node is not top else ''))),
+                           dropdown or ''),
+                          cls='main-menu-item')
+                     for node, dropdown in menu]
+            return lcg.concat(g.h(_("Main navigation"), 3),
+                              g.div(g.ul(*items, cls='main-menu-items'), id='main-menu'))
         else:
             return None
+
+    def _menu_attr(self, context):
+        return dict(accesskey="3")
 
     def _submenu(self, context):
         if not context.has_submenu:
             return None
         g = self._generator
-        req = context.req()
-        application = context.application
-        if context.has_menu:
-            # If there is the main menu, this is its submenu, but if the main
-            # menu is empty, this menu acts as the main menu.
-            heading = application.menu_panel_title(req)
-            heading_id = 'local-navigation'
-        else:
-            heading = _("Main navigation")
-            heading_id = 'main-navigation'
         tree = lcg.FoldableTree(context.top_node(), label=_("Hierarchical navigation menu"),
                                 tooltip=_("Expand/collapse complete menu hierarchy"))
         content = tree.export(context)
-        extra_content = application.menu_panel_bottom_content(req)
-        if extra_content:
-            content += extra_content.export(context)
-        return g.div((g.h(heading, 3, id=heading_id, accesskey="3"),
-                      content),
-                     cls='menu-panel')
+        req = context.req()
+        application = context.application
+        title = application.menu_panel_title(req)
+        if title:
+            content = lcg.concat(g.h(title, 3), content)
+        bottom_content = application.menu_panel_bottom_content(req)
+        if bottom_content:
+            content = lcg.concat(content, bottom_content.export(context))
+        return  g.div(content, cls='menu-panel')
 
     def _panels(self, context):
         if not context.panels():

@@ -394,9 +394,9 @@ h1 a { outline: none; }
 }
 
 #page {
-    padding-top: 0.3em;
+    padding-top: 6px;
     min-width: 100%;
-    margin-top: 0.9em;
+    margin-top: 6px;
 }
 body.non-maximized #page.with-menu {
     margin-top: 0;
@@ -418,8 +418,8 @@ body.non-maximized #page.with-menu {
 
 #language-selection {
     position: absolute;
-    top: .5em;
-    right: .8em;
+    top: 3px;
+    right: 8px;
     max-width: 50%;
     font-size: 0.9em;
     /*white-space: nowrap;*/
@@ -441,14 +441,8 @@ body.maximized #panels {
     display: none;
 }
 
-/* Horizontal menu with folders */
+/* Horizontal menu bar */
 
-#page.with-menu #menu {
-    border-bottom: 1px solid $color.top-border;
-    padding-left: 0.2em;
-    /* leave some space for language selection and panel controls */
-    padding-right: 6em;
-}
 body.non-maximized #page.with-menu #main {
     border-top: 0px; /* The top border is part of the navigation bar when it is displayed. */
 }
@@ -456,31 +450,67 @@ body.non-maximized #page.with-menu #main {
     top: -1px;
 }
 #page.with-menu #language-selection {
-    top: 2pt;
-    right: 6pt;
+    top: 2px;
+    right: 6px;
 }
 
+#menu {
+    border-bottom: 1px solid $color.top-border;
+    padding-left: 3px;
+    padding-right: 6em; /* leave some space for language selection and panel controls */
+    height: 15px;
+}
 #menu h3 {
     display: none;
 }
-#menu ul {
+
+#menu ul.main-menu-items {
     margin: 0;
     padding: 0;
 }
-#menu li {
+#menu li.main-menu-item {
     display: inline;
     white-space: nowrap;
-    margin-right: 0.3em;
+    margin-right: 3px;
+    position: relative;
 }
 #menu a.navigation-link {
     border: solid $color.top-border 1px;
-    padding: 0 0.6em; /* 0.1em 0.6em; */
+    font-size: 13px;
+    padding: 2px 8px 0px 8px;
     background-color: $color.inactive-folder;
-    text-decoration: none; /* ??? */
+    text-decoration: none;
+    position: relative;
 }
 #menu a.navigation-link.current {
     background-color: $color.background;
     border-bottom: solid $color.background 1px;
+}
+#menu a.navigation-link.with-dropdown {
+    padding-right: 12px;
+}
+#menu .menu-dropdown-ctrl {
+    display: inline-block;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 12px;
+    height: 14px;
+    background-image: url(popup-arrow.png);
+    background-position: 0px 2px;
+    background-repeat: no-repeat;
+}
+#menu .menu-dropdown {
+    position: absolute;
+    top: 15px;
+    left: 2px;
+    border: 1px solid $color.top-border;
+    z-index: 2;
+    background-color: $color.background;
+    padding: 0 6px 0 2px;
+    box-shadow: 1px 1px 12px #999;
+    -moz-box-shadow: 1px 1px 12px #999;
+    -webkit-box-shadow: #999 1px 1px 12px;    
 }
 
 /* Hierarchical submenu */
@@ -495,25 +525,24 @@ body.non-maximized #page.with-submenu #main {
     float: left;
     width: 12em;
 }
-#submenu div.menu-panel  {
+#submenu .menu-panel  {
     position: relative;
     border: 1px solid $color.top-border;
-    margin: 0.8em 0.5em 0.5em 0.8em;
-    padding: 0;
+    margin: 10px 8px 0 8px;
 }
 #submenu h3 {
     margin: 0;
     font-size: 1.1em;
-    padding: 0.1em 0.2em;
+    padding: 2px 4px;
     background-color: $color.heading-bg;
     border-bottom: 1px solid $color.top-border;
 }
 #submenu button.toggle-menu-expansion {
     position: absolute;
-    top: 0.45em;
-    right: 0.3em;
+    top: 5px;
+    right: 4px;
 }
-* html #submenu button.toggle-menu-expansion { right: 0.8em; } /* MSIE hack */
+* html #submenu button.toggle-menu-expansion { right: 10px; } /* MSIE hack */
 
 /* This makes panels to skip in Firefox when page content is too wide...
 #submenu li a:hover {
@@ -533,14 +562,14 @@ body.non-maximized #page.with-panels #main {
 }
 #panels {
     position: relative;
-    right: 0.1em; /* Needed for MSIE when page is too wide */
+    right: 2px; /* Needed for MSIE when page is too wide */
     z-index: 1;
     float: right;
     width: 17em;
 }
 #panels a.panel-control {
     position: absolute;
-    top: -1.4em;
+    top: -14px;
     font-size: 0.8em;
     right: 0;
 }
