@@ -390,7 +390,6 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         extra_content = context.application.right_panels_bottom_content(req)
         if extra_content:
             result.append(g.div(extra_content.export(context), cls='panels-bottom-content'))
-        result.append(g.br())
         return result
 
     def _messages(self, context):
