@@ -398,10 +398,6 @@ h1 a { outline: none; }
     min-width: 100%;
     margin-top: 6px;
 }
-body.non-maximized #page.with-menu {
-    margin-top: 0;
-}
-
 #links {
     display: none;
 }
@@ -435,7 +431,6 @@ body.non-maximized #page.with-menu {
     border: none;
 }
 body.maximized #top,
-body.maximized #menu,
 body.maximized #submenu,
 body.maximized #panels {
     display: none;
@@ -443,7 +438,7 @@ body.maximized #panels {
 
 /* Horizontal menu bar */
 
-body.non-maximized #page.with-menu #main {
+body #page.with-menu #main {
     border-top: 0px; /* The top border is part of the navigation bar when it is displayed. */
 }
 #page.with-menu #panels {
@@ -489,7 +484,7 @@ body.non-maximized #page.with-menu #main {
 #menu a.navigation-link.with-dropdown {
     padding-right: 14px;
 }
-#menu a.navigation-link.current.with-dropdown {
+body.non-maximized #menu a.navigation-link.current.with-dropdown {
     padding-right: 8px;
 }
 #menu .menu-dropdown-ctrl {
@@ -503,7 +498,7 @@ body.non-maximized #page.with-menu #main {
     background-position: 0px 4px;
     background-repeat: no-repeat;
 }
-#menu a.navigation-link.current .menu-dropdown-ctrl {
+body.non-maximized #menu a.navigation-link.current .menu-dropdown-ctrl {
     display: none;
 }
 
@@ -563,7 +558,7 @@ body.non-maximized #page.with-panels {
 body.non-maximized #page.with-panels #main {
     margin-right: 220px;
 }
-#page.with-panels #menu {
+body.non-maximized #page.with-panels #menu {
     margin-right: 220px;
     padding-right: 0;
 }
