@@ -195,7 +195,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             cls += ' with-menu'
         if context.has_submenu:
             cls += ' with-submenu'
-        if context.panels() and context.req().show_panels():
+        if context.panels():
             cls += ' with-panels'
         return dict(cls=cls.strip() or None)
 
@@ -288,9 +288,8 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
     def _links(self, context):
         g = self._generator
         links = [g.a(_("Main content"), href='#main-heading', accesskey="2")]
-        if context.req().show_panels():
-            for panel in context.panels():
-                links.append(g.a(panel.accessible_title(), href='#panel-%s-anchor ' % panel.id()))
+        for panel in context.panels():
+            links.append(g.a(panel.accessible_title(), href='#panel-%s-anchor ' % panel.id()))
         return _("Jump in page") + ": " + lcg.concat(links, separator=' | ')
         
     def _breadcrumbs(self, context):
@@ -356,11 +355,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         panels = context.panels()
         if not panels:
             return None
-        if not req.show_panels():
-            # Translators: Panels are small windows on the side of the page. This is a label
-            # for a link that shows/hides the panels.
-            return g.a(_("Show panels"), href="?show_panels=1", cls='panel-control show')
-        result = [g.a(_("Hide panels"), href="?hide_panels=1", cls='panel-control hide')]
+        result = []
         for panel in panels:
             title = g.a(panel.title(), name='panel-' + panel.id() + '-anchor', tabindex=0,
                         cls='panel-anchor')

@@ -569,12 +569,6 @@ body.non-maximized #page.with-panels #menu {
     float: right;
     width: 220px;
 }
-#panels a.panel-control {
-    position: absolute;
-    top: -14px;
-    font-size: 0.8em;
-    right: 0;
-}
 div#panels-menu-item {
     margin-left: 0.5em;
 }

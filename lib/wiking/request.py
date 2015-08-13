@@ -259,7 +259,6 @@ class Request(ServerInterface):
             except KeyError:
                 return None
 
-    _PANELS_COOKIE = 'wiking_show_panels'
     _MAXIMIZED_MODE_COOKIE = 'wiking_maximized_mode'
     _MESSAGES_COOKIE = 'wiking_messages'
     _TZ_OFFSETS_COOKIE = 'wiking_tz_offsets'
@@ -298,14 +297,6 @@ class Request(ServerInterface):
         self._credentials = self._init_credentials()
         self._decryption_password = self._init_decryption_password()
         self._messages = self._init_messages()
-        if self.has_param('hide_panels'):
-            self.set_cookie(self._PANELS_COOKIE, 'no')
-            self._show_panels = False
-        elif self.has_param('show_panels'):
-            self.set_cookie(self._PANELS_COOKIE, 'yes')
-            self._show_panels = True
-        else:
-            self._show_panels = self.cookie(self._PANELS_COOKIE) != 'no'
         if self.has_param('maximize'):
             self._maximized = self.param('maximize') == '1'
             self.set_cookie(self._MAXIMIZED_MODE_COOKIE, self._maximized and 'yes' or 'no')
@@ -727,15 +718,6 @@ class Request(ServerInterface):
 
         """
         return tuple(self._forwards)
-
-    def show_panels(self):
-        """Return True if Wiking panels are currently on.
-
-        The Request instance tracks the state of side panels (shown/hidden) and
-        uses cookies to make this setting persistent.
-
-        """
-        return self._show_panels
 
     def maximized(self):
         """Return True if Wiking maximized content mode is currently on.
