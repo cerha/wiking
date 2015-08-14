@@ -322,7 +322,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                                        cls=' '.join(cls)),
                                    dropdown),
                                   cls='main-menu-item'))
-        return lcg.concat(
+        return (
             g.h(_("Main navigation"), 3),
             g.div(g.ul(*items, cls='main-menu-items'), id='main-menu'),
         )
@@ -386,7 +386,10 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         extra_content = context.application.right_panels_bottom_content(req)
         if extra_content:
             result.append(g.div(extra_content.export(context), cls='panels-bottom-content'))
-        return result
+        return (
+            g.span('', title=_("Toggle expansion of sidebar panels."), cls='expand-panels-ctrl'),
+            g.div(g.div(result), id='panels-container'), # Inner div important for JS slide effects...
+        )
 
     def _messages(self, context):
         messages = context.req().messages()

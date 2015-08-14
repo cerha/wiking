@@ -431,8 +431,11 @@ h1 a { outline: none; }
     border: none;
 }
 body.maximized #submenu,
-body.maximized #panels {
+body.maximized #panels-container {
     display: none;
+}
+body.maximized #panels-container.expanded {
+    display: block;
 }
 
 /* Horizontal menu bar */
@@ -440,7 +443,7 @@ body.maximized #panels {
 #menu {
     border-bottom: 1px solid $color.top-border;
     padding-left: 3px;
-    padding-right: 6em; /* leave some space for language selection and panel controls */
+    padding-right: 30px; /* leave some space for .expand-panels-ctrl */
 }
 #menu h3 {
     display: none;
@@ -557,8 +560,32 @@ body.non-maximized #page.with-panels #menu {
     float: right;
     width: 220px;
 }
-div#panels-menu-item {
-    margin-left: 0.5em;
+#panels .expand-panels-ctrl {
+    display: none;
+    position: absolute;
+    width: 16px;
+    height: 14px;
+    background-color: #ddd;
+    top: -22px;
+    right: -8px;
+    border: solid #bbb 1px;
+    border-right: 0;
+    border-radius: 2px 0 0 2px;
+    background-image: url(popup-arrow.png);
+    background-position: 2px 1px;
+    background-repeat: no-repeat;
+}
+body.maximized #panels .expand-panels-ctrl {
+    display: inline-block;
+}
+#panels-container.expanded {
+    padding: 9px 9px 8px 0px;
+    margin-bottom: 10px;
+    border: 1px solid $color.top-border;
+    background-color: $color.background;
+    box-shadow: 1px 1px 12px #999;
+    -moz-box-shadow: 1px 1px 12px #999;
+    -webkit-box-shadow: #999 1px 1px 12px;
 }
 
 div.panel {

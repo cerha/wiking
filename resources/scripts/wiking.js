@@ -40,6 +40,8 @@ var wiking = {
 
     gettext: new Gettext({domain:'wiking'}),
 
+    handler: null,
+
     _: function (msg) {
 	return wiking.gettext.gettext(msg);
     }
@@ -74,6 +76,19 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
 
 	// Set up global key handler.
 	document.observe('keydown', this.on_key_down.bind(this));
+
+	// Initialize global popup window management.
+	document.observe('click', this.on_document_click.bind(this));
+	this.registered_popups = [];
+
+	// Handle panels expansion control.
+	var ctrl = $('page').down('.expand-panels-ctrl');
+        if (ctrl) {
+	    ctrl.observe('click', function (event) {
+		this.toggle_panels();
+		event.stop();
+	    }.bind(this));
+	}
 
 	// Update the information about browser's timezone in the cookie to let
 	// the server know what is the user's time zone.  The problem is that
@@ -118,6 +133,8 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
 		}
 	    }
 	});
+
+	wiking.handler = this;
     },
     
     keymap: function () {
@@ -148,20 +165,63 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
 	    var item = $(nb.getAttribute('aria-activedescendant'));
 	    this.set_focus(item);
 	}
-    }
+    },
     
+    toggle_panels: function () {
+	var container = $('panels-container');
+	this.close_popups();
+	if (!container.hasClassName('expanded')) {
+	    // Reset the style to the initial state (when clicking too fast, the effects
+	    // may overlap and leave a messy final style).
+	    container.setStyle('display: none;');
+	    container.addClassName('expanded');
+	    this.register_popup(container, '#panels-container', this.toggle_panels.bind(this));
+	    Effect.SlideDown(container, {duration: 0.3});
+	} else {
+	    Effect.SlideUp(container, {duration: 0.3});
+	    setTimeout(function () { container.removeClassName('expanded'); }, 300);
+	}
+    },
+    
+    register_popup: function(element, selector, callback) {
+	this.registered_popups[this.registered_popups.length] = [element, selector, callback];
+    },
+    
+    close_popups: function() {
+	var i;
+	for (i = 0; i < this.registered_popups.length; i++) {
+	    var element = this.registered_popups[i][0];
+	    var callback = this.registered_popups[i][2];
+	    this.registered_popups.splice(i, 1);
+	    callback(element);
+	}
+    },
+
+    on_document_click: function (event) {
+	if (this.registered_popups) {
+	    var i;
+	    var found = null;
+	    for (i = 0; i < this.registered_popups.length; i++) {
+		var element = this.registered_popups[i][0];
+		var selector = this.registered_popups[i][1];
+		var callback = this.registered_popups[i][2];
+		if (element !== event.findElement(selector)) {
+		    this.registered_popups.splice(i, 1);
+		    callback(element);
+		    if (!event.stopped) {
+			event.stop();
+		    }
+		}
+	    }
+	}
+    }
+
 });
 
 wiking.MainMenu = Class.create(lcg.Menu, {
 
     _MANAGE_TABINDEX: false,
     
-    initialize: function ($super, element_id) {
-	this.visible_dropdown = null;
-	$super(element_id);
-	$(document).observe('click', this.on_document_click.bind(this));
-    },
-
     keymap: function () {
 	// Arrow keys are duplicated with Ctrl-Shift- to get them accessible to VoiceOver
 	// users as VO doesn't pass single arrow keypresses to the application.
@@ -211,27 +271,15 @@ wiking.MainMenu = Class.create(lcg.Menu, {
     },
     
     toggle_dropdown: function (dropdown) {
-	if (this.visible_dropdown && this.visible_dropdown != dropdown) {
-	    this.toggle_dropdown(this.visible_dropdown);
-	}
+	wiking.handler.close_popups();
 	if (!dropdown.visible()) {
+	    wiking.handler.register_popup(dropdown, '.menu_dropdown', this.toggle_dropdown);
 	    // Reset the style to the initial state (when clicking too fast, the effects
 	    // may overlap and leave a messy final style).
-	    dropdown.setAttribute('style', 'display: none;'); 
-	    this.visible_dropdown = dropdown;
+	    dropdown.setAttribute('style', 'display: none;');
 	    Effect.SlideDown(dropdown, {duration: 0.2});
 	} else {
-	    this.visible_dropdown = null;
 	    Effect.SlideUp(dropdown, {duration: 0.2});
-	}
-    },
-
-    on_document_click: function (event) {
-	if (this.visible_dropdown) {
-	    if (event.findElement('.menu-dropdown') !== this.visible_dropdown) {
-		this.toggle_dropdown(this.visible_dropdown);
-		event.stop();
-	    }
 	}
     },
 
