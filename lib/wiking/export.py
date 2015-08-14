@@ -191,8 +191,6 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
     def _page_attr(self, context):
         node = context.node()
         cls = ''
-        if context.has_menu:
-            cls += ' with-menu'
         if context.has_submenu:
             cls += ' with-submenu'
         if context.panels():
@@ -299,33 +297,35 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         
     def _menu(self, context):
         g = self._generator
-        def dropdown(node):
-            if all(n.hidden() for n in node.children()):
-                return None
-            else:
-                tree = lcg.FoldableTree(node, label=_("Hierarchical navigation menu"))
-                return g.div(tree.export(context), cls='menu-dropdown', style='display: none')
-        menu = [(node, dropdown(node))
-                for node in context.node().root().children() if not node.hidden()]
-        if menu:
-            top = context.node().top()
-            first = menu[0][0]
-            items = [g.li((g.a(node.title() + 
-                               (g.span('', cls='menu-dropdown-ctrl', role='presentation',
-                                       title=_("Expand drop-down submenu of this item."))
-                                if dropdown else ''),
-                               href=self._uri_node(context, node),
-                               title=node.descr(), accesskey=(node is first and '1' or None),
-                               cls=('navigation-link' +
-                                    (' current' if node is top else '') +
-                                    (' with-dropdown' if dropdown else ''))),
-                           dropdown or ''),
-                          cls='main-menu-item')
-                     for node, dropdown in menu]
-            return lcg.concat(g.h(_("Main navigation"), 3),
-                              g.div(g.ul(*items, cls='main-menu-items'), id='main-menu'))
-        else:
-            return None
+        top = context.top_node()
+        children = context.node().root().children()
+        first = children[0]
+        items = []
+        for node in children:
+            if not node.hidden():
+                cls = ['navigation-link']
+                if not all(n.hidden() for n in node.children()):
+                    tree = lcg.FoldableTree(node, label=_("Hierarchical navigation menu"))
+                    dropdown = g.div(tree.export(context), cls='menu-dropdown', style='display: none')
+                    cls.append('with-dropdown')
+                    ctrl = g.span('', cls='menu-dropdown-ctrl', role='presentation',
+                                  title=_("Expand drop-down submenu of this item."))
+                else:
+                    dropdown = ''
+                    ctrl = ''
+                if node is top:
+                    cls.append('current')
+                items.append(g.li((g.a(node.title() + ctrl,
+                                       href=self._uri_node(context, node),
+                                       title=node.descr(),
+                                       accesskey=(node is first and '1' or None),
+                                       cls=' '.join(cls)),
+                                   dropdown),
+                                  cls='main-menu-item'))
+        return lcg.concat(
+            g.h(_("Main navigation"), 3),
+            g.div(g.ul(*items, cls='main-menu-items'), id='main-menu'),
+        )
 
     def _menu_attr(self, context):
         return dict(accesskey="3")

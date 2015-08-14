@@ -415,7 +415,7 @@ h1 a { outline: none; }
 #language-selection {
     position: absolute;
     top: 3px;
-    right: 8px;
+    right: 10px;
     max-width: 50%;
     font-size: 0.9em;
     /*white-space: nowrap;*/
@@ -437,17 +437,6 @@ body.maximized #panels {
 }
 
 /* Horizontal menu bar */
-
-body #page.with-menu #main {
-    border-top: 0px; /* The top border is part of the navigation bar when it is displayed. */
-}
-#page.with-menu #panels {
-    top: -1px;
-}
-#page.with-menu #language-selection {
-    top: 2px;
-    right: 6px;
-}
 
 #menu {
     border-bottom: 1px solid $color.top-border;
@@ -563,7 +552,7 @@ body.non-maximized #page.with-panels #menu {
 }
 #panels {
     position: relative;
-    right: 2px; /* Needed for MSIE when page is too wide */
+    top: -1px;
     z-index: 1;
     float: right;
     width: 220px;
@@ -631,6 +620,7 @@ div.panel form { margin: 5px 0; }
     border: 1px solid $color.top-border;
     padding: 10px 11px;
     margin-bottom: 8px;
+    border-top: 0px; /* The top border is part of the menu bar. */
 }
 #main h1 {
     margin-top: 0;
