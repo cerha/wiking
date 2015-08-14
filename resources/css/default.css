@@ -453,7 +453,6 @@ body #page.with-menu #main {
     border-bottom: 1px solid $color.top-border;
     padding-left: 3px;
     padding-right: 6em; /* leave some space for language selection and panel controls */
-    height: 15px;
 }
 #menu h3 {
     display: none;
