@@ -723,10 +723,10 @@ body.non-maximized div#page.with-submenu #main {
     /* div#page is needed for MSIE to increase specificity. */
     padding-left: 10px;
 }
-#menu a.navigation-link.current.with-dropdown {
+body.non-maximized #menu a.navigation-link.current.with-dropdown {
     padding-right: 14px;
 }
-#menu a.navigation-link.current .menu-dropdown-ctrl {
+body.non-maximized #menu a.navigation-link.current .menu-dropdown-ctrl {
     display: inline;
 }
 
