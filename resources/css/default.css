@@ -647,14 +647,17 @@ div.panel form { margin: 5px 0; }
     clear: both;
     margin: 12px 0;
 }
+body.maximized #bottom {
+    margin-top: 4px;
+}
 #bottom-bar {
     text-align: right;
     font-size: 0.9em;
     border: solid $color.top-border;
     border-width: 1px 0px;
     background-color: $color.heading-bg;
+    margin-bottom: 12px;
 }
-#bottom-bar { text-align: right; }
 #bottom-bar span.left { float: left; }
 #bottom-bar div.left { text-align: left; }
 #bottom-bar a { text-decoration: none; }
