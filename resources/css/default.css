@@ -430,7 +430,6 @@ h1 a { outline: none; }
 #maximized-mode-control img {
     border: none;
 }
-body.maximized #top,
 body.maximized #submenu,
 body.maximized #panels {
     display: none;
