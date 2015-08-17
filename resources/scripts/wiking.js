@@ -178,8 +178,13 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
 	    this.register_popup(container, '#panels-container', this.toggle_panels.bind(this));
 	    Effect.SlideDown(container, {duration: 0.3});
 	} else {
-	    Effect.SlideUp(container, {duration: 0.3});
-	    setTimeout(function () { container.removeClassName('expanded'); }, 300);
+	    Effect.SlideUp(container, {
+		duration: 0.3,
+		afterFinish: function () { 
+		    container.removeClassName('expanded');
+		    container.removeAttribute('style');
+		}
+	    });
 	}
     },
     
