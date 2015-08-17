@@ -396,7 +396,6 @@ h1 a { outline: none; }
 #page {
     padding-top: 6px;
     min-width: 100%;
-    margin-top: 6px;
 }
 #links {
     display: none;
@@ -543,9 +542,6 @@ body.non-maximized #page.with-submenu #main {
 }*/
 
 /* Panels */
-body.non-maximized #page.with-panels {
-    float: left; /* Force the main div to fit its content. */
-}
 body.non-maximized #page.with-panels #main {
     margin-right: 220px;
 }
@@ -673,9 +669,6 @@ div.panel form { margin: 5px 0; }
 #bottom {
     clear: both;
     margin: 12px 0;
-}
-body.maximized #bottom {
-    margin-top: 4px;
 }
 #bottom-bar {
     text-align: right;
