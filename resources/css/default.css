@@ -842,7 +842,7 @@ form.list-form-controls .paging-controls {
 	border-color: #aaa;
     }
 }
-.#page .notebook-widget li.notebook-tab a.current {
+#page .notebook-widget li.notebook-tab a.current {
     background-color: $color.background;
     border-bottom-color: $color.background;
 }
