@@ -170,8 +170,11 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
 
     def _meta(self, context):
         import wiking
-        return (('generator', 'Wiking %s, LCG %s, Pytis %s' %
-                 (wiking.__version__, lcg.__version__, pytis.__version__)),)
+        result = [('generator', 'Wiking %s, LCG %s, Pytis %s' %
+                   (wiking.__version__, lcg.__version__, pytis.__version__))]
+        if wiking.cfg.viewport:
+            result.append(('viewport', wiking.cfg.viewport))
+        return result
 
     def _node_identification(self, context):
         """Returns a string of CSS classes identifying the current node

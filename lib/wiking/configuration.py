@@ -567,6 +567,14 @@ class Configuration(pytis.util.Configuration):
                 "production server.")
         _DEFAULT = None
 
+    class _Option_viewport(pc.StringOption):
+        _DESCR = "String value for the HTML head 'viewport' META tag."
+        _DOC = ("The viewport meta tag may be used to control the page's "
+                "dimensions and scaling within the browser window. "
+                "Check https://developer.mozilla.org/en-US/docs/Mozilla/Mobile/Viewport_meta_tag "
+                "for more information.  Typical value for responsive "
+                "websites is 'width=device-width, initial-scale=1'.")
+
 
 class ApplicationConfiguration(pytis.util.Configuration):
     """Base class for application specific configuration.
