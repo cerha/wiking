@@ -741,8 +741,26 @@ form.login-form label {
 
 } /* End of @media screen. */
 
-@media only screen and (max-width: 767px) { /* mobile phone */
-    
+@media only screen and (max-width: 991px) { /* Tablet screen layout */
+
+#panels-container {
+    display: none;
+}
+#panels-container.expanded {
+    display: block;
+}
+body.non-maximized div#page.with-panels #main,
+body.non-maximized div#page.with-panels #menu {
+    margin-right: 0px;
+}
+#panels .expand-panels-ctrl {
+    display: inline-block;
+}
+
+} /* End of tablet screen layout */
+
+@media only screen and (max-width: 767px) { /* Mobile phone screen layout */
+
 #submenu {
     display: none;
 }
@@ -756,18 +774,10 @@ body.non-maximized #menu a.navigation-link.current.with-dropdown {
 body.non-maximized #menu a.navigation-link.current .menu-dropdown-ctrl {
     display: inline;
 }
-
-/*
-#panels {
+#maximized-mode-control {
     display: none;
 }
-body.non-maximized #page.with-panels #main {
-    margin-right: 0px;    
-}
-#page.with-panels #menu {
-    margin-right: 0px;
-}
-*/
+
 } /* End of mobile phone screen layout */
 
 /* Print specific styles */
