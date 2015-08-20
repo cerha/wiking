@@ -1,0 +1,34 @@
+language: python
+python:
+  - "2.7"
+env:
+  global:
+    - PGVER=9.1
+install:
+  - "git clone git://git.freebsoft.org/git/lcg"
+  - "git clone git://git.freebsoft.org/git/pytis"
+  - "sudo apt-get update -qq"
+#  - "sudo service postgresql stop"
+#  - "sudo service postgresql start $PGVER"
+  - "sudo apt-get -y install libpq-dev postgresql-plpython-$PGVER gettext fontconfig ttf-freefont libxml2-dev texinfo"
+  - "pip install reportlab psycopg2 sqlalchemy pbkdf2 Pillow WebTest splinter coveralls"
+  - "export PYTHONPATH=lcg/lib:pytis/lib:lib:$PYTHONPATH"
+before_script:
+  - "createuser -U postgres -SDR pytis"
+  - "createdb -U postgres -O $USER test"
+  - "createlang -U postgres plpythonu test"
+  - "psql -U postgres -1c \"ALTER DATABASE test SET default_text_search_config to \'simple\'\" test"
+  - "psql -U postgres -1c 'CREATE EXTENSION pgcrypto;' test"
+  - "pytis/tools/gsql.py pytis.dbdefs.db_pytis_crypto | psql -1f - test"
+  - "pytis/tools/gsql.py wiking.dbdefs.wiking_db | psql -1f - test"
+  - "pytis/tools/gsql.py wiking.dbdefs.wiking_cms | psql -1f - test"
+script:
+  - "coverage run --source=lib/wiking lib/wiking/_test.py"
+after_success:
+  - "coveralls"
+notifications:
+  email:
+    recipients:
+      - wiking-cvs@lists.freebsoft.org
+    on_success: always
+    on_failure: always
