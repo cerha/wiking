@@ -2110,7 +2110,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
     def _delete_confirmation_actions(self, req, record, action):
         # TODO: Do we really need that?  Isn't 'javascript: history.back()' better?
         # Maybe we want a pw.DeleteForm for that...
-        if req.param('__invoked_from') == 'ListView':
+        if req.param('__invoked_from') in ('ListView', 'ItemizedView'):
             back = 'list'
         else:
             back = 'view'
@@ -2249,7 +2249,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         the final redirection URI.
 
         """
-        if req.param('__invoked_from') == 'ListView':
+        if req.param('__invoked_from') in ('ListView', 'ItemizedView'):
             kwargs.update(form_name=self.name(), search=record[self._key].export())
             return self._current_base_uri(req, record), kwargs
         else:
