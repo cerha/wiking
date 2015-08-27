@@ -2115,6 +2115,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         else:
             back = 'view'
         return (Action(action, self._DELETE_LABEL, submit=1),
+                # Translators: Back button label. Standard computer terminology.
                 Action(back, _("Back")),)
 
     def action_delete(self, req, record, action='delete'):
@@ -2128,7 +2129,6 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                 return self._redirect_after_delete(req, record)
         form = self._form(pw.ShowForm, req, record=record,
                           layout=self._layout(req, action, record),
-                          # Translators: Back button label. Standard computer terminology.
                           actions=self._delete_confirmation_actions(req, record, action))
         req.message(self._delete_prompt(req, record))
         return self._document(req, self._delete_form_content(req, form, record), record,
