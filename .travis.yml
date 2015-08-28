@@ -30,5 +30,3 @@ notifications:
   email:
     recipients:
       - wiking-cvs@lists.freebsoft.org
-    on_success: always
-    on_failure: always
