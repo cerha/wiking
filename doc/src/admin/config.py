@@ -5,11 +5,14 @@ class Reader(lcg.Reader):
 
     def _title(self):
         return "Wiking Configuration Options"
+        
+    def _variants(self):
+        return ('en',)
 
-    def _content(self):
+    def _content(self, lang):
         import wiking, wiking.cms
         def descr(option):
-            content = []
+            content = [lcg.em(o.description())]
             doc = option.documentation()
             if doc:
                 content.append(lcg.p(doc))

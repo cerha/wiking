@@ -9,7 +9,10 @@ class Reader(lcg.Reader):
     def _title(self):
         return "Wiking Application API"
     
-    def _content(self):
+    def _variants(self):
+        return ('en',)
+
+    def _content(self, lang):
         from wiking import Application
         parser = lcg.Parser()
         #modules = [(k, v) for k, v in wiking.application.__dict__.items()

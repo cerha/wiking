@@ -174,7 +174,7 @@ class Handler(object):
                                      page_heading=heading,
                                      descr=item.descr(), content=content,
                                      lang=lang, sec_lang=document.sec_lang(),
-                                     variants=variants or (),
+                                     variants=[lcg.Variant(v) for v in variants],
                                      active=item.active(), foldable=item.foldable(), hidden=hidden,
                                      children=[mknode(i) for i in item.submenu()],
                                      resource_provider=resource_provider,

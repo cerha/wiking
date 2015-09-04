@@ -2371,7 +2371,7 @@ class RssModule(object):
                 node = lcg.ContentNode('', content=content)
                 exporter = lcg.HtmlExporter()
                 context = exporter.context(node, None)
-                return node.content().export(context)
+                return node.content(None).export(context)
             text_format = self._view.field(descr_column).text_format()
             if text_format == pp.TextFormat.LCG:
                 parser = lcg.Parser()

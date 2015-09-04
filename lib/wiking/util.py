@@ -1373,12 +1373,6 @@ class WikingNode(lcg.ContentNode):
         self._active = active
         self._layout = layout
 
-    def add_child(self, node):
-        if isinstance(self._children, tuple):
-            self._children = list(self._children)
-        node._set_parent(self)
-        self._children.append(node)
-        
     def lang(self):
         return self._lang
 
@@ -1391,6 +1385,10 @@ class WikingNode(lcg.ContentNode):
     def page_heading(self):
         return self._page_heading or self._title
     
+    def add_child(self, node):
+        node._set_parent(self)
+        self._children += (node,)
+        
     def top(self):
         parent = self._parent
         if parent is None:
