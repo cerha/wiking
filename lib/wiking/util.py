@@ -1363,14 +1363,11 @@ class UniversalPasswordStorage(PasswordStorage):
 
 class WikingNode(lcg.ContentNode):
 
-    def __init__(self, id, page_heading=None, panels=(), lang=None, sec_lang=None,
-                 active=True, layout=None, **kwargs):
+    def __init__(self, id, lang=None, sec_lang=None, panels=(), layout=None, **kwargs):
         super(WikingNode, self).__init__(id, **kwargs)
-        self._page_heading = page_heading
         self._panels = panels
         self._lang = lang
         self._sec_lang = sec_lang
-        self._active = active
         self._layout = layout
 
     def lang(self):
@@ -1379,12 +1376,6 @@ class WikingNode(lcg.ContentNode):
     def sec_lang(self):
         return self._sec_lang
 
-    def active(self):
-        return self._active
-
-    def page_heading(self):
-        return self._page_heading or self._title
-    
     def add_child(self, node):
         node._set_parent(self)
         self._children += (node,)

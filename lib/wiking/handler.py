@@ -148,9 +148,9 @@ class Handler(object):
             # results in all cases (such as for '/').
             item_uri = '/' + item.id().strip('/')
             if item_uri == uri:
-                heading = document.title() or item.title()
-                if heading and document.subtitle():
-                    heading = lcg.concat(heading, ' :: ', document.subtitle())
+                title = document.title() or item.title()
+                if title and document.subtitle():
+                    title = lcg.concat(title, ' :: ', document.subtitle())
                 content = document.content()
                 if isinstance(content, (list, tuple)):
                     content = lcg.Container([c for c in content if c is not None])
@@ -159,8 +159,8 @@ class Handler(object):
                 if variants is None:
                     variants = item.variants()
             else:
-                heading = item.title()
-                content = lcg.Content()
+                title = item.title()
+                content = None
                 panels = ()
                 variants = item.variants()
             hidden = item.hidden()
@@ -170,8 +170,7 @@ class Handler(object):
                 hidden = True
             # The identifier is encoded to allow unicode characters within it.  The encoding
             # actually doesnt't matter, we just need any unique 8-bit string.
-            node = wiking.WikingNode(item_uri.encode('utf-8'), title=item.title(),
-                                     page_heading=heading,
+            node = wiking.WikingNode(item_uri.encode('utf-8'), title=title,
                                      descr=item.descr(), content=content,
                                      lang=lang, sec_lang=document.sec_lang(),
                                      variants=[lcg.Variant(v) for v in variants],

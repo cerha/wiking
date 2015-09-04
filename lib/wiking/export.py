@@ -238,7 +238,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         req = context.req()
         server_uri = req.server_uri()
         return tags + [g.meta(property='og:' + name, content=val) for name, val in (
-            ('title', context.node().page_heading()),
+            ('title', context.node().title()),
             ('type', 'article'),
             ('url', server_uri + req.uri()),
             ('site_name', context.application.site_title(req)),
@@ -257,7 +257,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         return content
 
     def _title(self, context):
-        return context.node().page_heading() + ' - ' + context.application.site_title(context.req())
+        return context.node().title() + ' - ' + context.application.site_title(context.req())
 
     def _top(self, context):
         g = self._generator
@@ -406,7 +406,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                 g.div((
                     g.a(g.img(context.uri(context.resource(icon)), alt=label),
                         href=href, title=tooltip, id='maximized-mode-control'),
-                    g.h(g.a(context.node().page_heading(), tabindex=0,
+                    g.h(g.a(context.node().heading().export(context), tabindex=0,
                             name='main-heading', id='main-heading'), 1),
                     self._messages(context),
                     super(Exporter, self)._content(context)), id='content'),
