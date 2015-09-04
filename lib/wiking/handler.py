@@ -170,7 +170,7 @@ class Handler(object):
                 hidden = True
             # The identifier is encoded to allow unicode characters within it.  The encoding
             # actually doesnt't matter, we just need any unique 8-bit string.
-            node = wiking.WikingNode(item_uri.encode('utf-8'), title=title,
+            node = wiking.WikingNode(item_uri, title=title,
                                      descr=item.descr(), content=content,
                                      lang=lang, sec_lang=document.sec_lang(),
                                      variants=[lcg.Variant(v) for v in variants],
