@@ -38,4 +38,4 @@ class Reader(lcg.Reader):
                 for s in section.sections()))
             for section in sections
         ]
-        return intro + overview + sections
+        return dict(content=intro + overview + sections)
