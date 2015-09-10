@@ -452,6 +452,7 @@ body.maximized #panels-container.expanded {
 #menu ul.main-menu-items {
     margin: 0;
     padding: 0;
+    height: 18px;
 }
 #menu li.main-menu-item {
     display: inline;
@@ -460,13 +461,15 @@ body.maximized #panels-container.expanded {
     position: relative;
 }
 #menu a.navigation-link {
+    display: inline-block;
     border: solid $color.top-border 1px;
     font-size: 13px;
-    padding: 1px 8px 0px 8px;
+    padding: 2px 8px 0px 8px;
     background-color: $color.inactive-folder;
     text-decoration: none;
     position: relative;
     border-radius: 2px 2px 0 0;
+    height: 15px;
 }
 #menu a.navigation-link.current {
     background-color: $color.background;
