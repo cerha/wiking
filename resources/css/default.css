@@ -179,10 +179,6 @@ div.table-of-contents ul {
     margin-bottom: 0;
 }
 
-.login-form input {
-    border: 1px solid $color.border;
-}
-
 /* Wiking CMS specific styles */
 .cms-page-actions { 
     margin: 1em 0 0 0;
@@ -349,7 +345,8 @@ body {
     color: $color.top-fg;
     background-color: $color.top-bg;
     font-size: 0.8em;
-    margin: 2pt 6pt;
+    padding: 0;
+    margin: 0;
 }
 button, input, select {
     /* Avoid dual application of 0.8em defined above in some elements */
@@ -386,17 +383,68 @@ a:link:hover, a:visited:hover { color: $color.link-hover; }
 
 h1 a { outline: none; }
 
-#top hr { display: none; }
-
-#site-title {
-    font-size: 1.1em;
-    max-width: 70%;
+#wrap {
 }
 
+#top {
+    background-color: white;
+    padding: 4px;
+}
+
+#site-title {
+    display: inline-block;
+    white-space: nowrap;
+    padding: 4px;
+}
+
+#top-controls {
+    display: inline-block;
+    float: right;
+}
+
+#top-controls > div {
+    display: inline-block;
+    margin-left: 20px;
+}
+
+#login-control {
+    padding: 3px 0 3px 24px;
+    background: url(user.png) 1px center no-repeat;
+}
+#login-control a.login-link {
+    color: $color.foreground;
+    padding: 3px 5px 3px 20px;
+    text-decoration: none;
+    white-space: nowrap;
+    border-radius: 3px;
+    background: url(login.png) 1px center no-repeat #ddd;
+}
+#panel-login.logged a.login-ctrl {
+    background-image: url(logout.png);
+}
+
+#language-selection {
+    white-space: nowrap;
+}
+#language-selection a.language-selection-ctrl {
+    padding: 3px 0 3px 5px;
+    border-radius: 3px;
+    background: #ddd;
+}
+#language-selection .language-abbr { display: none; }
+
+#top-clearing {
+    height: 0;
+    clear: both;
+}
+
+#middle {
+    background: url(shadow.png) 0 -3px repeat-x;
+    padding: 4px 8px;
+}
 #page {
-    padding-top: 6px;
-    min-width: 100%;
-    float: left; /* Force the page container to fit its content. */
+    max-width: 1130px;
+    margin: 0 auto;
 }
 #links {
     display: none;
@@ -411,16 +459,6 @@ h1 a { outline: none; }
     padding: 1px 0;
     margin-bottom: 0.3em;
 }
-
-#language-selection {
-    position: absolute;
-    top: 3px;
-    right: 10px;
-    max-width: 50%;
-    font-size: 0.9em;
-    /*white-space: nowrap;*/
-}
-#language-selection a.current { background-color: $color.highlight-bg; }
 
 #maximized-mode-control {
     position: absolute;
@@ -476,7 +514,7 @@ body.maximized #panels-container.expanded {
     border-bottom: solid $color.background 1px;
 }
 #menu a.navigation-link.with-dropdown {
-    padding-right: 14px;
+    padding-right: 25px;
 }
 body.non-maximized #menu a.navigation-link.current.with-dropdown {
     padding-right: 8px;
@@ -484,13 +522,11 @@ body.non-maximized #menu a.navigation-link.current.with-dropdown {
 #menu .menu-dropdown-ctrl {
     display: inline-block;
     position: absolute;
-    right: 0;
-    bottom: 0;
-    width: 14px;
-    height: 16px;
-    background-image: url(popup-arrow.png);
-    background-position: 0px 4px;
-    background-repeat: no-repeat;
+    right: -1px;
+    bottom: -6px;
+    width: 22px;
+    height: 22px;
+    background: url(popup-arrow.png) 0 0 no-repeat;
 }
 body.non-maximized #menu a.navigation-link.current .menu-dropdown-ctrl {
     display: none;
@@ -571,9 +607,7 @@ body.non-maximized #page.with-panels #menu {
     border: solid #bbb 1px;
     border-right: 0;
     border-radius: 2px 0 0 2px;
-    background-image: url(popup-arrow.png);
-    background-position: 2px 1px;
-    background-repeat: no-repeat;
+    background: url(popup-arrow.png) 2px 1px no-repeat;
 }
 body.maximized #panels .expand-panels-ctrl {
     display: inline-block;
@@ -614,30 +648,6 @@ div.panel ul, div.panel ol {
 }
 div.panel form { margin: 5px 0; }
 
-#panel-login a.login-ctrl {
-    color: $color.foreground;
-    border: 1px solid $color.top-border;
-    background-color: $color.heading-bg;
-    padding: 0 5px 0 20px;
-    text-decoration: none;
-    white-space: nowrap;
-    margin: 0 5px;
-    background-image: url(login.png);
-    background-position: 1px center;
-    background-repeat: no-repeat;
-}
-#panel-login a.login-ctrl:hover {
-    background-color: $color.highlight-bg;
-}
-#panel-login.logged a.login-ctrl {
-    background-image: url(logout.png);
-}
-#panel-login div.panel-content {
-    padding: 6px 4px;
-    line-height: 1.3em;
-}
-
-
 /* The actual page content */
 
 #main {
@@ -656,7 +666,6 @@ div.panel form { margin: 5px 0; }
 }
 #content {
     position: relative; /* fix MSIE background painting */
-    width: 100%;
 }
 #clearing {
     height: 0;
@@ -672,7 +681,8 @@ div.panel form { margin: 5px 0; }
 
 #bottom {
     clear: both;
-    margin: 12px 0;
+    max-width: 1146px;
+    margin: 0 auto 40px auto;
 }
 #bottom-bar {
     text-align: right;
@@ -680,7 +690,7 @@ div.panel form { margin: 5px 0; }
     border: solid $color.top-border;
     border-width: 1px 0px;
     background-color: $color.heading-bg;
-    margin-bottom: 12px;
+    margin: 0 8px 12px 8px;
 }
 #bottom-bar span.left { float: left; }
 #bottom-bar div.left { text-align: left; }
@@ -712,13 +722,6 @@ div#shared-audio-player {
 
 /* Special controls */
 
-#login-controls {
-    position: absolute;
-    top: 0.7em;
-    right: 0.9em;
-    padding: 0.2em 0 0.3em 0;
-}
-
 form.login-form {
     background-color: $color.frame-bg;
     border: 1px solid $color.frame-border;
@@ -728,6 +731,7 @@ form.login-form {
 }
 form.login-form input {
     margin-bottom: 12px;
+    border: 1px solid $color.border;
 }
 form.login-form ul {
     margin-top: 14px;
@@ -753,6 +757,7 @@ body.non-maximized div#page.with-panels #menu {
 #panels .expand-panels-ctrl {
     display: inline-block;
 }
+#language-selection .language-selection-label { display: none; }
 
 } /* End of tablet screen layout */
 
@@ -766,7 +771,7 @@ body.non-maximized div#page.with-submenu #main {
     padding-left: 10px;
 }
 body.non-maximized #menu a.navigation-link.current.with-dropdown {
-    padding-right: 14px;
+    padding-right: 25px;
 }
 body.non-maximized #menu a.navigation-link.current .menu-dropdown-ctrl {
     display: inline;
@@ -774,6 +779,10 @@ body.non-maximized #menu a.navigation-link.current .menu-dropdown-ctrl {
 #maximized-mode-control {
     display: none;
 }
+#language-selection .language-name { display: none; }
+#language-selection .language-abbr { display: inline; }
+#site-title .separator, #site-title .subtitle { display: none; }
+
 
 } /* End of mobile phone screen layout */
 

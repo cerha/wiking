@@ -40,43 +40,6 @@ class Application(CookieAuthentication, wiking.Application):
     _PREVIEW_MODE_COOKIE = 'wiking_cms_preview_mode'
     _PREVIEW_MODE_PARAM = '_wiking_cms_preview_mode'
     
-    class WMILink(lcg.Content):
-        # Used in login panel or bottom bar.
-        def export(self, context):
-            g = context.generator()
-            if not context.req().wmi:
-                uri, label, title = ('/_wmi/', _("Manage this site"),
-                                     _("Enter the Wiking Management Interface"))
-            else:
-                uri, label, title = ('/', _("Leave the Management Interface"), None)
-            return g.a(label, href=uri, title=title, accesskey="9", id='wmi-link')
-    class PreviewModeCtrl(lcg.Content):
-        def export(self, context):
-            g = context.generator()
-            req = context.req()
-            if req.wmi:
-                return ""
-            else:
-                name = Application._PREVIEW_MODE_PARAM
-                # Translators: There are two modes of operation in the CMS
-                # management.  The "Production mode" displays only the content
-                # publically visible to the website visitors.  "Preview mode",
-                # on the other hand, displays also the content which is not
-                # published yet.  This content is only visible to the
-                # administrators until it is published.  Please make sure you
-                # translate these two modes consistently acros all their
-                # occurences.
-                values = (('0', _("Production mode")),
-                          # Translators: See "Production mode"
-                          ('1', _("Preview mode")))
-                current_value = wiking.module.Application.preview_mode(req) and '1' or '0'
-                return g.form([g.radio(id=name + '_' + value, name=name, value=value,
-                                       checked=(current_value == value),
-                                       onchange='this.form.submit();') +
-                               g.label(label, name + '_' + value) + g.br()
-                               for value, label in values],
-                              action=req.uri(), method='GET')
-
     def preview_mode(self, req):
         """Query the current state of preview mode.
 
@@ -265,11 +228,7 @@ class Application(CookieAuthentication, wiking.Application):
         return wiking.module(modname).menu(req)
 
     def panels(self, req, lang):
-        if wiking.cms.cfg.allow_login_panel:
-            panels = [wiking.LoginPanel()]
-        else:
-            panels = []
-        return panels + wiking.module.Panels.panels(req, lang)
+        return wiking.module.Panels.panels(req, lang)
 
     def languages(self):
         return wiking.module.Languages.languages()
@@ -326,13 +285,34 @@ class Application(CookieAuthentication, wiking.Application):
     def forgotten_password_uri(self, req):
         return req.make_uri(req.module_uri('Registration'), action='reset_password')
 
-    def login_panel_content(self, req):
-        content = []
-        if self.preview_mode_possible(req):
-            content.append(self.PreviewModeCtrl())
+    def login_control_menu_items(self, req):
+        items = []
         if wiking.module.WikingManagementInterface.authorized(req):
-            content.append(self.WMILink())
-        return content or None
+            if not req.wmi:
+                items.append(lcg.PopupMenuItem(_("Enter the Management Interface"), uri='/_wmi/'))
+            else:
+                items.append(lcg.PopupMenuItem(_("Leave the Management Interface"), uri='/'))
+        if wiking.module.Application.preview_mode_possible(req):
+            param = wiking.module.Application._PREVIEW_MODE_PARAM
+            # Translators: There are two modes of operation in the CMS
+            # management.  The "Production Mode" displays only the content
+            # publically visible to the website visitors.  "Preview Mode",
+            # on the other hand, displays also the content which is not
+            # published yet.  This content is only visible to the
+            # administrators until it is published.  Please make sure you
+            # translate these two modes consistently acros all their
+            # occurences.
+            if wiking.module.Application.preview_mode(req):
+                label, value = _("Switch to Production Mode"), '0'
+            else:
+                label, value = _("Switch to Preview Mode"), '0'
+            items.append(lcg.PopupMenuItem(label, uri='%s?%s=%s' % (req.uri(), param, value)))
+        if hasattr(req, 'page_write_access') and req.page_write_access:
+            items.append(lcg.PopupMenuItem(_("Edit the Current Page"),
+                                           uri=req.uri() + '?action=update'))
+        if req.check_roles(wiking.cms.Roles.CONTENT_ADMIN):
+            items.append(lcg.PopupMenuItem(_("Create a New Page"), uri='/?action=insert'))
+        return items
 
     def login_is_email(self, req):
         return wiking.cms.cfg.login_is_email
@@ -348,23 +328,6 @@ class Application(CookieAuthentication, wiking.Application):
             return wiking.HtmlRenderer(content)
         else:
             return None
-
-    def bottom_bar_left_content(self, req):
-        result = self._powered_by_wiking(req)
-        if not wiking.cms.cfg.allow_login_panel:
-            link = self._accessibility_statement_link(req)
-            if link:
-                result = (result, ' | ', link)
-        return result
-
-    def bottom_bar_right_content(self, req):
-        if wiking.cms.cfg.allow_login_panel:
-            content = self._accessibility_statement_link(req)
-        else:
-            content = wiking.LoginCtrl(inline=True)
-            if wiking.module.WikingManagementInterface.authorized(req):
-                content = (content, ' ', self.WMILink())
-        return content
 
     def _text_content(self, req, text):
         # Default to English to avoid raising NotAcceptable where it is not handled.

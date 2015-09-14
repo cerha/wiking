@@ -276,9 +276,6 @@ class Application(wiking.Module):
         but this is just a common practice, not a requirement.  The application
         may decide to return a different set of panels for each request.
 
-        Note, that except for the generic 'Panel' class, there are also
-        predefined single purpose classes, such as 'LoginPanel'.
-
         See the Navigation section of the Wiking User's documentation for
         general information about panels.
 
@@ -398,13 +395,15 @@ class Application(wiking.Module):
         """
         return None
 
-    def login_panel_content(self, req):
-        """Return the extra content displayed in login panel below login controls.
+    def login_control_menu_items(self, req):
+        """Return the extra menu items displayed in login control dropdown menu.
 
-        Any content acceptable by 'lcg.coerce()' may be returned.
+        Returns a sequence of 'lcg.PopupMenuItem' instances representing the
+        items added to the menu by the application.
 
         """
         return None
+
     
     def login_dialog_content(self, req):
         """Return the content displayed below the login dialog as 'lcg.Content' element(s).

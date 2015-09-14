@@ -727,56 +727,6 @@ class Panel(object):
         return self._channel
 
 
-class LoginPanel(Panel):
-    """Displays login/logout controls and other relevant information."""
-    
-    class PanelContent(lcg.Content):
-        def export(self, context):
-            g = context.generator()
-            req = context.req()
-            user = req.user()
-            result = LoginCtrl().export(context)
-            appl = wiking.module.Application
-            if user:
-                if wiking.cfg.display_role_in_login_panel:
-                    # TODO: show only explicitly assigned roles, not special
-                    # roles, such as wiking.Roles.AUTHENTICATED.  Also for
-                    # compound roles, show only the top level role.  This
-                    # information is, however, currnetly not available.
-                    role_names = [role.name() for role in user.roles()]
-                    if role_names:
-                        result += g.br() + '\n' + lcg.concat(role_names, separator=', ')
-                expiration = user.password_expiration()
-                if expiration:
-                    if datetime.date.today() >= expiration:
-                        # Translators: Information text on login panel.
-                        result += g.br() + '\n' + _("Your password expired")
-                    else:
-                        date = lcg.LocalizableDateTime(str(expiration))
-                        # Translators: Login panel info. '%(date)s' is replaced by a concrete date.
-                        result += g.br() + '\n' + _("Your password expires on %(date)s", date=date)
-                uri = appl.password_change_uri(req)
-                if uri:
-                    # Translators: Link on login panel on the webpage.
-                    result += g.br() + '\n' + g.a(_("Change your password"), href=uri)
-            else:
-                uri = appl.registration_uri(req)
-                if uri:
-                    # Translators: Login panel/dialog registration link.  Registration allows the
-                    # user to obtain access to the website/application by submitting his personal
-                    # details.
-                    result += g.br() + '\n' + g.a(_("New user registration"), href=uri)
-            added_content = appl.login_panel_content(req)
-            if added_content:
-                exported = lcg.coerce(added_content).export(context)
-                result += g.escape('\n') + g.div(exported, cls='login-panel-content')
-            return result
-        
-    def __init__(self):
-        super(LoginPanel, self).__init__('login', _("Login"), self.PanelContent(),
-                                         accessible_title=_("Login Panel"))
-        
-
 class Document(object):
     """Independent Wiking document representation.
 
@@ -1376,43 +1326,6 @@ class PanelItem(lcg.Content):
                         cls="panel-field-" + id)
                  for id, value, uri in self._fields]
         return g.div(lcg.concat(items, separator=' '), cls="item")
-
-
-class LoginCtrl(lcg.Content):
-    """Displays current logged in user and login/logout link/button."""
-    def __init__(self, inline=False):
-        super(LoginCtrl, self).__init__()
-        self._inline = inline
-        
-    def export(self, context):
-        g = context.generator()
-        req = context.req()
-        user = req.user()
-        target_uri = req.uri()
-        if user:
-            username = user.name()
-            uri = user.uri()
-            if uri:
-                username = g.a(username, href=uri, title=_("Go to your profile"))
-            # Translators: Logout button label (verb in imperative).
-            cmd, label = ('logout', _("log out"))
-        else:
-            # Translators: Login status info.  If logged, the username is displayed instead.
-            username = _("not logged")
-            # Translators: Login button label (verb in imperative).
-            cmd, label = ('login', _("log in"))
-            if req.uri().endswith('_registration'):
-                target_uri = '/' # Redirect logins from the registration forms to site root
-        link = g.a(label, href=g.uri(target_uri, command=cmd), cls='login-ctrl')
-        if self._inline:
-            link = '[' + link + ']'
-        else:
-            link = g.span('[', cls="hidden") + link + g.span(']', cls="hidden")
-        result = username + ' ' + link
-        if self._inline:
-            # Translators: Login info label (noun) followed by login name and other info.
-            result = _("Login") + ': ' + result
-        return result
 
 
 class LoginDialog(lcg.Content):
