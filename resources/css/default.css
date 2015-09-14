@@ -817,7 +817,7 @@ h5 { font-size: 1.1em; }
 h6 { font-size: 1.1em; }
 h7 { font-size: 1.1em; }
 
-#links, #menu, #submenu, #panels, #language-selection, #bottom, 
+#top, #links, #breadcrumbs, #menu, #submenu, #panels, #bottom, 
 form.list-form-controls .paging-controls {
     display: none;
 }
