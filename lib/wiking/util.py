@@ -1320,6 +1320,7 @@ class LoginControl(lcg.Content):
         user = req.user()
         items = []
         if user:
+            # Translators: Menu item label (verb in imperative).
             items.append(lcg.PopupMenuItem(_("Log out"),
                                            uri=req.make_uri(req.uri(), command='logout')))
             if user.uri():
@@ -1350,14 +1351,11 @@ class LoginControl(lcg.Content):
         req = context.req()
         user = req.user()
         if user:
-            login, displayed_name, profile_uri = user.login(), user.name(), user.uri()
+            login, displayed_name = user.login(), user.name()
+            result = g.span(displayed_name, cls='displayed-user-name')
             tooltip = _("Logged in user:") + ' ' + displayed_name
             if login != displayed_name:
                 tooltip += ' (' + login + ')'
-            result = displayed_name
-            # Translators: Logout button label (verb in imperative).
-            if profile_uri:
-                result = g.a(result, href=profile_uri, cls='user-profile-link')
         else:
             uri = req.uri()
             # Translators: Login status info.  If logged, the username is displayed instead.
