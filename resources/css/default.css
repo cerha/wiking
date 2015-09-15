@@ -759,7 +759,7 @@ body.non-maximized div#page.with-panels #menu {
 
 } /* End of tablet screen layout */
 
-/* Mobile phone screen layout */
+/* Bigger mobile phone screen layout */
 @media only screen and (max-width: 767px) { 
 
 #submenu {
@@ -778,12 +778,18 @@ body.non-maximized #menu a.navigation-link.current .menu-dropdown-ctrl {
 #maximized-mode-control {
     display: none;
 }
-.language-selection .language-name { display: none; }
-.language-selection .language-abbr { display: inline; }
 #site-title .separator, #site-title .subtitle { display: none; }
 
+} /* End of bigger mobile phone screen layout */
 
-} /* End of mobile phone screen layout */
+/* Smaller mobile phone screen layout */
+@media only screen and (max-width: 600px) {
+
+.language-selection .language-name { display: none; }
+.language-selection .language-abbr { display: inline; }
+.login-control .displayed-user-name { display: none; }
+
+} /* End of smaller mobile phone screen layout */
 
 /* Print specific styles */
 @media print {
