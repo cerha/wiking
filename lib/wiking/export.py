@@ -116,7 +116,6 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
 
     _BODY_PARTS = ('wrap', 'media_player')
     _WRAP_PARTS = ('top', 'middle', 'bottom')
-    _TOP_PARTS = ('top_content', 'login_control', 'language_selection')
     _MIDDLE_PARTS = ('page',)
     _PAGE_PARTS = ('links', 'breadcrumbs', 'menu', 'submenu', 'panels', 'main', 'page_clearing')
     _BOTTOM_PARTS = ('bottom_bar', 'footer')
@@ -138,8 +137,6 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         'main': 'main',
         'bottom': 'contentinfo',
     }
-    # Translators: Label for language selection followed by list of languages
-    _LANGUAGE_SELECTION_LABEL = _("Language:")
     _MESSAGE_TYPE_CLASS = {wiking.Request.INFO: 'info',
                            wiking.Request.SUCCESS: 'success',
                            wiking.Request.WARNING: 'warning',
@@ -221,112 +218,6 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             return self._generator.div(content, id=name.replace('_', '-'), **attr)
         else:
             return None
-
-    def _login_control(self, context):
-        g = context._generator
-        req = context.req()
-        user = req.user()
-        if user:
-            username = user.name()
-            uri = user.uri()
-            if uri:
-                username = g.a(username, href=uri)
-            #g.span(_("Login") + ': ', cls='login-ctrl-label'),
-            # Translators: Logout button label (verb in imperative).
-            items = [
-                lcg.PopupMenuItem(_("Log out"), uri=g.uri(req.uri(), command='logout')),
-                lcg.PopupMenuItem(_("My User Profile"), uri=uri),
-            ] + wiking.module.Application.login_control_menu_items(req)
-            return g.span(
-                username + lcg.PopupMenuCtrl(items, None, '.user-name').export(context),
-                cls='user-name',
-            )
-        else:
-            # Translators: Login status info.  If logged, the username is displayed instead.
-            uri = req.uri()
-            if uri.endswith('_registration'):
-                uri = '/' # Redirect logins from the registration forms to site root
-            # Translators: Login button label (verb in imperative).
-            return g.a(_("Log in"), href=g.uri(uri, command='login'), cls='login-link')
-
-    def _login_control_attr(self, context):
-        user = context.req().user()
-        if user:
-            login, name = user.login(), user.name()
-            if login != name:
-                name += ' (' + login + ')'
-            title = _("Logged in user:") + ' ' + name
-        else:
-            title = _("User not logged in")
-        return dict(title=title)
-
-    
-    def _warnings(self, context):
-        g = context.generator()
-        req = context.req()
-        user = req.user()
-        appl = wiking.module.Application
-        result = ''
-        if user:
-            if wiking.cfg.display_role_in_login_panel:
-                # TODO: show only explicitly assigned roles, not special
-                # roles, such as wiking.Roles.AUTHENTICATED.  Also for
-                # compound roles, show only the top level role.  This
-                # information is, however, currnetly not available.
-                role_names = [role.name() for role in user.roles()]
-                if role_names:
-                    result += g.br() + '\n' + lcg.concat(role_names, separator=', ')
-            expiration = user.password_expiration()
-            if expiration:
-                if datetime.date.today() >= expiration:
-                    # Translators: Information text on login panel.
-                    result += g.br() + '\n' + _("Your password expired")
-                else:
-                    date = lcg.LocalizableDateTime(str(expiration))
-                    # Translators: Login panel info. '%(date)s' is replaced by a concrete date.
-                    result += g.br() + '\n' + _("Your password expires on %(date)s", date=date)
-            uri = appl.password_change_uri(req)
-            if uri:
-                # Translators: Link on login panel on the webpage.
-                result += g.br() + '\n' + g.a(_("Change your password"), href=uri)
-        else:
-            uri = appl.registration_uri(req)
-            if uri:
-                # Translators: Login panel/dialog registration link.  Registration allows the
-                # user to obtain access to the website/application by submitting his personal
-                # details.
-                result += g.br() + '\n' + g.a(_("New user registration"), href=uri)
-        added_content = appl.login_panel_content(req)
-        if added_content:
-            exported = lcg.coerce(added_content).export(context)
-            result += g.escape('\n') + g.div(exported, cls='login-panel-content')
-        return result
-
-
-    def _language_selection(self, context):
-        g = context._generator
-        node = context.node()
-        variants = node.variants()
-        if len(variants) <= 1:
-            return None
-        items = [lcg.PopupMenuItem(self.localizer(lang).localize(lcg.language_name(lang) or lang),
-                                   uri=self._uri_node(context, node, lang=lang),
-                                   #cls='lang-' + lang + ' current' if lang == context.lang() else '')
-                               )
-                 for lang in sorted(variants)]
-        lang = context.lang()
-        # The language code CS for Czech is very confusing for ordinary
-        # users, while 'CZ' (which is actually a country code) seems much
-        # more familiar...
-        abbr = dict(cs='CZ').get(lang, lang.upper())
-        return lcg.concat(
-            g.a(self._LANGUAGE_SELECTION_LABEL + ' ', cls='language-selection-label'),
-            g.a((g.span(lcg.language_name(lang) or abbr, cls='language-name'),
-                 g.span(abbr, cls='language-abbr'),
-                 lcg.PopupMenuCtrl(items, 'a').export(context)),
-                cls='language-selection-ctrl',
-            ),
-        )
         
     def _hidden(self, *text):
         return self._generator.span(text, cls="hidden")
@@ -384,18 +275,14 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         return g.div(
             g.div(
                 g.div((g.div(self._site_title(context), id='site-title'),
-                       g.div(self._parts(context, self._TOP_PARTS), id='top-controls'),
+                       g.div(self._top_controls(context), id='top-controls'),
                        g.div(g.noescape('&nbsp;'), id='top-clearing')),
                       id='top-layer3'),
                 id='top-layer2'),
             id='top-layer1')
         
-    def _top_content(self, context):
-        content = context.application.top_content(context.req())
-        if content:
-            return lcg.coerce(content).export(context)
-        else:
-            return None
+    def _top_controls(self, context):
+        return lcg.coerce(context.application.top_controls(context.req())).export(context)
 
     def _links(self, context):
         g = self._generator

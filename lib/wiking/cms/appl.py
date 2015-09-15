@@ -29,6 +29,39 @@ from wiking.cms import CMSExtension, CMSExtensionModule, CookieAuthentication, R
 
 _ = lcg.TranslatableTextFactory('wiking-cms')
 
+class LoginControl(wiking.LoginControl):
+
+    def _menu_items(self, req):
+        items = super(LoginControl, self)._menu_items(req)
+        if wiking.module.WikingManagementInterface.authorized(req):
+            if not req.wmi:
+                items.append(lcg.PopupMenuItem(_("Enter the Management Interface"), uri='/_wmi/'))
+            else:
+                items.append(lcg.PopupMenuItem(_("Leave the Management Interface"), uri='/'))
+        if wiking.module.Application.preview_mode_possible(req):
+            param = wiking.module.Application._PREVIEW_MODE_PARAM
+            # Translators: There are two modes of operation in the CMS
+            # management.  The "Production Mode" displays only the content
+            # publically visible to the website visitors.  "Preview Mode",
+            # on the other hand, displays also the content which is not
+            # published yet.  This content is only visible to the
+            # administrators until it is published.  Please make sure you
+            # translate these two modes consistently acros all their
+            # occurences.
+            if wiking.module.Application.preview_mode(req):
+                label, value = _("Switch to Production Mode"), '0'
+            else:
+                label, value = _("Switch to Preview Mode"), '0'
+            items.append(lcg.PopupMenuItem(label, uri='%s?%s=%s' % (req.uri(), param, value)))
+        if hasattr(req, 'page_write_access') and req.page_write_access:
+            items.append(lcg.PopupMenuItem(_("Edit the Current Page"),
+                                           uri=req.uri() + '?action=update'))
+        if req.check_roles(wiking.cms.Roles.CONTENT_ADMIN):
+            items.append(lcg.PopupMenuItem(_("Create a New Page"), uri='/?action=insert'))
+        return items
+
+
+
 class Application(CookieAuthentication, wiking.Application):
     
     _MAPPING = dict(
@@ -282,37 +315,11 @@ class Application(CookieAuthentication, wiking.Application):
             return req.make_uri(req.module_uri('Registration'), action='insert')
         return None
 
+    def password_change_uri(self, req):
+        return req.make_uri(req.module_uri('Registration'), action='passwd')
+
     def forgotten_password_uri(self, req):
         return req.make_uri(req.module_uri('Registration'), action='reset_password')
-
-    def login_control_menu_items(self, req):
-        items = []
-        if wiking.module.WikingManagementInterface.authorized(req):
-            if not req.wmi:
-                items.append(lcg.PopupMenuItem(_("Enter the Management Interface"), uri='/_wmi/'))
-            else:
-                items.append(lcg.PopupMenuItem(_("Leave the Management Interface"), uri='/'))
-        if wiking.module.Application.preview_mode_possible(req):
-            param = wiking.module.Application._PREVIEW_MODE_PARAM
-            # Translators: There are two modes of operation in the CMS
-            # management.  The "Production Mode" displays only the content
-            # publically visible to the website visitors.  "Preview Mode",
-            # on the other hand, displays also the content which is not
-            # published yet.  This content is only visible to the
-            # administrators until it is published.  Please make sure you
-            # translate these two modes consistently acros all their
-            # occurences.
-            if wiking.module.Application.preview_mode(req):
-                label, value = _("Switch to Production Mode"), '0'
-            else:
-                label, value = _("Switch to Preview Mode"), '0'
-            items.append(lcg.PopupMenuItem(label, uri='%s?%s=%s' % (req.uri(), param, value)))
-        if hasattr(req, 'page_write_access') and req.page_write_access:
-            items.append(lcg.PopupMenuItem(_("Edit the Current Page"),
-                                           uri=req.uri() + '?action=update'))
-        if req.check_roles(wiking.cms.Roles.CONTENT_ADMIN):
-            items.append(lcg.PopupMenuItem(_("Create a New Page"), uri='/?action=insert'))
-        return items
 
     def login_is_email(self, req):
         return wiking.cms.cfg.login_is_email
@@ -334,8 +341,12 @@ class Application(CookieAuthentication, wiking.Application):
         lang = req.preferred_language(raise_error=False) or 'en'
         return wiking.module.Texts.localized_text(req, text, lang=lang)
 
-    def top_content(self, req):
-        return text2content(req, self._text_content(req, wiking.cms.texts.top))
+    def top_controls(self, req):
+        controls = (LoginControl(), wiking.LanguageSelection())
+        top_text = self._text_content(req, wiking.cms.texts.top)
+        if top_text:
+            controls = (lcg.Container(text2content(req, top_text), id='top-content'),) + controls
+        return controls
 
     def footer_content(self, req):
         text = self._text_content(req, wiking.cms.texts.footer)

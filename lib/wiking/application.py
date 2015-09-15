@@ -372,7 +372,7 @@ class Application(wiking.Module):
         return None
 
     def password_change_uri(self, req):
-        """Return the change password URI or None if the link should not appear in login panel."""
+        """Return the change password URI or None if the link should not appear in login control."""
         return None
 
     def login_is_email(self, req):
@@ -386,25 +386,25 @@ class Application(wiking.Module):
         """
         return False
 
-    def top_content(self, req):
-        """Return the content displayed in the top portion of every page under the site title.
+    def top_controls(self, req):
+        """Return the controls displayed on the right side of the top bar.
+
+        The top bar displays the site title (and subtitle) on the left and
+        controls on the right.  Controls are simple (usually interactive)
+        widgets for performing site global actions, such as logging in/out or
+        switching languages (these two controls are returned by default).
+        Derived applications may override this method to add custom controls,
+        customize the built-in controls or re-arrange the order of controls on
+        the top bar.
         
         Any content acceptable by 'lcg.coerce()' may be returned ('lcg.Content'
-        instance, basestring, or their sequence).
+        instance, basestring, or their sequence).  The default implementation
+        returns a tuple of two instances: 'wiking.LoginControl' an
+        'wiking.LanguageSelection'.
 
         """
-        return None
+        return (wiking.LoginControl(), wiking.LanguageSelection())
 
-    def login_control_menu_items(self, req):
-        """Return the extra menu items displayed in login control dropdown menu.
-
-        Returns a sequence of 'lcg.PopupMenuItem' instances representing the
-        items added to the menu by the application.
-
-        """
-        return None
-
-    
     def login_dialog_content(self, req):
         """Return the content displayed below the login dialog as 'lcg.Content' element(s).
 

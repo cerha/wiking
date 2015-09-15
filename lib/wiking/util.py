@@ -1313,6 +1313,98 @@ class UniversalPasswordStorage(PasswordStorage):
 # ============================================================================
 # Classes derived from LCG components
 # ============================================================================
+
+class LoginControl(lcg.Content):
+
+    def _menu_items(self, req):
+        user = req.user()
+        items = []
+        if user:
+            items.append(lcg.PopupMenuItem(_("Log out"),
+                                           uri=req.make_uri(req.uri(), command='logout')))
+            if user.uri():
+                items.append(lcg.PopupMenuItem(_("My User Profile"), uri=user.uri()))
+            password_change_uri = wiking.module.Application.password_change_uri(req)
+            if password_change_uri:
+                password_expiration = user.password_expiration()
+                if password_expiration:
+                    # Translators: Login panel info. '%(date)s' is replaced by a concrete date.
+                    tooltip = _("Your password expires on %(date)s",
+                                date=lcg.LocalizableDateTime(str(password_expiration)))
+                else:
+                    tooltip = None
+                # Translators: Link on login panel on the webpage.
+                items.append(lcg.PopupMenuItem(_("Change your password"), 
+                                               uri=password_change_uri, tooltip=tooltip))
+        else:
+            uri = wiking.module.Application.registration_uri(req)
+            if uri:
+                # Translators: Login panel/dialog registration link.  Registration allows the
+                # user to obtain access to the website/application by submitting his personal
+                # details.
+                items.append(lcg.PopupMenuItem(_("New user registration"), uri=uri))
+        return items
+
+    def export(self, context):
+        g = context.generator()
+        req = context.req()
+        user = req.user()
+        if user:
+            login, displayed_name, profile_uri = user.login(), user.name(), user.uri()
+            tooltip = _("Logged in user:") + ' ' + displayed_name
+            if login != displayed_name:
+                tooltip += ' (' + login + ')'
+            result = displayed_name
+            # Translators: Logout button label (verb in imperative).
+            if profile_uri:
+                result = g.a(result, href=profile_uri, cls='user-profile-link')
+        else:
+            uri = req.uri()
+            # Translators: Login status info.  If logged, the username is displayed instead.
+            if uri.endswith('_registration'):
+                uri = '/' # Redirect logins from the registration forms to site root
+            # Translators: Login button label (verb in imperative).
+            result = g.a(_("Log in"), href=g.uri(uri, command='login'), cls='login-link')
+            tooltip = _("User not logged in")
+        menu_items = self._menu_items(req)
+        if menu_items:
+            result += lcg.PopupMenuCtrl(menu_items, None, '.login-control').export(context)
+        return g.div(result, cls='login-control', title=tooltip)
+
+
+class LanguageSelection(lcg.Content):
+
+    # Translators: Label for language selection followed by the
+    # current language name with a selection of other available
+    # language variants.
+    _LABEL = _("Language:")
+
+    def export(self, context):
+        g = context._generator
+        node = context.node()
+        variants = node.variants()
+        if len(variants) <= 1:
+            return ''
+        e = context.exporter()
+        items = [lcg.PopupMenuItem(e.localizer(lang).localize(lcg.language_name(lang) or lang),
+                                   uri=e.uri(context, node, lang=lang),
+                                   #cls='lang-' + lang + ' current' if lang == context.lang() else '')
+                               )
+                 for lang in sorted(variants)]
+        lang = context.lang()
+        # The language code CS for Czech is very confusing for ordinary
+        # users, while 'CZ' (which is actually a country code) seems much
+        # more familiar...
+        abbr = dict(cs='CZ').get(lang, lang.upper())
+        return g.div(
+            (g.a(self._LABEL + ' ', cls='language-selection-label'),
+             g.a((g.span(lcg.language_name(lang) or abbr, cls='language-name'),
+                  g.span(abbr, cls='language-abbr'),
+                  lcg.PopupMenuCtrl(items, None, '.language-selection-ctrl').export(context)),
+                 cls='language-selection-ctrl')),
+            cls='language-selection',
+        )
+        
     
 class PanelItem(lcg.Content):
 
