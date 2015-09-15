@@ -1315,8 +1315,21 @@ class UniversalPasswordStorage(PasswordStorage):
 # ============================================================================
 
 class LoginControl(lcg.Content):
+    """Login control widget.
 
+    The login control is typically displayed at the top bar of a Wiking
+    application.  Specific Wiking applications may customize the login control
+    by overriding this class and returning an instance of the derived class in
+    'wiking.Application.top_controls()'.
+
+    """
     def _menu_items(self, req):
+        """Return the menu items displayed in the login control dropdown menu.
+
+        Returns a sequence of 'lcg.PopupMenuItem' instances.  This method may
+        be overriden in derived classes to customize the login control menu.
+
+        """
         user = req.user()
         items = []
         if user:
@@ -1371,7 +1384,15 @@ class LoginControl(lcg.Content):
 
 
 class LanguageSelection(lcg.Content):
+    """Language selection widget.
 
+    The language selection widget is typically displayed at the top bar of a
+    Wiking application when the page is available in multiple language
+    variants.  Wiking applications may need to customize the language control
+    by overriding this class and returning an instance of the derived class in
+    'wiking.Application.top_controls()'.
+
+    """
     # Translators: Label for language selection followed by the
     # current language name with a selection of other available
     # language variants.
