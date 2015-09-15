@@ -1379,7 +1379,11 @@ class LoginControl(lcg.Content):
             tooltip = _("User not logged in")
         menu_items = self._menu_items(req)
         if menu_items:
-            result += lcg.PopupMenuCtrl(menu_items, None, '.login-control').export(context)
+            result = g.span(
+                (result,
+                 lcg.PopupMenuCtrl(menu_items, None, '.login-dropdown').export(context)),
+                cls='login-dropdown',
+            )
         return g.div(result, cls='login-control', title=tooltip)
 
 
