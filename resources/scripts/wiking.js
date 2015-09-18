@@ -278,7 +278,7 @@ wiking.MainMenu = Class.create(lcg.Menu, {
     toggle_dropdown: function (dropdown) {
 	wiking.handler.close_popups();
 	if (!dropdown.visible()) {
-	    wiking.handler.register_popup(dropdown, '.menu_dropdown', this.toggle_dropdown);
+	    wiking.handler.register_popup(dropdown, '.menu-dropdown', this.toggle_dropdown);
 	    // Reset the style to the initial state (when clicking too fast, the effects
 	    // may overlap and leave a messy final style).
 	    dropdown.setAttribute('style', 'display: none;');
