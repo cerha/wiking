@@ -399,11 +399,11 @@ class Application(wiking.Module):
         
         Any content acceptable by 'lcg.coerce()' may be returned ('lcg.Content'
         instance, basestring, or their sequence).  The default implementation
-        returns a tuple of two instances: 'wiking.LoginControl' an
+        returns a list of two instances: 'wiking.LoginControl' and
         'wiking.LanguageSelection'.
 
         """
-        return (wiking.LoginControl(), wiking.LanguageSelection())
+        return [wiking.LoginControl(), wiking.LanguageSelection()]
 
     def login_dialog_content(self, req):
         """Return the content displayed below the login dialog as 'lcg.Content' element(s).

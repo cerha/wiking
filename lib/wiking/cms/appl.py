@@ -61,7 +61,6 @@ class LoginControl(wiking.LoginControl):
         return items
 
 
-
 class Application(CookieAuthentication, wiking.Application):
     
     _MAPPING = dict(
@@ -342,10 +341,10 @@ class Application(CookieAuthentication, wiking.Application):
         return wiking.module.Texts.localized_text(req, text, lang=lang)
 
     def top_controls(self, req):
-        controls = (LoginControl(), wiking.LanguageSelection())
+        controls = [LoginControl(), wiking.LanguageSelection()]
         top_text = self._text_content(req, wiking.cms.texts.top)
         if top_text:
-            controls = (lcg.Container(text2content(req, top_text), id='top-content'),) + controls
+            controls.insert(0, lcg.Container(text2content(req, top_text), id='top-content'))
         return controls
 
     def footer_content(self, req):
