@@ -35,7 +35,8 @@ class LoginControl(wiking.LoginControl):
         items = super(LoginControl, self)._menu_items(req)
         if wiking.module.WikingManagementInterface.authorized(req):
             if not req.wmi:
-                items.append(lcg.PopupMenuItem(_("Enter the Management Interface"), uri='/_wmi/'))
+                items.append(lcg.PopupMenuItem(_("Enter the Management Interface"), uri='/_wmi/',
+                                               cls='wmi'))
             else:
                 items.append(lcg.PopupMenuItem(_("Leave the Management Interface"), uri='/'))
         if wiking.module.Application.preview_mode_possible(req):
@@ -55,9 +56,10 @@ class LoginControl(wiking.LoginControl):
             items.append(lcg.PopupMenuItem(label, uri='%s?%s=%s' % (req.uri(), param, value)))
         if hasattr(req, 'page_write_access') and req.page_write_access:
             items.append(lcg.PopupMenuItem(_("Edit the Current Page"),
-                                           uri=req.uri() + '?action=update'))
+                                           uri=req.uri() + '?action=update', cls='edit-page'))
         if req.check_roles(wiking.cms.Roles.CONTENT_ADMIN):
-            items.append(lcg.PopupMenuItem(_("Create a New Page"), uri='/?action=insert'))
+            items.append(lcg.PopupMenuItem(_("Create a New Page"), uri='/?action=insert',
+                                           cls='new-page'))
         return items
 
 

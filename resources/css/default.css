@@ -455,6 +455,14 @@ h1 a { outline: none; }
     padding-left: 28px;
     background: url(gear-16x16.png) 8px center no-repeat;
 }
+.popup-menu-widget li.edit-page a {
+    padding-left: 28px;
+    background: url(edit-page.png) 10px center no-repeat;
+}
+.popup-menu-widget li.new-page a {
+    padding-left: 28px;
+    background: url(new-page.png) 10px center no-repeat;
+}
 
 .language-selection {
     white-space: nowrap;
