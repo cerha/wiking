@@ -411,13 +411,17 @@ h1 a { outline: none; }
     padding: 3px 0 3px 24px;
     background: url(user.png) 1px center no-repeat;
 }
-.login-control a.login-link {
-    color: $color.foreground;
-    padding: 3px 5px 3px 20px;
-    text-decoration: none;
+.login-control .login-dropdown {
+    padding: 3px 0 3px 5px;
     white-space: nowrap;
     border-radius: 3px;
-    background: url(login.png) 1px center no-repeat #ddd;
+    background: #ddd;
+}
+.login-control .login-link {
+    color: $color.foreground;
+    padding-left: 20px;
+    text-decoration: none;
+    background: url(login.png) left center no-repeat;
 }
 
 .language-selection {
@@ -787,7 +791,10 @@ body.non-maximized #menu a.navigation-link.current .menu-dropdown-ctrl {
 
 .language-selection .language-name { display: none; }
 .language-selection .language-abbr { display: inline; }
+.login-control { padding-left: 14px; }
 .login-control .displayed-user-name { display: none; }
+.login-control .login-dropdown { background: none; }
+.login-control .login-link { display: none }
 
 } /* End of smaller mobile phone screen layout */
 
