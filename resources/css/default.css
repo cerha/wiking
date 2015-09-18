@@ -216,17 +216,17 @@ div.table-of-contents ul {
     padding-left: 19px;
 }
 .list-form-controls button.prev-page-button span {
-    background-image: url(previous.png);
-    padding-left: 18px;
+    background-image: url(arrow-left.png);
+    padding-left: 16px;
 }
 .list-form-controls button.next-page-button span {
-    background-image: url(next.png);
-    padding-right: 20px;
+    background-image: url(arrow-right.png);
+    padding-right: 16px;
     background-position: right center;
 }
 .list-form-controls button.search-button span {
     background-image: url(search.png);
-    padding-left: 18px;
+    padding-left: 16px;
 }
 
 div.wiking-image-gallery img {
@@ -270,14 +270,14 @@ div.item span.panel-field-date {
     background-repeat: no-repeat;
 }
 .page-navigation .navigation-ctrl.prev {
-    background-image: url(previous.png);
+    background-image: url(arrow-left.png);
     background-position: left center;
-    padding-left: 18px;
+    padding-left: 16px;
 }
 .page-navigation .navigation-ctrl.next {
-    background-image: url(next.png);
+    background-image: url(arrow-right.png);
     background-position: right center;
-    padding-right: 18px;
+    padding-right: 16px;
 }
 .page-navigation .navigation-ctrl.dead {
     opacity: 0.6;
