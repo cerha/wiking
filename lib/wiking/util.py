@@ -1351,12 +1351,14 @@ class LoginControl(lcg.Content):
                 items.append(lcg.PopupMenuItem(_("Change your password"), 
                                                uri=password_change_uri, tooltip=tooltip))
         else:
+            items.append(lcg.PopupMenuItem(_("Log in to an existing user account"),
+                                           uri=req.make_uri(req.uri(), command='login')))
             uri = wiking.module.Application.registration_uri(req)
             if uri:
                 # Translators: Login panel/dialog registration link.  Registration allows the
                 # user to obtain access to the website/application by submitting his personal
                 # details.
-                items.append(lcg.PopupMenuItem(_("New user registration"), uri=uri))
+                items.append(lcg.PopupMenuItem(_("Register a new user account"), uri=uri)),
         return items
 
     def export(self, context):
