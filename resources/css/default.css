@@ -423,7 +423,7 @@ h1 a { outline: none; }
 .language-selection {
     white-space: nowrap;
 }
-.language-selection a.language-selection-ctrl {
+.language-selection .language-selection-dropdown {
     padding: 3px 0 3px 5px;
     border-radius: 3px;
     background: #ddd;

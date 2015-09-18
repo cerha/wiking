@@ -1422,11 +1422,12 @@ class LanguageSelection(lcg.Content):
         # more familiar...
         abbr = dict(cs='CZ').get(lang, lang.upper())
         return g.div(
-            (g.a(self._LABEL + ' ', cls='language-selection-label'),
-             g.a((g.span(lcg.language_name(lang) or abbr, cls='language-name'),
-                  g.span(abbr, cls='language-abbr'),
-                  lcg.PopupMenuCtrl(items, None, '.language-selection-ctrl').export(context)),
-                 cls='language-selection-ctrl')),
+            (g.span(self._LABEL + ' ', cls='language-selection-label'),
+             g.span((g.span(lcg.language_name(lang) or abbr, cls='language-name'),
+                     g.span(abbr, cls='language-abbr'),
+                     lcg.PopupMenuCtrl(items, None,
+                                       '.language-selection-dropdown').export(context)),
+                    cls='language-selection-dropdown')),
             cls='language-selection',
         )
         
