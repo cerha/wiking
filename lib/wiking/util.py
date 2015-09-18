@@ -1334,10 +1334,11 @@ class LoginControl(lcg.Content):
         items = []
         if user:
             # Translators: Menu item label (verb in imperative).
-            items.append(lcg.PopupMenuItem(_("Log out"),
+            items.append(lcg.PopupMenuItem(_("Log out"), cls='logout',
                                            uri=req.make_uri(req.uri(), command='logout')))
             if user.uri():
-                items.append(lcg.PopupMenuItem(_("My User Profile"), uri=user.uri()))
+                items.append(lcg.PopupMenuItem(_("My User Profile"), uri=user.uri(),
+                                               cls='user-profile'))
             password_change_uri = wiking.module.Application.password_change_uri(req)
             if password_change_uri:
                 password_expiration = user.password_expiration()
@@ -1348,17 +1349,18 @@ class LoginControl(lcg.Content):
                 else:
                     tooltip = None
                 # Translators: Link on login panel on the webpage.
-                items.append(lcg.PopupMenuItem(_("Change your password"), 
+                items.append(lcg.PopupMenuItem(_("Change your password"), cls='change-password', 
                                                uri=password_change_uri, tooltip=tooltip))
         else:
-            items.append(lcg.PopupMenuItem(_("Log in to an existing user account"),
+            items.append(lcg.PopupMenuItem(_("Log in to an existing user account"), cls='login',
                                            uri=req.make_uri(req.uri(), command='login')))
             uri = wiking.module.Application.registration_uri(req)
             if uri:
                 # Translators: Login panel/dialog registration link.  Registration allows the
                 # user to obtain access to the website/application by submitting his personal
                 # details.
-                items.append(lcg.PopupMenuItem(_("Register a new user account"), uri=uri)),
+                items.append(lcg.PopupMenuItem(_("Register a new user account"), uri=uri,
+                                               cls='new-user-registration')),
         return items
 
     def export(self, context):

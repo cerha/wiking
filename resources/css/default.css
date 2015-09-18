@@ -423,6 +423,30 @@ h1 a { outline: none; }
     text-decoration: none;
     background: url(login.png) left center no-repeat;
 }
+.popup-menu-widget li.login a {
+    padding-left: 28px;
+    background: url(login.png) 8px center no-repeat;
+}
+.popup-menu-widget li.logout a {
+    padding-left: 28px;
+    background: url(logout.png) 8px center no-repeat;
+}
+.popup-menu-widget li.user-profile a {
+    padding-left: 28px;
+    background: url(user-16x16.png) 8px center no-repeat;
+}
+.popup-menu-widget li.change-password a {
+    padding-left: 28px;
+    background: url(key-16x16.png) 8px center no-repeat;
+}
+.popup-menu-widget li.new-user-registration a {
+    padding-left: 28px;
+    background: url(new-user-16x16.png) 10px center no-repeat;
+}
+.popup-menu-widget li.wmi a {
+    padding-left: 28px;
+    background: url(gear-16x16.png) 8px center no-repeat;
+}
 
 .language-selection {
     white-space: nowrap;
