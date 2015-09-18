@@ -196,11 +196,19 @@ div.table-of-contents ul {
     opacity: 0.4;
 }
 .cms-page-actions button.action-update span { 
-    background-image: url(edit.png);
+    background-image: url(edit-page.png);
     padding-left: 19px;
 }
 .cms-page-actions button.action-options span { 
     background-image: url(properties.png);
+    padding-left: 19px;
+}
+.cms-page-actions button.action-new_page span {
+    background-image: url(new-page.png);
+    padding-left: 19px;
+}
+.cms-page-actions button.action-delete span {
+    background-image: url(remove.png);
     padding-left: 19px;
 }
 .cms-page-actions button.action-commit span { 
