@@ -62,7 +62,8 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             self._req = req
             self._layout = layout
             node = top_node = self.node()
-            while top_node and top_node.parent() and top_node.parent() is not node.root():
+            root = node.root()
+            while top_node and top_node.parent() and top_node.parent() is not root:
                 top_node = top_node.parent()
             self._top_node = top_node
             application = wiking.module.Application
