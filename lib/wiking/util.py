@@ -1379,15 +1379,6 @@ class WikingNode(lcg.ContentNode):
         node._set_parent(self)
         self._children += (node,)
         
-    def top(self):
-        parent = self._parent
-        if parent is None:
-            return None
-        elif parent.parent() is None:
-            return self
-        else:
-            return parent.top()
-    
     def layout(self):
         return self._layout
 

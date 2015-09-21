@@ -59,16 +59,19 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         def _init_kwargs(self, req=None, **kwargs):
             super(Exporter.Context, self)._init_kwargs(timezone=req.timezone(), **kwargs)
             self._req = req
-            node = self.node()
+            node = top_node = self.node()
+            while top_node and top_node.parent() and top_node.parent() is not node.root():
+                top_node = top_node.parent()
+            self._top_node = top_node
             application = wiking.module.Application
-            self._panels = application.panels(req, node.lang())
+            self._panels = application.panels(req, self.lang())
             # Allow simple access to some often used data through context attributes ...
             # These attributes are not the part of the official context extension (such as the
             # 'req()' method, so their use should be limited to this module only!
             if isinstance(node, wiking.WikingNode):
                 # Not needed when exporting AJAX response content, which does not use WikingNode.
                 self.has_menu = any(not n.hidden() for n in node.root().children())
-                self.has_submenu = any(not n.hidden() for n in node.top().children())
+                self.has_submenu = any(not n.hidden() for n in top_node.children())
             self.application = application
             # Make sure that Prototype.js is always loaded first, so that it is
             # available in any other scripts.
@@ -89,6 +92,10 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         def panels(self):
             """Return the list of 'wiking.Panel' instances to be displayed on the page."""
             return self._panels
+
+        def top_node(self):
+            """Return the top level parent of this node before the root node."""
+            return self._top_node
 
     class Layout(object):
         """Enumeration of output document layout styles."""
@@ -297,7 +304,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         g = self._generator
         items = [item for item in context.node().root().children() if not item.hidden()]
         if items:
-            top = context.node().top()
+            top = context.top_node()
             n = len(items)
             style = "width: %d%%" % (100 / n)
             last_style = "width: %d%%" % (100 - (100 / n * (n - 1)))
@@ -327,7 +334,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         else:
             heading = _("Main navigation")
             heading_id = 'main-navigation'
-        tree = lcg.FoldableTree(context.node().top(), label=_("Hierarchical navigation menu"),
+        tree = lcg.FoldableTree(context.top_node(), label=_("Hierarchical navigation menu"),
                                 tooltip=_("Expand/collapse complete menu hierarchy"))
         content = tree.export(context)
         extra_content = application.menu_panel_bottom_content(req)
