@@ -56,9 +56,11 @@ class MinimalExporter(lcg.HtmlExporter):
 class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
 
     class Context(lcg.HtmlExporter.Context):
-        def _init_kwargs(self, req=None, **kwargs):
+        def _init_kwargs(self, req=None, layout='default', **kwargs):
             super(Exporter.Context, self)._init_kwargs(timezone=req.timezone(), **kwargs)
+            assert layout in pytis.util.public_attr_values(self._exporter.Layout), layout
             self._req = req
+            self._layout = layout
             node = top_node = self.node()
             while top_node and top_node.parent() and top_node.parent() is not node.root():
                 top_node = top_node.parent()
@@ -96,6 +98,10 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         def top_node(self):
             """Return the top level parent of this node before the root node."""
             return self._top_node
+
+        def layout(self):
+            """Return the current export layout as one of 'Exporter.Layout' constants."""
+            return self._layout
 
     class Layout(object):
         """Enumeration of output document layout styles."""
@@ -149,8 +155,8 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         cls = ['page-id-' + self._safe_css_id(context.node().id().strip('/'))]
         cls.extend(['parent-page-id-' + self._safe_css_id(node.id().strip('/'))
                     for node in context.node().path()[1:-1]])
-        cls.extend(['lang-%s' % context.lang(),
-                    (context.node().layout() or self.Layout.DEFAULT) + '-layout'])
+        cls.extend(('lang-%s' % context.lang(),
+                    context.layout() + '-layout'))
         if context.req().maximized():
             cls.append('maximized')
         else:
@@ -158,7 +164,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         return super(Exporter, self)._body_attr(context, onload=onload, cls=' '.join(cls), **kwargs)
 
     def _body_content(self, context):
-        if context.node().layout() == self.Layout.FRAME:
+        if context.layout() == self.Layout.FRAME:
             return (self._messages(context),
                     self._content(context))
         else:

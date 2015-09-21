@@ -173,8 +173,7 @@ class Handler(object):
                                      active=item.active(), foldable=item.foldable(), hidden=hidden,
                                      children=[mknode(i) for i in item.submenu()],
                                      resource_provider=resource_provider,
-                                     globals=document.globals(),
-                                     layout=document.layout())
+                                     globals=document.globals())
             nodes[item_uri] = node
             return node
         top_level_nodes = [mknode(item) for item in application.menu(req)]
@@ -202,8 +201,10 @@ class Handler(object):
     def _serve_document(self, req, document, status_code=200):
         """Serve a document using the Wiking exporter."""
         lang = document.lang() or req.preferred_language(raise_error=False) or 'en'
+        layout = document.layout() or self._exporter.Layout.DEFAULT
         node = self._build(req, document, lang)
-        context = self._exporter.context(node, lang, sec_lang=document.sec_lang(), req=req)
+        context = self._exporter.context(node, lang, sec_lang=document.sec_lang(),
+                                         req=req, layout=layout)
         exported = self._exporter.export(context)
         # exported, t1, t2 = timeit(self._exporter.export, context)
         # log(OPERATIONAL, "Document exported in %.1f ms (%.1f ms CPU):" %

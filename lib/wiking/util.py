@@ -1366,16 +1366,9 @@ class UniversalPasswordStorage(PasswordStorage):
 
 class WikingNode(lcg.ContentNode):
 
-    def __init__(self, id, layout=None, **kwargs):
-        super(WikingNode, self).__init__(id, **kwargs)
-        self._layout = layout
-
     def add_child(self, node):
         node._set_parent(self)
         self._children += (node,)
-        
-    def layout(self):
-        return self._layout
 
     
 class PanelItem(lcg.Content):
