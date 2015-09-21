@@ -2079,9 +2079,9 @@ class NavigablePages(Pages):
             
         def export(self, context):
             g = context.generator()
-            def ctrl(node, label, cls):
+            def ctrl(target, label, cls):
                 # Check that the target node is within the publications's children.
-                if node:
+                if target:
                     uri = context.uri(target)
                     title = target.title()
                 else:
