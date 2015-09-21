@@ -130,7 +130,7 @@ class Handler(object):
             styles.append(x)
         return lcg.ResourceProvider(resources=styles, dirs=wiking.cfg.resource_path)
 
-    def _build(self, req, document):
+    def _build(self, req, document, lang):
         """Return the 'WikingNode' instance representing the given document.
 
         The whole application menu structure must be built in order to create
@@ -140,7 +140,6 @@ class Handler(object):
         """
         application = self._application
         uri = '/' + req.uri().strip('/')
-        lang = document.lang() or req.preferred_language(raise_error=False) or 'en'
         nodes = {}
         resource_provider = self._resource_provider(req)
         def mknode(item):
@@ -169,7 +168,7 @@ class Handler(object):
             # The identifier is encoded to allow unicode characters within it.  The encoding
             # actually doesnt't matter, we just need any unique 8-bit string.
             node = wiking.WikingNode(item_uri, title=title,
-                                     descr=item.descr(), content=content, lang=lang,
+                                     descr=item.descr(), content=content,
                                      variants=[lcg.Variant(v) for v in variants],
                                      active=item.active(), foldable=item.foldable(), hidden=hidden,
                                      children=[mknode(i) for i in item.submenu()],
@@ -202,8 +201,9 @@ class Handler(object):
 
     def _serve_document(self, req, document, status_code=200):
         """Serve a document using the Wiking exporter."""
-        node = self._build(req, document)
-        context = self._exporter.context(node, node.lang(), sec_lang=document.sec_lang(), req=req)
+        lang = document.lang() or req.preferred_language(raise_error=False) or 'en'
+        node = self._build(req, document, lang)
+        context = self._exporter.context(node, lang, sec_lang=document.sec_lang(), req=req)
         exported = self._exporter.export(context)
         # exported, t1, t2 = timeit(self._exporter.export, context)
         # log(OPERATIONAL, "Document exported in %.1f ms (%.1f ms CPU):" %
