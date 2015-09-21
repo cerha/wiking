@@ -155,10 +155,12 @@ class Handler(object):
                 variants = document.variants()
                 if variants is None:
                     variants = item.variants()
+                globals_ = document.globals()
             else:
                 title = item.title()
                 content = None
                 variants = item.variants()
+                globals_ = None
             hidden = item.hidden()
             if variants is None:
                 variants = application.languages()
@@ -172,21 +174,23 @@ class Handler(object):
                                    active=item.active(), foldable=item.foldable(), hidden=hidden,
                                    children=[mknode(i) for i in item.submenu()],
                                    resource_provider=resource_provider,
-                                   globals=document.globals())
+                                   globals=globals_)
             nodes[item_uri] = node
             return node
         top_level_nodes = [mknode(item) for item in application.menu(req)]
-        # Find the parent node by the identifier prefix.
-        parent = None
-        for i in range(len(req.path) - 1):
-            key = '/' + '/'.join(req.path[:len(req.path) - i - 1])
-            if key in nodes:
-                parent = nodes[key]
-                break
         try:
             node = nodes[uri]
         except KeyError:
-            # Create the current document's node if it was not created with the menu.
+            # The current document's node was not created with the menu.
+            # We need to create an extra node and add into the structure.
+            parent = None
+            pathlen = len(req.path)
+            for i in range(pathlen - 1):
+                # Find the parent node by the closest identifier prefix.
+                subpath = '/' + '/'.join(req.path[:pathlen - i - 1])
+                if subpath in nodes:
+                    parent = nodes[subpath]
+                    break
             variants = document.variants() or parent and parent.variants() or None
             node = mknode(wiking.MenuItem(uri, document.title(), hidden=True, variants=variants))
             if parent:
