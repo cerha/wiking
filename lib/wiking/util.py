@@ -811,6 +811,9 @@ class Document(object):
             target language (supported by the application and its
             translations).  Should always be defined for language dependent
             content, unless the whole application is mono-lingual.
+          sec_lang -- secondary language of the content as a an iso language
+            code or None if no secondary language applies.  Corrensonds to the
+            'lcg.Exporter.Context' constructor argument of the same name.
           variants -- available language variants as a sequence of language
             codes.  Should be defined if only a limited set of target languages
             for the document exist.  For example when the document is read form
@@ -1363,17 +1366,13 @@ class UniversalPasswordStorage(PasswordStorage):
 
 class WikingNode(lcg.ContentNode):
 
-    def __init__(self, id, lang=None, sec_lang=None, layout=None, **kwargs):
+    def __init__(self, id, lang=None, layout=None, **kwargs):
         super(WikingNode, self).__init__(id, **kwargs)
         self._lang = lang
-        self._sec_lang = sec_lang
         self._layout = layout
 
     def lang(self):
         return self._lang
-
-    def sec_lang(self):
-        return self._sec_lang
 
     def add_child(self, node):
         node._set_parent(self)

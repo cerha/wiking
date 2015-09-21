@@ -169,8 +169,7 @@ class Handler(object):
             # The identifier is encoded to allow unicode characters within it.  The encoding
             # actually doesnt't matter, we just need any unique 8-bit string.
             node = wiking.WikingNode(item_uri, title=title,
-                                     descr=item.descr(), content=content,
-                                     lang=lang, sec_lang=document.sec_lang(),
+                                     descr=item.descr(), content=content, lang=lang,
                                      variants=[lcg.Variant(v) for v in variants],
                                      active=item.active(), foldable=item.foldable(), hidden=hidden,
                                      children=[mknode(i) for i in item.submenu()],
@@ -204,7 +203,7 @@ class Handler(object):
     def _serve_document(self, req, document, status_code=200):
         """Serve a document using the Wiking exporter."""
         node = self._build(req, document)
-        context = self._exporter.context(node, node.lang(), sec_lang=node.sec_lang(), req=req)
+        context = self._exporter.context(node, node.lang(), sec_lang=document.sec_lang(), req=req)
         exported = self._exporter.export(context)
         # exported, t1, t2 = timeit(self._exporter.export, context)
         # log(OPERATIONAL, "Document exported in %.1f ms (%.1f ms CPU):" %
