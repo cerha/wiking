@@ -154,14 +154,12 @@ class Handler(object):
                 content = document.content()
                 if isinstance(content, (list, tuple)):
                     content = lcg.Container([c for c in content if c is not None])
-                panels = application.panels(req, lang)
                 variants = document.variants()
                 if variants is None:
                     variants = item.variants()
             else:
                 title = item.title()
                 content = None
-                panels = ()
                 variants = item.variants()
             hidden = item.hidden()
             if variants is None:
@@ -178,7 +176,7 @@ class Handler(object):
                                      children=[mknode(i) for i in item.submenu()],
                                      resource_provider=resource_provider,
                                      globals=document.globals(),
-                                     panels=panels, layout=document.layout())
+                                     layout=document.layout())
             nodes[item_uri] = node
             return node
         top_level_nodes = [mknode(item) for item in application.menu(req)]

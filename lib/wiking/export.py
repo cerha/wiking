@@ -57,16 +57,19 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
 
     class Context(lcg.HtmlExporter.Context):
         def _init_kwargs(self, req=None, **kwargs):
+            super(Exporter.Context, self)._init_kwargs(timezone=req.timezone(), **kwargs)
             self._req = req
-            # Some harmless hacks for faster access to some often used parameters...
+            node = self.node()
+            application = wiking.module.Application
+            self._panels = application.panels(req, node.lang())
+            # Allow simple access to some often used data through context attributes ...
             # These attributes are not the part of the official context extension (such as the
             # 'req()' method, so their use should be limited to this module only!
-            if isinstance(self.node(), wiking.WikingNode):
+            if isinstance(node, wiking.WikingNode):
                 # Not needed when exporting AJAX response content, which does not use WikingNode.
-                self.has_menu = bool([n for n in self.node().root().children() if not n.hidden()])
-                self.has_submenu = bool([n for n in self.node().top().children() if not n.hidden()])
-            self.application = wiking.module.Application
-            super(Exporter.Context, self)._init_kwargs(timezone=req.timezone(), **kwargs)
+                self.has_menu = any(not n.hidden() for n in node.root().children())
+                self.has_submenu = any(not n.hidden() for n in node.top().children())
+            self.application = application
             # Make sure that Prototype.js is always loaded first, so that it is
             # available in any other scripts.
             scripts = ('prototype.js', 'effects.js', 'gettext.js', 'lcg.js', 'wiking.js')
@@ -82,6 +85,10 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
 
             """
             return self._req
+
+        def panels(self):
+            """Return the list of 'wiking.Panel' instances to be displayed on the page."""
+            return self._panels
 
     class Layout(object):
         """Enumeration of output document layout styles."""
@@ -177,7 +184,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             cls += ' with-menu'
         if context.has_submenu:
             cls += ' with-submenu'
-        if node.panels() and context.req().show_panels():
+        if context.panels() and context.req().show_panels():
             cls += ' with-panels'
         return dict(cls=cls.strip() or None)
 
@@ -228,7 +235,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         g = self._generator
         tags = super(Exporter, self)._head(context) + \
             [g.link(rel='alternate', type='application/rss+xml', title=p.title(), href=p.channel())
-             for p in context.node().panels() if p.channel() is not None]
+             for p in context.panels() if p.channel() is not None]
         if wiking.cfg.site_icon:
             tags.append(g.link(rel='shortcut icon', href='/favicon.ico'))
         req = context.req()
@@ -277,7 +284,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         if len(context.node().variants()) > 1:
             links.append(g.a(_("Language selection"), href='#language-selection-anchor'))
         if context.req().show_panels():
-            for panel in context.node().panels():
+            for panel in context.panels():
                 links.append(g.a(panel.accessible_title(), href='#panel-%s-anchor ' % panel.id()))
         return _("Jump in page") + ": " + lcg.concat(links, separator=' | ')
         
@@ -331,9 +338,11 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                      cls='menu-panel')
 
     def _panels(self, context):
+        if not context.panels():
+            return None
         g = self._generator
         req = context.req()
-        panels = context.node().panels()
+        panels = context.panels()
         if not panels:
             return None
         if not req.show_panels():
