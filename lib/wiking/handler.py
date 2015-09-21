@@ -131,12 +131,11 @@ class Handler(object):
         return lcg.ResourceProvider(resources=styles, dirs=wiking.cfg.resource_path)
 
     def _build(self, req, document, lang):
-        """Return the 'WikingNode' instance representing the given document.
+        """Return the 'lcg.ContentNode' instance representing the given document.
 
         The whole application menu structure must be built in order to create
-        the 'WikingNone' instance ('WikingNode' is derived from
-        'lcg.ContentNode').
-        
+        the 'lcg.ContentNone' instance.
+
         """
         application = self._application
         uri = '/' + req.uri().strip('/')
@@ -167,13 +166,13 @@ class Handler(object):
                 hidden = True
             # The identifier is encoded to allow unicode characters within it.  The encoding
             # actually doesnt't matter, we just need any unique 8-bit string.
-            node = wiking.WikingNode(item_uri, title=title,
-                                     descr=item.descr(), content=content,
-                                     variants=[lcg.Variant(v) for v in variants],
-                                     active=item.active(), foldable=item.foldable(), hidden=hidden,
-                                     children=[mknode(i) for i in item.submenu()],
-                                     resource_provider=resource_provider,
-                                     globals=document.globals())
+            node = lcg.ContentNode(item_uri, title=title,
+                                   descr=item.descr(), content=content,
+                                   variants=[lcg.Variant(v) for v in variants],
+                                   active=item.active(), foldable=item.foldable(), hidden=hidden,
+                                   children=[mknode(i) for i in item.submenu()],
+                                   resource_provider=resource_provider,
+                                   globals=document.globals())
             nodes[item_uri] = node
             return node
         top_level_nodes = [mknode(item) for item in application.menu(req)]
@@ -191,11 +190,12 @@ class Handler(object):
             variants = document.variants() or parent and parent.variants() or None
             node = mknode(wiking.MenuItem(uri, document.title(), hidden=True, variants=variants))
             if parent:
-                parent.add_child(node)
+                node._set_parent(parent)
+                parent._children += (node,)
             else:
                 top_level_nodes.append(node)
-        wiking.WikingNode('__wiking_root_node__', title='root', content=lcg.Content(),
-                          children=top_level_nodes)
+        lcg.ContentNode('__wiking_root_node__', title='root', content=lcg.Content(),
+                        children=top_level_nodes)
         return node
 
     def _serve_document(self, req, document, status_code=200):

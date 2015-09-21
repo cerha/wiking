@@ -1363,13 +1363,6 @@ class UniversalPasswordStorage(PasswordStorage):
 # ============================================================================
 # Classes derived from LCG components
 # ============================================================================
-
-class WikingNode(lcg.ContentNode):
-
-    def add_child(self, node):
-        node._set_parent(self)
-        self._children += (node,)
-
     
 class PanelItem(lcg.Content):
 
