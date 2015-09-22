@@ -247,7 +247,34 @@ div.table-of-contents ul {
     background: url(undo.png) left center no-repeat;
     padding-left: 19px;
 }
-
+.pytis-form.browse-form .actions button.action-insert span {
+    background: url(plus.png) left center no-repeat;
+    padding-left: 19px;
+}
+.pytis-form.show-form .actions button.action-list span {
+    background: url(arrow-up.png) -2px center no-repeat;
+    padding-left: 18px;
+}
+.pytis-form.show-form .actions button.action-delete span {
+    background: url(remove.png) left center no-repeat;
+    padding-left: 19px;
+}
+.pytis-form.show-form .actions button.action-update span {
+    background: url(edit-page.png) left center no-repeat;
+    padding-left: 19px;
+}
+.pytis-form.show-form .actions button.action-passwd span {
+    background: url(key-16x16.png) left center no-repeat;
+    padding-left: 19px;
+}
+.pytis-form.show-form .actions button.action-enable span {
+    background: url(thumb-up.png) left center no-repeat;
+    padding-left: 19px;
+}
+.pytis-form.show-form .actions button.action-disable span {
+    background: url(thumb-down.png) left center no-repeat;
+    padding-left: 19px;
+}
 
 div.wiking-image-gallery img {
     margin-right: 1.6em;
