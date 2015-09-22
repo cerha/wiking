@@ -147,9 +147,13 @@ class Handler(object):
             # results in all cases (such as for '/').
             item_uri = '/' + item.id().strip('/')
             if item_uri == uri:
+                # Note, the document title should not override the menu item title.
+                # Only the main page heading is affected, but the ContentNode's 
+                # title matches the MenuItem's title.
                 title = document.title() or item.title()
                 if title and document.subtitle():
                     title = lcg.concat(title, ' :: ', document.subtitle())
+                heading = lcg.TextContent(title)
                 content = document.content()
                 if isinstance(content, (list, tuple)):
                     content = lcg.Container([c for c in content if c is not None])
@@ -158,13 +162,13 @@ class Handler(object):
                     variants = item.variants()
                 globals_ = document.globals()
             else:
-                title = item.title()
-                content = None
                 variants = item.variants()
+                heading = None
+                content = None
                 globals_ = None
             if variants is None:
                 variants = all_variants
-            node = lcg.ContentNode(item_uri, title=title,
+            node = lcg.ContentNode(item_uri, title=item.title(), heading=heading,
                                    descr=item.descr(), content=content,
                                    variants=[lcg.Variant(v) for v in variants],
                                    active=item.active(), foldable=item.foldable(),
@@ -183,7 +187,7 @@ class Handler(object):
             parent = None
             pathlen = len(req.path)
             for i in range(pathlen - 1):
-                # Find the parent node by the closest identifier prefix.
+                # Find the parent node by the closest uri prefix.
                 subpath = '/' + '/'.join(req.path[:pathlen - i - 1])
                 if subpath in nodes:
                     parent = nodes[subpath]
