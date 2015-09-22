@@ -15,7 +15,7 @@
 #messages .success {
     color: $color.message-fg;
     border-color: $color.message-border;
-    background: $color.message-bg url(ok.png) 8px 4px no-repeat;
+    background: $color.message-bg url(success.png) 8px 4px no-repeat;
 }
 #messages .warning { 
     color: $color.error-fg;
@@ -237,7 +237,7 @@ div.table-of-contents ul {
     padding-left: 18px;
 }
 .pytis-form.edit-form div.submit button[type=submit] span {
-    background: url(done.png) left center no-repeat;
+    background: url(ok.png) left center no-repeat;
     padding-left: 19px;
 }
 .pytis-form.edit-form div.submit button[name=_cancel] span {
