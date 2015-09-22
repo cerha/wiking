@@ -137,9 +137,10 @@ class Handler(object):
         the 'lcg.ContentNone' instance.
 
         """
-        application = self._application
         uri = '/' + req.uri().strip('/')
         nodes = {}
+        application = self._application
+        all_variants = application.languages()
         resource_provider = self._resource_provider(req)
         def mknode(item):
             # Caution - make the same uri transformation as above to get same
@@ -161,17 +162,13 @@ class Handler(object):
                 content = None
                 variants = item.variants()
                 globals_ = None
-            hidden = item.hidden()
             if variants is None:
-                variants = application.languages()
-            elif lang not in variants:
-                hidden = True
-            # The identifier is encoded to allow unicode characters within it.  The encoding
-            # actually doesnt't matter, we just need any unique 8-bit string.
+                variants = all_variants
             node = lcg.ContentNode(item_uri, title=title,
                                    descr=item.descr(), content=content,
                                    variants=[lcg.Variant(v) for v in variants],
-                                   active=item.active(), foldable=item.foldable(), hidden=hidden,
+                                   active=item.active(), foldable=item.foldable(),
+                                   hidden=item.hidden() or lang not in variants,
                                    children=[mknode(i) for i in item.submenu()],
                                    resource_provider=resource_provider,
                                    globals=globals_)
