@@ -236,6 +236,18 @@ div.table-of-contents ul {
     background-image: url(search.png);
     padding-left: 18px;
 }
+.pytis-form.edit-form div.submit button[type=submit] span {
+    background: url(done.png) left center no-repeat;
+    padding-left: 19px;
+}
+.pytis-form.edit-form div.submit button[name=_cancel] span {
+    background-image: url(remove.png);
+}
+.pytis-form.edit-form div.submit button[type=reset] span {
+    background: url(undo.png) left center no-repeat;
+    padding-left: 19px;
+}
+
 
 div.wiking-image-gallery img {
     margin-right: 1.6em;
