@@ -236,16 +236,19 @@ div.table-of-contents ul {
     background-image: url(search.png);
     padding-left: 18px;
 }
-.pytis-form.edit-form div.submit button[type=submit] span {
+.pytis-form.edit-form div.submit button[type="submit"] span {
     background: url(ok.png) left center no-repeat;
     padding-left: 19px;
 }
-.pytis-form.edit-form div.submit button[name=_cancel] span {
+.pytis-form.edit-form div.submit button[name="_cancel"] span {
     background-image: url(remove.png);
 }
-.pytis-form.edit-form div.submit button[type=reset] span {
+.pytis-form.edit-form div.submit button[type="reset"] span {
     background: url(undo.png) left center no-repeat;
     padding-left: 19px;
+}
+.pytis-form.edit-form div.submit button[type="submit"][name="commit"] span {
+    background-image: url(publish.png);
 }
 .pytis-form .actions button.action-insert span {
     background: url(plus.png) left center no-repeat;
