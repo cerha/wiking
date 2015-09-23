@@ -626,6 +626,11 @@ body.non-maximized #page.with-submenu #main {
 }*/
 
 /* Panels */
+body.non-maximized #page.with-panels {
+    /* Force the main div to fit its content (avoid panels overlapping it). */
+    float: left;
+    min-width: 100%;
+}
 body.non-maximized #page.with-panels #main {
     margin-right: 220px;
 }
