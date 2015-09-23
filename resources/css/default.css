@@ -483,10 +483,13 @@ h1 a { outline: none; }
     background: url(shadow.png) 0 -3px repeat-x;
     padding: 4px 8px;
 }
-#page {
+#middle-layer1,
+#bottom {
     max-width: 1160px;
-    margin: 0 auto;
+    margin-left: auto;
+    margin-right: auto;
 }
+
 #links {
     display: none;
 }
@@ -719,11 +722,9 @@ div.panel form { margin: 5px 0; }
 }
 
 /* Bottom part of the page */
-
 #bottom {
     clear: both;
-    max-width: 1176px;
-    margin: 0 auto 40px auto;
+    padding: 0 8px;
 }
 #bottom-bar {
     text-align: right;
@@ -731,7 +732,7 @@ div.panel form { margin: 5px 0; }
     border: solid $color.top-border;
     border-width: 1px 0px;
     background-color: $color.heading-bg;
-    margin: 0 8px 12px 8px;
+    margin-bottom: 12px;
 }
 #bottom-bar span.left { float: left; }
 #bottom-bar div.left { text-align: left; }
