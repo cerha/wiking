@@ -4113,6 +4113,10 @@ class Planner(_News):
         else:
             return condition
 
+    def _panel_condition(self, req, relation):
+        return pd.AND(super(Planner, self)._panel_condition(req, relation),
+                      self._condition(req))
+
 
 class Newsletters(EmbeddableCMSModule):
     """E-mail newsletters with subscription."""
