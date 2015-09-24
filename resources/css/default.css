@@ -531,6 +531,12 @@ body.non-maximized #bottom {
     margin-left: auto;
     margin-right: auto;
 }
+body.non-maximized #page {
+    /* Force the page div to fit its content.
+     * Avoid inner content exceeding to the right side (across panels) when too wide. */
+    float: left;
+    min-width: 100%;
+}
 
 #links {
     display: none;
@@ -668,11 +674,6 @@ body.non-maximized #page.with-submenu #main {
 }*/
 
 /* Panels */
-body.non-maximized #page.with-panels {
-    /* Force the main div to fit its content (avoid panels overlapping it). */
-    float: left;
-    min-width: 100%;
-}
 body.non-maximized #page.with-panels #main {
     margin-right: 220px;
 }
