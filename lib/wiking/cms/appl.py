@@ -31,6 +31,9 @@ _ = lcg.TranslatableTextFactory('wiking-cms')
 
 class AdminControl(wiking.TopBarControl):
 
+    def _tooltip(self, req):
+        return _("Website Administration")
+
     def _menu_items(self, context):
         req = context.req()
         items = []
