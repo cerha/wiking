@@ -3218,9 +3218,9 @@ class PageHistory(ContentManagementModule):
             return super(PageHistory, self)._layout(req, action, record=record)
 
     def _diff(self, record):
-        rows = self._rows(record.req(),
-                          condition=pd.AND(pd.EQ('page_key', record['page_key']),
-                                           pd.LT('history_id', record['history_id'])),
+        req = record.req()
+        rows = self._rows(req, condition=pd.AND(pd.EQ('page_key', record['page_key']),
+                                                pd.LT('history_id', record['history_id'])),
                           sorting=(('history_id', pd.DESCENDANT),), limit=1)
         if rows:
             row = rows[0]
@@ -3235,8 +3235,12 @@ class PageHistory(ContentManagementModule):
                          lcg.format(" (%s %s)", record['user'].value(),
                                     record['timestamp'].export()))
                 diff = difflib.HtmlDiff(wrapcolumn=80)
-                content = lcg.HtmlContent(diff.make_table(text1.splitlines(), text2.splitlines(),
-                                                          name1, name2, context=True, numlines=3))
+                content = lcg.HtmlContent(diff.make_table(text1.splitlines(),
+                                                          text2.splitlines(),
+                                                          req.localize(name1), 
+                                                          req.localize(name2),
+                                                          context=True,
+                                                          numlines=3))
         else:
             content = lcg.p(_("Previous version empty (no differences available)."))
         return content
