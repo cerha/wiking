@@ -461,7 +461,7 @@ h1 a { outline: none; }
     padding: 3px 0 3px 24px;
     background: url(user.png) 1px center no-repeat;
 }
-.login-control .login-dropdown {
+.login-control .dropdown {
     padding: 3px 0 3px 5px;
     white-space: nowrap;
     border-radius: 3px;
@@ -473,6 +473,13 @@ h1 a { outline: none; }
     text-decoration: none;
     background: url(login.png) left center no-repeat;
 }
+#top-controls .admin-control {
+    padding: 3px 0 3px 18px;
+    background: url(gear.png) 1px center no-repeat;
+    margin-right: -15px;
+    margin-left: 15px;
+}
+
 .popup-menu-widget li.login a {
     padding-left: 28px;
     background: url(login.png) 8px center no-repeat;
@@ -509,7 +516,7 @@ h1 a { outline: none; }
 .language-selection {
     white-space: nowrap;
 }
-.language-selection .language-selection-dropdown {
+.language-selection .dropdown {
     padding: 3px 0 3px 5px;
     border-radius: 3px;
     background: #ddd;
@@ -848,7 +855,7 @@ body.non-maximized div#page.with-panels #menu {
 #panels .expand-panels-ctrl {
     display: inline-block;
 }
-.language-selection .language-selection-label { display: none; }
+.language-selection .label { display: none; }
 
 } /* End of tablet screen layout */
 
@@ -882,7 +889,7 @@ body.non-maximized #menu a.navigation-link.current .menu-dropdown-ctrl {
 .language-selection .language-abbr { display: inline; }
 .login-control { padding-left: 14px; }
 .login-control .displayed-user-name { display: none; }
-.login-control .login-dropdown { background: none; }
+.login-control .dropdown { background: none; }
 .login-control .login-link { display: none }
 
 } /* End of smaller mobile phone screen layout */

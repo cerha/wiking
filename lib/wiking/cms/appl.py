@@ -29,10 +29,11 @@ from wiking.cms import CMSExtension, CMSExtensionModule, CookieAuthentication, R
 
 _ = lcg.TranslatableTextFactory('wiking-cms')
 
-class LoginControl(wiking.LoginControl):
+class AdminControl(wiking.TopBarControl):
 
-    def _menu_items(self, req):
-        items = super(LoginControl, self)._menu_items(req)
+    def _menu_items(self, context):
+        req = context.req()
+        items = []
         if wiking.module.WikingManagementInterface.authorized(req):
             if not req.wmi:
                 items.append(lcg.PopupMenuItem(_("Enter the Management Interface"), uri='/_wmi/',
@@ -40,7 +41,6 @@ class LoginControl(wiking.LoginControl):
             else:
                 items.append(lcg.PopupMenuItem(_("Leave the Management Interface"), uri='/'))
         if wiking.module.Application.preview_mode_possible(req):
-            param = wiking.module.Application._PREVIEW_MODE_PARAM
             # Translators: There are two modes of operation in the CMS
             # management.  The "Production Mode" displays only the content
             # publically visible to the website visitors.  "Preview Mode",
@@ -52,14 +52,16 @@ class LoginControl(wiking.LoginControl):
             if wiking.module.Application.preview_mode(req):
                 label, value = _("Switch to Production Mode"), '0'
             else:
-                label, value = _("Switch to Preview Mode"), '0'
+                label, value = _("Switch to Preview Mode"), '1'
+            param = wiking.module.Application._PREVIEW_MODE_PARAM
             items.append(lcg.PopupMenuItem(label, uri='%s?%s=%s' % (req.uri(), param, value)))
-        if hasattr(req, 'page_write_access') and req.page_write_access:
-            items.append(lcg.PopupMenuItem(_("Edit the Current Page"),
-                                           uri=req.uri() + '?action=update', cls='edit-page'))
-        if req.check_roles(wiking.cms.Roles.CONTENT_ADMIN):
-            items.append(lcg.PopupMenuItem(_("Create a New Page"), uri='/?action=insert',
-                                           cls='new-page'))
+        if not req.wmi:
+            if hasattr(req, 'page_write_access') and req.page_write_access:
+                items.append(lcg.PopupMenuItem(_("Edit the Current Page"),
+                                               uri=req.uri() + '?action=update', cls='edit-page'))
+            if req.check_roles(wiking.cms.Roles.CONTENT_ADMIN):
+                items.append(lcg.PopupMenuItem(_("Create a New Page"), uri='/?action=insert',
+                                               cls='new-page'))
         return items
 
 
@@ -343,7 +345,7 @@ class Application(CookieAuthentication, wiking.Application):
         return wiking.module.Texts.localized_text(req, text, lang=lang)
 
     def top_controls(self, req):
-        controls = [LoginControl(), wiking.LanguageSelection()]
+        controls = [wiking.LoginControl(), AdminControl(), wiking.LanguageSelection()]
         top_text = self._text_content(req, wiking.cms.texts.top)
         if top_text:
             controls.insert(0, lcg.Container(text2content(req, top_text), id='top-content'))

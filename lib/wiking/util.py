@@ -1314,7 +1314,73 @@ class UniversalPasswordStorage(PasswordStorage):
 # Classes derived from LCG components
 # ============================================================================
 
-class LoginControl(lcg.Content):
+
+class TopBarControl(lcg.Content):
+    """Generic superclass for typical wiking top bar widgets.
+
+    The controls are displayed at the top bar of a Wiking application.  Wiking
+    applications may define custom controls derived from this class or from
+    lcg.Content directly when the control doesn't share the common properties
+    supported by this class.
+
+    The controls derived from this class may have a label, tooltip, displayed
+    content and a dropdown menu, all optional.  Their actual content is defined
+    by the return value of the methods '_label()', '_tooltip()', '_content()'
+    and '_menu_items()'.  If all these methods return an empty result, the
+    control is not displayed at all.
+
+    To make use of a particular control in an application, return its instance
+    from 'wiking.Application.top_controls()'.
+
+    """
+    def _cls(self, req):
+        """Return the CSS class name to use for the main div of the control."""
+        return pytis.util.camel_case_to_lower(self.__class__.__name__, '-')
+
+    def _label(self, req):
+        """Return the label displayed within the control or None for unlabeled control.""" 
+        return None
+
+    def _tooltip(self, req):
+        """Return the tooltip displayed on the control or None.""" 
+        return None
+
+    def _content(self, context):
+        """Return the actual content displayed within the control.
+
+        Returns the exported content as a basestring or HtmlEscapedUnicode if
+        the content contains HTML tags.  Return an empty string if nothing is
+        displayed.
+
+        """
+        return ''
+
+    def _menu_items(self, context):
+        """Return the menu items displayed in the control's dropdown menu.
+
+        Returns a sequence of 'lcg.PopupMenuItem' instances.  When the returned
+        sequence is empty, the control will not display a dropdown menu.
+
+        """
+
+    def export(self, context):
+        g = context.generator()
+        req = context.req()
+        content = self._content(context)
+        items = self._menu_items(context)
+        if items:
+            menu = lcg.PopupMenuCtrl(items, None, '.dropdown').export(context)
+            content = g.span((content, menu), cls='dropdown')
+        label = self._label(req)
+        if label:
+            content = (g.span(self._LABEL, cls='label'), ' ', content)
+        if content:
+            return g.div(content, cls=self._cls(req), title=self._tooltip(req))
+        else:
+            return '' 
+
+
+class LoginControl(TopBarControl):
     """Login control widget.
 
     The login control is typically displayed at the top bar of a Wiking
@@ -1323,13 +1389,8 @@ class LoginControl(lcg.Content):
     'wiking.Application.top_controls()'.
 
     """
-    def _menu_items(self, req):
-        """Return the menu items displayed in the login control dropdown menu.
-
-        Returns a sequence of 'lcg.PopupMenuItem' instances.  This method may
-        be overriden in derived classes to customize the login control menu.
-
-        """
+    def _menu_items(self, context):
+        req = context.req()
         user = req.user()
         items = []
         if user:
@@ -1363,35 +1424,35 @@ class LoginControl(lcg.Content):
                                                cls='new-user-registration')),
         return items
 
-    def export(self, context):
-        g = context.generator()
-        req = context.req()
+    def _tooltip(self, req):
         user = req.user()
         if user:
             login, displayed_name = user.login(), user.name()
-            result = g.span(displayed_name, cls='displayed-user-name')
+            # Translators: Login status info.
             tooltip = _("Logged in user:") + ' ' + displayed_name
             if login != displayed_name:
                 tooltip += ' (' + login + ')'
         else:
+            # Translators: Login status info.
+            tooltip = _("User not logged in")
+        return tooltip
+
+    def _content(self, context):
+        g = context.generator()
+        req = context.req()
+        user = req.user()
+        if user:
+            result = g.span(user.name(), cls='displayed-user-name')
+        else:
             uri = req.uri()
-            # Translators: Login status info.  If logged, the username is displayed instead.
             if uri.endswith('_registration'):
                 uri = '/' # Redirect logins from the registration forms to site root
             # Translators: Login button label (verb in imperative).
             result = g.a(_("Log in"), href=g.uri(uri, command='login'), cls='login-link')
-            tooltip = _("User not logged in")
-        menu_items = self._menu_items(req)
-        if menu_items:
-            result = g.span(
-                (result,
-                 lcg.PopupMenuCtrl(menu_items, None, '.login-dropdown').export(context)),
-                cls='login-dropdown',
-            )
-        return g.div(result, cls='login-control', title=tooltip)
+        return result
 
 
-class LanguageSelection(lcg.Content):
+class LanguageSelection(TopBarControl):
     """Language selection widget.
 
     The language selection widget is typically displayed at the top bar of a
@@ -1406,33 +1467,34 @@ class LanguageSelection(lcg.Content):
     # language variants.
     _LABEL = _("Language:")
 
-    def export(self, context):
-        g = context._generator
+    def _label(self, context):
+        return self._LABEL
+
+    def _menu_items(self, context):
         node = context.node()
         variants = node.variants()
-        if len(variants) <= 1:
-            return ''
         e = context.exporter()
-        items = [lcg.PopupMenuItem(e.localizer(lang).localize(lcg.language_name(lang) or lang),
-                                   uri=e.uri(context, node, lang=lang),
-                                   #cls='lang-' + lang + ' current' if lang == context.lang() else '')
-                               )
-                 for lang in sorted(variants)]
+        return [lcg.PopupMenuItem(e.localizer(lang).localize(lcg.language_name(lang) or lang),
+                                  uri=e.uri(context, node, lang=lang),
+                                  cls='lang-' + lang + ' current' if lang == context.lang() else '')
+                for lang in sorted(variants)]
+        
+    def _content(self, context):
+        g = context.generator()
         lang = context.lang()
         # The language code CS for Czech is very confusing for ordinary
         # users, while 'CZ' (which is actually a country code) seems much
         # more familiar...
         abbr = dict(cs='CZ').get(lang, lang.upper())
-        return g.div(
-            (g.span(self._LABEL + ' ', cls='language-selection-label'),
-             g.span((g.span(lcg.language_name(lang) or abbr, cls='language-name'),
-                     g.span(abbr, cls='language-abbr'),
-                     lcg.PopupMenuCtrl(items, None,
-                                       '.language-selection-dropdown').export(context)),
-                    cls='language-selection-dropdown')),
-            cls='language-selection',
+        return lcg.concat(
+            g.span(lcg.language_name(lang) or abbr, cls='language-name'),
+            g.span(abbr, cls='language-abbr'),
         )
         
+    def export(self, context):
+        if len(context.node().variants()) <= 1:
+            return ''
+        return super(LanguageSelection, self).export(context)
     
 class PanelItem(lcg.Content):
 

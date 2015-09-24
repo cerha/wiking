@@ -396,11 +396,16 @@ class Application(wiking.Module):
         Derived applications may override this method to add custom controls,
         customize the built-in controls or re-arrange the order of controls on
         the top bar.
+
+        Make sure the controls don't take too much space or make them
+        responsive to the actual display size through CSS.
         
         Any content acceptable by 'lcg.coerce()' may be returned ('lcg.Content'
-        instance, basestring, or their sequence).  The default implementation
-        returns a list of two instances: 'wiking.LoginControl' and
-        'wiking.LanguageSelection'.
+        instance, basestring, or their sequence).  Consider using the base
+        class 'wiking.TopBarControl' for definition of custom controls.
+
+        The default implementation returns a list of two instances:
+        'wiking.LoginControl' and 'wiking.LanguageSelection'.
 
         """
         return [wiking.LoginControl(), wiking.LanguageSelection()]
