@@ -454,7 +454,7 @@ h1 a { outline: none; }
 
 #top-controls > div {
     display: inline-block;
-    margin-left: 20px;
+    margin-left: 17px;
 }
 
 .login-control {
@@ -476,8 +476,8 @@ h1 a { outline: none; }
 .admin-control {
     padding: 3px 0 3px 18px;
     background: url(gear.png) 1px center no-repeat;
-    margin-right: -15px !important;
-    margin-left: 15px;
+    margin-right: -10px;
+    margin-left: 5px !important;
 }
 body.preview-mode .admin-control {
     background-image: url(gear-red.png);
