@@ -525,8 +525,8 @@ h1 a { outline: none; }
     background: url(shadow.png) 0 -3px repeat-x;
     padding: 4px 8px;
 }
-#middle-layer1,
-#bottom {
+body.non-maximized #middle-layer1,
+body.non-maximized #bottom {
     max-width: 1160px;
     margin-left: auto;
     margin-right: auto;
