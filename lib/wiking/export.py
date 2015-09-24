@@ -153,10 +153,15 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                     for node in context.node().path()[1:-1]])
         cls.extend(('lang-%s' % context.lang(),
                     context.layout() + '-layout'))
-        if context.req().maximized():
+        req = context.req()
+        if req.maximized():
             cls.append('maximized')
         else:
             cls.append('non-maximized')
+        if context.application.preview_mode(req):
+            cls.append('preview-mode')
+        else:
+            cls.append('production-mode')
         return super(Exporter, self)._body_attr(context, onload=onload, cls=' '.join(cls), **kwargs)
 
     def _body_content(self, context):

@@ -473,11 +473,14 @@ h1 a { outline: none; }
     text-decoration: none;
     background: url(login.png) left center no-repeat;
 }
-#top-controls .admin-control {
+.admin-control {
     padding: 3px 0 3px 18px;
     background: url(gear.png) 1px center no-repeat;
-    margin-right: -15px;
+    margin-right: -15px !important;
     margin-left: 15px;
+}
+body.preview-mode .admin-control {
+    background-image: url(gear-red.png);
 }
 
 .popup-menu-widget li.login a {
