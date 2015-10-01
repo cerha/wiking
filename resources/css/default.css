@@ -203,7 +203,8 @@ div.table-of-contents ul {
     background-image: url(properties.png);
     padding-left: 19px;
 }
-.cms-page-actions button.action-new_page span {
+.cms-page-actions button.action-new_page span,
+.cms-page-actions button.action-new_chapter span {
     background-image: url(new-page.png);
     padding-left: 19px;
 }
@@ -359,6 +360,15 @@ span.diff_sub, span.field.id-diff_sub { background-color: #ffaaaa; }
 .pytis-form.publication-export-form th.label {
     width: 1%; /* Prevent label spanning too wide in Safari */
 }
+.pytis-form.publication-export-form div.submit button[type="submit"] span {
+    background-image: url(down.png);
+    background-position: left 1px;
+    padding: 2px 0 2px 19px;
+}
+.pytis-form.publication-export-form div.submit button[type="submit"][name="test"] span {
+    background-image: url(gear-16x16.png);
+}
+
 
 .export-progress-log {
     min-height: 2em;
@@ -483,6 +493,9 @@ body.preview-mode .admin-control {
     background-image: url(gear-red.png);
 }
 
+.popup-menu-widget li {
+    font-size: 1.2em;
+} 
 .popup-menu-widget li.login a {
     padding-left: 28px;
     background: url(login.png) 8px center no-repeat;
