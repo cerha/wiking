@@ -157,7 +157,7 @@ figure.right-aligned {
     float: right;
 }
 
-figcaption{
+figcaption {
     display: table-caption;
     caption-side: bottom;
     text-align: center;
@@ -447,7 +447,7 @@ h1 a { outline: none; }
 }
 
 #top {
-    background-color: white;
+    background-color: $color.background;
     padding: 4px;
 }
 
@@ -483,6 +483,8 @@ h1 a { outline: none; }
     text-decoration: none;
     background: url(login.png) left center no-repeat;
 }
+.login-control .login-link:hover { color: $color.foreground; }
+
 .admin-control {
     padding: 3px 0 3px 18px;
     background: url(gear.png) 1px center no-repeat;
@@ -493,8 +495,8 @@ body.preview-mode .admin-control {
     background-image: url(gear-red.png);
 }
 
-.popup-menu-widget li {
-    font-size: 1.2em;
+div.popup-menu-widget ul li {
+    font-size: 14px;
 } 
 .popup-menu-widget li.login a {
     padding-left: 28px;
