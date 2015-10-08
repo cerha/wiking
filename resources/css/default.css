@@ -791,10 +791,13 @@ form.list-form-controls .paging-controls {
 }
 
 #page .pytis-form .group, 
-#page .pytis-form div.submit,
+#page .pytis-form .submit,
 #page .pytis-form .paging-controls {
     background-color: $color.frame-bg;
     border-color: $color.frame-border;
+}
+#page .pytis-form.query-fields-form .submit {
+    background: none;
 }
 #page .pytis-form.query-fields-form .group {
     background: none;
