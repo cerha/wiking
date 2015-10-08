@@ -224,6 +224,10 @@ div.table-of-contents ul {
     background-image: url(attachment.png);
     padding-left: 19px;
 }
+.query-fields-form button.apply-filters span {
+    background-image: url(refresh.png);
+    padding-left: 19px;
+}
 .list-form-controls button.prev-page-button span {
     background-image: url(arrow-left.png);
     padding-left: 16px;
