@@ -224,7 +224,7 @@ div.table-of-contents ul {
     background-image: url(attachment.png);
     padding-left: 19px;
 }
-.query-fields-form button.apply-filters span {
+.pytis-form.edit-form.query-fields-form .submit button.apply-filters span {
     background-image: url(refresh.png);
     padding-left: 19px;
 }
