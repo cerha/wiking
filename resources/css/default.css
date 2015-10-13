@@ -589,12 +589,8 @@ body.non-maximized #page {
 #maximized-mode-control img {
     border: none;
 }
-body.maximized #submenu,
-body.maximized #panels-container {
+body.maximized #submenu {
     display: none;
-}
-body.maximized #panels-container.expanded {
-    display: block;
 }
 
 /* Horizontal menu bar */
@@ -602,7 +598,6 @@ body.maximized #panels-container.expanded {
 #menu {
     border-bottom: 1px solid $color.top-border;
     padding-left: 3px;
-    padding-right: 30px; /* leave some space for .expand-panels-ctrl */
 }
 #menu h3 {
     display: none;
@@ -703,56 +698,44 @@ body.non-maximized #page.with-submenu #main {
 }*/
 
 /* Panels */
-body.non-maximized #page.with-panels #main {
-    margin-right: 220px;
-}
-body.non-maximized #page.with-panels #menu {
-    margin-right: 220px;
-    padding-right: 0;
-}
-#panels {
+body.with-panels #page {
     position: relative;
-    top: -1px;
+}
+body.non-maximized.with-panels #main,
+body.non-maximized.with-panels #menu,
+body.non-maximized.with-panels #bottom-bar,
+body.non-maximized.with-panels #footer {
+    margin-right: 220px;
+}
+body.non-maximized #panels {
+    position: absolute;
+    top: 18px;
+    right: 0px;
     z-index: 1;
     float: right;
     width: 220px;
 }
-#panels .expand-panels-ctrl {
-    display: none;
-    position: absolute;
-    width: 16px;
-    height: 14px;
-    background-color: #ddd;
-    top: -22px;
-    right: -8px;
-    border: solid #bbb 1px;
-    border-right: 0;
-    border-radius: 2px 0 0 2px;
-    background: url(popup-arrow.png) 2px 1px no-repeat;
+body.maximized #panels {
+    margin-left: -8px;
 }
-body.maximized #panels .expand-panels-ctrl {
+body.maximized #panels .panel {
+    width: 212px;
     display: inline-block;
-}
-#panels-container.expanded {
-    padding: 9px 9px 8px 0px;
-    margin-bottom: 10px;
-    border: 1px solid $color.top-border;
-    background-color: $color.background;
-    box-shadow: 1px 1px 12px #999;
-    -moz-box-shadow: 1px 1px 12px #999;
-    -webkit-box-shadow: #999 1px 1px 12px;
+    vertical-align: top;
 }
 
-div.panel {
-    margin: 0 0 8px 8px;
+
+#panels .panel {
+    margin-bottom: 8px;
+    margin-left: 8px;
     color: $color.foreground;
     border: 1px solid $color.top-border;
     background-color: $color.background;
 }
-div.panels-bottom-content {
-    margin: 0 0em 8px 8px;
+#panels .panels-bottom-content {
+    margin: 0 0 8px 8px;
 }
-div.panel h3 {
+#panels .panel h3 {
     padding: 2px 4px;
     margin: 0;
     font-size: 1.1em;
@@ -760,14 +743,14 @@ div.panel h3 {
     background-color: $color.heading-bg;
     border-bottom: 1px solid $color.top-border;
 }
-div.panel div.panel-content {
+#panels .panel .panel-content {
     padding: 2px 4px;
 }
-div.panel ul, div.panel ol {
+#panels .panel ul, #panels .panel ol {
     padding-left: 1.5em;
     margin: 0;
 }
-div.panel form { margin: 5px 0; }
+#panels .panel form { margin: 5px 0; }
 
 /* The actual page content */
 
@@ -864,19 +847,24 @@ form.login-form label {
 /* Tablet screen layout */
 @media only screen and (max-width: 991px) { 
 
-#panels-container {
-    display: none;
-}
-#panels-container.expanded {
-    display: block;
-}
-body.non-maximized div#page.with-panels #main,
-body.non-maximized div#page.with-panels #menu {
+body.non-maximized.with-panels #main,
+body.non-maximized.with-panels #menu,
+body.non-maximized.with-panels #bottom-bar,
+body.non-maximized.with-panels #footer {
     margin-right: 0px;
 }
-#panels .expand-panels-ctrl {
-    display: inline-block;
+body.non-maximized #panels {
+    position: static;
+    float: none;
+    width: auto;
+    margin-left: -8px;
 }
+body.non-maximized #panels .panel {
+    width: 212px;
+    display: inline-block;
+    vertical-align: top;
+}
+
 .language-selection .label { display: none; }
 
 } /* End of tablet screen layout */

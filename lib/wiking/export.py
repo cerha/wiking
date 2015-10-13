@@ -117,7 +117,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
     _BODY_PARTS = ('wrap', 'media_player')
     _WRAP_PARTS = ('top', 'middle', 'bottom')
     _MIDDLE_PARTS = ('page',)
-    _PAGE_PARTS = ('links', 'breadcrumbs', 'menu', 'submenu', 'panels', 'main', 'page_clearing')
+    _PAGE_PARTS = ('links', 'breadcrumbs', 'menu', 'submenu', 'main', 'panels', 'page_clearing')
     _BOTTOM_PARTS = ('bottom_bar', 'footer')
     _PART_TITLE = {
         'top': _("Page heading"),
@@ -162,6 +162,8 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             cls.append('preview-mode')
         else:
             cls.append('production-mode')
+        if context.panels():
+            cls.append('with-panels')
         return super(Exporter, self)._body_attr(context, onload=onload, cls=' '.join(cls), **kwargs)
 
     def _body_content(self, context):
@@ -199,13 +201,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         return self._parts(context, self._PAGE_PARTS)
 
     def _page_attr(self, context):
-        node = context.node()
-        cls = ''
-        if context.has_submenu:
-            cls += ' with-submenu'
-        if context.panels():
-            cls += ' with-panels'
-        return dict(cls=cls.strip() or None)
+        return dict(cls='with-submenu') if context.has_submenu else {}
 
     def _part(self, name, context):
         content = getattr(self, '_' + name)(context)
@@ -389,10 +385,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         extra_content = context.application.right_panels_bottom_content(req)
         if extra_content:
             result.append(g.div(extra_content.export(context), cls='panels-bottom-content'))
-        return (
-            g.span('', title=_("Toggle expansion of sidebar panels."), cls='expand-panels-ctrl'),
-            g.div(g.div(result), id='panels-container'), # Inner div important for JS slide effects...
-        )
+        return result
 
     def _messages(self, context):
         messages = context.req().messages()
