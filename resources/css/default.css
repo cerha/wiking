@@ -10,7 +10,7 @@
     /* There's currently no color theme for this... */
     color: $color.foreground;
     border: dotted #dadac0 1px;
-    background: #fafae8 url(info.png) left top no-repeat;
+    background: #fafae8 url(info.png) 2px center no-repeat;
 }
 #messages .success {
     color: $color.message-fg;
