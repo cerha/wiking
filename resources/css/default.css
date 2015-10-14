@@ -817,7 +817,11 @@ div#shared-audio-player {
     padding: .1em;
 }
 
-#footer { font-size: 0.9em; text-align: center; margin: 0; }
+#footer {
+    font-size: 0.9em;
+    text-align: center;
+    margin: 12px 0;
+}
 #footer p { margin: 1px 0; }
 #footer img { margin: 5px; }
 #footer hr { display: none; }
