@@ -241,6 +241,10 @@ div.table-of-contents ul {
     background-image: url(search.png);
     padding-left: 18px;
 }
+.list-form-controls button.cancel-search span {
+    background-image: url(remove.png);
+    padding-left: 18px;
+}
 .pytis-form.edit-form .submit button[type="submit"] span {
     background: url(ok.png) left center no-repeat;
     padding-left: 19px;
@@ -895,6 +899,7 @@ body.non-maximized #menu a.navigation-link.current .menu-dropdown-ctrl {
 
 .list-form-controls button.prev-page span,
 .list-form-controls button.next-page span,
+.list-form-controls button.cancel-search span,
 .list-form-controls button.search span {
     width: 0px;
     padding-left: 16px;
