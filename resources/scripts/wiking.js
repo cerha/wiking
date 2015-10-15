@@ -77,19 +77,6 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
 	// Set up global key handler.
 	document.observe('keydown', this.on_key_down.bind(this));
 
-	// Initialize global popup window management.
-	document.observe('click', this.on_document_click.bind(this));
-	this.registered_popups = [];
-
-	// Handle panels expansion control.
-	var ctrl = $('page').down('.expand-panels-ctrl');
-        if (ctrl) {
-	    ctrl.observe('click', function (event) {
-		this.toggle_panels();
-		event.stop();
-	    }.bind(this));
-	}
-
 	// Update the information about browser's timezone in the cookie to let
 	// the server know what is the user's time zone.  The problem is that
 	// this information will not be available on the very first request, so
@@ -165,62 +152,8 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
 	    var item = $(nb.getAttribute('aria-activedescendant'));
 	    this.set_focus(item);
 	}
-    },
-    
-    toggle_panels: function () {
-	var container = $('panels-container');
-	this.close_popups();
-	if (!container.hasClassName('expanded')) {
-	    // Reset the style to the initial state (when clicking too fast, the effects
-	    // may overlap and leave a messy final style).
-	    container.setStyle('display: none;');
-	    container.addClassName('expanded');
-	    this.register_popup(container, '#panels-container', this.toggle_panels.bind(this));
-	    Effect.SlideDown(container, {duration: 0.3});
-	} else {
-	    Effect.SlideUp(container, {
-		duration: 0.3,
-		afterFinish: function () { 
-		    container.removeClassName('expanded');
-		    container.removeAttribute('style');
-		}
-	    });
-	}
-    },
-    
-    register_popup: function(element, selector, callback) {
-	this.registered_popups[this.registered_popups.length] = [element, selector, callback];
-    },
-    
-    close_popups: function() {
-	var i;
-	for (i = 0; i < this.registered_popups.length; i++) {
-	    var element = this.registered_popups[i][0];
-	    var callback = this.registered_popups[i][2];
-	    this.registered_popups.splice(i, 1);
-	    callback(element);
-	}
-    },
-
-    on_document_click: function (event) {
-	if (this.registered_popups) {
-	    var i;
-	    var found = null;
-	    for (i = 0; i < this.registered_popups.length; i++) {
-		var element = this.registered_popups[i][0];
-		var selector = this.registered_popups[i][1];
-		var callback = this.registered_popups[i][2];
-		if (element !== event.findElement(selector)) {
-		    this.registered_popups.splice(i, 1);
-		    callback(element);
-		    if (!event.stopped) {
-			event.stop();
-		    }
-		}
-	    }
-	}
     }
-
+        
 });
 
 wiking.MainMenu = Class.create(lcg.Menu, {
@@ -254,6 +187,9 @@ wiking.MainMenu = Class.create(lcg.Menu, {
 	// easily.
 	//this.element.setAttribute('role', 'menubar');
 	ul.setAttribute('role', 'presentation');
+	// Initialize dropdown menu management.
+	this.active_dropdown = null;
+	document.observe('click', this.on_document_click.bind(this));
 	return $super(ul, parent);
     },
 
@@ -276,15 +212,28 @@ wiking.MainMenu = Class.create(lcg.Menu, {
     },
     
     toggle_dropdown: function (dropdown) {
-	wiking.handler.close_popups();
+	if (this.active_dropdown && this.active_dropdown !== dropdown) {
+	    this.toggle_dropdown(this.active_dropdown);
+	}
 	if (!dropdown.visible()) {
-	    wiking.handler.register_popup(dropdown, '.menu-dropdown', this.toggle_dropdown);
+	    this.active_dropdown = dropdown;
 	    // Reset the style to the initial state (when clicking too fast, the effects
 	    // may overlap and leave a messy final style).
 	    dropdown.setAttribute('style', 'display: none;');
 	    Effect.SlideDown(dropdown, {duration: 0.2});
 	} else {
+	    this.active_dropdown = null;
 	    Effect.SlideUp(dropdown, {duration: 0.2});
+	}
+    },
+
+    on_document_click: function (event) {
+	var dropdown = this.active_dropdown;
+	if (dropdown && event.findElement('.menu-dropdown') !== dropdown) {
+	    this.toggle_dropdown(dropdown);
+	    if (!event.stopped) {
+		event.stop();
+	    }
 	}
     },
 
