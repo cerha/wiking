@@ -228,16 +228,16 @@ div.table-of-contents ul {
     background-image: url(refresh.png);
     padding-left: 19px;
 }
-.list-form-controls button.prev-page-button span {
+.list-form-controls button.prev-page span {
     background-image: url(arrow-left.png);
     padding-left: 16px;
 }
-.list-form-controls button.next-page-button span {
+.list-form-controls button.next-page span {
     background-image: url(arrow-right.png);
     padding-right: 16px;
     background-position: right center;
 }
-.list-form-controls button.search-button span {
+.list-form-controls button.search span {
     background-image: url(search.png);
     padding-left: 18px;
 }
@@ -416,7 +416,6 @@ button, input, select {
     /* Avoid dual application of 0.8em defined above in some elements */
     font-size: 1em;
 }
-
 p {
     margin: 0.4em 0;
 }
