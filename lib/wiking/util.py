@@ -1413,7 +1413,8 @@ class LoginControl(TopBarControl):
                 items.append(lcg.PopupMenuItem(_("Change your password"), cls='change-password', 
                                                uri=password_change_uri, tooltip=tooltip))
         else:
-            items.append(lcg.PopupMenuItem(_("Log in to an existing user account"), cls='login',
+            items.append(lcg.PopupMenuItem(_("Log in"), cls='login',
+                                           tooltip=_("Log in to an existing user account"),
                                            uri=req.make_uri(req.uri(), command='login')))
             uri = wiking.module.Application.registration_uri(req)
             if uri:
