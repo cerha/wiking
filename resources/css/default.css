@@ -904,6 +904,7 @@ body.non-maximized #menu a.navigation-link.current .menu-dropdown-ctrl {
     width: 0px;
     padding-left: 16px;
     padding-right: 0;
+    overflow: hidden;
 }
 
 } /* End of bigger mobile phone screen layout */
