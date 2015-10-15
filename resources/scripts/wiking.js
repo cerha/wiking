@@ -189,7 +189,6 @@ wiking.MainMenu = Class.create(lcg.Menu, {
 	ul.setAttribute('role', 'presentation');
 	// Initialize dropdown menu management.
 	this.active_dropdown = null;
-	document.observe('click', this.on_document_click.bind(this));
 	return $super(ul, parent);
     },
 
@@ -221,19 +220,32 @@ wiking.MainMenu = Class.create(lcg.Menu, {
 	    // may overlap and leave a messy final style).
 	    dropdown.setAttribute('style', 'display: none;');
 	    Effect.SlideDown(dropdown, {duration: 0.2});
+	    this.on_touchstart = function (event) { this.touch_moved = false; }.bind(this);
+	    this.on_touchmove = function (event) { this.touch_moved = true; }.bind(this);
+	    this.on_touchend = function (event) {
+		if (!this.touch_moved) {
+		    this.on_click(event); 
+		}
+	    }.bind(this);
+	    this.on_click = function (event) {
+		if (dropdown && event.findElement('.menu-dropdown') !== dropdown) {
+		    this.toggle_dropdown(dropdown);
+		    if (!event.stopped) {
+			event.stop();
+		    }
+		}
+	    }.bind(this);
+	    $(document).observe('click', this.on_click);
+	    $(document).observe('touchstart', this.on_touchstart);
+	    $(document).observe('touchmove', this.on_touchmove);
+	    $(document).observe('touchend', this.on_touchend);
 	} else {
+	    $(document).stopObserving('click', this.on_click);
+	    $(document).stopObserving('touchstart', this.on_touchstart);
+	    $(document).stopObserving('touchmove', this.on_touchmove);
+	    $(document).stopObserving('touchend', this.on_touchend);
 	    this.active_dropdown = null;
 	    Effect.SlideUp(dropdown, {duration: 0.2});
-	}
-    },
-
-    on_document_click: function (event) {
-	var dropdown = this.active_dropdown;
-	if (dropdown && event.findElement('.menu-dropdown') !== dropdown) {
-	    this.toggle_dropdown(dropdown);
-	    if (!event.stopped) {
-		event.stop();
-	    }
 	}
     },
 
