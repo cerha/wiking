@@ -893,6 +893,14 @@ body.non-maximized #menu a.navigation-link.current .menu-dropdown-ctrl {
 }
 #site-title .separator, #site-title .subtitle { display: none; }
 
+.list-form-controls button.prev-page span,
+.list-form-controls button.next-page span,
+.list-form-controls button.search span {
+    width: 0px;
+    padding-left: 16px;
+    padding-right: 0;
+}
+
 } /* End of bigger mobile phone screen layout */
 
 /* Smaller mobile phone screen layout */
