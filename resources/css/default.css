@@ -609,7 +609,7 @@ body.maximized #submenu {
 #menu ul.main-menu-items {
     margin: 0;
     padding: 0;
-    height: 18px;
+    height: 20px;
 }
 #menu li.main-menu-item {
     display: inline;
@@ -620,13 +620,13 @@ body.maximized #submenu {
 #menu a.navigation-link {
     display: inline-block;
     border: solid $color.top-border 1px;
-    font-size: 13px;
-    padding: 2px 8px 0px 8px;
+    font-size: 15px;
+    padding: 1px 8px 2px 8px;
     background-color: $color.inactive-folder;
     text-decoration: none;
     position: relative;
-    border-radius: 2px 2px 0 0;
-    height: 15px;
+    border-radius: 3px 3px 0 0;
+    height: 16px;
 }
 #menu a.navigation-link.current {
     background-color: $color.background;
@@ -642,7 +642,7 @@ body.non-maximized #menu a.navigation-link.current.with-dropdown {
     display: inline-block;
     position: absolute;
     right: -1px;
-    bottom: -6px;
+    bottom: -4px;
     width: 22px;
     height: 22px;
     background: url(popup-arrow.png) 0 0 no-repeat;
