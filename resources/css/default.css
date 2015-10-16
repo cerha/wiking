@@ -409,12 +409,13 @@ span.diff_sub, span.field.id-diff_sub { background-color: #ffaaaa; }
 @media screen {
 
 body {
-    font-family: arial, verdana, sans-serif, helvetica;
+    font-family: arial, helvetica, sans-serif;
     color: $color.top-fg;
     background-color: $color.top-bg;
-    font-size: 0.8em;
+    font-size: 13px;
     padding: 0;
     margin: 0;
+    -webkit-text-size-adjust: none;
 }
 button, input, select {
     /* Avoid dual application of 0.8em defined above in some elements */
