@@ -1324,22 +1324,15 @@ class TopBarControl(lcg.Content):
     supported by this class.
 
     The controls derived from this class may have a label, tooltip, displayed
-    content and a popup menu, all optional.  Their actual content is defined
-    by the return value of the methods '_label()', '_tooltip()', '_content()'
-    and '_menu_items()'.  If all these methods return an empty result, the
+    content and a popup menu, all optional.  Their actual content is defined by
+    the return value of the methods '_label()', '_content()', '_menu_items()'
+    and '_menu_title()'.  If all these methods return an empty result, the
     control is not displayed at all.
 
     To make use of a particular control in an application, return its instance
     from 'wiking.Application.top_controls()'.
 
     """
-    def _cls(self, req):
-        """Return the CSS class name to use for the main div of the control."""
-        return pytis.util.camel_case_to_lower(self.__class__.__name__, '-')
-
-    def _tooltip(self, req):
-        """Return the tooltip displayed on the control or None.""" 
-        return None
 
     def _label(self, context):
         """Return the label displayed within the control or None for unlabeled control.""" 
@@ -1385,7 +1378,8 @@ class TopBarControl(lcg.Content):
         if label:
             content = (g.span(label, cls='label'), ' ', content)
         if content:
-            return g.div(content, cls=self._cls(req), title=self._tooltip(req))
+            return g.div(content,
+                         cls=pytis.util.camel_case_to_lower(self.__class__.__name__, '-'))
         else:
             return '' 
 
@@ -1438,19 +1432,6 @@ class LoginControl(TopBarControl):
                                                cls='new-user-registration')),
         return items
 
-    def _tooltip(self, req):
-        user = req.user()
-        if user:
-            login, displayed_name = user.login(), user.name()
-            # Translators: Login status info.
-            tooltip = _("Logged in user:") + ' ' + displayed_name
-            if login != displayed_name:
-                tooltip += ' (' + login + ')'
-        else:
-            # Translators: Login status info.
-            tooltip = _("User not logged in")
-        return tooltip
-
     def _label(self, context):
         req = context.req()
         if req.user() is None:
@@ -1459,7 +1440,9 @@ class LoginControl(TopBarControl):
             if uri.endswith('_registration'):
                 uri = '/' # Redirect logins from the registration forms to site root
             # Translators: Login button label (verb in imperative).
-            result = g.a(_("Log in"), href=g.uri(uri, command='login'), cls='login-link')
+            result = g.a(_("Log in"), href=g.uri(uri, command='login'), cls='login-link',
+                         # Translators: Login status info.
+                         title=_("User not logged in"))
         else:
             result = None
         return result
@@ -1469,7 +1452,12 @@ class LoginControl(TopBarControl):
         req = context.req()
         user = req.user()
         if user:
-            result = g.span(user.name(), cls='displayed-user-name')
+            login, displayed_name = user.login(), user.name()
+            # Translators: Login status info.
+            tooltip = _("Logged in user:") + ' ' + displayed_name
+            if login != displayed_name:
+                tooltip += ' (' + login + ')'
+            result = g.span(displayed_name, cls='displayed-user-name', title=tooltip)
         else:
             result = None
         return result
