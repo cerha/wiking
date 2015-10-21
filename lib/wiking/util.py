@@ -1394,7 +1394,10 @@ class LoginControl(TopBarControl):
 
     """
     def _menu_title(self, context):
-        return _("User actions")
+        if context.req().user():
+            return _("User actions")
+        else:
+            return _("Login and registration")
 
     def _menu_items(self, context):
         req = context.req()
