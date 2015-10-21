@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-09-24 11:41+0200\n"
+"POT-Creation-Date: 2015-10-21 15:23+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: \n"
@@ -262,11 +262,11 @@ msgstr "Pentru această secţiune este disponibil şi un canal RSS:"
 msgid "Page heading"
 msgstr "Titlul paginii"
 
-#: ../lib/wiking/export.py:124 ../lib/wiking/export.py:327
+#: ../lib/wiking/export.py:124 ../lib/wiking/export.py:328
 msgid "Main navigation"
 msgstr "Navigaţia principală"
 
-#: ../lib/wiking/export.py:126 ../lib/wiking/export.py:289
+#: ../lib/wiking/export.py:126 ../lib/wiking/export.py:290
 msgid "Main content"
 msgstr "Cuprinsul principal"
 
@@ -279,59 +279,55 @@ msgstr "Subsolul paginii"
 msgid "Language selection"
 msgstr "Selectare limbă"
 
-#: ../lib/wiking/export.py:292
+#: ../lib/wiking/export.py:293
 msgid "Jump in page"
 msgstr "Treci la pagina"
 
 #. A label followed by location information in webpage navigation
-#: ../lib/wiking/export.py:297
+#: ../lib/wiking/export.py:298
 msgid "You are here:"
 msgstr "Te afli aici:"
 
-#: ../lib/wiking/export.py:309 ../lib/wiking/export.py:338
+#: ../lib/wiking/export.py:310 ../lib/wiking/export.py:339
 #, fuzzy
 msgid "Hierarchical navigation menu"
 msgstr "Navigaţia acestei secţiuni "
 
-#: ../lib/wiking/export.py:313
+#: ../lib/wiking/export.py:314
 msgid "Expand drop-down submenu of this item."
 msgstr ""
 
-#: ../lib/wiking/export.py:339
+#: ../lib/wiking/export.py:340
 msgid "Expand/collapse complete menu hierarchy"
 msgstr ""
 
 #. ``RSS channel'' is terminology idiom, see Wikipedia
-#: ../lib/wiking/export.py:371
+#: ../lib/wiking/export.py:372
 msgid "RSS channel"
 msgstr "RSS canal"
 
-#: ../lib/wiking/export.py:388
-msgid "Toggle expansion of sidebar panels."
-msgstr ""
-
-#: ../lib/wiking/export.py:396
+#: ../lib/wiking/export.py:394
 msgid "Warning"
 msgstr "Atenţie"
 
-#: ../lib/wiking/export.py:408
+#: ../lib/wiking/export.py:406
 msgid "Minimize"
 msgstr ""
 
-#: ../lib/wiking/export.py:409
+#: ../lib/wiking/export.py:407
 msgid "Exit the maximized mode."
 msgstr ""
 
-#: ../lib/wiking/export.py:413
+#: ../lib/wiking/export.py:411
 msgid "Maximize"
 msgstr ""
 
-#: ../lib/wiking/export.py:414
+#: ../lib/wiking/export.py:412
 msgid "Maximize the main content to the full size of the browser window."
 msgstr ""
 
 #. Information about last change of a webpage (when and who)
-#: ../lib/wiking/export.py:432
+#: ../lib/wiking/export.py:430
 #, python-format
 msgid "Last change: %(date)s, %(user)s"
 msgstr "Ultima modificare: %(date)s, %(user)s"
@@ -438,8 +434,7 @@ msgstr ""
 "blocat până la schimbarea parolei."
 
 #. This is a link on a webpage
-#. Link on login panel on the webpage.
-#: ../lib/wiking/util.py:230 ../lib/wiking/util.py:1413
+#: ../lib/wiking/util.py:230
 msgid "Change your password"
 msgstr "Schimbă parola"
 
@@ -561,121 +556,143 @@ msgstr ""
 "Funcţia solicitată este momentan inaccesibilă. Încercaţi să repetaţi cererea "
 "mai târziu."
 
-#. Menu item label (verb in imperative).
 #: ../lib/wiking/util.py:1398
+#, fuzzy
+msgid "User actions"
+msgstr "Acţiuni:"
+
+#: ../lib/wiking/util.py:1400
+#, fuzzy
+msgid "Login and registration"
+msgstr "Înregistrare utilizator nou"
+
+#. Menu item label (verb in imperative).
+#: ../lib/wiking/util.py:1408
 #, fuzzy
 msgid "Log out"
 msgstr "ieşire din cont"
 
-#: ../lib/wiking/util.py:1401
-msgid "My User Profile"
-msgstr ""
+#: ../lib/wiking/util.py:1411
+#, fuzzy
+msgid "My user profile"
+msgstr "Afişează profilul utilizatorului"
 
 #. Login panel info. '%(date)s' is replaced by a concrete date.
-#: ../lib/wiking/util.py:1409
+#: ../lib/wiking/util.py:1419
 #, python-format
 msgid "Your password expires on %(date)s"
 msgstr "Valabilitatea parolei până la %(date)s"
 
-#: ../lib/wiking/util.py:1416
+#. Link on login panel on the webpage.
+#: ../lib/wiking/util.py:1423
+#, fuzzy
+msgid "Change my password"
+msgstr "Schimbă parola"
+
+#. Login button label (verb in imperative).
+#. Login button label - verb in imperative.
+#: ../lib/wiking/util.py:1426 ../lib/wiking/util.py:1446
+#: ../lib/wiking/util.py:1580
+msgid "Log in"
+msgstr "Intrare în cont"
+
+#: ../lib/wiking/util.py:1427
 msgid "Log in to an existing user account"
 msgstr ""
 
 #. Login panel/dialog registration link.  Registration allows the
 #. user to obtain access to the website/application by submitting his personal
 #. details.
-#: ../lib/wiking/util.py:1423
+#: ../lib/wiking/util.py:1434
 msgid "Register a new user account"
 msgstr ""
 
 #. Login status info.
-#: ../lib/wiking/util.py:1432
-msgid "Logged in user:"
-msgstr ""
-
-#. Login status info.
-#: ../lib/wiking/util.py:1437
+#: ../lib/wiking/util.py:1448
 #, fuzzy
 msgid "User not logged in"
 msgstr "neautentificat"
 
-#. Login button label (verb in imperative).
-#. Login button label - verb in imperative.
-#: ../lib/wiking/util.py:1451 ../lib/wiking/util.py:1563
-msgid "Log in"
-msgstr "Intrare în cont"
+#. Login status info.
+#: ../lib/wiking/util.py:1460
+msgid "Logged in user:"
+msgstr ""
 
 #. Label for language selection followed by the
 #. current language name with a selection of other available
 #. language variants.
-#: ../lib/wiking/util.py:1468
+#: ../lib/wiking/util.py:1482
 msgid "Language:"
 msgstr "Limba:"
 
-#: ../lib/wiking/util.py:1544
+#: ../lib/wiking/util.py:1488
+msgid "Switch the language"
+msgstr ""
+
+#: ../lib/wiking/util.py:1561
 msgid "Your e-mail address"
 msgstr ""
 
-#: ../lib/wiking/util.py:1547
+#: ../lib/wiking/util.py:1564
 msgid "Login name"
 msgstr "Nume de autentificare"
 
-#: ../lib/wiking/util.py:1557
+#: ../lib/wiking/util.py:1574
 msgid "Password"
 msgstr "Parola"
 
 #. Webpage link leading to registration form.
-#: ../lib/wiking/util.py:1567
+#: ../lib/wiking/util.py:1584
 msgid "New user registration"
 msgstr "Înregistrare utilizator nou"
 
 #. Login dialog link to password change or password reminder (depends
 #. on configuration).
-#: ../lib/wiking/util.py:1570
+#: ../lib/wiking/util.py:1587
 msgid "Forgot your password?"
 msgstr "Ţi-ai uitat parola?"
 
 #. Web form label and message
-#: ../lib/wiking/util.py:1601
+#: ../lib/wiking/util.py:1618
 #, python-format
 msgid "Decryption password for '%s'"
 msgstr ""
 
 #. Web form button.
-#: ../lib/wiking/util.py:1608
+#: ../lib/wiking/util.py:1625
 #, fuzzy
 msgid "Send password"
 msgstr "Parola"
 
 #. Confirmation button
-#: ../lib/wiking/util.py:1630
+#: ../lib/wiking/util.py:1647
 msgid "Continue"
 msgstr ""
 
-#: ../lib/wiking/util.py:2491
+#: ../lib/wiking/util.py:2508
 #, fuzzy
 msgid "Invalid e-mail address format."
 msgstr "Format invalid"
 
 #. Computer terminology. `gmail.com' is a domain name in email address
 #. `joe@gmail.com'.
-#: ../lib/wiking/util.py:2499 ../lib/wiking/util.py:2507
+#: ../lib/wiking/util.py:2516 ../lib/wiking/util.py:2524
 #, fuzzy
 msgid "Domain not found."
 msgstr "Domeniul nu a fost găsit"
 
 #. Computer terminology.  Don't translate the acronym `DNS'.
-#: ../lib/wiking/util.py:2502 ../lib/wiking/util.py:2510
+#: ../lib/wiking/util.py:2519 ../lib/wiking/util.py:2527
 #, python-format
 msgid "Unable to retrieve DNS records: %s"
 msgstr ""
 
-#: ../lib/wiking/util.py:2538
+#: ../lib/wiking/util.py:2555
 #, python-format
 msgid "Invalid e-mail address: %s"
 msgstr ""
 
-#: ../lib/wiking/util.py:2540
+#: ../lib/wiking/util.py:2557
 #, python-format
 msgid ""
 "Unable to verify e-mail address: Mail servers for '%s' are temporarily "
@@ -716,9 +733,6 @@ msgstr ""
 #~ msgid "Login Panel"
 #~ msgstr "Panou de autentificare"
 
-#~ msgid "Go to your profile"
-#~ msgstr "Afişează profilul utilizatorului"
-
 #~ msgid "log in"
 #~ msgstr "intrare în cont"
 
@@ -751,9 +765,6 @@ msgstr ""
 
 #~ msgid "Make the item invisible to website visitors"
 #~ msgstr "Fă obiectul inaccesibil pentru vizitatorii site-ului"
-
-#~ msgid "Actions:"
-#~ msgstr "Acţiuni:"
 
 #~ msgid "Help"
 #~ msgstr "Ajutor"
