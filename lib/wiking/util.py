@@ -1405,7 +1405,7 @@ class LoginControl(TopBarControl):
             items.append(lcg.PopupMenuItem(_("Log out"), cls='logout',
                                            uri=req.make_uri(req.uri(), command='logout')))
             if user.uri():
-                items.append(lcg.PopupMenuItem(_("My User Profile"), uri=user.uri(),
+                items.append(lcg.PopupMenuItem(_("My user profile"), uri=user.uri(),
                                                cls='user-profile'))
             password_change_uri = wiking.module.Application.password_change_uri(req)
             if password_change_uri:
@@ -1417,7 +1417,7 @@ class LoginControl(TopBarControl):
                 else:
                     tooltip = None
                 # Translators: Link on login panel on the webpage.
-                items.append(lcg.PopupMenuItem(_("Change your password"), cls='change-password', 
+                items.append(lcg.PopupMenuItem(_("Change my password"), cls='change-password', 
                                                uri=password_change_uri, tooltip=tooltip))
         else:
             items.append(lcg.PopupMenuItem(_("Log in"), cls='login',
