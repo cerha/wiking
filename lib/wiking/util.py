@@ -1337,12 +1337,12 @@ class TopBarControl(lcg.Content):
         """Return the CSS class name to use for the main div of the control."""
         return pytis.util.camel_case_to_lower(self.__class__.__name__, '-')
 
-    def _label(self, req):
-        """Return the label displayed within the control or None for unlabeled control.""" 
-        return None
-
     def _tooltip(self, req):
         """Return the tooltip displayed on the control or None.""" 
+        return None
+
+    def _label(self, context):
+        """Return the label displayed within the control or None for unlabeled control.""" 
         return None
 
     def _content(self, context):
@@ -1371,9 +1371,9 @@ class TopBarControl(lcg.Content):
         if items:
             menu = lcg.PopupMenuCtrl(items, None, '.dropdown').export(context)
             content = g.span((content, menu), cls='dropdown')
-        label = self._label(req)
+        label = self._label(context)
         if label:
-            content = (g.span(self._LABEL, cls='label'), ' ', content)
+            content = (g.span(label, cls='label'), ' ', content)
         if content:
             return g.div(content, cls=self._cls(req), title=self._tooltip(req))
         else:
