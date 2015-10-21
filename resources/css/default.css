@@ -603,6 +603,21 @@ body.non-maximized #page {
 body.maximized #submenu {
     display: none;
 }
+body.maximized #middle {
+    padding-left: 0;
+    padding-right: 0;
+}
+body.maximized #main {
+    border-left: 0;
+    border-right: 0;
+}
+body.maximized #bottom {
+    padding: 0;
+}
+body.maximized #bottom-bar {
+    padding: 0 4px;
+}
+
 
 /* Horizontal menu bar */
 
@@ -726,9 +741,6 @@ body.non-maximized #panels {
     z-index: 1;
     float: right;
     width: 220px;
-}
-body.maximized #panels {
-    margin-left: -8px;
 }
 body.maximized #panels .panel {
     width: 212px;
@@ -872,18 +884,31 @@ body.non-maximized.with-panels #bottom-bar,
 body.non-maximized.with-panels #footer {
     margin-right: 0px;
 }
+body.non-maximized #middle {
+    padding-left: 0;
+    padding-right: 0;
+}
+body.non-maximized #main {
+    border-left: 0;
+    border-right: 0;
+}
+
 body.non-maximized #panels {
     position: static;
     float: none;
     width: auto;
-    margin-left: -8px;
 }
 body.non-maximized #panels .panel {
     width: 212px;
     display: inline-block;
     vertical-align: top;
 }
-
+body.non-maximized #bottom {
+    padding: 0;
+}
+body.non-maximized #bottom-bar {
+    padding: 0 4px;
+}
 .language-selection .label { display: none; }
 
 } /* End of tablet screen layout */
