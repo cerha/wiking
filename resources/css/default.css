@@ -615,7 +615,7 @@ body.maximized #bottom {
     padding: 0;
 }
 body.maximized #bottom-bar {
-    padding: 0 4px;
+    padding: 1px 4px;
 }
 
 
@@ -819,6 +819,7 @@ body.maximized #panels .panel {
     border: solid $color.top-border;
     border-width: 1px 0px;
     background-color: $color.heading-bg;
+    padding: 1px 2px;
     margin-bottom: 12px;
 }
 #bottom-bar span.left { float: left; }
@@ -907,7 +908,7 @@ body.non-maximized #bottom {
     padding: 0;
 }
 body.non-maximized #bottom-bar {
-    padding: 0 4px;
+    padding: 1px 4px;
 }
 .language-selection .label { display: none; }
 
