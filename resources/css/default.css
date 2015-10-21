@@ -649,11 +649,11 @@ body.non-maximized #menu a.navigation-link.current.with-dropdown {
 #menu .menu-dropdown-ctrl {
     display: inline-block;
     position: absolute;
-    right: -1px;
-    bottom: -4px;
-    width: 22px;
-    height: 22px;
-    background: url(popup-arrow.png) 0 0 no-repeat;
+    right: 0px;
+    bottom: 0px;
+    width: 26px;
+    height: 18px;
+    background: url(popup-arrow.png) 5px 2px no-repeat;
 }
 body.non-maximized #menu a.navigation-link.current .menu-dropdown-ctrl {
     display: none;
