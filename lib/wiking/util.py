@@ -1324,7 +1324,7 @@ class TopBarControl(lcg.Content):
     supported by this class.
 
     The controls derived from this class may have a label, tooltip, displayed
-    content and a dropdown menu, all optional.  Their actual content is defined
+    content and a popup menu, all optional.  Their actual content is defined
     by the return value of the methods '_label()', '_tooltip()', '_content()'
     and '_menu_items()'.  If all these methods return an empty result, the
     control is not displayed at all.
@@ -1356,12 +1356,22 @@ class TopBarControl(lcg.Content):
         return ''
 
     def _menu_items(self, context):
-        """Return the menu items displayed in the control's dropdown menu.
+        """Return the menu items displayed in the control's popup menu.
 
         Returns a sequence of 'lcg.PopupMenuItem' instances.  When the returned
-        sequence is empty, the control will not display a dropdown menu.
+        sequence is empty, the control will not display a popup menu.
 
         """
+        return []
+
+    def _menu_title(self, context):
+        """Return a short and descriptive title of the control's popup menu.
+        
+        This title is used as an accessible label of the menu invocation
+        control (the down pointing arrow) as well as its tooltip.
+
+        """
+        return None
 
     def export(self, context):
         g = context.generator()
@@ -1369,8 +1379,8 @@ class TopBarControl(lcg.Content):
         content = self._content(context)
         items = self._menu_items(context)
         if items:
-            menu = lcg.PopupMenuCtrl(items, None, '.dropdown').export(context)
-            content = g.span((content, menu), cls='dropdown')
+            content = lcg.PopupMenuCtrl(self._menu_title(context), items,
+                                        content=HtmlContent(content or '')).export(context)
         label = self._label(context)
         if label:
             content = (g.span(label, cls='label'), ' ', content)
@@ -1389,6 +1399,9 @@ class LoginControl(TopBarControl):
     'wiking.Application.top_controls()'.
 
     """
+    def _menu_title(self, context):
+        return _("User actions")
+
     def _menu_items(self, context):
         req = context.req()
         user = req.user()
@@ -1438,6 +1451,19 @@ class LoginControl(TopBarControl):
             tooltip = _("User not logged in")
         return tooltip
 
+    def _label(self, context):
+        req = context.req()
+        if req.user() is None:
+            g = context.generator()
+            uri = req.uri()
+            if uri.endswith('_registration'):
+                uri = '/' # Redirect logins from the registration forms to site root
+            # Translators: Login button label (verb in imperative).
+            result = g.a(_("Log in"), href=g.uri(uri, command='login'), cls='login-link')
+        else:
+            result = None
+        return result
+
     def _content(self, context):
         g = context.generator()
         req = context.req()
@@ -1445,11 +1471,7 @@ class LoginControl(TopBarControl):
         if user:
             result = g.span(user.name(), cls='displayed-user-name')
         else:
-            uri = req.uri()
-            if uri.endswith('_registration'):
-                uri = '/' # Redirect logins from the registration forms to site root
-            # Translators: Login button label (verb in imperative).
-            result = g.a(_("Log in"), href=g.uri(uri, command='login'), cls='login-link')
+            result = None
         return result
 
 
@@ -1471,6 +1493,9 @@ class LanguageSelection(TopBarControl):
     def _label(self, context):
         return self._LABEL
 
+    def _menu_title(self, context):
+        return _("Switch the language")
+        
     def _menu_items(self, context):
         node = context.node()
         variants = node.variants()

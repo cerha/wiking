@@ -1010,9 +1010,8 @@ class Panels(SiteSpecificContentModule, wiking.CachingPytisModule):
                                                             action=action.id(),
                                                             panel_id=row['panel_id'].export()))
                          for action in self._form_actions(req, record, None)]
-                titlebar_content = lcg.PopupMenuCtrl(items, tooltip=_("Popup the menu of actions "
-                                                                      "for this panel"),
-                                                     active_area_selector='h3')
+                titlebar_content = lcg.PopupMenuCtrl(_("Popup the menu of actions for this panel"),
+                                                     items, active_area_selector='h3')
             else:
                 titlebar_content = None
             panels.append(wiking.Panel(panel_id, title, content,

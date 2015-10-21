@@ -476,26 +476,37 @@ h1 a { outline: none; }
     margin-left: 17px;
 }
 
-.login-control {
-    padding: 3px 0 3px 24px;
-    background: url(user.png) 1px center no-repeat;
-}
-.login-control .dropdown {
-    padding: 3px 0 3px 5px;
+#top-controls .label,
+#top-controls .invoke-menu {
+    padding: 3px 0;
     white-space: nowrap;
+}
+#top-controls .invoke-menu {
     border-radius: 3px;
     background: #ddd;
 }
+#top-controls .invoke-menu.labeled {
+    padding-left: 6px;
+}
+#top-controls .popup-arrow {
+    top: 2px;
+    height: 12px;
+}
+.login-control {
+    padding: 3px 0 3px 22px;
+    background: url(user.png) 1px center no-repeat;
+}
 .login-control .login-link {
     color: $color.foreground;
-    padding-left: 20px;
+    padding: 3px 5px 3px 23px;
     text-decoration: none;
-    background: url(login.png) left center no-repeat;
+    border-radius: 3px;
+    background: url(login.png) 3px center no-repeat #ddd;
 }
 .login-control .login-link:hover { color: $color.foreground; }
 
 .admin-control {
-    padding: 3px 0 3px 18px;
+    padding: 3px 0 3px 23px;
     background: url(gear.png) 1px center no-repeat;
     margin-right: -10px;
     margin-left: 5px !important;
@@ -542,11 +553,6 @@ div.popup-menu-widget ul li {
 
 .language-selection {
     white-space: nowrap;
-}
-.language-selection .dropdown {
-    padding: 3px 0 3px 5px;
-    border-radius: 3px;
-    background: #ddd;
 }
 .language-selection .language-abbr { display: none; }
 
@@ -714,7 +720,7 @@ body.non-maximized.with-panels #footer {
 }
 body.non-maximized #panels {
     position: absolute;
-    top: 18px;
+    top: 20px;
     right: 0px;
     z-index: 1;
     float: right;
@@ -748,14 +754,17 @@ body.maximized #panels .panel {
     background-color: $color.heading-bg;
     border-bottom: 1px solid $color.top-border;
 }
+#panels .panel h3 .popup-menu-widget {
+    font-weight: normal;
+}
 #panels .panel .panel-content {
     padding: 2px 4px;
 }
-#panels .panel ul, #panels .panel ol {
+#panels .panel-content ul, #panels .panel-content ol {
     padding-left: 1.5em;
     margin: 0;
 }
-#panels .panel form { margin: 5px 0; }
+#panels .panel-content form { margin: 5px 0; }
 
 /* The actual page content */
 
@@ -916,10 +925,10 @@ body.non-maximized #menu a.navigation-link.current .menu-dropdown-ctrl {
 
 .language-selection .language-name { display: none; }
 .language-selection .language-abbr { display: inline; }
-.login-control { padding-left: 14px; }
 .login-control .displayed-user-name { display: none; }
-.login-control .dropdown { background: none; }
+.login-control .popup-menu-ctrl-widget { background: none; }
 .login-control .login-link { display: none }
+#top-controls .login-control .invoke-menu.labeled { padding-left: 0; }
 
 } /* End of smaller mobile phone screen layout */
 
@@ -999,11 +1008,11 @@ form.list-form-controls .paging-controls {
 #page .popup-menu-widget li.active:hover {
     background-color: $color.highlight-bg;
 }
-#page .dropdown-selection-widget {
+#page .dropdown-selection-widget .dropdown-selection {
     background-color: $color.background;
     border-color: $color.top-border;
 }
-#page .dropdown-selection-widget li.active a {
+#page .dropdown-selection-widget .dropdown-selection li.active a {
     color: $color.foreground;
 }
 

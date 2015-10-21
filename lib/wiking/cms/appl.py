@@ -34,6 +34,9 @@ class AdminControl(wiking.TopBarControl):
     def _tooltip(self, req):
         return _("Website Administration")
 
+    def _menu_title(self, context):
+        return _("Website Administration")
+
     def _menu_items(self, context):
         req = context.req()
         items = []
