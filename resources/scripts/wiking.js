@@ -111,12 +111,14 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
 	    var uri = href.substr(0, href.indexOf('#'));
 	    if (uri === '' || uri === self.location.pathname) {
 		var anchor = href.substr(href.indexOf('#') + 1);
-		var target = $(anchor) || $$('a[name=' + anchor + ']')[0];
-		if (target && !target.hasClassName('notebook-page')) {
-		    element.observe('click', function(event) {
-			Effect.ScrollTo(target, {offset: -wiking.scroll_offset});
-			event.stop();
-		    });
+		if (anchor) {
+		    var target = $(anchor) || $$('a[name=' + anchor + ']')[0];
+		    if (target && !target.hasClassName('notebook-page')) {
+			element.observe('click', function(event) {
+			    Effect.ScrollTo(target, {offset: -wiking.scroll_offset});
+			    event.stop();
+			});
+		    }
 		}
 	    }
 	});
