@@ -202,7 +202,7 @@ class Users(CommonAccesRights, Base_CachingTable):
 
     init_columns = ('login', 'password', 'firstname', 'surname', 'nickname', 'user_',
                     'email', 'state', 'last_password_change',)
-    init_values = (('admin', 'wiking', 'Wiking', 'Admin', 'Admin', 'Admin',
+    init_values = (('admin', 'plain:wiking', 'Wiking', 'Admin', 'Admin', 'Admin',
                     '-', 'enabled', '2012-01-01 00:00'),)
 
 class CmsFInsertOrUpdateUser(sql.SQLPlFunction):
