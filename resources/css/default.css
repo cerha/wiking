@@ -368,6 +368,9 @@ span.diff_sub, span.field.id-diff_sub { background-color: #ffaaaa; }
 .pytis-form.excerpt-export-form .submit button {
     margin: 0 6px 0 0;
 }
+.pytis-form.publication-export-form .radio-group label {
+    margin: 0 10px 0 2px;
+}
 .pytis-form.publication-export-form div.submit button[type="submit"] span {
     background-image: url(down.png);
     background-position: left top;
