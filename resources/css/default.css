@@ -361,22 +361,21 @@ span.diff_sub, span.field.id-diff_sub { background-color: #ffaaaa; }
     background: transparent !important;
     text-align: left;
 }
-.pytis-form.publication-export-form .submit button,
-.pytis-form.excerpt-export-form .submit button {
-    margin: 0;
-}
 .pytis-form.publication-export-form th.label {
     width: 1%; /* Prevent label spanning too wide in Safari */
 }
+.pytis-form.publication-export-form .submit button,
+.pytis-form.excerpt-export-form .submit button {
+    margin: 0 6px 0 0;
+}
 .pytis-form.publication-export-form div.submit button[type="submit"] span {
     background-image: url(down.png);
-    background-position: left 1px;
-    padding: 2px 0 2px 19px;
+    background-position: left top;
+    padding-left: 19px;
 }
 .pytis-form.publication-export-form div.submit button[type="submit"][name="test"] span {
     background-image: url(gear-16x16.png);
 }
-
 
 .export-progress-log {
     min-height: 2em;
