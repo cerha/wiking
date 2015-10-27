@@ -1163,10 +1163,10 @@ class CmsStylesheets(CommonAccesRights, Base_CachingTable):
               sql.Column('content', pytis.data.String()),
               sql.Column('ord', pytis.data.Integer()),
               )
-    unique = (('identifier', 'site',),)
-    init_columns = ('identifier', 'site', 'media', 'ord',)
+    unique = (('filename', 'site',),)
+    init_columns = ('filename', 'site', 'ord',)
     init_values = (
-        ('default.css', '*', 'all', 10),
+        ('default.css', '*', 10),
     )
 
 
