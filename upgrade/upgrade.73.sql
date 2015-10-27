@@ -1,6 +1,6 @@
 DROP VIEW "public"."cms_v_session_log";
 
-drop rule cms_session_delete on cms_session;
+drop rule if exists cms_session_delete on cms_session;
 
 ALTER TABLE public.cms_session ALTER COLUMN last_access TYPE TIMESTAMP(0) WITH TIME ZONE;
 
