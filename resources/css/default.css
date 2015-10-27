@@ -513,6 +513,9 @@ h1 a { outline: none; }
     margin-right: -10px;
     margin-left: 5px !important;
 }
+.admin-control:last-child {
+    margin-right: 2px;
+}
 body.preview-mode .admin-control {
     background-image: url(gear-red.png);
 }
