@@ -570,6 +570,7 @@ div.popup-menu-widget ul li {
     background: url(shadow.png) 0 -3px repeat-x;
     padding: 4px 8px;
 }
+body.non-maximized #top-layer1,
 body.non-maximized #middle-layer1,
 body.non-maximized #bottom {
     max-width: 1160px;
