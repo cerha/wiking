@@ -1043,9 +1043,6 @@ form.list-form-controls .paging-controls {
 #page .popup-menu-widget li.active a {
     color: $color.foreground;
 }
-#page .popup-menu-widget li.active:hover {
-    background-color: $color.highlight-bg;
-}
 #page .dropdown-selection-widget .dropdown-selection {
     background-color: $color.background;
     border-color: $color.top-border;
