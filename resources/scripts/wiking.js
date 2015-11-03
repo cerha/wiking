@@ -207,12 +207,16 @@ wiking.MainMenu = Class.create(lcg.Menu, {
 	if (this.active_dropdown && this.active_dropdown !== dropdown) {
 	    this.toggle_dropdown(this.active_dropdown);
 	}
+	var item = dropdown.up('li').down('.navigation-link');
 	if (!dropdown.visible()) {
 	    this.active_dropdown = dropdown;
 	    // Reset the style to the initial state (when clicking too fast, the effects
 	    // may overlap and leave a messy final style).
 	    dropdown.setAttribute('style', 'display: none;');
-	    dropdown.up('li').down('.navigation-link').addClassName('expanded');
+	    item.addClassName('expanded');
+	    // This solves two problems.  A. the dropdown looks odd when not wider than the item.
+	    // B. the dropdown width flickers when hovering over its widest item.
+	    dropdown.setStyle({width: Math.max(item.getWidth(), dropdown.getWidth()) + 'px'});
 	    Effect.SlideDown(dropdown, {duration: 0.2});
 	    this.on_touchstart = function (event) { this.touch_moved = false; }.bind(this);
 	    this.on_touchmove = function (event) { this.touch_moved = true; }.bind(this);
@@ -242,7 +246,7 @@ wiking.MainMenu = Class.create(lcg.Menu, {
 	    Effect.SlideUp(dropdown, {
 		duration: 0.2,
 		afterFinish: function () {
-		    dropdown.up('li').down('.navigation-link').removeClassName('expanded');
+		    item.removeClassName('expanded');
 		},
 	    });
 	}
