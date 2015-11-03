@@ -58,20 +58,9 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
 	$super();
 	var menu = $('main-menu');
 	if (menu) {
-	    var main_menu = new wiking.MainMenu(menu);
-	    var submenu = $('submenu');
-	    if (submenu) {
-		var tree_menu = lcg.widget_instance(submenu.down('.foldable-tree-widget'));
-		// Bind given lcg.TreeMenu instance as a descendant of this menu in
-		// keyboard traversal.
-		var parent_item = main_menu.selected_item();
-		var i, item;
-		parent_item._lcg_submenu = tree_menu.items;
-		for (i = 0; i < tree_menu.items.length; i++) {
-		    item = tree_menu.items[i];
-		    item._lcg_menu_parent = parent_item;
-		}
-	    }
+	    this._main_menu = new wiking.MainMenu(menu);
+	} else {
+	    this._main_menu = undefined;
 	}
 
 	// Set up global key handler.
@@ -137,7 +126,7 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
     cmd_menu: function (element) {
 	// Move focus to the menu (the current menu item).
 	var submenu = $('submenu');
-	if (submenu) {
+	if (submenu && submenu.getStyle('display') !== 'none') {
 	    lcg.widget_instance(submenu.down('.foldable-tree-widget')).focus();
 	} else {
 	    var menu = $('main-menu');
@@ -197,6 +186,21 @@ wiking.MainMenu = Class.create(lcg.Menu, {
     init_item: function ($super, item, prev, parent) {
 	$super(item, prev, parent);
 	item.setAttribute('role', 'menuitem');
+	var dropdown = item.up('li').down('.menu-dropdown');
+	var submenu = (item.hasClassName('current') ? $('submenu') : undefined);
+	this.bind_tree_menu_parent(submenu, item);
+	this.bind_tree_menu_parent(dropdown, item);
+	item._wiking_submenu = submenu;
+	item._wiking_dropdown = dropdown;
+    },
+
+    bind_tree_menu_parent: function (element, item) {
+	if (element) {
+	    var tree_menu = lcg.widget_instance(element.down('.foldable-tree-widget'));
+	    tree_menu.items.each(function(tree_menu_item) {
+		tree_menu_item._lcg_menu_parent = item;
+	    });
+	}
     },
     
     toggle_dropdown: function (dropdown) {
@@ -245,14 +249,25 @@ wiking.MainMenu = Class.create(lcg.Menu, {
     },
 
     cmd_submenu: function (item) {
-	if (item._lcg_submenu !== null) {
-	    this.set_focus(item._lcg_submenu[0]);
+	var submenu = item._wiking_submenu;
+	var dropdown = item._wiking_dropdown;
+	var menu_element;
+	if (submenu && submenu.getStyle('display') !== 'none') {
+	    menu_element = submenu;
+	} else if (dropdown && dropdown.visible()) {
+	    menu_element = dropdown;
+	} else if (dropdown) {
+	    this.toggle_dropdown(dropdown);
 	}
+	if (menu_element) {
+	    var tree_menu = lcg.widget_instance(menu_element.down('.foldable-tree-widget'));
+	    this.set_focus(tree_menu.items[0]);
+	}	
     },
 
     cmd_activate: function (item) {
-	var dropdown = item.up('li').down('.menu-dropdown');
-	var submenu = (item.hasClassName('current') ? $('submenu') : undefined);
+	var dropdown = item._wiking_dropdown;
+	var submenu = item._wiking_submenu;
 	if (dropdown && !dropdown.visible() &&
 	    (!submenu || submenu.getStyle('display') === 'none')) {
 	    this.toggle_dropdown(dropdown);
