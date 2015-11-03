@@ -305,23 +305,20 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         items = []
         for node in children:
             if not node.hidden():
-                cls = ['navigation-link']
                 if not all(n.hidden() for n in node.children()):
                     tree = lcg.FoldableTree(node, label=_("Hierarchical navigation menu"))
                     dropdown = g.div(tree.export(context), cls='menu-dropdown', style='display: none')
-                    cls.append('with-dropdown')
-                    ctrl = g.span('', cls='menu-dropdown-ctrl', role='presentation',
-                                  title=_("Expand drop-down submenu of this item."))
+                    arrow = g.span('', cls='dropdown-arrow', role='presentation')
                 else:
                     dropdown = ''
-                    ctrl = ''
-                if node is top:
-                    cls.append('current')
-                items.append(g.li((g.a(node.title() + ctrl,
+                    arrow = ''
+                items.append(g.li((g.a(node.title() + arrow,
                                        href=self._uri_node(context, node),
                                        title=node.descr(),
                                        accesskey=(node is first and '1' or None),
-                                       cls=' '.join(cls)),
+                                       cls=('navigation-link' +
+                                            (' current' if node is top else '') +
+                                            (' with-dropdown' if dropdown else ''))),
                                    dropdown),
                                   cls='main-menu-item'))
         return (

@@ -197,19 +197,6 @@ wiking.MainMenu = Class.create(lcg.Menu, {
     init_item: function ($super, item, prev, parent) {
 	$super(item, prev, parent);
 	item.setAttribute('role', 'menuitem');
-	var dropdown = item.up().down('.menu-dropdown');
-        if (dropdown) {
-	    // This is commented out, because the slide down effect
-	    // doesn't work reliably in this case in Firefox (really wierd).
-      	    // item.observe('contextmenu', function (event) { 
-	    //    this.toggle_dropdown(dropdown);
-	    //    event.stop();
-	    //}.bind(this));
-	    item.down('.menu-dropdown-ctrl').observe('click', function (event) { 
-		this.toggle_dropdown(dropdown);
-		event.stop();
-	    }.bind(this));
-	}
     },
     
     toggle_dropdown: function (dropdown) {
@@ -221,6 +208,7 @@ wiking.MainMenu = Class.create(lcg.Menu, {
 	    // Reset the style to the initial state (when clicking too fast, the effects
 	    // may overlap and leave a messy final style).
 	    dropdown.setAttribute('style', 'display: none;');
+	    dropdown.up('li').down('.navigation-link').addClassName('expanded');
 	    Effect.SlideDown(dropdown, {duration: 0.2});
 	    this.on_touchstart = function (event) { this.touch_moved = false; }.bind(this);
 	    this.on_touchmove = function (event) { this.touch_moved = true; }.bind(this);
@@ -247,7 +235,12 @@ wiking.MainMenu = Class.create(lcg.Menu, {
 	    $(document).stopObserving('touchmove', this.on_touchmove);
 	    $(document).stopObserving('touchend', this.on_touchend);
 	    this.active_dropdown = null;
-	    Effect.SlideUp(dropdown, {duration: 0.2});
+	    Effect.SlideUp(dropdown, {
+		duration: 0.2,
+		afterFinish: function () {
+		    dropdown.up('li').down('.navigation-link').removeClassName('expanded');
+		},
+	    });
 	}
     },
 
@@ -258,7 +251,14 @@ wiking.MainMenu = Class.create(lcg.Menu, {
     },
 
     cmd_activate: function (item) {
-	self.location = item.getAttribute('href');
+	var dropdown = item.up('li').down('.menu-dropdown');
+	var submenu = (item.hasClassName('current') ? $('submenu') : undefined);
+	if (dropdown && !dropdown.visible() &&
+	    (!submenu || submenu.getStyle('display') === 'none')) {
+	    this.toggle_dropdown(dropdown);
+	} else {
+	    self.location = item.getAttribute('href');
+	}
     },
 
     cmd_quit: function (item) {

@@ -657,6 +657,11 @@ body.maximized #bottom-bar {
     border-radius: 3px 3px 0 0;
     height: 16px;
 }
+#menu a.navigation-link.expanded {
+    z-index: 3;
+    background-color: $color.background;
+    border-bottom: solid $color.background 1px;
+}
 #menu a.navigation-link.current {
     background-color: $color.background;
     border-bottom: solid $color.background 1px;
@@ -667,7 +672,7 @@ body.maximized #bottom-bar {
 body.non-maximized #menu a.navigation-link.current.with-dropdown {
     padding-right: 8px;
 }
-#menu .menu-dropdown-ctrl {
+#menu a.navigation-link .dropdown-arrow {
     display: inline-block;
     position: absolute;
     right: 0px;
@@ -676,22 +681,22 @@ body.non-maximized #menu a.navigation-link.current.with-dropdown {
     height: 18px;
     background: url(popup-arrow.png) 5px 2px no-repeat;
 }
-body.non-maximized #menu a.navigation-link.current .menu-dropdown-ctrl {
+body.non-maximized #menu a.navigation-link.current .dropdown-arrow {
     display: none;
 }
 
 #menu .menu-dropdown {
     position: absolute;
-    top: 15px;
-    left: 2px;
+    top: 16px;
+    left: 0px;
     border: 1px solid $color.top-border;
     z-index: 2;
-    background-color: $color.background;
     padding: 2px 6px 2px 2px;
-    box-shadow: 1px 1px 12px #999;
     font-size: 1.1em;
-    -moz-box-shadow: 1px 1px 12px #999;
-    -webkit-box-shadow: #999 1px 1px 12px;    
+    background-color: $color.background;
+    box-shadow: 1px 1px 12px rgba(0, 0, 0, 0.6);
+    -moz-box-shadow: 1px 1px 12px rgba(0, 0, 0, 0.6);
+    -webkit-box-shadow: rgba(0, 0, 0, 0.6) 1px 1px 12px;
 }
 
 /* Hierarchical submenu */
@@ -933,7 +938,7 @@ body.non-maximized div#page.with-submenu #main {
 body.non-maximized #menu a.navigation-link.current.with-dropdown {
     padding-right: 25px;
 }
-body.non-maximized #menu a.navigation-link.current .menu-dropdown-ctrl {
+body.non-maximized #menu a.navigation-link.current .dropdown-arrow {
     display: inline;
 }
 #maximized-mode-control {
