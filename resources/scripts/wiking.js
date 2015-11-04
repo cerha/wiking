@@ -186,7 +186,14 @@ wiking.MainMenu = Class.create(lcg.Menu, {
 	$super(item, prev, parent);
 	var dropdown = item.up('li').down('.menu-dropdown');
 	var submenu = (item.hasClassName('current') ? $('submenu') : undefined);
+	// The condition below should be actually re-evaluated on every page width
+	// change (because the submenu is hidden/shown dynamically by responsive CSS),
+	// but in practice screen reader users hardly ever resize their browser
+	// window...
 	if (dropdown && (!submenu || submenu.getStyle('display') === 'none')) {
+	    // Setting aria-haspopup has a strange effect in VO, it starts
+	    // to read the item as "local navigation link", which seems confusing.
+	    //item.setAttribute('aria-haspopup', 'true');
 	    item.setAttribute('aria-expanded', 'false');
 	    item.setAttribute('aria-controls',
 			      dropdown.down('.foldable-tree-widget').getAttribute('id'));
