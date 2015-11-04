@@ -407,8 +407,8 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             href = '?maximize=1'
         return (g.hr(cls='hidden'),
                 g.div((
-                    g.a(g.img(context.uri(context.resource(icon)), alt=label),
-                        href=href, title=tooltip, id='maximized-mode-control'),
+                    g.a(g.img(context.uri(context.resource(icon)), role='presentation', alt=label),
+                        href=href, title=tooltip, id='maximized-mode-control', role='button'),
                     g.h(g.a(context.node().heading().export(context), tabindex=0,
                             name='main-heading', id='main-heading'), 1),
                     self._messages(context),
