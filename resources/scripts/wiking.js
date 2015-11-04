@@ -176,7 +176,6 @@ wiking.MainMenu = Class.create(lcg.Menu, {
 	// left unset, the menu items become items of the 'navigation'.
 	// Their number is announced correctly and they can be navigated
 	// easily.
-	//this.element.setAttribute('role', 'menubar');
 	ul.setAttribute('role', 'presentation');
 	// Initialize dropdown menu management.
 	this.active_dropdown = null;
@@ -185,9 +184,13 @@ wiking.MainMenu = Class.create(lcg.Menu, {
 
     init_item: function ($super, item, prev, parent) {
 	$super(item, prev, parent);
-	item.setAttribute('role', 'menuitem');
 	var dropdown = item.up('li').down('.menu-dropdown');
 	var submenu = (item.hasClassName('current') ? $('submenu') : undefined);
+	if (dropdown && (!submenu || submenu.getStyle('display') === 'none')) {
+	    item.setAttribute('aria-expanded', 'false');
+	    item.setAttribute('aria-controls',
+			      dropdown.down('.foldable-tree-widget').getAttribute('id'));
+	}
 	this.bind_tree_menu_parent(submenu, item);
 	this.bind_tree_menu_parent(dropdown, item);
 	item._wiking_submenu = submenu;
@@ -214,6 +217,7 @@ wiking.MainMenu = Class.create(lcg.Menu, {
 	    // may overlap and leave a messy final style).
 	    dropdown.setAttribute('style', 'display: none;');
 	    item.addClassName('expanded');
+	    item.setAttribute('aria-expanded', 'true');
 	    // This solves two problems.  A. the dropdown looks odd when not wider than the item.
 	    // B. the dropdown width flickers when hovering over its widest item.
 	    dropdown.setStyle({width: Math.max(item.getWidth(), dropdown.getWidth()) + 'px'});
@@ -247,6 +251,7 @@ wiking.MainMenu = Class.create(lcg.Menu, {
 		duration: 0.2,
 		afterFinish: function () {
 		    item.removeClassName('expanded');
+		    item.setAttribute('aria-expanded', 'false');
 		},
 	    });
 	}
