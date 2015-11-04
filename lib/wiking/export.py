@@ -301,7 +301,6 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         g = self._generator
         top = context.top_node()
         children = context.node().root().children()
-        first = children[0]
         items = []
         for node in children:
             if not node.hidden():
@@ -315,7 +314,6 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                 items.append(g.li((g.a(node.title() + arrow,
                                        href=self._uri_node(context, node),
                                        title=node.descr(),
-                                       accesskey=(node is first and '1' or None),
                                        cls=('navigation-link' +
                                             (' current' if node is top else '') +
                                             (' with-dropdown' if dropdown else ''))),
