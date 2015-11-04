@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-10-21 15:23+0200\n"
+"POT-Creation-Date: 2015-11-04 10:03+0100\n"
 "PO-Revision-Date: 2010-01-19 16:43+0100\n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: Slovak <wiking@lists.freebsoft.org>\n"
@@ -32,7 +32,7 @@ msgstr "Prehlásenie o sprístupnení"
 msgid "In this section:"
 msgstr "V tejto sekcii:"
 
-#: ../lib/wiking/application.py:465 ../lib/wiking/export.py:125
+#: ../lib/wiking/application.py:465
 msgid "Local navigation"
 msgstr "Navigácia tejto sekcie"
 
@@ -266,73 +266,74 @@ msgstr "K dispozícii je tiež RSS kanál pre túto sekciu:"
 msgid "Page heading"
 msgstr "Začiatok strany"
 
-#: ../lib/wiking/export.py:124 ../lib/wiking/export.py:328
+#: ../lib/wiking/export.py:124 ../lib/wiking/export.py:321
 msgid "Main navigation"
 msgstr "Hlavná navigácia"
 
-#: ../lib/wiking/export.py:126 ../lib/wiking/export.py:290
+#: ../lib/wiking/export.py:125 ../lib/wiking/export.py:288
 #, fuzzy
 msgid "Main content"
 msgstr "Obsah"
 
-#: ../lib/wiking/export.py:127
+#: ../lib/wiking/export.py:126
 msgid "Page footer"
 msgstr "Ukončenie strany"
 
 #. Title of a dialog on a webpage
-#: ../lib/wiking/export.py:128 ../lib/wiking/util.py:349
+#: ../lib/wiking/export.py:127 ../lib/wiking/util.py:349
 msgid "Language selection"
 msgstr "Výber jazyka"
 
-#: ../lib/wiking/export.py:293
+#: ../lib/wiking/export.py:291
 msgid "Jump in page"
 msgstr "Prejsť v stránke"
 
 #. A label followed by location information in webpage navigation
-#: ../lib/wiking/export.py:298
+#: ../lib/wiking/export.py:296
 msgid "You are here:"
 msgstr "Nachádzate sa tu:"
 
-#: ../lib/wiking/export.py:310 ../lib/wiking/export.py:339
-#, fuzzy
-msgid "Hierarchical navigation menu"
+#: ../lib/wiking/export.py:306
+#, fuzzy, python-format
+msgid "Local navigation for: %s"
 msgstr "Navigácia tejto sekcie"
 
-#: ../lib/wiking/export.py:314
-msgid "Expand drop-down submenu of this item."
-msgstr ""
+#: ../lib/wiking/export.py:333
+#, fuzzy, python-format
+msgid "Local navigation: %s"
+msgstr "Navigácia tejto sekcie"
 
-#: ../lib/wiking/export.py:340
+#: ../lib/wiking/export.py:334
 msgid "Expand/collapse complete menu hierarchy"
 msgstr ""
 
 #. ``RSS channel'' is terminology idiom, see Wikipedia
-#: ../lib/wiking/export.py:372
+#: ../lib/wiking/export.py:366
 msgid "RSS channel"
 msgstr "RSS kanál"
 
-#: ../lib/wiking/export.py:394
+#: ../lib/wiking/export.py:388
 msgid "Warning"
 msgstr "Varovanie"
 
-#: ../lib/wiking/export.py:406
+#: ../lib/wiking/export.py:400
 msgid "Minimize"
 msgstr ""
 
-#: ../lib/wiking/export.py:407
+#: ../lib/wiking/export.py:401
 msgid "Exit the maximized mode."
 msgstr ""
 
-#: ../lib/wiking/export.py:411
+#: ../lib/wiking/export.py:405
 msgid "Maximize"
 msgstr ""
 
-#: ../lib/wiking/export.py:412
+#: ../lib/wiking/export.py:406
 msgid "Maximize the main content to the full size of the browser window."
 msgstr ""
 
 #. Information about last change of a webpage (when and who)
-#: ../lib/wiking/export.py:430
+#: ../lib/wiking/export.py:424
 #, python-format
 msgid "Last change: %(date)s, %(user)s"
 msgstr "Posledná zmena: %(date)s, %(user)s"
@@ -726,6 +727,10 @@ msgstr ""
 #: ../resources/scripts/discussion.js:121
 msgid "Cancel"
 msgstr ""
+
+#, fuzzy
+#~ msgid "Hierarchical navigation menu"
+#~ msgstr "Navigácia tejto sekcie"
 
 #~ msgid "Show panels"
 #~ msgstr "Zobraziť panely"

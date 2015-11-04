@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-10-21 15:23+0200\n"
+"POT-Creation-Date: 2015-11-04 10:03+0100\n"
 "PO-Revision-Date: 2010-02-04 00:17+0100\n"
 "Last-Translator: Hostomský Károly <khostomsky@gmail.com>\n"
 "Language-Team: Hungarian <wiking@lists.freebsoft.org>\n"
@@ -32,7 +32,7 @@ msgstr "Hozzáférési nyilatkozat"
 msgid "In this section:"
 msgstr "Szekció tartalmazza:"
 
-#: ../lib/wiking/application.py:465 ../lib/wiking/export.py:125
+#: ../lib/wiking/application.py:465
 msgid "Local navigation"
 msgstr "Almenü"
 
@@ -267,72 +267,73 @@ msgstr "RSS csatorna elérhető a következő szekcióhoz:"
 msgid "Page heading"
 msgstr "Oldalcím"
 
-#: ../lib/wiking/export.py:124 ../lib/wiking/export.py:328
+#: ../lib/wiking/export.py:124 ../lib/wiking/export.py:321
 msgid "Main navigation"
 msgstr "Főmenü"
 
-#: ../lib/wiking/export.py:126 ../lib/wiking/export.py:290
+#: ../lib/wiking/export.py:125 ../lib/wiking/export.py:288
 msgid "Main content"
 msgstr "Fő tartalom"
 
-#: ../lib/wiking/export.py:127
+#: ../lib/wiking/export.py:126
 msgid "Page footer"
 msgstr "Lábjegyzet"
 
 #. Title of a dialog on a webpage
-#: ../lib/wiking/export.py:128 ../lib/wiking/util.py:349
+#: ../lib/wiking/export.py:127 ../lib/wiking/util.py:349
 msgid "Language selection"
 msgstr "Nyelv választás"
 
-#: ../lib/wiking/export.py:293
+#: ../lib/wiking/export.py:291
 msgid "Jump in page"
 msgstr "Ugrás az oldalon"
 
 #. A label followed by location information in webpage navigation
-#: ../lib/wiking/export.py:298
+#: ../lib/wiking/export.py:296
 msgid "You are here:"
 msgstr "Ön itt áll:"
 
-#: ../lib/wiking/export.py:310 ../lib/wiking/export.py:339
-#, fuzzy
-msgid "Hierarchical navigation menu"
+#: ../lib/wiking/export.py:306
+#, fuzzy, python-format
+msgid "Local navigation for: %s"
 msgstr "Almenü"
 
-#: ../lib/wiking/export.py:314
-msgid "Expand drop-down submenu of this item."
-msgstr ""
+#: ../lib/wiking/export.py:333
+#, fuzzy, python-format
+msgid "Local navigation: %s"
+msgstr "Almenü"
 
-#: ../lib/wiking/export.py:340
+#: ../lib/wiking/export.py:334
 msgid "Expand/collapse complete menu hierarchy"
 msgstr ""
 
 #. ``RSS channel'' is terminology idiom, see Wikipedia
-#: ../lib/wiking/export.py:372
+#: ../lib/wiking/export.py:366
 msgid "RSS channel"
 msgstr "RSS csatorna"
 
-#: ../lib/wiking/export.py:394
+#: ../lib/wiking/export.py:388
 msgid "Warning"
 msgstr "Figyelmeztetés"
 
-#: ../lib/wiking/export.py:406
+#: ../lib/wiking/export.py:400
 msgid "Minimize"
 msgstr ""
 
-#: ../lib/wiking/export.py:407
+#: ../lib/wiking/export.py:401
 msgid "Exit the maximized mode."
 msgstr ""
 
-#: ../lib/wiking/export.py:411
+#: ../lib/wiking/export.py:405
 msgid "Maximize"
 msgstr ""
 
-#: ../lib/wiking/export.py:412
+#: ../lib/wiking/export.py:406
 msgid "Maximize the main content to the full size of the browser window."
 msgstr ""
 
 #. Information about last change of a webpage (when and who)
-#: ../lib/wiking/export.py:430
+#: ../lib/wiking/export.py:424
 #, python-format
 msgid "Last change: %(date)s, %(user)s"
 msgstr "Utólsó változtatások: %(date)s, %(user)s"
@@ -722,6 +723,10 @@ msgstr ""
 #: ../resources/scripts/discussion.js:121
 msgid "Cancel"
 msgstr ""
+
+#, fuzzy
+#~ msgid "Hierarchical navigation menu"
+#~ msgstr "Almenü"
 
 #~ msgid "Show panels"
 #~ msgstr "Ablakok mutatása"
