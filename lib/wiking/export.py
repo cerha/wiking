@@ -122,7 +122,6 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
     _PART_TITLE = {
         'top': _("Page heading"),
         'menu': _("Main navigation"),
-        'submenu': _("Local navigation"),
         'main': _("Main content"),
         'bottom': _("Page footer"),
         'language_selection': _("Language selection"),
@@ -133,7 +132,6 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
     _LANDMARKS = {
         'top': 'banner',
         'menu': 'navigation',
-        'submenu': 'navigation',
         'main': 'main',
         'bottom': 'contentinfo',
     }
@@ -305,7 +303,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         for node in children:
             if not node.hidden():
                 if not all(n.hidden() for n in node.children()):
-                    tree = lcg.FoldableTree(node, label=_("Hierarchical navigation menu"))
+                    tree = lcg.FoldableTree(node, label=_("Local navigation for: %s", node.title()))
                     dropdown = g.div(tree.export(context), cls='menu-dropdown', style='display: none')
                     arrow = g.span('', cls='dropdown-arrow', role='presentation')
                 else:
@@ -331,14 +329,15 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         if not context.has_submenu:
             return None
         g = self._generator
-        tree = lcg.FoldableTree(context.top_node(), label=_("Hierarchical navigation menu"),
+        top = context.top_node()
+        tree = lcg.FoldableTree(top, label=_("Local navigation: %s", top.title()),
                                 tooltip=_("Expand/collapse complete menu hierarchy"))
         content = tree.export(context)
         req = context.req()
         application = context.application
         title = application.menu_panel_title(req)
         if title:
-            content = lcg.concat(g.h(title, 3), content)
+            content = lcg.concat(g.h(title, 3, role='presentation', aria_hidden='true'), content)
         bottom_content = application.menu_panel_bottom_content(req)
         if bottom_content:
             content = lcg.concat(content, bottom_content.export(context))
