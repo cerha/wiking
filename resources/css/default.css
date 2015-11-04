@@ -725,7 +725,7 @@ body.non-maximized #page.with-submenu #main {
 }
 #submenu button.toggle-menu-expansion {
     position: absolute;
-    top: 6px;
+    top: 4px;
     right: 4px;
 }
 * html #submenu button.toggle-menu-expansion { right: 10px; } /* MSIE hack */
