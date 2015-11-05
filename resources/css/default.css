@@ -503,9 +503,21 @@ h1 a { outline: none; }
     padding: 3px 5px 3px 23px;
     text-decoration: none;
     border-radius: 3px;
-    background: url(login.png) 3px center no-repeat #ddd;
+    background: url(arrow-in.png) 3px center no-repeat #ddd;
 }
-.login-control .login-link:hover { color: $color.foreground; }
+.login-control .login-link:hover {
+    color: $color.foreground;
+}
+.login-control .popup-menu-widget li a {
+    padding-left: 28px;
+    background-position: 8px center;
+    background-repeat: no-repeat;
+}
+.login-control li.login a { background-image: url(arrow-in.png); }
+.login-control li.logout a { background-image: url(arrow-out.png); }
+.login-control li.user-profile a { background-image: url(user-16x16.png); }
+.login-control li.change-password a { background-image: url(key-16x16.png); }
+.login-control li.new-user-registration a { background-image: url(new-user-16x16.png); }
 
 .admin-control {
     padding: 3px 0 3px 23px;
@@ -513,45 +525,22 @@ h1 a { outline: none; }
     margin-right: -10px;
     margin-left: 5px !important;
 }
-.admin-control:last-child {
-    margin-right: 2px;
-}
 body.preview-mode .admin-control {
     background-image: url(gear-red.png);
 }
-
-.popup-menu-widget li.login a {
-    padding-left: 28px;
-    background: url(login.png) 8px center no-repeat;
+.admin-control:last-child {
+    margin-right: 2px;
 }
-.popup-menu-widget li.logout a {
+.admin-control .popup-menu-widget li a {
     padding-left: 28px;
-    background: url(logout.png) 8px center no-repeat;
+    background-position: 8px center;
+    background-repeat: no-repeat;
 }
-.popup-menu-widget li.user-profile a {
-    padding-left: 28px;
-    background: url(user-16x16.png) 8px center no-repeat;
-}
-.popup-menu-widget li.change-password a {
-    padding-left: 28px;
-    background: url(key-16x16.png) 8px center no-repeat;
-}
-.popup-menu-widget li.new-user-registration a {
-    padding-left: 28px;
-    background: url(new-user-16x16.png) 10px center no-repeat;
-}
-.popup-menu-widget li.wmi a {
-    padding-left: 28px;
-    background: url(gear-16x16.png) 8px center no-repeat;
-}
-.popup-menu-widget li.edit-page a {
-    padding-left: 28px;
-    background: url(edit-page.png) 10px center no-repeat;
-}
-.popup-menu-widget li.new-page a {
-    padding-left: 28px;
-    background: url(new-page.png) 10px center no-repeat;
-}
+.admin-control li.wmi a { background-image: url(gear-16x16.png); }
+.admin-control li.leave-wmi a { background-image: url(arrow-out.png); }
+.admin-control li.switch-mode a { background-image: url(refresh.png); }
+.admin-control li.edit-page a { background-image: url(edit-page.png); }
+.admin-control li.new-page a { background-image: url(new-page.png); }
 
 .language-selection {
     white-space: nowrap;

@@ -42,7 +42,8 @@ class AdminControl(wiking.TopBarControl):
                 items.append(lcg.PopupMenuItem(_("Enter the Management Interface"), uri='/_wmi/',
                                                cls='wmi'))
             else:
-                items.append(lcg.PopupMenuItem(_("Leave the Management Interface"), uri='/'))
+                items.append(lcg.PopupMenuItem(_("Leave the Management Interface"), uri='/',
+                                               cls='leave-wmi'))
         if wiking.module.Application.preview_mode_possible(req):
             # Translators: There are two modes of operation in the CMS
             # management.  The "Production Mode" displays only the content
@@ -53,11 +54,12 @@ class AdminControl(wiking.TopBarControl):
             # translate these two modes consistently acros all their
             # occurences.
             if wiking.module.Application.preview_mode(req):
-                label, value = _("Switch to Production Mode"), '0'
+                label, value, cls = _("Switch to Production Mode"), '0', 'prodiction-mode'
             else:
-                label, value = _("Switch to Preview Mode"), '1'
+                label, value, cls = _("Switch to Preview Mode"), '1', 'preview-mode'
             param = wiking.module.Application._PREVIEW_MODE_PARAM
-            items.append(lcg.PopupMenuItem(label, uri='%s?%s=%s' % (req.uri(), param, value)))
+            items.append(lcg.PopupMenuItem(label, uri='%s?%s=%s' % (req.uri(), param, value),
+                                           cls='switch-mode ' + cls))
         if not req.wmi:
             if hasattr(req, 'page_write_access') and req.page_write_access:
                 items.append(lcg.PopupMenuItem(_("Edit the Current Page"),
