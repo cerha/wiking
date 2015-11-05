@@ -1368,7 +1368,6 @@ class TopBarControl(lcg.Content):
 
     def export(self, context):
         g = context.generator()
-        req = context.req()
         content = self._content(context)
         items = self._menu_items(context)
         if items:
