@@ -520,9 +520,6 @@ body.preview-mode .admin-control {
     background-image: url(gear-red.png);
 }
 
-div.popup-menu-widget ul li {
-    font-size: 14px;
-} 
 .popup-menu-widget li.login a {
     padding-left: 28px;
     background: url(login.png) 8px center no-repeat;
@@ -1013,139 +1010,140 @@ form.list-form-controls .paging-controls {
 } /* End of @media print. */
 
 /* Override default LCG widget colors by Wiking color theme colors */
-/* Original selectors must be duplicated here and prefixed by #page to get more specificity. */
+/* Original selectors must be duplicated here and prefixed by 'body' to get more specificity. */
 
-#page .foldable-tree-widget li a.current span {
+body .foldable-tree-widget li a.current span {
     background-color: $color.heading-bg
 }
-#page .notebook-widget ul.notebook-switcher {
+body .notebook-widget ul.notebook-switcher {
     border-bottom-color: $color.top-border;
 }
-#page .notebook-widget li.notebook-tab a {
+body .notebook-widget li.notebook-tab a {
     border-color: $color.top-border;
 }
 @media print {
-    #page .notebook-widget ul.notebook-switcher {
+    body .notebook-widget ul.notebook-switcher {
 	border-bottom-color: #aaa;
     }
-    #page .notebook-widget li.notebook-tab a {
+    body .notebook-widget li.notebook-tab a {
 	border-color: #aaa;
     }
 }
-#page .notebook-widget li.notebook-tab a.current {
+body .notebook-widget li.notebook-tab a.current {
     background-color: $color.background;
     border-bottom-color: $color.background;
 }
-#page .popup-menu-widget {
+body .popup-menu-widget {
     background-color: $color.frame-bg;
-    border-color: $color.top-border;
+    border-color: $color.frame-border;
+    font-size: 14px;
 }
-#page .popup-menu-widget li.active a {
+body .popup-menu-widget li.active a {
     color: $color.foreground;
 }
-#page .dropdown-selection-widget .dropdown-selection {
+body .dropdown-selection-widget .dropdown-selection {
     background-color: $color.background;
     border-color: $color.top-border;
 }
-#page .dropdown-selection-widget .dropdown-selection li.active a {
+body .dropdown-selection-widget .dropdown-selection li.active a {
     color: $color.foreground;
 }
 
 /* Override default Pytis form colors by current Wiking color theme colors. */
 
-#page .pytis-form.edit-form .errors,
-#page .pytis-form.query-fields-form .errors {
+body .pytis-form.edit-form .errors,
+body .pytis-form.query-fields-form .errors {
     color: $color.error-fg;
     background-color: $color.error-bg;
     border-color: $color.error-border;
 }
 
-#page .pytis-form .group, 
-#page .pytis-form .submit,
-#page .pytis-form .paging-controls {
+body .pytis-form .group,
+body .pytis-form .submit,
+body .pytis-form .paging-controls {
     background-color: $color.frame-bg;
     border-color: $color.frame-border;
 }
-#page .pytis-form.query-fields-form .submit {
+body .pytis-form.query-fields-form .submit {
     background: none;
 }
-#page .pytis-form.query-fields-form .group {
+body .pytis-form.query-fields-form .group {
     background: none;
     border: none;
 }
-* html #page .pytis-form fieldset.group legend { 
+* html body .pytis-form fieldset.group legend {
     color: $color.foreground;
 }
-#page .pytis-form.browse-form table.data-table tr.data-row td,
-#page .pytis-form.browse-form table.data-table tr.row-expansion td,
-#page .pytis-form.browse-form table.data-table tr.column-headings th,
-#page .pytis-form.browse-form table.data-table tr.group-heading th {
+body .pytis-form.browse-form table.data-table tr.data-row td,
+body .pytis-form.browse-form table.data-table tr.row-expansion td,
+body .pytis-form.browse-form table.data-table tr.column-headings th,
+body .pytis-form.browse-form table.data-table tr.group-heading th {
     border-color: $color.border;
 }
 @media print {
-    #page .pytis-form.browse-form table.data-table,
-    #page .pytis-form.browse-form table.data-table tr.data-row td,
-    #page .pytis-form.browse-form table.data-table tr.row-expansion td,
-    #page .pytis-form.browse-form table.data-table tr.column-headings th,
-    #page .pytis-form.browse-form table.data-table tr.group-heading th {
+    body .pytis-form.browse-form table.data-table,
+    body .pytis-form.browse-form table.data-table tr.data-row td,
+    body .pytis-form.browse-form table.data-table tr.row-expansion td,
+    body .pytis-form.browse-form table.data-table tr.column-headings th,
+    body .pytis-form.browse-form table.data-table tr.group-heading th {
 	border-color: #ddd;
     }
 }
-#page .pytis-form.browse-form table.data-table tr.column-headings th.column-heading,
-#page .pytis-form.browse-form table.data-table tr.group-heading th {
+body .pytis-form.browse-form table.data-table tr.column-headings th.column-heading,
+body .pytis-form.browse-form table.data-table tr.group-heading th {
     background-color: $color.heading-bg;
 }
-#page .pytis-form.browse-form table.data-table tr.data-row,
-#page .pytis-form.browse-form table.data-table tr.row-expansion {
+body .pytis-form.browse-form table.data-table tr.data-row,
+body .pytis-form.browse-form table.data-table tr.row-expansion {
     background-color: $color.table-cell;
 }
-#page .pytis-form.browse-form table.data-table tr.data-row.even {
+body .pytis-form.browse-form table.data-table tr.data-row.even {
     background-color: $color.table-cell2;
 }
 
-#page .pytis-form.browse-form table.data-table tfoot td {
+body .pytis-form.browse-form table.data-table tfoot td {
     background-color: $color.frame-bg;
     border-color: $color.frame-border;
 }
-#page .pytis-form.browse-form #found-record {
+body .pytis-form.browse-form #found-record {
     background-color: $color.highlight-bg;
 }
-#page .pytis-form.list-view div.tree-indent {
+body .pytis-form.list-view div.tree-indent {
     border-left-color: $color.frame-border
 }
-#page .pytis-form.list-view #found-record h3 {
+body .pytis-form.list-view #found-record h3 {
     background-color: $color.highlight-bg;
 }
-#page .pytis-form.list-view div.list-item div.meta {
+body .pytis-form.list-view div.list-item div.meta {
     color: $color.meta-fg;
     background-color: $color.meta-bg;
 }
-#page .pytis-form .field-label.disabled { 
+body .pytis-form .field-label.disabled {
     color: $color.help; 
 }
-#page .pytis-form .group span.color-display { 
+body .pytis-form .group span.color-display {
     border-color: $color.border;
 }
-#page .pytis-form.show-form .group textarea,
-#page .pytis-form.list-view .group textarea {
+body .pytis-form.show-form .group textarea,
+body .pytis-form.list-view .group textarea {
     background-color: $color.frame-bg;
 }
-#page .pytis-form.edit-form div.help { 
+body .pytis-form.edit-form div.help {
     color: $color.help;
 }
-#page .pytis-form input.text-search-field,
-#page .pytis-form.edit-form input.text-field,
-#page .pytis-form.edit-form textarea,
-#page .pytis-form.edit-form select {
+body .pytis-form input.text-search-field,
+body .pytis-form.edit-form input.text-field,
+body .pytis-form.edit-form textarea,
+body .pytis-form.edit-form select {
     border-color: $color.border;
 }
-#page .pytis-form.list-view div.summary {
+body .pytis-form.list-view div.summary {
     border-top-color: $color.frame-border;
 }
 /*.pytis-form .invalid {
     background-color: $color.error-bg;
 }*/
-#page .actions button[disabled] span,
-#page .list-form-controls button[disabled] span {
+body .actions button[disabled] span,
+body .list-form-controls button[disabled] span {
     color: $color.foreground;
 }
