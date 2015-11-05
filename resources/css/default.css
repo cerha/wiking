@@ -767,9 +767,6 @@ body.maximized #panels .panel {
     background-color: $color.heading-bg;
     border-bottom: 1px solid $color.top-border;
 }
-#panels .panel h3 .popup-menu-widget {
-    font-weight: normal;
-}
 #panels .panel .panel-content {
     padding: 2px 4px;
 }
