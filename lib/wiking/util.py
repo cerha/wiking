@@ -1404,11 +1404,14 @@ class LoginControl(TopBarControl):
         user = req.user()
         items = []
         if user:
-            # Translators: Menu item label (verb in imperative).
-            items.append(lcg.PopupMenuItem(_("Log out"), cls='logout',
-                                           uri=req.make_uri(req.uri(), command='logout')))
             if user.uri():
-                items.append(lcg.PopupMenuItem(_("My user profile"), uri=user.uri(),
+                g = context.generator()
+                login, displayed_name = user.login(), user.name()
+                if login != displayed_name:
+                    displayed_name += ' (' + login + ')'
+                label = g.div((g.div(displayed_name, cls='user-name'),
+                               g.div(_("My user profile"), cls='label')))
+                items.append(lcg.PopupMenuItem(label, uri=user.uri(),
                                                cls='user-profile'))
             password_change_uri = wiking.module.Application.password_change_uri(req)
             if password_change_uri:
@@ -1422,6 +1425,9 @@ class LoginControl(TopBarControl):
                 # Translators: Link on login panel on the webpage.
                 items.append(lcg.PopupMenuItem(_("Change my password"), cls='change-password', 
                                                uri=password_change_uri, tooltip=tooltip))
+            # Translators: Menu item label (verb in imperative).
+            items.append(lcg.PopupMenuItem(_("Log out"), cls='logout',
+                                           uri=req.make_uri(req.uri(), command='logout')))
         else:
             items.append(lcg.PopupMenuItem(_("Log in"), cls='login',
                                            tooltip=_("Log in to an existing user account"),

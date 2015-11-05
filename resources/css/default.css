@@ -513,6 +513,10 @@ h1 a { outline: none; }
     background-position: 8px center;
     background-repeat: no-repeat;
 }
+.login-control li.user-profile .label {
+    font-size: 0.8em;
+    color: $color.help;
+}
 .login-control li.login a { background-image: url(arrow-in.png); }
 .login-control li.logout a { background-image: url(arrow-out.png); }
 .login-control li.user-profile a { background-image: url(user-16x16.png); }
