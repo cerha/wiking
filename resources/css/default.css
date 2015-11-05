@@ -688,7 +688,6 @@ body.non-maximized #menu a.navigation-link.current .dropdown-arrow {
     left: 0px;
     border: 1px solid $color.top-border;
     z-index: 2;
-    padding: 2px 2px 2px 8px;
     font-size: 1.1em;
     background-color: $color.background;
     box-shadow: 1px 1px 12px rgba(0, 0, 0, 0.6);
