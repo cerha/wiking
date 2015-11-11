@@ -273,8 +273,8 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         g = self._generator
         return g.div(
             g.div(
-                g.div((g.div(self._site_title(context), id='site-title'),
-                       g.div(self._top_controls(context), id='top-controls'),
+                g.div((g.span(self._site_title(context), id='site-title'),
+                       g.span(self._top_controls(context), id='top-controls'),
                        g.div(g.noescape('&nbsp;'), id='top-clearing')),
                       id='top-layer3'),
                 id='top-layer2'),

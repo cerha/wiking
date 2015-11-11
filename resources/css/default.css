@@ -469,6 +469,7 @@ h1 a { outline: none; }
     white-space: nowrap;
     padding: 4px;
     font-size: 1.1em;
+    float: left;
 }
 
 #top-controls {
@@ -476,7 +477,7 @@ h1 a { outline: none; }
     float: right;
 }
 
-#top-controls > div {
+#top-controls > span {
     display: inline-block;
     margin-left: 17px;
 }

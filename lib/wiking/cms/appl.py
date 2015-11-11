@@ -353,7 +353,9 @@ class Application(CookieAuthentication, wiking.Application):
         controls = [wiking.LoginControl(), AdminControl(), wiking.LanguageSelection()]
         top_text = self._text_content(req, wiking.cms.texts.top)
         if top_text:
-            controls.insert(0, lcg.Container(text2content(req, top_text), id='top-content'))
+            def export_top_content(renderer, context, content):
+                return context.generator().span(content.export(context), cls='top-content')
+            controls.insert(0, wiking.HtmlRenderer(export_top_content, text2content(req, top_text)))
         return controls
 
     def footer_content(self, req):

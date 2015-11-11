@@ -1377,8 +1377,8 @@ class TopBarControl(lcg.Content):
         if label:
             content = (g.span(label, cls='label'), ' ', content)
         if content:
-            return g.div(content,
-                         cls=pytis.util.camel_case_to_lower(self.__class__.__name__, '-'))
+            return g.span(content,
+                          cls=pytis.util.camel_case_to_lower(self.__class__.__name__, '-'))
         else:
             return '' 
 
