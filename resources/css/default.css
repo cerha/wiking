@@ -459,6 +459,9 @@ h1 a { outline: none; }
 #top {
     background-color: $color.background;
     padding: 4px;
+    /* The rules below fix MSIE 8 popup menu z-index */
+    position: relative;
+    z-index: 2;
 }
 
 #site-title {
