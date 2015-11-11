@@ -1023,12 +1023,7 @@ body .notebook-widget li.notebook-tab a.current {
     border-bottom-color: $color.background;
 }
 body .popup-menu-widget {
-    background-color: $color.frame-bg;
-    border-color: $color.frame-border;
     font-size: 14px;
-}
-body .popup-menu-widget li.active a {
-    color: $color.foreground;
 }
 body .dropdown-selection-widget .dropdown-selection {
     background-color: $color.background;
