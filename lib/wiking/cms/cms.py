@@ -140,7 +140,7 @@ class WikingManagementInterface(wiking.Module, wiking.RequestHandler):
          ['Users', 'ApplicationRoles', 'SessionLog', 'EmailSpool', 'CryptoNames']),
         # Translators: Heading and menu title. Computer idiom meaning configuration of appearance
         # (colors, sizes, positions, graphical presentation...).
-        ('style', _("Look &amp; Feel"),
+        ('style', _("Look & Feel"),
          _("Customize the appearance of your site."),
          ['StyleSheets', 'Themes']),
         # Translators: Heading and menu title for configuration.
