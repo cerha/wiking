@@ -35,5 +35,5 @@ $(shell ls wiking-cms.*.po): wiking-cms.%.po: wiking-cms.pot
 	msgmerge -q --backup=none --update $@ $< && touch $@
 
 clean:
-	rm -f *.d *.pot
+	rm -f *.pot
 	rm -rf ../resources/translations/
