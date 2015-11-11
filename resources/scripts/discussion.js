@@ -1,6 +1,6 @@
 /* -*- coding: utf-8 -*-
  *
- * Copyright (C) 2012, 2013, 2014 Brailcom, o.p.s.
+ * Copyright (C) 2012-2015 Brailcom, o.p.s.
  * Author: Tomas Cerha
  *
  * This program is free software; you can redistribute it and/or modify
@@ -25,15 +25,16 @@
  * button only works when JavaScript is on, so we don't want it on the page at
  * all when JavaScript is off).  The button, when pressed, inserts a form for
  * entering a reply to given comment into the page just below the comment.
- * 
+ *
  * An instance of the wiking.Discussion class must be created below the exported
  * pytis form.  The new instance will automatically locate all
  * '.discussion-reply' elements in the document and bind Javascript handlers
  * to the related HTML elements of the discussion list.
  */
 
-/*jslint browser: true */
-/*jslint unparam: true */
+/*jshint browser: true */
+/*jshint es3: true */
+/*jshint -W097 */ // allow direct "use strict"
 /*global Class */
 /*global Element */
 /*global Effect */
@@ -71,7 +72,7 @@ var Discussion = Class.create({
 	    }
             var button = new Element('button', {'class': 'reply'}).update(
 		new Element('span').update(wiking._("Reply")));
-	    button.observe('click', function (event) { 
+	    button.observe('click', function (event) {
 	        this.on_reply(item, comment_id, quoted);
 	    }.bind(this));
 	    actions.insert({'top': button});
@@ -92,8 +93,8 @@ var Discussion = Class.create({
 	label.insert(new Element('sup', {'class': 'not-null'}).update('*'));
 	label.insert(':');
 	form.insert(new Element('div').update(label));
-        form.insert(new Element('textarea', {'class': 'fullsize', 
-     					     'cols': '80', 
+        form.insert(new Element('textarea', {'class': 'fullsize',
+     					     'cols': '80',
      					     'rows': '8',
      					     'name': this.field,
 					     'id': field_id,
@@ -106,19 +107,19 @@ var Discussion = Class.create({
 	    var adiv = new Element('div');
 	    adiv.insert(new Element('span', {'class': 'field-label id-'+this.attachment_field}).update(alabel));
 	    adiv.insert(':&nbsp;');
-	    adiv.insert(new Element('input', {'type': 'file', 
-     					      'size': '50', 
+	    adiv.insert(new Element('input', {'type': 'file',
+     					      'size': '50',
      					      'name': this.attachment_field,
 					      'id': attachment_field_id}));
 	    form.insert(adiv);
 	}
      	form.insert(new Element('input', {'type': 'hidden', 'name': 'action', 'value': 'reply'}));
 	var buttons = [
-	    [wiking._("Submit"), {'type': 'submit', 'value': '1'}, 
+	    [wiking._("Submit"), {'type': 'submit', 'value': '1'},
 	     function (event) { return; }],
-	    [wiking._("Quote"), {'onclick': 'return false;'}, 
+	    [wiking._("Quote"), {'onclick': 'return false;'},
 	     function (event) { this.on_quote(form[this.field], quoted); }],
-	    [wiking._("Cancel"), {'onclick': 'return false;'}, 
+	    [wiking._("Cancel"), {'onclick': 'return false;'},
 	     function (event) { this.on_cancel(form); }]];
 	var div = new Element('div', {'class': 'submit'});
 	form.insert(div);

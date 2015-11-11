@@ -17,9 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*jslint browser: true */
-/*jslint unparam: true */
-/*jslint todo: true */
+/*jshint browser: true */
+/*jshint es3: true */
+/*jshint -W097 */ // allow direct "use strict"
 /*global Class */
 /*global Effect */
 /*global Gettext */
@@ -52,7 +52,7 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
     // main javascript interface of a Wiking application.  It creates
     // instances of other javascript classes to handle menus etc if the
     // relevant HTML objects exist..
-        
+
     initialize: function ($super) {
 	// Constructor (called on page load).
 	$super();
@@ -79,7 +79,7 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
 	var winter_date = new Date(Date.UTC(2005, 12, 30, 0, 0, 0, 0));
 	var winter_offset = -winter_date.getTimezoneOffset();
 	lcg.cookies.set('wiking_tz_offsets', summer_offset + ';' + winter_offset);
-	
+
 	// Move focus to the main content if there is no anchor in the current URL.
 	if (!self.location.hash) {
 	    this.set_focus($('main-heading'));
@@ -90,7 +90,7 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
 	    var anchor_ = self.location.hash.substr(1);
 	    var target_ = $(anchor_) || $$('a[name=' + anchor_ + ']')[0];
 	    if (target_) {
-		Effect.ScrollTo(target_, {offset: -wiking.scroll_offset});
+		new Effect.ScrollTo(target_, {offset: -wiking.scroll_offset});
 	    }
 	}
 
@@ -104,7 +104,7 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
 		    var target = $(anchor) || $$('a[name=' + anchor + ']')[0];
 		    if (target && !target.hasClassName('notebook-page')) {
 			element.observe('click', function(event) {
-			    Effect.ScrollTo(target, {offset: -wiking.scroll_offset});
+			    new Effect.ScrollTo(target, {offset: -wiking.scroll_offset});
 			    event.stop();
 			});
 		    }
@@ -114,7 +114,7 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
 
 	wiking.handler = this;
     },
-    
+
     keymap: function () {
 	return {
 	    'Ctrl-Shift-m': this.cmd_menu,
@@ -135,7 +135,7 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
 	    }
 	}
     },
-    
+
     cmd_notebook: function (element) {
 	// Move focus to the first Notebook widget on the page.
 	var nb = document.body.down('div.notebook-widget');
@@ -144,13 +144,13 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
 	    this.set_focus(item);
 	}
     }
-        
+
 });
 
 wiking.MainMenu = Class.create(lcg.Menu, {
 
     _MANAGE_TABINDEX: false,
-    
+
     keymap: function () {
 	// Arrow keys are duplicated with Ctrl-Shift- to get them accessible to VoiceOver
 	// users as VO doesn't pass single arrow keypresses to the application.
@@ -166,10 +166,10 @@ wiking.MainMenu = Class.create(lcg.Menu, {
 	    'Escape': this.cmd_quit
 	};
     },
-    
+
     init_items: function ($super, ul, parent) {
 	// By setting the role to 'menubar', the menubar becomes an "item"
-	// in the surrounding 'navigation' element.  This disturbs VoiceOver 
+	// in the surrounding 'navigation' element.  This disturbs VoiceOver
 	// presentation and requires the user to go through two elements
 	// (first "navigation, one item" and second "menubar n items")
 	// where the first is redundant and misleading.  When the role is
@@ -216,7 +216,7 @@ wiking.MainMenu = Class.create(lcg.Menu, {
 	    });
 	}
     },
-    
+
     toggle_dropdown: function (dropdown) {
 	if (this.active_dropdown && this.active_dropdown !== dropdown) {
 	    this.toggle_dropdown(this.active_dropdown);
@@ -232,12 +232,12 @@ wiking.MainMenu = Class.create(lcg.Menu, {
 	    // This solves two problems.  A. the dropdown looks odd when not wider than the item.
 	    // B. the dropdown width flickers when hovering over its widest item.
 	    dropdown.setStyle({width: Math.max(item.getWidth(), dropdown.getWidth()) + 'px'});
-	    Effect.SlideDown(dropdown, {duration: 0.2});
+	    new Effect.SlideDown(dropdown, {duration: 0.2});
 	    this.on_touchstart = function (event) { this.touch_moved = false; }.bind(this);
 	    this.on_touchmove = function (event) { this.touch_moved = true; }.bind(this);
 	    this.on_touchend = function (event) {
 		if (!this.touch_moved) {
-		    this.on_click(event); 
+		    this.on_click(event);
 		}
 	    }.bind(this);
 	    this.on_click = function (event) {
@@ -258,12 +258,12 @@ wiking.MainMenu = Class.create(lcg.Menu, {
 	    $(document).stopObserving('touchmove', this.on_touchmove);
 	    $(document).stopObserving('touchend', this.on_touchend);
 	    this.active_dropdown = null;
-	    Effect.SlideUp(dropdown, {
+	    new Effect.SlideUp(dropdown, {
 		duration: 0.2,
 		afterFinish: function () {
 		    item.removeClassName('expanded');
 		    item.setAttribute('aria-expanded', 'false');
-		},
+		}
 	    });
 	}
     },
@@ -282,7 +282,7 @@ wiking.MainMenu = Class.create(lcg.Menu, {
 	if (menu_element) {
 	    var tree_menu = lcg.widget_instance(menu_element.down('.foldable-tree-widget'));
 	    this.set_focus(tree_menu.items[0]);
-	}	
+	}
     },
 
     cmd_activate: function (item) {

@@ -17,8 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*jslint browser: true */
-/*jslint unparam: true */
+/*jshint browser: true */
+/*jshint es3: true */
+/*jshint -W097 */ // allow direct "use strict"
 /*global Class */
 /*global Element */
 /*global Effect */
@@ -122,5 +123,5 @@ wiking.cms.PublicationExportForm = Class.create({
 	}
 	document.body.style.cursor = "default";
     }
-    
+
 });
