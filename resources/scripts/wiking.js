@@ -20,6 +20,7 @@
 /*jshint browser: true */
 /*jshint es3: true */
 /*jshint -W097 */ // allow direct "use strict"
+/*global Prototype */
 /*global Class */
 /*global Effect */
 /*global Gettext */
@@ -80,8 +81,11 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
 	var winter_offset = -winter_date.getTimezoneOffset();
 	lcg.cookies.set('wiking_tz_offsets', summer_offset + ';' + winter_offset);
 
-	// Move focus to the main content if there is no anchor in the current URL.
-	if (!self.location.hash) {
+	// Move focus to the main content if there is no anchor in the current URL
+	// to improve the experience for screen reader users.  Don't do it in MSIE
+	// as it scrolls the current viewport so that the left side menu column is
+	// not visible.
+	if (!self.location.hash && !Prototype.Browser.IE) {
 	    this.set_focus($('main-heading'));
 	}
 
