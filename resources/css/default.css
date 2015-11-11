@@ -1001,7 +1001,7 @@ form.list-form-controls .paging-controls {
 /* Override default LCG widget colors by Wiking color theme colors */
 /* Original selectors must be duplicated here and prefixed by 'body' to get more specificity. */
 
-body .foldable-tree-widget li a.current span {
+body .foldable-tree-widget a.current .label {
     background-color: $color.heading-bg
 }
 body .notebook-widget ul.notebook-switcher {
