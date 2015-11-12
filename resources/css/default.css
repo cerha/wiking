@@ -482,6 +482,7 @@ h1 a { outline: none; }
     margin-left: 17px;
     padding: 3px 0;
     white-space: nowrap;
+    line-height: 16px;
 }
 
 #top-controls .label,
@@ -495,10 +496,6 @@ h1 a { outline: none; }
 }
 #top-controls .invoke-menu.labeled {
     padding-left: 6px;
-}
-#top-controls .popup-arrow {
-    top: 0;
-    height: 16px;
 }
 .login-control {
     padding-left: 22px;
