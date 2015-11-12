@@ -639,10 +639,12 @@ body.maximized #bottom-bar {
     height: 20px;
 }
 #menu li.main-menu-item {
-    display: inline;
+    display: inline-block;
+    float: left; /* MSIE 8 hack */
     white-space: nowrap;
     margin-right: 3px;
     position: relative;
+    height: 20px;
 }
 #menu a.navigation-link {
     display: inline-block;
@@ -685,7 +687,7 @@ body.non-maximized #menu a.navigation-link.current .dropdown-arrow {
 
 #menu .menu-dropdown {
     position: absolute;
-    top: 16px;
+    top: 20px;
     left: 0px;
     border: 1px solid $color.top-border;
     z-index: 2;
