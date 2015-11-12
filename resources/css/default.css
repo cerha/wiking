@@ -467,16 +467,19 @@ h1 a { outline: none; }
 #site-title {
     display: inline-block;
     white-space: nowrap;
-    padding: 8px 4px;
+    padding: 3px 4px;
     font-size: 1.1em;
     float: left;
+}
+
+.top-content p {
+    margin: 0;
 }
 
 #top-controls {
     display: inline-block;
     float: right;
 }
-
 #top-controls > span {
     display: inline-block;
     margin-left: 17px;
