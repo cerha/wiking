@@ -467,7 +467,7 @@ h1 a { outline: none; }
 #site-title {
     display: inline-block;
     white-space: nowrap;
-    padding: 4px;
+    padding: 8px 4px;
     font-size: 1.1em;
     float: left;
 }
