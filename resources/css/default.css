@@ -489,6 +489,7 @@ h1 a { outline: none; }
 #top-controls .invoke-menu {
     padding: 3px 0;
     white-space: nowrap;
+    cursor: pointer;
 }
 #top-controls .invoke-menu {
     border-radius: 3px;
