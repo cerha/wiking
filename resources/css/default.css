@@ -625,6 +625,9 @@ body.maximized #bottom-bar {
 #menu {
     border-bottom: 1px solid $color.top-border;
     padding-left: 3px;
+    /* The rules below fix MSIE 8 dropdown menu z-index */
+    position: relative;
+    z-index: 1;
 }
 #menu h3 {
     display: none;
