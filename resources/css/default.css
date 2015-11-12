@@ -667,20 +667,20 @@ body.maximized #bottom-bar {
     background-color: $color.background;
     border-bottom: solid $color.background 1px;
 }
-#menu a.navigation-link.with-dropdown {
-    padding-right: 25px;
-}
-body.non-maximized #menu a.navigation-link.current.with-dropdown {
-    padding-right: 8px;
-}
 #menu a.navigation-link .dropdown-arrow {
     display: inline-block;
     position: absolute;
     right: 0px;
     bottom: 0px;
-    width: 26px;
-    height: 18px;
-    background: url(popup-arrow.png) 5px 2px no-repeat;
+    width: 14px;
+    height: 14px;
+    background: url(lcg-icons.png) 0 0 no-repeat;
+    position: relative;
+    bottom: -2px;
+    left: 1px;
+    margin-left: 3px;
+    text-indent: -9999px;
+    overflow: hidden;
 }
 body.non-maximized #menu a.navigation-link.current .dropdown-arrow {
     display: none;
@@ -932,11 +932,8 @@ body.non-maximized div#page.with-submenu #main {
     /* div#page is needed for MSIE to increase specificity. */
     padding-left: 10px;
 }
-body.non-maximized #menu a.navigation-link.current.with-dropdown {
-    padding-right: 25px;
-}
 body.non-maximized #menu a.navigation-link.current .dropdown-arrow {
-    display: inline;
+    display: inline-block;
 }
 #maximized-mode-control {
     display: none;
