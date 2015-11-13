@@ -396,19 +396,15 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
     def _main(self, context):
         g = self._generator
         if context.req().maximized():
-            icon = 'minimize.png'
-            label = _("Minimize")
-            tooltip = _("Exit the maximized mode.")
+            label = _("Exit the maximized mode.")
             href = '?maximize=0'
         else:
-            icon = 'maximize.png'
-            label = _("Maximize")
-            tooltip = _("Maximize the main content to the full size of the browser window.")
+            label = _("Maximize the main content to the full size of the browser window.")
             href = '?maximize=1'
         return (g.hr(cls='hidden'),
                 g.div((
-                    g.a(g.img(context.uri(context.resource(icon)), role='presentation', alt=label),
-                        href=href, title=tooltip, id='maximized-mode-control', role='button'),
+                    g.a('', href=href, title=label, aria_label=label, id='maximized-mode-control',
+                        role='button'),
                     g.h(g.a(context.node().heading().export(context), tabindex=0,
                             name='main-heading', id='main-heading'), 1),
                     self._messages(context),

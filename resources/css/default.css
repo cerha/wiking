@@ -597,12 +597,16 @@ body.non-maximized #page {
 }
 
 #maximized-mode-control {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
     position: absolute;
     top: 4px;
     right: 4px;
+    background: url(maximize.png);
 }
-#maximized-mode-control img {
-    border: none;
+body.maximized #maximized-mode-control {
+    background: url(minimize.png);
 }
 body.maximized #submenu {
     display: none;
