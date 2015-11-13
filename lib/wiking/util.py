@@ -1325,9 +1325,9 @@ class TopBarControl(lcg.Content):
 
     The controls derived from this class may have a label, tooltip, displayed
     content and a popup menu, all optional.  Their actual content is defined by
-    the return value of the methods '_label()', '_content()', '_menu_items()'
-    and '_menu_title()'.  If all these methods return an empty result, the
-    control is not displayed at all.
+    the return value of the methods '_label()', '_content()', '_menu_label()',
+    '_menu_items()' and '_menu_title()'.  If all these methods return an empty
+    result, the control is not displayed at all.
 
     To make use of a particular control in an application, return its instance
     from 'wiking.Application.top_controls()'.
@@ -1335,18 +1335,20 @@ class TopBarControl(lcg.Content):
     """
 
     def _label(self, context):
-        """Return the label displayed within the control or None for unlabeled control.""" 
+        """Return the label displayed before the control or None for unlabeled control."""
         return None
 
     def _content(self, context):
-        """Return the actual content displayed within the control.
+        """Return the content displayed within the control.
+
+        This content is displayed between the label and the menu.
 
         Returns the exported content as a basestring or HtmlEscapedUnicode if
-        the content contains HTML tags.  Return an empty string if nothing is
+        the content contains HTML tags.  If None is returned, nothing is
         displayed.
 
         """
-        return ''
+        return None
 
     def _menu_items(self, context):
         """Return the menu items displayed in the control's popup menu.
@@ -1357,9 +1359,23 @@ class TopBarControl(lcg.Content):
         """
         return []
 
+    def _menu_label(self, context):
+        """Return the current value displayed within the control's popup menu.
+
+        The label is displayed together with the popup arrow and typically
+        displays the current value selected from the menu (when this makes
+        sense) or other information about the current state of the control.
+
+        Returns the exported content as a basestring or HtmlEscapedUnicode if
+        the content contains HTML tags.  If None is returned, nothing is
+        displayed.
+
+        """
+        return None
+
     def _menu_title(self, context):
         """Return a short and descriptive title of the control's popup menu.
-        
+    
         This title is used as an accessible label of the menu invocation
         control (the down pointing arrow) as well as its tooltip.
 
@@ -1368,19 +1384,23 @@ class TopBarControl(lcg.Content):
 
     def export(self, context):
         g = context.generator()
-        content = self._content(context)
-        items = self._menu_items(context)
-        if items:
-            content = lcg.PopupMenuCtrl(self._menu_title(context), items,
-                                        content=HtmlContent(content or '')).export(context)
+        result = []
         label = self._label(context)
         if label:
-            content = (g.span(label, cls='label'), ' ', content)
+            result.append(g.span(label, cls='label'))
+        content = self._content(context)
         if content:
-            return g.span(content,
-                          cls=pytis.util.camel_case_to_lower(self.__class__.__name__, '-'))
+            result.append(g.span(content, cls='content'))
+        items = self._menu_items(context)
+        if items:
+            menu_label = self._menu_label(context)
+            menu_title = self._menu_title(context)
+            menu = lcg.PopupMenuCtrl(menu_title, items, content=HtmlContent(menu_label or ''))
+            result.append(menu.export(context))
+        if result:
+            return g.span(result, cls=pytis.util.camel_case_to_lower(self.__class__.__name__, '-'))
         else:
-            return '' 
+            return ''
 
 
 class LoginControl(TopBarControl):
@@ -1440,22 +1460,7 @@ class LoginControl(TopBarControl):
                                                cls='new-user-registration')),
         return items
 
-    def _label(self, context):
-        req = context.req()
-        if req.user() is None:
-            g = context.generator()
-            uri = req.uri()
-            if uri.endswith('_registration'):
-                uri = '/' # Redirect logins from the registration forms to site root
-            # Translators: Login button label (verb in imperative).
-            result = g.a(_("Log in"), href=g.uri(uri, command='login'), cls='login-link',
-                         # Translators: Login status info.
-                         title=_("User not logged in"))
-        else:
-            result = None
-        return result
-
-    def _content(self, context):
+    def _menu_label(self, context):
         g = context.generator()
         req = context.req()
         user = req.user()
@@ -1466,6 +1471,21 @@ class LoginControl(TopBarControl):
             if login != displayed_name:
                 tooltip += ' (' + login + ')'
             result = g.span(displayed_name, cls='displayed-user-name', title=tooltip)
+        else:
+            result = None
+        return result
+
+    def _content(self, context):
+        req = context.req()
+        if req.user() is None:
+            g = context.generator()
+            uri = req.uri()
+            if uri.endswith('_registration'):
+                uri = '/' # Redirect logins from the registration forms to site root
+            # Translators: Login button label (verb in imperative).
+            result = g.a(_("Log in"), href=g.uri(uri, command='login'), cls='login-link',
+                         # Translators: Login status info.
+                         title=_("User not logged in"))
         else:
             result = None
         return result
@@ -1481,13 +1501,12 @@ class LanguageSelection(TopBarControl):
     'wiking.Application.top_controls()'.
 
     """
-    # Translators: Label for language selection followed by the
-    # current language name with a selection of other available
-    # language variants.
-    _LABEL = _("Language:")
 
     def _label(self, context):
-        return self._LABEL
+        # Translators: Label for language selection followed by the
+        # current language name with a selection of other available
+        # language variants.
+        return _("Language:")
 
     def _menu_title(self, context):
         return _("Switch the language")
@@ -1501,7 +1520,7 @@ class LanguageSelection(TopBarControl):
                                   cls='lang-' + lang + ' current' if lang == context.lang() else '')
                 for lang in sorted(variants)]
         
-    def _content(self, context):
+    def _menu_label(self, context):
         g = context.generator()
         lang = context.lang()
         # The language code CS for Czech is very confusing for ordinary
