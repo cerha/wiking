@@ -1442,7 +1442,7 @@ class LoginControl(TopBarControl):
                 else:
                     tooltip = None
                 # Translators: Link on login panel on the webpage.
-                items.append(lcg.PopupMenuItem(_("Change my password"), cls='change-password', 
+                items.append(lcg.PopupMenuItem(_("Change my password"), cls='change-password',
                                                uri=password_change_uri, tooltip=tooltip))
             # Translators: Menu item label (verb in imperative).
             items.append(lcg.PopupMenuItem(_("Log out"), cls='logout',
@@ -1536,6 +1536,7 @@ class LanguageSelection(TopBarControl):
         if len(context.node().variants()) <= 1:
             return ''
         return super(LanguageSelection, self).export(context)
+
     
 class PanelItem(lcg.Content):
 
@@ -1699,7 +1700,7 @@ class HtmlTraceback(lcg.Content):
         super(HtmlTraceback, self).__init__(**kwargs)
 
     def export(self, context):
-        g =context.generator()
+        g = context.generator()
         try:
             # cgitb sometimes fails when the introspection touches
             # something sensitive, such as database objects.
@@ -1709,7 +1710,6 @@ class HtmlTraceback(lcg.Content):
             import traceback
             return g.pre("".join(traceback.format_exception(*self._einfo)))
         
-
 
 class HtmlRenderer(lcg.Content):
     """LCG content class for wrapping a direct HTML renderer function.
