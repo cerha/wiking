@@ -302,10 +302,13 @@ form.activation-form {
 div.item span.panel-field-date { 
     font-weight: bold;
 }
-.feed-icon-link img {
-    border: none;
+.feed-icon-link {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    background: url(rss.png);
+    float: right;
 }
-
 
 /* Links to unpublished pages */
 .unpublished { text-decoration: line-through; }

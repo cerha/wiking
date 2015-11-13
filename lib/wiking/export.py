@@ -34,7 +34,7 @@ class MinimalExporter(lcg.HtmlExporter):
             uri = '_resources'
         return super(MinimalExporter, self)._head(context) + \
             [g.link(rel='stylesheet', type='text/css', href='/%s/default.css' % uri)]
-    
+
     def _meta(self, context):
         import wiking
         return (('generator', 'Wiking %s, LCG %s, Pytis %s' %
@@ -44,7 +44,7 @@ class MinimalExporter(lcg.HtmlExporter):
         g = context.generator()
         return (g.h(context.node().title(), 1),
                 super(MinimalExporter, self)._content(context))
-        
+
     def _bottom_bar(self, context):
         g = context.generator()
         import wiking
@@ -111,7 +111,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         This layout is typically useful for rendering the IFRAME content.  The
         exported document content is wrapped into HTML body with HTML head
         automatically created.
-        
+
         """
 
     _BODY_PARTS = ('wrap', 'media_player')
@@ -187,14 +187,14 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
     def _wrap(self, context):
         g = self._generator
         return g.div(self._parts(context, self._WRAP_PARTS), id='wrap-layer1')
-    
+
     def _middle(self, context):
         g = self._generator
         return g.div(self._parts(context, self._MIDDLE_PARTS), id='middle-layer1')
-    
+
     def _bottom(self, context):
         return self._parts(context, self._BOTTOM_PARTS)
-                           
+
     def _page(self, context):
         return self._parts(context, self._PAGE_PARTS)
 
@@ -217,7 +217,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             return self._generator.div(content, id=name.replace('_', '-'), **attr)
         else:
             return None
-        
+
     def _hidden(self, *text):
         return self._generator.span(text, cls="hidden")
 
@@ -237,7 +237,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         if theme_id and isinstance(resource, lcg.Stylesheet):
             uri += '?preview_theme=%s' % theme_id
         return uri
-    
+
     def _head(self, context):
         g = self._generator
         tags = super(Exporter, self)._head(context) + \
@@ -279,7 +279,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                       id='top-layer3'),
                 id='top-layer2'),
             id='top-layer1')
-        
+
     def _top_controls(self, context):
         return lcg.coerce(context.application.top_controls(context.req())).export(context)
 
@@ -289,12 +289,12 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         for panel in context.panels():
             links.append(g.a(panel.accessible_title(), href='#panel-%s-anchor ' % panel.id()))
         return _("Jump in page") + ": " + lcg.concat(links, separator=' | ')
-        
+
     def _breadcrumbs(self, context):
         links = [lcg.link(n).export(context) for n in context.node().path()[1:]]
         # Translators: A label followed by location information in webpage navigation
         return _("You are here:") + ' ' + lcg.concat(links, separator=' / ')
-        
+
     def _menu(self, context):
         g = self._generator
         top = context.top_node()
@@ -360,14 +360,11 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                 title += titlebar_content.export(context)
             channel = panel.channel()
             if channel:
-                icon = context.resource('rss.png')
-                if icon:
-                    # Translators: ``RSS channel'' is terminology idiom, see Wikipedia
-                    channel_title = panel.title() + ' (' + _("RSS channel") + ')'
-                    img = g.img(context.uri(icon), align='right', alt=channel_title)
-                    link = g.a(img, href=channel, title=channel_title, type='application/rss+xml',
-                               cls='feed-icon-link')
-                    title = link + ' ' + title
+                # Translators: ``RSS channel'' is terminology idiom, see Wikipedia.
+                # The placeholder %s is replaced by channel title.
+                channel_title = _("RSS channel %s") + ' ' + panel.title()
+                title += g.a('', href=channel, aria_label=channel_title, title=channel_title,
+                             type='application/rss+xml', cls='feed-icon-link')
             content = panel.content()
             # Add a fake container to force the heading level start at 4.
             lcg.Container(lcg.Section('', lcg.Section('', content)))
@@ -392,7 +389,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                          id='messages')
         else:
             return ''
-    
+
     def _main(self, context):
         g = self._generator
         if context.req().maximized():
@@ -413,7 +410,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
 
     def _page_clearing(self, context):
         return self._generator.noescape('&nbsp;')
-    
+
     def _last_change(self, context):
         # Currently unused, left here just to have the translation.
         # Translators: Information about last change of a webpage (when and who)
@@ -440,7 +437,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             return result
         else:
             return None
-        
+
     def _footer(self, context):
         g = self._generator
         content = context.application.footer_content(context.req())
