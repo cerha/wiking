@@ -16,6 +16,7 @@ install:
   - "export PYTHONPATH=lcg/lib:pytis/lib:lib:$PYTHONPATH"
 before_script:
   - "createuser -U postgres -SDR pytis"
+  - "createuser -U postgres -SDR www-data"
   - "createdb -U postgres -O $USER test"
   - "createlang -U postgres plpythonu test"
   - "psql -U postgres -1c \"ALTER DATABASE test SET default_text_search_config to \'simple\'\" test"
