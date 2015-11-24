@@ -117,13 +117,16 @@ table.lcg-fieldset th {
     vertical-align: top;
     padding: 0 0.5em 0 0;
 }
-
-pre.lcg-preformatted-text {
+.lcg-preformatted-text {
     background-color: $color.frame-bg;
     border: solid $color.frame-border 1px;
     color: $color.foreground;
-    padding: 0.3em;
+    margin: 1em 0;
+    padding: 4px;
+}
+.lcg-preformatted-text pre {
     white-space: pre;
+    margin: 0;
 }
 
 img.lcg-image { 
