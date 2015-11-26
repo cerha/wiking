@@ -71,7 +71,7 @@ class AdminControl(wiking.TopBarControl):
 
 
 class Application(CookieAuthentication, wiking.Application):
-    
+
     _MAPPING = dict(
         wiking.Application._MAPPING,
         _wmi='WikingManagementInterface',
@@ -80,7 +80,7 @@ class Application(CookieAuthentication, wiking.Application):
 
     _PREVIEW_MODE_COOKIE = 'wiking_cms_preview_mode'
     _PREVIEW_MODE_PARAM = '_wiking_cms_preview_mode'
-    
+
     def preview_mode(self, req):
         """Query the current state of preview mode.
 

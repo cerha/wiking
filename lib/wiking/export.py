@@ -304,7 +304,8 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             if not node.hidden():
                 if not all(n.hidden() for n in node.children()):
                     tree = lcg.FoldableTree(node, label=_("Local navigation for: %s", node.title()))
-                    dropdown = g.div(tree.export(context), cls='menu-dropdown', style='display: none')
+                    dropdown = g.div(tree.export(context), cls='menu-dropdown',
+                                     style='display: none')
                     arrow = g.span('', cls='dropdown-arrow', role='presentation')
                 else:
                     dropdown = ''
@@ -341,7 +342,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         bottom_content = application.menu_panel_bottom_content(req)
         if bottom_content:
             content = lcg.concat(content, bottom_content.export(context))
-        return  g.div(content, cls='menu-panel')
+        return g.div(content, cls='menu-panel')
 
     def _panels(self, context):
         if not context.panels():

@@ -68,7 +68,7 @@ class RequestError(Exception):
 
     """
     _TITLE = None
-    
+
     _STATUS_CODE = httplib.OK
     """Relevant HTTP status code.
 
@@ -109,7 +109,7 @@ class RequestError(Exception):
 
         """
         return self._STATUS_CODE
-        
+
     def stack(self):
         """Return Python call stack state saved in the constructor.
 
@@ -123,7 +123,7 @@ class RequestError(Exception):
 
 class AuthenticationError(RequestError):
     """Error indicating that authentication is required for the resource."""
-    
+
     # Translators: This is a warning on a webpage which is only accessible for logged in users
     _TITLE = _("Authentication required")
     _HTTP_AUTH_MATCHER = re.compile('.*(Thunderbird|Icedove|Liferea|Pytis)/.*')
@@ -142,9 +142,9 @@ class AuthenticationError(RequestError):
 
     The currently recognized user agents are Thunderbird mail reader (for its
     built in RSS support) and Liferea.
-    
+
     """
-    
+
     def status_code(self, req):
         """Return authentication error page status code.
 
@@ -152,7 +152,7 @@ class AuthenticationError(RequestError):
         on automatically -- see '_HTTP_AUTH_MATCHER'), the status code 401
         (UNAUTHORIZED) is returned, otherwise the code is 200 (OK)
         and cookie based authentication mechanism will be used.
-        
+
         """
         agent = req.header('User-Agent')
         if wiking.cfg.allow_http_authentication and \
@@ -175,7 +175,7 @@ class AuthenticationError(RequestError):
 
 class AuthenticationRedirect(AuthenticationError):
     """Has the same effect as AuthenticationError, but is just not an error."""
-    
+
     # Translators: Login dialog page title (use a noun).
     _TITLE = _("Login")
 
@@ -183,7 +183,7 @@ class AuthenticationRedirect(AuthenticationError):
 class DisplayDocument(Exception):
     """Exception that should result in displaying the given document."""
     # TODO: This class is redundant.  See Abort below!
-    
+
     def __init__(self, document):
         """
         Arguments:
@@ -218,9 +218,9 @@ class Abort(RequestError):
 
 
 class PasswordExpirationError(RequestError):
-    
+
     _TITLE = _("Your password expired")
-    
+
     def content(self, req):
         content = lcg.p(_("Your password expired.  Access to the application is now blocked for "
                           "security reasons until you change your password."))
@@ -230,7 +230,7 @@ class PasswordExpirationError(RequestError):
             content = (content, lcg.p(lcg.link(uri, _("Change your password"))))
         return content
 
-    
+
 class Forbidden(RequestError):
     """Error indicating unavailable request target.
 
@@ -239,10 +239,10 @@ class Forbidden(RequestError):
     'Forbidden' when the target is globally unavailable, such as when directory
     listing is denied to everyone, but files in that directory may be
     accessible.
-    
+
     """
     _STATUS_CODE = httplib.FORBIDDEN
-    
+
     def content(self, req):
         return (lcg.p(_("The item '%s' is not available.", req.uri())),
                 lcg.p(_("The item exists on the server, but can not be accessed.")))
@@ -261,7 +261,7 @@ class AuthorizationError(Forbidden):
     this action." is used.
 
     """
-    
+
     # Translators: An error message
     _TITLE = _("Access Denied")
 
@@ -278,12 +278,12 @@ class DecryptionError(RequestError):
     """Error signalling that a decryption key is missing.
 
     Its argument is the name of the inaccessible encryption area.
-    
+
     """
     def content(self, req):
         return DecryptionDialog(self.args[0])
 
-    
+
 class BadRequest(RequestError):
     """Error indicating invalid request argument values or their combination.
 
@@ -299,7 +299,7 @@ class BadRequest(RequestError):
 
     """
     _STATUS_CODE = httplib.BAD_REQUEST
-    
+
     def content(self, req):
         if self.args:
             messages = self.args
@@ -309,11 +309,11 @@ class BadRequest(RequestError):
                        "response after a legitimate action."),)
         return [lcg.p(msg) for msg in messages]
 
-        
+
 class NotFound(RequestError):
     """Error indicating invalid request target."""
     _STATUS_CODE = httplib.NOT_FOUND
-    
+
     def content(self, req):
         # Translators: The word 'item' is intentionaly very generic, since it may mean a page,
         # image, streaming video, RSS channel or anything else.
@@ -336,7 +336,7 @@ class NotModified(RequestError):
     """
     _STATUS_CODE = httplib.NOT_MODIFIED
 
-    
+
 class NotAcceptable(RequestError):
     """Error indicating unavailability of the resource in the requested language.
 
@@ -348,7 +348,7 @@ class NotAcceptable(RequestError):
     # Translators: Title of a dialog on a webpage
     _TITLE = _("Language selection")
     _STATUS_CODE = httplib.NOT_ACCEPTABLE
-    
+
     def content(self, req):
         msg = (lcg.p(_("The resource '%s' is not available in either of the requested languages.",
                        req.uri())),)
@@ -406,20 +406,20 @@ class InternalServerError(RequestError):
                             "persists.", wiking.cfg.webmaster_address), formatted=True),
                     lcg.p(_("The error message was:")),
                     lcg.PreformattedText(self._message))
-    
-        
+
+
 class ServiceUnavailable(RequestError):
     """Error indicating a temporary problem, which may not appaper in further requests."""
     _TITLE = _("Service Unavailable")
     _STATUS_CODE = httplib.SERVICE_UNAVAILABLE
-    
+
     def content(self, req):
         return (lcg.p(_("The requested function is currently unavailable. "
                         "Try repeating your request later.")),
                 lcg.p(_("Please inform the server administrator, %s if the problem "
                         "persists.", wiking.cfg.webmaster_address), formatted=True))
-    
-    
+
+
 class Redirect(Exception):
     """Exception class for HTTP redirection.
 
@@ -434,10 +434,10 @@ class Redirect(Exception):
 
     """
     _PERMANENT = False
-    
+
     def __init__(self, uri, *args, **kwargs):
         """Arguments:
-        
+
           uri -- redirection target URI as a string.  May be relative to the
             current request server address or absolute (beginning with
             'http://' or 'https://').  Relative URI is automatically prepended
@@ -448,7 +448,7 @@ class Redirect(Exception):
           args, kwargs -- query arguments (and/or anchor) to be encoded into
             the final uri.  The same rules as for the arguments of
             'Request.make_uri()' apply.
-            
+
         """
         self._uri = uri
         self._args = args + tuple(kwargs.items())
@@ -456,12 +456,12 @@ class Redirect(Exception):
     def uri(self):
         """Return the redirection target URI."""
         return self._uri
-    
+
     def args(self):
         """Return the tuple of query arguments to be encoded to the URI.
 
         The arguments are returned in the form expected by 'Request.make_uri()'.
-        
+
         """
         return self._args
 
@@ -469,13 +469,13 @@ class Redirect(Exception):
         """Return true if the redirection is permanent according to HTTP specification."""
         return self._PERMANENT
 
-    
+
 class PermanentRedirect(Redirect):
     """Exception class for permanent HTTP redirection.
 
     Same as the parent class, but results in permanent redirection according to
     HTTP specification.
-    
+
     """
     _PERMANENT = True
 
@@ -493,7 +493,7 @@ class Theme(object):
     """
     class Color(object):
         """Theme color specification.
-        
+
         Each color defines its own identifier and optionally the identifier of
         another theme color, which provides the default value for this color if
         no explicit value is defined in the color 'Theme'.
@@ -506,7 +506,7 @@ class Theme(object):
             return self._id
         def inherit(self):
             return self._inherit
-        
+
     COLORS = (
         Color('foreground'),
         Color('background'),
@@ -563,7 +563,7 @@ class Theme(object):
 
     def __init__(self, colors=None):
         """Arguments:
-        
+
            colors -- dictionary of theme colors.  Keys are string identifiers
              of theme colors from 'Theme.COLORS' and values are RGB string color
              representaions, such as "#0f0" or "#00ff00".
@@ -582,11 +582,11 @@ class Theme(object):
                 else:
                     return 'inherit'
         self._theme = {'color': dict([(key, color(key)) for key in coldict])}
-        
+
     def __getitem__(self, key):
         return self._theme[key]
 
-        
+
 class MenuItem(object):
     """Abstract menu item representation."""
     def __init__(self, id, title, descr=None, submenu=(), hidden=False, active=True,
@@ -668,13 +668,13 @@ class Panel(object):
         @type id: basestring
         @param id: Panel unique identifier.  This identifier is included in
         the output and thus may be used for panel specific styling.
-        
+
         @type title: basestring
         @param title: Title displayed in panel heading.
-        
+
         @type content: L{lcg.Content}
         @param content: Content displayed within the panel area.
-        
+
         @type accessible_title: basestring
         @param accessible_title: Panel title for assistive technologies or
         None.  Panel is by default represented by its 'title' to assistive
@@ -691,7 +691,7 @@ class Panel(object):
         channel.  If not None, the panel will indicate a channel icon with a
         link to the channel.  Channels of all panels present on a page will
         also be automatically included in <link> tags within the page header.
-        
+
         """
         assert isinstance(id, basestring), id
         assert isinstance(title, basestring), title
@@ -705,21 +705,21 @@ class Panel(object):
         self._accessible_title = accessible_title or title
         self._titlebar_content = titlebar_content
         self._channel = channel
-        
+
     def id(self):
         return self._id
-    
+
     def title(self):
         return self._title
-    
+
     def accessible_title(self):
         return self._accessible_title
-    
+
     def titlebar_content(self):
         return self._titlebar_content
 
     # TODO: navigable ....
-    
+
     def content(self):
         return self._content
 
@@ -732,7 +732,7 @@ class Document(object):
 
     The 'Document' is Wiking's abstraction of an LCG document (represented by
     'lcg.ContentNode').
-    
+
     This allows us to initialize document data without actually creating the
     whole LCG node hierarchy and specifying all the required attributes at the
     same time.  Default attribute values sensible in the Wiking environment are
@@ -742,7 +742,7 @@ class Document(object):
     to HTML.
 
     """
-    
+
     def __init__(self, title, content, subtitle=None, lang=None, sec_lang=None,
                  variants=None, globals=None, layout=None):
         """Arguments:
@@ -811,11 +811,11 @@ class Document(object):
     def globals(self):
         """Return the 'globals' passed to the constructor."""
         return self._globals
-        
+
     def layout(self):
         """Return the 'layout' passed to the constructor."""
         return self._layout
-        
+
     def clone(self, **kwargs):
         """Return an instance identical with this one, except for arguments passed to this method.
 
@@ -841,14 +841,14 @@ class Response(object):
 
     See also 'wiking.serve_file()' for a convenience function reading the
     response data out of a file within server's filesystem.
-    
+
     """
     def __init__(self, data, content_type='text/html', content_length=None,
                  status_code=httplib.OK, last_modified=None, filename=None, headers=()):
         """Arguments:
-        
+
           data -- respnse data as one of the types described below.
-          
+
           content_type -- The value to be used for the 'Content-Type' HTTP
             header (basestring).  When 'data' is a unicode instance, and
             'content_type' is one of "text/html", "application/xml", "text/css"
@@ -860,7 +860,7 @@ class Response(object):
             (basestring).  Set automatically when 'data' is 'str', 'buffer' or
             'unicode', but should be supplied when 'data' is an iterable
             object.
-            
+
           status_code -- integer number denoting the HTTP response status code
             (default is 'httplib.OK').  It is recommended to use 'httplib'
             constants for the status codes.
@@ -871,7 +871,7 @@ class Response(object):
             'headers'.  The browser will usually show a "Save File" dialog and
             suggest given file name as the default name for saving the request
             result into a file.
-        
+
           last_modified -- last modification time as a python datetime
             instance.  The value will be used for the 'Last-Modified' HTTP
             header (the appropriate date formatting is applied automatically).
@@ -902,7 +902,7 @@ class Response(object):
         self._last_modified = last_modified
         self._headers = headers
         self._filename = filename
-        
+
     def data(self):
         return self._data
 
@@ -920,16 +920,16 @@ class Response(object):
 
     def filename(self):
         return self._filename
-        
+
     def headers(self):
         return tuple(self._headers)
-    
+
     def add_header(self, name, value):
         if not isinstance(self._headers, list):
             self._headers = list(self._headers)
         self._headers.append((name, value))
 
-    
+
 class Channel(object):
     """RSS channel specification."""
     def __init__(self, id, title, descr, content, limit=None, sorting=None, condition=None,
@@ -939,10 +939,10 @@ class Channel(object):
         @param id: Channel identifier unique within one module's channels.  The
         identifier is used as a part of channel URL, so it should not contain
         special characters.
-        
+
         @type title: basestring
         @param title: Channel title
-        
+
         @type descr: basestring
         @param descr: Channel description/subtitle
 
@@ -959,7 +959,7 @@ class Channel(object):
         @param condition: Pytis data condition filtering the items present in
         the channel (appended to any other conditions imposed by the underlying
         module).
-        
+
         @type webmaster: basestring
         @param webmaster: Channel webmaster e-mail address.  If None,
         'wiking.cfg.webmaster_address' is used.
@@ -994,7 +994,7 @@ class Channel(object):
         return self._condition
     def webmaster(self):
         return self._webmaster
-    
+
 
 class ChannelContent(object):
     """Defines how PytisModule records map to RSS channel items.
@@ -1018,20 +1018,20 @@ class ChannelContent(object):
         """
         @type title: str or callable
         @param title: Item title field specification.
-        
+
         @type link: str, callable or None
         @param link: Item link field specification.  If None, the default
         item link is determined automatically as the module's record URL.
 
         @type descr: str, callable or None
         @param descr: Item description field specification.
-        
+
         @type date: str, callable or None
         @param date: Item date field specification.  The result must be
         'datetime.datetime' instance.  If column name is used, its type must be
         'pytis.data.DateTime'.  If function is used, it must return a
         'datetime.datetime' instance.
-        
+
         @type author: str, callable or None
         @param author: Item author field specification.
 
@@ -1062,10 +1062,10 @@ class ChannelContent(object):
     def author(self):
         return self._author
 
-    
+
 class RssWriter(object):
     """Simple RSS stream writer."""
-    
+
     def __init__(self, stream):
         self._stream = stream
 
@@ -1075,7 +1075,7 @@ class RssWriter(object):
                 value = saxutils.escape(value)
             data = '<%s>%s</%s>\n' % (tag, value, tag)
             self._stream.write(data.encode('utf-8'))
-            
+
     def start(self, link, title, description, language=None, webmaster=None, generator=None,
               ttl=60):
         """Call exactly once to write channel meta data into the stream."""
@@ -1129,24 +1129,24 @@ class PasswordStorage(object):
 
         Arguments:
           password -- the password to transform in clear text as a basestring.
-        
+
         Returns the transformed representation of the password as a basestring.
 
         """
         raise NotImplementedError()
-    
+
     def check_password(self, password, stored_password):
         """Verify that given password is the correct original of the stored password.
-        
+
         Arguments:
           password -- the password to check in clear text as a basestring.
           stored_password -- the stored version of the correct password as a basestring.
-        
+
         Returns True if the password is correct. False otherwise.
 
         """
         raise NotImplementedError()
-        
+
     def _equals(self, string1, string2):
         """Compare two strings in length-constant time.
 
@@ -1171,7 +1171,7 @@ class PlainTextPasswordStorage(PasswordStorage):
     """
     def stored_password(self, password):
         return password
-    
+
     def check_password(self, password, stored_password):
         return self._equals(password, stored_password)
 
@@ -1198,7 +1198,7 @@ class UnsaltedMd5PasswordStorage(PasswordStorage):
 
     def check_password(self, password, stored_password):
         return self._equals(self._md5(password), stored_password)
-        
+
 
 class Pbkdf2PasswordStorage(PasswordStorage):
     """Password storage storing passwords as salted PBKDF2 hashes.
@@ -1239,7 +1239,7 @@ class Pbkdf2PasswordStorage(PasswordStorage):
         iterations = self._iterations
         hashed_password = self._pbkdf2_hash(password, salt, iterations, self._hash_length)
         return ':'.join((str(iterations), salt, hashed_password))
-        
+
     def check_password(self, password, stored_password):
         iterations, salt, stored_hash = stored_password.split(':')
         try:
@@ -1288,7 +1288,7 @@ class UniversalPasswordStorage(PasswordStorage):
     even if new passwords are stored with another algorithm.
 
     """
-    
+
     def __init__(self, **kwargs):
         self._storage = {
             'plain': PlainTextPasswordStorage(),
@@ -1308,7 +1308,7 @@ class UniversalPasswordStorage(PasswordStorage):
 
     def stored_password(self, password):
         return self._default_prefix + ':' + self._default_storage.stored_password(password)
-    
+
 
 # ============================================================================
 # Classes derived from LCG components
@@ -1375,7 +1375,7 @@ class TopBarControl(lcg.Content):
 
     def _menu_title(self, context):
         """Return a short and descriptive title of the control's popup menu.
-    
+
         This title is used as an accessible label of the menu invocation
         control (the down pointing arrow) as well as its tooltip.
 
@@ -1510,7 +1510,7 @@ class LanguageSelection(TopBarControl):
 
     def _menu_title(self, context):
         return _("Switch the language")
-        
+
     def _menu_items(self, context):
         node = context.node()
         variants = node.variants()
@@ -1519,7 +1519,7 @@ class LanguageSelection(TopBarControl):
                                   uri=e.uri(context, node, lang=lang),
                                   cls='lang-' + lang + ' current' if lang == context.lang() else '')
                 for lang in sorted(variants)]
-        
+
     def _menu_label(self, context):
         g = context.generator()
         lang = context.lang()
@@ -1531,19 +1531,19 @@ class LanguageSelection(TopBarControl):
             g.span(lcg.language_name(lang) or abbr, cls='language-name'),
             g.span(abbr, cls='language-abbr'),
         )
-        
+
     def export(self, context):
         if len(context.node().variants()) <= 1:
             return ''
         return super(LanguageSelection, self).export(context)
 
-    
+
 class PanelItem(lcg.Content):
 
     def __init__(self, fields):
         super(PanelItem, self).__init__()
         self._fields = fields
-        
+
     def export(self, context):
         g = context.generator()
         items = [g.span(uri and g.a(value, href=uri) or value,
@@ -1561,7 +1561,7 @@ class LoginDialog(lcg.Content):
         self._extra_content = extra_content
         self._login_is_email = login_is_email
         super(LoginDialog, self).__init__()
-        
+
     def export(self, context):
         g = context.generator()
         req = context.req()
@@ -1635,7 +1635,7 @@ class DecryptionDialog(lcg.Content):
         assert isinstance(name, basestring)
         self._decryption_name = name
         super(DecryptionDialog, self).__init__()
-        
+
     def export(self, context):
         g = context.generator()
         req = context.req()
@@ -1664,7 +1664,7 @@ class DecryptionDialog(lcg.Content):
 
 class ConfirmationDialog(lcg.Container):
     """Dialog displaying arbitrary content followed by a `Continue' button."""
-    
+
     def export(self, context):
         g = context.generator()
         return g.div((super(ConfirmationDialog, self).export(context),
@@ -1680,7 +1680,7 @@ class HtmlContent(lcg.TextContent):
     This class allows embedding HTML content into the LCG content hierarchy.
     Its export is a noop.  It denies all the advantages of the LCG's export
     separation, so use only when there is no other choice and with caution.
-    
+
     """
     def export(self, context):
         return self._text
@@ -1709,7 +1709,7 @@ class HtmlTraceback(lcg.Content):
         except:
             import traceback
             return g.pre("".join(traceback.format_exception(*self._einfo)))
-        
+
 
 class HtmlRenderer(lcg.Content):
     """LCG content class for wrapping a direct HTML renderer function.
@@ -1742,10 +1742,10 @@ class HtmlRenderer(lcg.Content):
         self._renderer_args = args
         self._renderer_kwargs = kwargs
         super(HtmlRenderer, self).__init__()
-    
+
     def export(self, context):
         return self._renderer(self, context, *self._renderer_args, **self._renderer_kwargs)
-    
+
 class IFrame(lcg.Content):
     """HTML specific IFRAME component."""
     def __init__(self, uri, width=400, height=200):
@@ -1753,11 +1753,11 @@ class IFrame(lcg.Content):
         self._width = width
         self._height = height
         super(IFrame, self).__init__()
-        
+
     def export(self, context):
         return context.generator().iframe(self._uri, width=self._width, height=self._height)
 
-    
+
 # ============================================================================
 # Classes derived from Pytis components
 # ============================================================================
@@ -1768,9 +1768,9 @@ class FieldSet(pp.GroupSpec):
         orientation = horizontal and pp.Orientation.HORIZONTAL or pp.Orientation.VERTICAL
         super(FieldSet, self).__init__(fields, label=label, orientation=orientation)
 
-        
+
 from pytis.data.dbapi import DBAPIData
-    
+
 class WikingDefaultDataClass(DBAPIData):
     """Default data class used by wiking modules connected to pytis data objects.
 
@@ -1799,7 +1799,7 @@ class WikingDefaultDataClass(DBAPIData):
                 "Unknown column '%s' in '%s'" % (colname, self.table(self.key()[0].id()))
             return column.type()
         return [(k, pd.Value(t(k), v)) for k, v in kwargs.items()]
-    
+
     def get_rows(self, skip=None, limit=None, sorting=(), condition=None, arguments=None,
                  columns=None, transaction=None, **kwargs):
         if kwargs:
@@ -1909,7 +1909,7 @@ class Specification(pp.Specification):
     def _action_spec_name(self):
         # Mainly to indicate the module name in specification error messages...
         return self._module.__module__ + '.' + self._module.name()
-    
+
 
 class Binding(pp.Binding):
     """Extension of Pytis 'Binding' with web specific parameters."""
@@ -1923,7 +1923,7 @@ class Binding(pp.Binding):
             'True', the binding is used, otherwise it is omitted.
 
         Other arguments are same as in the parent class.
-            
+
         """
         form = kwargs.pop('form', None)
         enabled = kwargs.pop('enabled', None)
@@ -1949,7 +1949,7 @@ class Binding(pp.Binding):
 
     def enabled(self):
         return self._enabled
-    
+
 
 class WikingResolver(pytis.util.Resolver):
     """A custom resolver of Wiking modules."""
@@ -1983,7 +1983,7 @@ class WikingResolver(pytis.util.Resolver):
 
         Any keyword arguments are be passed to the module constructor.  The
         instances are cached internally (for matching constructor arguments).
-        
+
         """
         key = (name, tuple(kwargs.items()))
         try:
@@ -2007,7 +2007,7 @@ class ModuleInstanceResolver(object):
     """Single purpose class to be used as 'wiking.module' instance (see below)."""
     def __call__(self, name):
         return wiking.cfg.resolver.wiking_module(name)
-       
+
     def __getattr__(self, name):
         if name.startswith('_'):
             return super(ModuleInstanceResolver, self).__getattr__(name)
@@ -2017,7 +2017,7 @@ class ModuleInstanceResolver(object):
             except pytis.util.ResolverError as e:
                 raise AttributeError(str(e))
 
-        
+
 module = ModuleInstanceResolver()
 """Return the instance of given Wiking module.
 
@@ -2034,10 +2034,10 @@ wiking.cfg.resolver directly are deprecated.
 
 """
 
-    
+
 class DateTime(pytis.data.DateTime):
     """Deprecated.  Use 'pytis.data.DateTime' directly."""
-    
+
     def _init(self, show_time=True, exact=False, leading_zeros=True, **kwargs):
         self._exact = exact
         self._show_time = show_time
@@ -2049,7 +2049,7 @@ class DateTime(pytis.data.DateTime):
 
     def exact(self):
         return self._exact
-        
+
     def _export(self, value, show_weekday=False, show_time=None, **kwargs):
         result = super(DateTime, self)._export(value, **kwargs)
         if show_time is None:
@@ -2057,7 +2057,7 @@ class DateTime(pytis.data.DateTime):
         return lcg.LocalizableDateTime(result, show_weekday=show_weekday, utc=self._utc,
                                        show_time=show_time, leading_zeros=self._leading_zeros)
 
-        
+
 # We need three types, because we need to derive from two different base classes.
 
 class Date(pytis.data.Date):
@@ -2081,10 +2081,10 @@ class Time(pytis.data.Time):
         if exact:
             format += ':%S'
         super(Time, self)._init(format=format, **kwargs)
-    
+
     def exact(self):
         return self._exact
-        
+
     def _export(self, value, **kwargs):
         return lcg.LocalizableTime(super(Time, self)._export(value, **kwargs))
 
@@ -2100,7 +2100,7 @@ class TZInfo(datetime.tzinfo):
 
     This class mainly exists to allow specification of the configuration option
     'default_timezone'.
-    
+
     # Example: Central Europe has 120 minutes UTC offset in summer and 60 in winter.
     default_timezone = wiking.TZInfo(120, 60)
 
@@ -2290,7 +2290,7 @@ def serve_file(req, path, content_type=None, filename=None, lock=False, headers=
 
 def ajax_response(req, form):
     """Call form.ajax_response() and translate the result to a Wiking response.
-    
+
     Arguments:
        req -- 'wiking.Request' instance.
        form -- 'pytis.web.EditForm' instance.
@@ -2349,7 +2349,7 @@ class MailAttachment(object):
     def type(self):
         """Return MIME type of the attachment."""
         return self._type
-    
+
 def send_mail(addr, subject, text, sender=None, sender_name=None, html=None,
               export=False, lang=None, cc=(), headers=(), attachments=(),
               smtp_server=None, smtp_port=None, uid=None):
@@ -2385,7 +2385,7 @@ def send_mail(addr, subject, text, sender=None, sender_name=None, html=None,
       uid -- if not 'None' then special CC addresses defined in
         'wiking.cfg.special_cc_addresses' are added if the given uid is not in any of the
         'wiking.cfg.special_cc_exclude_roles'.
-      
+
     """
     assert isinstance(addr, (basestring, tuple, list,)), ('type error', addr,)
     assert isinstance(subject, basestring), ('type error', subject,)
@@ -2589,7 +2589,7 @@ def cmp_versions(v1, v2):
     """Compare version strings, such as '0.3.1' and return the result.
 
     The returned value is -1, 0 or 1 such as for the builtin 'cmp()' function.
-    
+
     """
     v1a = [int(v) for v in v1.split('.')]
     v2a = [int(v) for v in v2.split('.')]
@@ -2622,7 +2622,7 @@ def make_uri(base, *args, **kwargs):
 
 _WKDAY = ('Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun',)
 _MONTH = ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',)
-    
+
 def format_http_date(dt):
     """Return datetime as a basestring in the RFC 1123 format.
 
@@ -2644,7 +2644,7 @@ def parse_http_date(date_string):
     """Return datetime corresponding to RFC 2616 date_string.
 
     Arguments:
-    
+
       date_string -- basestring representing date and time in one of the
         formats supported by RFC 2616
 
