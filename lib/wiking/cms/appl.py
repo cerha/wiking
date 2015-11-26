@@ -54,7 +54,7 @@ class AdminControl(wiking.TopBarControl):
             # translate these two modes consistently acros all their
             # occurences.
             if wiking.module.Application.preview_mode(req):
-                label, value, cls = _("Switch to Production Mode"), '0', 'prodiction-mode'
+                label, value, cls = _("Switch to Production Mode"), '0', 'production-mode'
             else:
                 label, value, cls = _("Switch to Preview Mode"), '1', 'preview-mode'
             param = wiking.module.Application._PREVIEW_MODE_PARAM
