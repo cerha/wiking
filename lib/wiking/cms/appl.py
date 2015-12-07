@@ -31,6 +31,12 @@ _ = lcg.TranslatableTextFactory('wiking-cms')
 
 class AdminControl(wiking.TopBarControl):
 
+    def _icon(self, context):
+        if wiking.module.Application.preview_mode(context.req()):
+            return 'gear-larger-red'
+        else:
+            return 'gear-larger'
+
     def _menu_title(self, context):
         return _("Website Administration")
 

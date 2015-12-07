@@ -1325,17 +1325,31 @@ class TopBarControl(lcg.Content):
 
     The controls derived from this class may have a label, tooltip, displayed
     content and a popup menu, all optional.  Their actual content is defined by
-    the return value of the methods '_label()', '_content()', '_menu_label()',
-    '_menu_items()' and '_menu_title()'.  If all these methods return an empty
-    result, the control is not displayed at all.
+    the return value of the methods '_icon()', '_label()', '_content()',
+    '_menu_label()', '_menu_items()' and '_menu_title()'.  If all these methods
+    return an empty result, the control is not displayed at all.
 
     To make use of a particular control in an application, return its instance
     from 'wiking.Application.top_controls()'.
 
     """
 
+    def _icon(self, context):
+        """Return the string identifier of the icon displayed before the control or None.
+
+        The icon is only added when '_content()' or '_menu_items()' returns a
+        non-empty result.
+
+        """
+        return None
+
     def _label(self, context):
-        """Return the label displayed before the control or None for unlabeled control."""
+        """Return the label displayed before the control or None for unlabeled control.
+
+        The label is only added when '_content()' or '_menu_items()' returns a
+        non-empty result.
+
+        """
         return None
 
     def _content(self, context):
@@ -1385,9 +1399,6 @@ class TopBarControl(lcg.Content):
     def export(self, context):
         g = context.generator()
         result = []
-        label = self._label(context)
-        if label:
-            result.append(g.span(label, cls='label'))
         content = self._content(context)
         if content:
             result.append(g.span(content, cls='content'))
@@ -1398,6 +1409,12 @@ class TopBarControl(lcg.Content):
             menu = lcg.PopupMenuCtrl(menu_title, items, content=HtmlContent(menu_label or ''))
             result.append(menu.export(context))
         if result:
+            label = self._label(context)
+            if label:
+                result.insert(0, g.span(label, cls='label'))
+            icon = self._icon(context)
+            if icon:
+                result.insert(0, g.span('', cls='icon %s-icon' % icon))
             return g.span(result, cls=pytis.util.camel_case_to_lower(self.__class__.__name__, '-'))
         else:
             return ''
@@ -1412,6 +1429,9 @@ class LoginControl(TopBarControl):
     'wiking.Application.top_controls()'.
 
     """
+    def _icon(self, context):
+        return 'user-larger'
+
     def _menu_title(self, context):
         if context.req().user():
             return _("User actions")
