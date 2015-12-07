@@ -658,16 +658,10 @@ body.non-maximized #page {
 }
 
 #maximized-mode-control {
-    display: inline-block;
-    width: 20px;
-    height: 20px;
     position: absolute;
     top: 4px;
     right: 4px;
-    background: url(maximize.png);
-}
-body.maximized #maximized-mode-control {
-    background: url(minimize.png);
+    margin: 0;
 }
 body.maximized #submenu {
     display: none;
