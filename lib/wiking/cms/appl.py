@@ -46,10 +46,10 @@ class AdminControl(wiking.TopBarControl):
         if wiking.module.WikingManagementInterface.authorized(req):
             if not req.wmi:
                 items.append(lcg.PopupMenuItem(_("Enter the Management Interface"), uri='/_wmi/',
-                                               cls='wmi'))
+                                               icon='gear-icon'))
             else:
                 items.append(lcg.PopupMenuItem(_("Leave the Management Interface"), uri='/',
-                                               cls='leave-wmi'))
+                                               icon='circle-out-icon'))
         if wiking.module.Application.preview_mode_possible(req):
             # Translators: There are two modes of operation in the CMS
             # management.  The "Production Mode" displays only the content
@@ -60,19 +60,20 @@ class AdminControl(wiking.TopBarControl):
             # translate these two modes consistently acros all their
             # occurences.
             if wiking.module.Application.preview_mode(req):
-                label, value, cls = _("Switch to Production Mode"), '0', 'production-mode'
+                label, value = _("Switch to Production Mode"), '0'
             else:
-                label, value, cls = _("Switch to Preview Mode"), '1', 'preview-mode'
+                label, value = _("Switch to Preview Mode"), '1'
             param = wiking.module.Application._PREVIEW_MODE_PARAM
             items.append(lcg.PopupMenuItem(label, uri='%s?%s=%s' % (req.uri(), param, value),
-                                           cls='switch-mode ' + cls))
+                                           icon='refresh-icon'))
         if not req.wmi:
             if hasattr(req, 'page_write_access') and req.page_write_access:
                 items.append(lcg.PopupMenuItem(_("Edit the Current Page"),
-                                               uri=req.uri() + '?action=update', cls='edit-page'))
+                                               uri=req.uri() + '?action=update',
+                                               icon='edit-page-icon'))
             if req.check_roles(wiking.cms.Roles.CONTENT_ADMIN):
                 items.append(lcg.PopupMenuItem(_("Create a New Page"), uri='/?action=insert',
-                                               cls='new-page'))
+                                               icon='new-page-icon'))
         return items
 
 
