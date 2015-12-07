@@ -73,23 +73,23 @@ class RoleSets(UserManagementModule, CachingPytisModule):
             Field('delete', virtual=True, computer=computer(lambda r: _("Remove"))),
         )
         columns = layout = ('role_id', 'member_role_id')
-        
+
     _TITLE_COLUMN = 'member_role_id'
     _INSERT_LABEL = _("Add rights of group")
 
     _roles_instance = None
     _cache_ids = ('containment', 'resolution',)
     _DEFAULT_CACHE_ID = 'containment'
-    
+
     def _layout(self, req, action, record=None):
         return (self._TITLE_COLUMN,)
-    
+
     def _list_form_kwargs(self, req, form_cls):
         kwargs = super(RoleSets, self)._list_form_kwargs(req, form_cls)
         if issubclass(form_cls, pw.ItemizedView) and req.check_roles(Roles.USER_ADMIN):
             kwargs['template'] = lcg.TranslatableText("%%(%s)s [%%(delete)s]" % self._TITLE_COLUMN)
         return kwargs
-    
+
     def _link_provider(self, req, uri, record, cid, **kwargs):
         if cid is None:
             return self._link_provider(req, uri, record, self._TITLE_COLUMN, **kwargs)
@@ -158,7 +158,7 @@ class RoleSets(UserManagementModule, CachingPytisModule):
             result = list(role_ids)
         resolution_cache[key] = result
         return result
-        
+
     def included_role_ids(self, role, instances=False):
         """
         @type role: L{Role}
@@ -170,10 +170,10 @@ class RoleSets(UserManagementModule, CachingPytisModule):
         @rtype: sequence of strings
         @return: Sequence of role identifiers included in the given role,
           including the identifier of C{role} itself.
-          
+
         """
         return self._related_role_ids(role, 'included', instances=instances)
-        
+
     def included_role_ids_by_role_ids(self, role_ids, instances=False):
         """
         @type role_ids: sequence of strings
@@ -185,7 +185,7 @@ class RoleSets(UserManagementModule, CachingPytisModule):
         @rtype: sequence of strings
         @return: Sequence of role identifiers included in the given role,
           including C{role_ids} themselves.
-          
+
         """
         return self._related_role_ids_by_role_ids(role_ids, 'included', instances=instances)
 
@@ -197,7 +197,7 @@ class RoleSets(UserManagementModule, CachingPytisModule):
         @rtype: sequence of strings
         @return: Sequence of identifiers of roles containing the given role,
           including the identifier of C{role} itself.
-          
+
         """
         return self._related_role_ids(role, 'including')
 
@@ -215,7 +215,7 @@ class ContainingRoles(RoleSets):
     """
     _TITLE_COLUMN = 'role_id'
     _INSERT_LABEL = _("Add rights to another group")
-    
+
 
 class RoleMembers(UserManagementModule):
     """Accessor of user role membership information stored in the database."""
@@ -234,13 +234,13 @@ class RoleMembers(UserManagementModule):
                 Field('delete', virtual=True, computer=computer(lambda r: _("Remove"))),
             )
         columns = layout = ('role_id', 'uid',)
-        
+
     _TITLE_COLUMN = 'uid'
     _INSERT_LABEL = _("Add member")
-        
+
     def _layout(self, req, action, record=None):
         return (self._TITLE_COLUMN,)
-    
+
     def _list_form_kwargs(self, req, form_cls):
         kwargs = super(RoleMembers, self)._list_form_kwargs(req, form_cls)
         if issubclass(form_cls, pw.ItemizedView) and req.check_roles(Roles.USER_ADMIN):
@@ -266,7 +266,7 @@ class RoleMembers(UserManagementModule):
         @rtype: sequence of integers
         @return: Sequence of identifiers of the users belonging to the given
           role
-          
+
         """
         assert isinstance(role, wiking.Role), role
         assert isinstance(strict, bool), strict
@@ -296,7 +296,7 @@ class RoleMembers(UserManagementModule):
         def role_id(row):
             return row['role_id'].value()
         return self._data.select_map(role_id, condition=condition)
-    
+
 
 class UserRoles(RoleMembers):
     """UI customization of the L{RoleMembers} module for listing of user's roles.
@@ -399,10 +399,10 @@ class ApplicationRoles(UserManagementModule, CachingPytisModule):
 
     def _update_enabled(self, req, record):
         return not record['system'].value()
-    
+
     def _delete_enabled(self, req, record):
         return not record['system'].value()
-    
+
     def _make_role(self, row):
         role_id = row['role_id'].value()
         name = row['name'].value()
@@ -469,13 +469,13 @@ class UserGroups(ApplicationRoles):
     """
     class Spec(ApplicationRoles.Spec):
         condition = pd.EQ('auto', pd.Value(pd.Boolean(), False))
-        
+
     def _base_uri(self, req):
         # The available codebook values are limited, but the links refer to the
         # unlimited list of all ApplicationRoles.
         return req.module_uri('ApplicationRoles')
 
-        
+
 class Users(UserManagementModule, CachingPytisModule):
     """
     TODO: General description
@@ -483,7 +483,7 @@ class Users(UserManagementModule, CachingPytisModule):
     This module defines several inner classes closely related to user
     management.  By subclassing this module and its inner classes you can
     extend or change behavior of user management in your application.
-    
+
     There is no easy way to delete a particular user, since that could have
     unexpected consequences to other content in the system.  Instead, to
     remove a user from the system, his account is disabled.  User related data
@@ -676,7 +676,7 @@ class Users(UserManagementModule, CachingPytisModule):
                 ok, error = wiking.validate_email_address(record['email'].value())
                 if not ok:
                     return ('email', error)
-                    
+
         def _check_old_password(self, record):
             req = record.req()
             if req.param('action') == 'passwd' and req.user().uid() == record['uid'].value():
@@ -1320,7 +1320,7 @@ class Users(UserManagementModule, CachingPytisModule):
 
     def action_passwd(self, req, record):
         return self.action_update(req, record, action='passwd')
-        
+
     def action_reset_password(self, req):
         title = _("Forgotten Password Reset")
         expiry_minutes = wiking.cms.cfg.reset_password_expiry_minutes
@@ -1408,7 +1408,7 @@ class Users(UserManagementModule, CachingPytisModule):
                             msg = _("E-mail with a security code has been sent to your "
                                     "e-mail address for verification of the request. "
                                     "Please, check your inbox and follow the link "
-                                    "within %d minutes to be able reset your password.", 
+                                    "within %d minutes to be able reset your password.",
                                     expiry_minutes)
                         return Document(title, lcg.p(msg))
             else:
@@ -1422,7 +1422,7 @@ class Users(UserManagementModule, CachingPytisModule):
                     g.strong(g.label(_("Enter your login name or e-mail address") + ':',
                                      ids.query)),
                     g.div((
-                        g.field(name='query', value=req.param('query'), id=ids.query, 
+                        g.field(name='query', value=req.param('query'), id=ids.query,
                                 tabindex=0, size=60),
                         g.noescape('&nbsp;'),
                         # Translators: Button name. Computer terminology. Use an appropriate term common

@@ -148,7 +148,7 @@ class WikingManagementInterface(wiking.Module, wiking.RequestHandler):
          _("Edit global properties of your web site."),
          ['Config', 'Languages', 'Countries', 'Texts', 'Emails']),
     )
-    
+
     def _handle(self, req):
         req.wmi = True # Switch to WMI only after successful authorization!
         if not req.unresolved_path:
@@ -170,7 +170,7 @@ class WikingManagementInterface(wiking.Module, wiking.RequestHandler):
     def _authorized(self, req):
         return req.check_roles(Roles.USER_ADMIN, Roles.SETTINGS_ADMIN, Roles.STYLE_ADMIN,
                                Roles.MAIL_ADMIN)
-    
+
     def authorized(self, req):
         return self._authorized(req)
 
@@ -192,7 +192,7 @@ class WikingManagementInterface(wiking.Module, wiking.RequestHandler):
             if modname in modnames:
                 return '/_wmi/' + section + '/' + modname
         return None
-            
+
 
 class Roles(wiking.Roles):
     """Additional roles used by Wiking CMS and Wiking CMS applications.
@@ -230,7 +230,7 @@ class Roles(wiking.Roles):
     # Translators: Name of a special purpose user group.
     REGISTERED = Role('registered', _("Successfuly registered user"))
     """Authenticated user who has at least completed registration succesfully.
-    
+
     Users with this role must have at least successfully confirmed the registration activation
     code.  They may not yet be fully enabled in the application (approved by the administator).
     Approved accounts as well as blocked accounts also belong to this role.  This role may be used
@@ -265,7 +265,7 @@ class Roles(wiking.Roles):
     Applications may include their own administration roles into this role by
     adding corresponding entries to the database table C{role_sets}.
     """
-    
+
     def __getitem__(self, role_id):
         try:
             return super(Roles, self).__getitem__(role_id)
@@ -274,7 +274,7 @@ class Roles(wiking.Roles):
             if role is None:
                 raise KeyError(role_id)
             return role
-    
+
     def all_roles(self):
         standard_roles = super(Roles, self).all_roles()
         user_defined_roles = wiking.module.ApplicationRoles.user_defined_roles()
@@ -283,7 +283,7 @@ class Roles(wiking.Roles):
 
 class CMSModule(wiking.PytisModule, wiking.RssModule):
     """Base class for all CMS modules."""
-    
+
     _DB_FUNCTIONS = dict(wiking.PytisModule._DB_FUNCTIONS,
                          cms_crypto_lock_passwords=(('uid', pd.Integer(),),),
                          cms_crypto_unlock_passwords=(('uid', pd.Integer(),),
@@ -367,7 +367,7 @@ class CMSModule(wiking.PytisModule, wiking.RssModule):
     def handle(self, req):
         self._check_crypto_passwords(req)
         return super(CMSModule, self).handle(req)
-        
+
     def submenu(self, req):
         return []
 
@@ -403,7 +403,7 @@ class _ManagementModule(CMSModule):
 class ContentManagementModule(_ManagementModule):
     """Base class for WMI modules managed by L{Roles.CONTENT_ADMIN}."""
     _ADMIN_ROLES = (Roles.CONTENT_ADMIN,)
-    
+
 class SettingsManagementModule(_ManagementModule):
     """Base class for WMI modules managed by L{Roles.SETTINGS_ADMIN}."""
     _ADMIN_ROLES = (Roles.SETTINGS_ADMIN,)
@@ -411,16 +411,16 @@ class SettingsManagementModule(_ManagementModule):
 class UserManagementModule(_ManagementModule):
     """Base class for WMI modules managed by L{Roles.USER_ADMIN}."""
     _ADMIN_ROLES = (Roles.USER_ADMIN,)
-    
+
 class StyleManagementModule(_ManagementModule):
     """Base class for WMI modules managed by L{Roles.STYLE_ADMIN}."""
     _ADMIN_ROLES = (Roles.STYLE_ADMIN,)
-    
+
 class MailManagementModule(_ManagementModule):
     """Base class for WMI modules managed by L{Roles.MAIL_ADMIN}."""
     _ADMIN_ROLES = (Roles.MAIL_ADMIN,)
-    
-    
+
+
 class Embeddable(object):
     """Mix-in class for modules which may be embedded into page content.
 
@@ -438,14 +438,14 @@ class Embeddable(object):
     'submenu()'.
 
     """
-    
+
     def embed(self, req):
         """Return a list of content instances extending the page content."""
         pass
 
     def submenu(self, req):
         """Return a list of 'MenuItem' instances to insert into the main menu.
-        
+
         The submenu will appear in the main menu under the item of a page which embeds the module.
         The items returned by this method will always be placed above any items defined within the
         CMS (items for descendant pages).
@@ -453,14 +453,14 @@ class Embeddable(object):
         """
         return []
 
-    
+
 class EmbeddableCMSModule(CMSModule, Embeddable):
     _EMBED_BINDING_COLUMN = None
 
     @staticmethod
     def _embed_binding_condition(row):
         return None
-    
+
     @classmethod
     def binding(cls):
         """Return a Binding describing embedded module's relation to a page.
@@ -505,7 +505,7 @@ class CMSExtension(wiking.Module, Embeddable, wiking.RequestHandler):
             """Arguments:
 
                modname -- string name of the submodule derived from 'CMSExtensionModule'
-               
+
                id -- item identifier as a string.  The default value is determined by transforming
                  'modname' to lower case using dashes to separate camel case words.  This
                  identifier is used as part of the URI of the item.
@@ -531,7 +531,7 @@ class CMSExtension(wiking.Module, Embeddable, wiking.RequestHandler):
             self.submenu = submenu
             self.enabled = enabled
             self.kwargs = kwargs
-    
+
     _MENU = ()
     """Define the menu as a sequence of 'CMSExtension.MenuItem' instances."""
 
@@ -546,7 +546,7 @@ class CMSExtension(wiking.Module, Embeddable, wiking.RequestHandler):
                 wiking.module(item.modname).set_parent(self)
                 init(item.submenu)
         init(self._MENU)
-    
+
     def embed(self, req):
         uri = self.submenu(req)[0].id()
         raise Redirect(uri)
@@ -576,25 +576,25 @@ class CMSExtension(wiking.Module, Embeddable, wiking.RequestHandler):
     def submodule_uri(self, req, modname):
         return self._base_uri(req) + '/' + self._rmapping[modname]
 
-    
+
 class CMSExtensionMenuModule(object):
     """Mixin class for modules to be used in 'CMSExtension' menu."""
 
     def __init__(self, *args, **kwargs):
         self._parent = None
         super(CMSExtensionMenuModule, self).__init__(*args, **kwargs)
-        
+
     def set_parent(self, parent):
         assert isinstance(parent, CMSExtension)
         self._parent = parent
-    
+
     def parent(self):
         return self._parent
-    
+
     def submenu(self, req):
         return []
 
-    
+
 class CMSExtensionModule(CMSModule, CMSExtensionMenuModule):
     """CMS module to be used within a 'CMSExtension'."""
     _HONOUR_SPEC_TITLE = True
@@ -670,14 +670,14 @@ class Config(SettingsManagementModule, wiking.CachingPytisModule):
     def _resolve(self, req):
         # We always work with just one record.
         return self._data.get_row(site=wiking.cfg.server_hostname)
-    
+
     def _default_action(self, req, **kwargs):
         return 'update'
-        
+
     def _redirect_after_update(self, req, record):
         req.message(self._update_msg(req, record), req.SUCCESS)
         raise Redirect(req.uri())
-    
+
     def configure(self, req):
         """Update configuration acording to the current database contents.
 
@@ -744,14 +744,14 @@ class Config(SettingsManagementModule, wiking.CachingPytisModule):
              wiking.cfg.server_hostname is None)):
             title = wiking.cfg.site_title
         return title
-    
+
 
 class SiteSpecificContentModule(ContentManagementModule):
 
     def _refered_row_values(self, req, value):
         return dict(super(SiteSpecificContentModule, self)._refered_row_values(req, value),
                     site=wiking.cfg.server_hostname)
-    
+
     def _condition(self, req):
         return pd.AND(super(SiteSpecificContentModule, self)._condition(req),
                       pd.EQ('site', pd.sval(wiking.cfg.server_hostname)))
@@ -759,19 +759,19 @@ class SiteSpecificContentModule(ContentManagementModule):
     def _prefill(self, req):
         return dict(super(SiteSpecificContentModule, self)._prefill(req),
                     site=wiking.cfg.server_hostname)
-    
-        
+
+
 class PageTitles(SiteSpecificContentModule):
     """Simplified version of the 'Pages' module for 'PageStructure' enumerator.
 
     This module is needed to prevent recursive enumerator definition in 'PageStructure'.
-    
+
     """
     class Spec(Specification):
         table = 'cms_v_pages'
         fields = [Field(_f) for _f in ('page_key', 'page_id', 'site', 'lang', 'title')]
 
-        
+
 class PageStructure(SiteSpecificContentModule):
     """Provide a set of available URIs -- page identifiers bound to particular pages.
 
@@ -780,7 +780,7 @@ class PageStructure(SiteSpecificContentModule):
     language.  This module is needed for the reference integrity specification
     in 'Pages', 'Attachments' and other modules, where records are related to
     (language independent) page structure nodes.
-    
+
     """
     class Spec(Specification):
         table = 'cms_pages'
@@ -803,7 +803,7 @@ class PageStructure(SiteSpecificContentModule):
             return self._module._page_title(row, indent)
         def cb(self):
             return pp.CodebookSpec(display=self._display, prefer_display=True)
-        
+
     @staticmethod
     def _page_title(row, indent=''):
         enumerator = row['page_id'].type().enumerator()
@@ -813,7 +813,7 @@ class PageStructure(SiteSpecificContentModule):
                              for r in enumerator.rows(condition=condition)])
         return lcg.SelfTranslatableText(indent + row['identifier'].value(),
                                         translations=translations)
-    
+
     def page_position_selection(self, site, parent, page_id):
         """Return the available values for page order selection.
 
@@ -825,7 +825,7 @@ class PageStructure(SiteSpecificContentModule):
         order at the same level of page hierarchy.  Each integer is actually an
         instance of 'Order' class, which carries also the corresponding
         selection label as the value of the attributte 'label'.
-        
+
         """
         class Order(int):
             def __new__(cls, order, label):
@@ -942,7 +942,7 @@ class Panels(SiteSpecificContentModule, wiking.CachingPytisModule):
             return req.check_roles(*self._ADMIN_ROLES)
         else:
             return super(Panels, self)._authorized(req, action, **kwargs)
-            
+
     def _resolve(self, req):
         # Don't allow resolution by uri, panels have no URI so the
         # identification must be passed as a parameter.
@@ -953,7 +953,7 @@ class Panels(SiteSpecificContentModule, wiking.CachingPytisModule):
 
     def _current_record_uri(self, req, record):
         return req.uri()
-    
+
     def _hidden_fields(self, req, action, record=None):
         hidden_fields = super(Panels, self)._hidden_fields(req, action, record=record)
         hidden_fields.append(('_manage_cms_panels', '1'))
@@ -973,7 +973,7 @@ class Panels(SiteSpecificContentModule, wiking.CachingPytisModule):
             restriction = {'published': True}
         return self._data.get_rows(site=wiking.cfg.server_hostname, lang=lang,
                                    sorting=self._sorting, **restriction)
-        
+
     def panels(self, req, lang):
         panels = []
         roles = wiking.module.Users.Roles()
@@ -1591,7 +1591,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
             return ('title', 'description', '_content', 'comment',)
         elif action == 'delete':
             return ()
-  
+
     def _handle_subpath(self, req, record):
         modname = record['modname'].value()
         if modname:
@@ -2075,7 +2075,7 @@ class NavigablePages(Pages):
                 # Translators: Label of a link to the start page of a publication.
                 (target(top), 'top', _("Top")),
             )
-            
+
         def export(self, context):
             g = context.generator()
             def ctrl(target, label, cls):
@@ -2109,7 +2109,7 @@ class NavigablePages(Pages):
 class BrailleExporter(wiking.Module):
 
     _OMIT_FOOTER = False
-    
+
     @classmethod
     def braille_presentation(cls):
         presentation = lcg.braille_presentation()
@@ -2227,7 +2227,7 @@ class PDFExporter(wiking.Module):
 
 
 class CmsPageExcerpts(EmbeddableCMSModule, BrailleExporter):
-    
+
     _OMIT_FOOTER = True
 
     class Spec(wiking.Specification):
@@ -2273,7 +2273,7 @@ class CmsPageExcerpts(EmbeddableCMSModule, BrailleExporter):
         row = pd.Row((('page_id', page_id), ('lang', lang),
                       ('title', title), ('content', content),))
         return self._data.insert(row, transaction=transaction)
-        
+
     def action_export_braille(self, req, record):
         resource_provider = lcg.ResourceProvider(dirs=wiking.cfg.resource_path)
         node = lcg.ContentNode('excerpt', title=record['title'].value(),
@@ -2599,7 +2599,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter, PDFExpo
                 [lcg.Section(_("Table of Contents"), lcg.NodeIndex(), in_toc=False),
                  wiking.module.PublicationExports.exported_versions_list(req),
                  self.Navigation('bottom')])
-  
+
     def _page_actions_content(self, req, record):
         return ([self._publication_export_form(req, record)] +
                 super(Publications, self)._page_actions_content(req, record))
@@ -2746,7 +2746,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter, PDFExpo
         if not hasattr(req, 'publication_record') or req.publication_record is None:
             return []
         record = req.publication_record
-        
+
         children = self._child_rows(req, record,
                                     preview=wiking.module.Application.preview_mode(req))
         base_uri = '/%s/data/%s' % (req.page_record['identifier'].value(),
@@ -2982,7 +2982,7 @@ class PublicationExports(ContentManagementModule):
             return req.page_write_access
         else:
             return False
-            
+
     def _check_publication_download_access(self, req):
         if req.page_write_access:
             return True
@@ -3029,7 +3029,7 @@ class PublicationExports(ContentManagementModule):
                              _.ngettext("%d warning", "%d warnings", kinds.count(lcg.WARNING))),
                   cls='export-progress-summary')
         )
-        
+
     def _insert_form_content(self, req, form, record):
         def script(element, context):
             g = context.generator()
@@ -3154,8 +3154,8 @@ class PublicationExports(ContentManagementModule):
             if rows:
                 return wiking.HtmlRenderer(export, rows)
         return lcg.Content()
-                
-                
+
+
 class PageHistory(ContentManagementModule):
     """History of page content changes."""
     class Spec(Specification):
@@ -3236,7 +3236,7 @@ class PageHistory(ContentManagementModule):
                 diff = difflib.HtmlDiff(wrapcolumn=80)
                 content = lcg.HtmlContent(diff.make_table(text1.splitlines(),
                                                           text2.splitlines(),
-                                                          req.localize(name1), 
+                                                          req.localize(name1),
                                                           req.localize(name2),
                                                           context=True,
                                                           numlines=3))
@@ -3431,7 +3431,7 @@ class Attachments(ContentManagementModule):
 
         def _image(self, record, upload):
             return self._resize(upload and upload.buffer(), wiking.cms.cfg.image_screen_size)
-        
+
         def _file_data(self, record):
             path = record['file_path'].value()
             f = file(path)
@@ -3640,7 +3640,7 @@ class Attachments(ContentManagementModule):
             else:
                 return None
         return super(Attachments, self)._tooltip_provider(req, uri, record, cid)
-        
+
     def _binding_column(self, req):
         column, value = super(Attachments, self)._binding_column(req)
         if not column:
@@ -4226,7 +4226,7 @@ class Newsletters(EmbeddableCMSModule):
     def _prefill(self, req):
         return dict(super(Newsletters, self)._prefill(req),
                     lang=req.preferred_language())
-        
+
     def _image_provider(self, req, uri, record, cid):
         if cid == 'image':
             return self._link_provider(req, uri, record, None, action='image')
@@ -4237,10 +4237,10 @@ class Newsletters(EmbeddableCMSModule):
 
     def action_subscribe(self, req, record):
         return wiking.module.NewsletterSubscription.subscribe(req, record)
-            
+
     def action_unsubscribe(self, req, record):
         return wiking.module.NewsletterSubscription.unsubscribe(req, record)
-        
+
     def action_image(self, req, record):
         # if req.cached_since(last_modified):
         #     raise wiking.NotModified()
@@ -4408,7 +4408,7 @@ class NewsletterEditions(CMSModule):
             Action('send', _("Send")),
             Action('test', _("Test")),
         )
-        
+
     _LIST_LABEL = _("Overview of Editions")
     _TITLE_COLUMN = 'title'
     _POST_TEMPLATE_MATCHER = re.compile(r'<!-- POST START -->(.*)<!-- POST END -->',
