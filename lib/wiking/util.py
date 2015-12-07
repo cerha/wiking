@@ -1686,6 +1686,41 @@ class HtmlContent(lcg.TextContent):
         return self._text
 
 
+class Message(lcg.Container):
+    """Distinguishable message displayed within other content.
+
+    The message may be pure text (passing 'basestring' as 'content' to the
+    constructor) or any 'lcg.Content' instance.  Messages may also use inline
+    formatting when the argument 'formatted' is True as in 'lcg.coerce()'.
+
+    The message will be displayed inside a distinguishable box with an icon.
+    The 'kind' agrument of the constructor determines the colors and icon of
+    the box.  Available kinds are defined by class constants below.
+
+    """
+    INFO = 'info'
+    """Message 'kind' constant for informational messages."""
+    SUCCESS = 'success'
+    """Message 'kind' constant for success messages."""
+    WARNING = 'warning'
+    """Message 'kind' constant for warning messages."""
+    ERROR = 'error'
+    """Message 'kind' constant for error messages."""
+
+    def __init__(self, content, formatted=False, kind=INFO, **kwargs):
+        assert kind in (self.INFO, self.SUCCESS, self.WARNING, self.ERROR)
+        icon = HtmlRenderer(lambda renderer, context: self._export_icon(context))
+        content = lcg.coerce(content, formatted=formatted)
+        if kind == wiking.Request.WARNING:
+            content = lcg.coerce((_("Warning"), ': ', content))
+        super(Message, self).__init__((icon, lcg.Container(content, id='content')),
+                                      id='message %s' % kind, **kwargs)
+        self._kind = kind
+
+    def _export_icon(self, context):
+        g = context.generator()
+        return g.span(g.span('', cls='%s-icon' % self._kind), cls='icon')
+
 class HtmlTraceback(lcg.Content):
     """LCG content element displaying a Python exception traceback in HTML.
 

@@ -28,7 +28,7 @@ import pytis
 import pytis.web
 import lcg
 import wiking
-from wiking import log, OPR, format_http_date, parse_http_date
+from wiking import log, OPR, format_http_date, parse_http_date, Message
 
 _ = lcg.TranslatableTextFactory('wiking')
 
@@ -264,13 +264,13 @@ class Request(ServerInterface):
     _TZ_OFFSETS_COOKIE = 'wiking_tz_offsets'
     _UNDEFINED = object()
 
-    INFO = 'INFO'
+    INFO = Message.INFO
     """Message type constant for informational messages."""
-    SUCCESS = 'SUCCESS'
+    SUCCESS = Message.SUCCESS
     """Message type constant for success messages."""
-    WARNING = 'WARNING'
+    WARNING = Message.WARNING
     """Message type constant for warning messages."""
-    ERROR = 'ERROR'
+    ERROR = Message.ERROR
     """Message type constant for error messages."""
     HEADING = 'HEADING'
     """Message type constant for messages to be put into document heading."""
@@ -632,7 +632,7 @@ class Request(ServerInterface):
         """Return a URI constructed from given base URI and arguments.
 
         Arguments:
-        
+
           base_uri -- base URI.  May be a relative path, such as '/xx/yy', absolute
             URI, such as 'http://host.domain.com/xx/yy' or a mailto URI, such
             as 'mailto:name@domain.com'.

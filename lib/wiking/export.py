@@ -135,10 +135,6 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         'main': 'main',
         'bottom': 'contentinfo',
     }
-    _MESSAGE_TYPE_CLASS = {wiking.Request.INFO: 'info',
-                           wiking.Request.SUCCESS: 'success',
-                           wiking.Request.WARNING: 'warning',
-                           wiking.Request.ERROR: 'error'}
     _UNSAFE_CHARS = re.compile(r"[^a-zA-Z0-9_-]")
 
     def _safe_css_id(self, id):
@@ -383,10 +379,8 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         messages = context.req().messages()
         if messages:
             g = self._generator
-            return g.div([g.div((_("Warning") + ': ' if type == wiking.Request.WARNING else '') +
-                                message,
-                                cls=self._MESSAGE_TYPE_CLASS[type])
-                          for message, type in messages],
+            return g.div([wiking.Message(message, kind=kind).export(context)
+                          for message, kind in messages],
                          id='messages')
         else:
             return ''

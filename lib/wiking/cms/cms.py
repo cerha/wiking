@@ -4801,8 +4801,7 @@ class Discussions(ContentManagementModule, EmbeddableCMSModule):
                 # link target '?command=login' untouched and traslate 'log in' to fit into the
                 # sentence.  The user only sees it as 'You need to log in before ...'.
                 msg = _("Note: You need to [?command=login log in] before you can post messages.")
-                content.append(lcg.Container((lcg.p(req.localize(msg), formatted=True),),
-                                             name='login-info'))
+                content.append(wiking.Message(req.localize(msg), formatted=True))
             # Wrap in a named container to allow css styling.
             content = [lcg.Container(content, name='discussion-list')]
         return content

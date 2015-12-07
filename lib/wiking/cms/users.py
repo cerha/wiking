@@ -386,8 +386,7 @@ class ApplicationRoles(UserManagementModule, CachingPytisModule):
                                    'role_id', form=pw.ItemizedView,
                                    enabled=lambda r: not r['auto'].value()))
     _LAYOUT = {'view': (('role_id', 'xname', 'system'),
-                        lambda r: lcg.Container(lcg.coerce(r['role_info'].value()),
-                                                name='wiking-info-bar')),
+                        lambda r: wiking.Message(r['role_info'].value())),
                }
     _TITLE_COLUMN = 'xname'
 
@@ -1238,7 +1237,7 @@ class Users(UserManagementModule, CachingPytisModule):
         else:
             texts = ()
         if texts:
-            return lcg.Container([lcg.p(text) for text in texts], name='wiking-info-bar')
+            return wiking.Message([lcg.p(text) for text in texts])
         else:
             return lcg.Content()
 

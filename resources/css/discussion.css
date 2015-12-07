@@ -74,13 +74,3 @@ div.discussion-list .pytis-form.edit-form div.submit button {
     margin: 2px 0;
 }
 div.discussion-list .pytis-form.edit-form div.footer { display: none; }
-div.discussion-list div.login-info p {
-    margin: 1em 0;
-    padding: 0.5em;
-    padding-left: 28px;
-    border: dotted 2px $color.message-border;
-    /* background-color: $color.background; */
-    background-image: url(info.png);
-    background-position: left center;
-    background-repeat: no-repeat;
-}

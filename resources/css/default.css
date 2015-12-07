@@ -1,48 +1,51 @@
 /* Wiking generic page content styles */
 
-#messages .info, #messages .success, #messages .error, #messages .warning {
+.message {
     border-style: solid;
     border-width: 1px 0;
-    margin: 0.8em 0;
-    padding: 6px 2px 6px 30px;
+    margin: .8em 0 .5em 0;
+    padding: 3px 5px;
+    position: relative;
 }
-#messages .info {
+.message .icon {
+    position: absolute;
+    top: 50%;
+    left: 8px;
+    margin-top: -10px;
+}
+.message .content {
+    margin-left: 30px;
+    padding: 2px 0;
+}
+.message.info {
     /* There's currently no color theme for this... */
     color: $color.foreground;
     border: dotted #dadac0 1px;
-    background: #fafae8 url(info.png) 2px center no-repeat;
+    background-color: #fafae8;
 }
-#messages .success {
+.message.success {
     color: $color.message-fg;
     border-color: $color.message-border;
-    background: $color.message-bg url(success.png) 8px 4px no-repeat;
+    background-color: $color.message-bg;
 }
-#messages .warning { 
+.message.warning {
     color: $color.error-fg;
     border-color: $color.error-border;
-    background: $color.error-bg url(warning.png) 4px 3px no-repeat;
+    background-color: $color.error-bg;
 }
-#messages .error {
+.message.warning .icon {
+    left: 7px;
+}
+.message.error {
     color: $color.error-fg;
     border-color: $color.error-border;
-    background: $color.error-bg url(error.png) 4px 3px no-repeat;
-}
-
-img { position: relative; } /* MSIE float workaround */
-.hidden { display: none; }
-
-.wiking-info-bar {
-    margin: 1em 0 0.5em 0;
-    padding: .3em;
-    padding-left: 32px;
-    border: dotted 2px $color.message-border;
-    /* background-color: $color.background; */
-    background-image: url(info.png);
-    background-position: 2px center;
-    background-repeat: no-repeat;
+    background-color: $color.error-bg;
 }
 
 /* styles for exported LCG elements */
+
+img { position: relative; } /* MSIE float workaround */
+.hidden { display: none; }
 
 hr {
     height: 1px;
@@ -181,6 +184,64 @@ div.table-of-contents ul {
     margin-top: 3pt;
     margin-bottom: 0;
 }
+
+/* Wiking icons sprite */
+.user-larger-icon, .gear-larger-icon, .gear-larger-red-icon, .maximize-icon, .unmaximize-icon,
+.cart-larger-icon, .info-icon, .success-icon, .error-icon, .warning-icon, .user-icon, .gear-icon,
+.ok-icon, .remove-icon, .refresh-icon, .undo-icon, .search-icon, .cart-icon, .key-icon,
+.key-larger-icon, .menu-icon, .arrow-left-icon, .arrow-right-icon, .arrow-down-icon,
+.arrow-up-icon, .plus-icon, .ellipsis-icon, .users-icon, .new-user-icon, .attachment-icon,
+.feed-icon, .thumb-up-icon, .thumb-down-icon, .view-icon, .edit-icon, .create-icon,
+.circle-in-icon, .circle-out-icon, .circle-down-icon, .circle-up-icon, .circle-in-up-icon {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background: url(wiking-icons.png) top left no-repeat;
+    vertical-align: middle;
+    margin-right: 4px;
+}
+.user-larger-icon     { background-position: 0 0; width: 20px; height: 20px; }
+.gear-larger-icon     { background-position: -20px 0; width: 20px; height: 20px; }
+.gear-larger-red-icon { background-position: -40px 0; width: 20px; height: 20px; }
+.maximize-icon        { background-position: -60px 0; width: 20px; height: 20px; }
+.unmaximize-icon      { background-position: -80px 0; width: 20px; height: 20px; }
+.cart-larger-icon     { background-position: -100px 0; width: 20px; height: 20px; }
+.info-icon            { background-position: -120px 0; width: 20px; height: 20px; }
+.success-icon         { background-position: -140px 0; width: 20px; height: 20px; }
+.error-icon           { background-position: -160px 0; width: 20px; height: 20px; }
+.warning-icon         { background-position: -157px -20px; width: 23px; height: 20px; }
+.menu-icon            { background-position: -158px -42px; width: 23px; height: 24px; }
+.key-larger-icon      { background-position: -160px -66px; width: 18px; height: 18px; }
+.user-icon            { background-position: -0 -20px; }
+.gear-icon            { background-position: -16px -20px; }
+.ok-icon              { background-position: -32px -20px; }
+.remove-icon          { background-position: -48px -20px; }
+.refresh-icon         { background-position: -64px -20px; }
+.undo-icon            { background-position: -80px -20px; }
+.search-icon          { background-position: -96px -20px; }
+.cart-icon            { background-position: -112px -20px; }
+.arrow-left-icon      { background-position: -0px -36px; }
+.arrow-right-icon     { background-position: -16px -36px; }
+.arrow-down-icon      { background-position: -32px -36px; }
+.arrow-up-icon        { background-position: -48px -36px; }
+.plus-icon            { background-position: -64px -36px; }
+.properties-icon      { background-position: -80px -36px; }
+.key-icon             { background-position: -96px -36px; }
+.attachment-icon      { background-position: -0 -52px; }
+.feed-icon            { background-position: -16px -52px; }
+.thumb-up-icon        { background-position: -32px -52px; }
+.thumb-down-icon      { background-position: -48px -52px; }
+.view-icon            { background-position: -64px -52px; }
+.edit-icon            { background-position: -81px -52px; width: 17px; }
+.create-icon          { background-position: -99px -52px; width: 17px; }
+.users-icon           { background-position: -117px -52px; width: 18px; }
+.new-user-icon        { background-position: -135px -52px; width: 18px; }
+.circle-in-icon       { background-position: 0 -69px; height: 14px; }
+.circle-out-icon      { background-position: -16px -69px; height: 14px; }
+.circle-down-icon     { background-position: -33px -68px; width: 14px; }
+.circle-up-icon       { background-position: -49px -68px; width: 14px; }
+.circle-in-up-icon    { background-position: -65px -68px; width: 14px; }
+
 
 /* Wiking CMS specific styles */
 .cms-page-actions { 
