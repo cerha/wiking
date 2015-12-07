@@ -1450,7 +1450,7 @@ class LoginControl(TopBarControl):
                     displayed_name += ' (' + login + ')'
                 label = g.div((g.div(displayed_name, cls='user-name'),
                                g.div(_("My user profile"), cls='label')))
-                items.append(lcg.PopupMenuItem(label, uri=user.uri(),
+                items.append(lcg.PopupMenuItem(label, uri=user.uri(), icon='user-icon',
                                                cls='user-profile'))
             password_change_uri = wiking.module.Application.password_change_uri(req)
             if password_change_uri:
@@ -1462,13 +1462,13 @@ class LoginControl(TopBarControl):
                 else:
                     tooltip = None
                 # Translators: Link on login panel on the webpage.
-                items.append(lcg.PopupMenuItem(_("Change my password"), cls='change-password',
+                items.append(lcg.PopupMenuItem(_("Change my password"), icon='key-icon',
                                                uri=password_change_uri, tooltip=tooltip))
             # Translators: Menu item label (verb in imperative).
-            items.append(lcg.PopupMenuItem(_("Log out"), cls='logout',
+            items.append(lcg.PopupMenuItem(_("Log out"), icon='circle-out-icon',
                                            uri=req.make_uri(req.uri(), command='logout')))
         else:
-            items.append(lcg.PopupMenuItem(_("Log in"), cls='login',
+            items.append(lcg.PopupMenuItem(_("Log in"), icon='circle-in-icon',
                                            tooltip=_("Log in to an existing user account"),
                                            uri=req.make_uri(req.uri(), command='login')))
             uri = wiking.module.Application.registration_uri(req)
@@ -1477,7 +1477,7 @@ class LoginControl(TopBarControl):
                 # user to obtain access to the website/application by submitting his personal
                 # details.
                 items.append(lcg.PopupMenuItem(_("Register a new user account"), uri=uri,
-                                               cls='new-user-registration')),
+                                               icon='new-user-icon')),
         return items
 
     def _menu_label(self, context):
@@ -1503,7 +1503,8 @@ class LoginControl(TopBarControl):
             if uri.endswith('_registration'):
                 uri = '/' # Redirect logins from the registration forms to site root
             # Translators: Login button label (verb in imperative).
-            result = g.a(_("Log in"), href=g.uri(uri, command='login'), cls='login-link',
+            result = g.a(g.span('', cls='icon circle-in-icon') + _("Log in"),
+                         href=g.uri(uri, command='login'), cls='login-link',
                          # Translators: Login status info.
                          title=_("User not logged in"))
         else:

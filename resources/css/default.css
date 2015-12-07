@@ -574,29 +574,19 @@ h1 a { outline: none; }
 .login-control .login-link {
     display: inline-block;
     color: $color.foreground;
-    padding: 3px 5px 3px 23px;
+    padding: 3px 5px;
     text-decoration: none;
     border-radius: 3px;
     margin-right: 4px;
-    background: url(arrow-in.png) 3px center no-repeat #ddd;
+    background-color: #ddd;
 }
 .login-control .login-link:hover {
     color: $color.foreground;
-}
-.login-control .popup-menu-widget li a {
-    padding-left: 28px;
-    background-position: 8px center;
-    background-repeat: no-repeat;
 }
 .login-control li.user-profile .label {
     font-size: 0.8em;
     color: $color.help;
 }
-.login-control li.login a { background-image: url(arrow-in.png); }
-.login-control li.logout a { background-image: url(arrow-out.png); }
-.login-control li.user-profile a { background-image: url(user-16x16.png); }
-.login-control li.change-password a { background-image: url(key-16x16.png); }
-.login-control li.new-user-registration a { background-image: url(new-user-16x16.png); }
 
 .admin-control {
     margin-right: -10px;
