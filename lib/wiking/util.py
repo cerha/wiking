@@ -1414,7 +1414,7 @@ class TopBarControl(lcg.Content):
                 result.insert(0, g.span(label, cls='label'))
             icon = self._icon(context)
             if icon:
-                result.insert(0, g.span('', cls='icon %s-icon' % icon))
+                result.insert(0, g.span('', cls='ctrl-icon %s-icon' % icon))
             return g.span(result, cls=pytis.util.camel_case_to_lower(self.__class__.__name__, '-'))
         else:
             return ''
@@ -1503,7 +1503,7 @@ class LoginControl(TopBarControl):
             if uri.endswith('_registration'):
                 uri = '/' # Redirect logins from the registration forms to site root
             # Translators: Login button label (verb in imperative).
-            result = g.a(g.span('', cls='icon circle-in-icon') + _("Log in"),
+            result = g.a(g.span('', cls='ctrl-icon circle-in-icon') + _("Log in"),
                          href=g.uri(uri, command='login'), cls='login-link',
                          # Translators: Login status info.
                          title=_("User not logged in"))

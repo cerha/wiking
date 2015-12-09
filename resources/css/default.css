@@ -198,7 +198,6 @@ div.table-of-contents ul {
     height: 16px;
     background: url(wiking-icons.png) top left no-repeat;
     vertical-align: middle;
-    margin-right: 4px;
 }
 .user-larger-icon     { background-position: 0 0; width: 20px; height: 20px; }
 .gear-larger-icon     { background-position: -20px 0; width: 20px; height: 20px; }
@@ -244,7 +243,7 @@ div.table-of-contents ul {
 
 
 /* Wiking CMS specific styles */
-.cms-page-actions { 
+.cms-page-actions {
     margin: 1em 0 0 0;
     position: relative;
     top: 0.2em;
@@ -551,8 +550,9 @@ h1 a { outline: none; }
     margin-left: 17px;
 }
 
-#top-controls .icon {
+#top-controls .ctrl-icon {
     margin-bottom: 1px;
+    margin-right: 4px;
 }
 #top-controls .label {
     display: inline-block;
