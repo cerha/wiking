@@ -270,7 +270,7 @@ button .icon {
 .key-larger-icon      { background-position: -160px -66px; width: 18px; height: 18px; }
 .user-icon            { background-position: -0 -20px; }
 .gear-icon            { background-position: -16px -20px; }
-.pytis-form button.submit .icon,
+.pytis-form button.submit .default-submit-icon,
 .ok-icon              { background-position: -32px -20px; }
 .pytis-form button.cancel .icon,
 .list-form-controls button.cancel-search .icon,
@@ -306,7 +306,6 @@ button .icon {
 .circle-up-icon       { background-position: -49px -68px; width: 14px; }
 .circle-in-up-icon    { background-position: -65px -68px; width: 14px; }
 
-
 /* Wiking CMS specific styles */
 .cms-page-actions {
     margin: 1em 0 0 0;
@@ -334,14 +333,6 @@ button .icon {
 }
 .cms-page-actions button.action-delete .icon {
     background-image: url(remove.png);
-    padding-left: 18px;
-}
-.cms-page-actions button.action-commit .icon {
-    background-image: url(publish.png);
-    padding-left: 18px;
-}
-.cms-page-actions button.action-revert .icon {
-    background-image: url(undo.png);
     padding-left: 18px;
 }
 .cms-page-actions button.action-attachments .icon {
@@ -374,17 +365,6 @@ button .icon {
 }
 .pytis-form .actions button.action-disable .icon {
     background: url(thumb-down.png) left center no-repeat;
-    padding-left: 18px;
-}
-.pytis-form.edit-form .submit-buttons button[type="submit"][name="commit"] .icon {
-    background-image: url(publish.png);
-}
-.pytis-form.publication-export-form .submit-buttons button[type="submit"][name="test"] .icon {
-    background-image: url(gear-16x16.png);
-}
-.pytis-form.publication-export-form .submit-buttons button[type="submit"] .icon {
-    background-image: url(down.png);
-    background-position: left top;
     padding-left: 18px;
 }
 

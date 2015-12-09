@@ -924,10 +924,10 @@ class Panels(SiteSpecificContentModule, wiking.CachingPytisModule):
         columns = ('title', 'identifier', 'ord', 'modtitle', 'size', 'published', 'content')
         layout = ('title', 'identifier', 'ord', 'page_id', 'size', 'content', 'published')
         actions = (
-            Action('publish', _("Publish"),
+            Action('publish', _("Publish"), icon='circle-up-icon',
                    enabled=lambda r: not r['published'].value(),
                    descr=_("Make the panel visible in production mode")),
-            Action('unpublish', _("Unpublish"),
+            Action('unpublish', _("Unpublish"), icon='undo-icon',
                    enabled=lambda r: r['published'].value(),
                    descr=_("Make the panel invisible in production mode")),
         )
@@ -1459,11 +1459,11 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
             Action('options', _("Options"),
                    descr=_("Edit global options, such as visibility, "
                            "menu position and access rights.")),
-            Action('commit', _("Commit"),
+            Action('commit', _("Commit"), icon='circle-up-icon',
                    descr=_("Publish the current concept in production mode."),
                    enabled=lambda r: (r['parents_published'].value() and r['published'].value() and
                                       r['_content'].value() != r['content'].value())),
-            Action('revert', _("Revert"),
+            Action('revert', _("Revert"), icon='undo-icon',
                    descr=_("Replace the current concept with the production version."),
                    enabled=lambda r: (r['parents_published'].value() and r['published'].value() and
                                       r['_content'].value() != r['content'].value())),
@@ -1681,7 +1681,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                 return ((None, _("Save as Concept")),)
             else:
                 return ((None, _("Save as Concept")),
-                        ('commit', _("Save as Production Version")))
+                        ('commit', _("Save as Production Version"), 'circle-up-icon'))
         else:
             return super(Pages, self)._submit_buttons(req, action, record=record)
 
@@ -2259,7 +2259,7 @@ class CmsPageExcerpts(EmbeddableCMSModule, BrailleExporter):
             ),
             name='ExcerptExportForm',
             action='export_braille',
-            submit_buttons=((None, _("Export")),),
+            submit_buttons=((None, _("Export"), 'gear-icon'),),
             show_reset_button=False,
             show_footer=False,
         )
@@ -2565,7 +2565,8 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter, PDFExpo
             ),
             name='PublicationExportForm',
             action='export_publication',
-            submit_buttons=(('test', _("Export")), (None, _("Download")),),
+            submit_buttons=(('test', _("Export"), 'gear-icon'),
+                            (None, _("Download"), 'circle-down-icon'),),
             show_reset_button=False,
             show_footer=False,
         )
