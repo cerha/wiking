@@ -612,9 +612,16 @@ h1 a { outline: none; }
 .login-control .login-link:hover {
     color: $color.foreground;
 }
+.login-control li.user-profile > a > div {
+    margin-left: 22px;
+}
 .login-control li.user-profile .label {
     font-size: 0.8em;
     color: $color.help;
+}
+.login-control li.user-profile .icon {
+    float: left;
+    margin-top: 6px;
 }
 
 .admin-control {
