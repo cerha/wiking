@@ -62,7 +62,7 @@ class DBException(pd.DBException):
         super(DBException, self).__init__(message, None)
     def column(self):
         return self._column
-        
+
 
 class PytisModule(wiking.Module, wiking.ActionHandler):
     """Module bound to a Pytis data object.
@@ -71,7 +71,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
     the class named 'Spec' derived from 'pytis.presentation.Specification'.
     Each instance is then bound to a pytis data object, which is automatically
     created on module instantiation.
-    
+
     Most actions (such as 'view', 'update', 'delete') in this class work with a
     pytis record and expect a 'PytisModule.Record' instance as the 'record'
     argument of the action handler method.  Some actions (such as 'list') don't
@@ -87,7 +87,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
     instance corresponding to the data row with 123 in the key value.  Referer
     column values are converted to strings and back through standard pytis
     value export/validation according to referer column type.
-    
+
     """
     _REFERER = None
     """DEPRECARED!  Use the Pytis specification option 'referer' instead.
@@ -95,7 +95,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
     Currently overrides the specification option 'referer' of Pytis ViewSpec,
     but is deprecated.
 
-       
+
     """
     _TITLE_COLUMN = None
     _TITLE_TEMPLATE = None
@@ -317,7 +317,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                 dbcolumns.append(dbcolumn)
                 rdata.append((id, value))
             return pd.Row(rdata)
-            
+
         def display(self, key, **kwargs):
             return super(PytisModule.Record, self).display(key, **kwargs)
 
@@ -847,7 +847,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
 
     def _expand_row(self, req, record, form):
         """Return lcg.Content for expansion of given record in BrowseForm.
-        
+
         Row expansion is additional content which may be displayed within table
         form below the actual row.  This content is initially collapsed, but
         may be expanded by the user.  By default, table forms don't have
@@ -901,7 +901,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         The returned value may be a 'pytis.presentation.GroupSpec' instance, a
         sequence of field identifiers or 'pytis.presentation.GroupSpec'
         instances or 'None' to use the default layout defined by specification.
-        
+
         If you ever need to call this method (you most often just define it),
         you may need the method '_layout_instance()' to convert the returned
         value into a 'pytis.presentation.GroupSpec' instance.
@@ -1801,7 +1801,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
           condition -- condition to use when accessing whole data
           sorting -- sorting to use when accessing whole data; if 'None' then
             use default module sorting
-        
+
         """
         resolver = wiking.WikingResolver()
         class ErrorResolver(pytis.output.Resolver):
@@ -2607,7 +2607,7 @@ class CachedTables(PytisModule):
             key = row['object_schema'].value() + '.' + row['object_name'].value()
             info[key] = (row['version'].value(), row['stamp'].value(),)
         self._data.select_map(add, transaction=transaction)
-        
+
     def current_stamp(self, schema, table, transaction=None):
         """Return current version and timestamp.
 
@@ -2718,7 +2718,7 @@ class CachingPytisModule(PytisModule):
     def _init_cache(self):
         self._caches = [(id_, {},) for id_ in self._cache_ids]
         self._cache_versions = {}
-        
+
     def _flush_cache(self):
         self._init_cache()
 
@@ -2835,12 +2835,12 @@ class CbCachingPytisModule(CachingPytisModule):
     """
     _cached_field_ids = ()
     _cache_ids = ('default', 'fields',)
-            
+
     class Record(CachingPytisModule.Record):
 
         def _load_value(self, key, transaction=None, **kwargs):
             return CachingPytisModule.Record.display(self, key[-2])
-            
+
         def display(self, key, **kwargs):
             module = self._module
             if key in module._cached_field_ids:
