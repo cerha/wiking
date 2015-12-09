@@ -70,10 +70,10 @@ class AdminControl(wiking.TopBarControl):
             if hasattr(req, 'page_write_access') and req.page_write_access:
                 items.append(lcg.PopupMenuItem(_("Edit the Current Page"),
                                                uri=req.uri() + '?action=update',
-                                               icon='edit-page-icon'))
+                                               icon='edit-icon'))
             if req.check_roles(wiking.cms.Roles.CONTENT_ADMIN):
                 items.append(lcg.PopupMenuItem(_("Create a New Page"), uri='/?action=insert',
-                                               icon='new-page-icon'))
+                                               icon='create-icon'))
         return items
 
 

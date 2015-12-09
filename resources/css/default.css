@@ -215,7 +215,6 @@ button[disabled] span {
 }
 button .label {
     display: inline-block;
-    line-height: 16px;
     height: 16px;
     vertical-align: middle;
 }
@@ -231,6 +230,9 @@ button .icon {
 .pytis-form .submit-buttons button .icon {
     margin-right: 5px;
 }
+.pytis-form .actions button .icon {
+    margin-right: 4px;
+}
 .login-form button {
     padding: 4px 10px;
 }
@@ -242,7 +244,7 @@ button .icon {
 .arrow-up-icon, .plus-icon, .ellipsis-icon, .users-icon, .new-user-icon, .attachment-icon,
 .feed-icon, .thumb-up-icon, .thumb-down-icon, .view-icon, .edit-icon, .create-icon,
 .circle-in-icon, .circle-out-icon, .circle-down-icon, .circle-up-icon, .circle-in-up-icon,
-.pytis-form button.submit .icon,
+.pytis-form button.submit .default-submit-icon,
 .pytis-form button.cancel .icon,
 .pytis-form button.reset .icon,
 .list-form-controls button.cancel-search .icon,
@@ -253,7 +255,8 @@ button .icon {
     display: inline-block;
     width: 16px;
     height: 16px;
-    background: url(wiking-icons.png) top left no-repeat;
+    background-image: url(wiking-icons.png);
+    background-repeat: no-repeat;
     vertical-align: middle;
 }
 .user-larger-icon     { background-position: 0 0; width: 20px; height: 20px; }
@@ -286,10 +289,10 @@ button .icon {
 .arrow-left-icon      { background-position: -2px -36px; width: 13px; }
 .list-form-controls button.next-page .icon,
 .arrow-right-icon     { background-position: -16px -36px; width: 13px; }
-.arrow-down-icon      { background-position: -32px -36px; }
-.arrow-up-icon        { background-position: -48px -36px; }
+.arrow-up-icon        { background-position: -32px -36px; }
+.arrow-down-icon      { background-position: -48px -36px; }
 .plus-icon            { background-position: -64px -36px; }
-.properties-icon      { background-position: -80px -36px; }
+.ellipsis-icon        { background-position: -80px -36px; }
 .key-icon             { background-position: -96px -36px; }
 .attachment-icon      { background-position: -0 -52px; }
 .feed-icon            { background-position: -16px -52px; }
@@ -307,6 +310,7 @@ button .icon {
 .circle-in-up-icon    { background-position: -65px -68px; width: 14px; }
 
 /* Wiking CMS specific styles */
+
 .cms-page-actions {
     margin: 1em 0 0 0;
     position: relative;
@@ -318,56 +322,6 @@ button .icon {
     margin-top: 0;
     border-top: none;
 }
-.cms-page-actions button.action-update .icon {
-    background-image: url(edit-page.png);
-    padding-left: 18px;
-}
-.cms-page-actions button.action-options .icon {
-    background-image: url(properties.png);
-    padding-left: 18px;
-}
-.cms-page-actions button.action-new_page .icon,
-.cms-page-actions button.action-new_chapter .icon {
-    background-image: url(new-page.png);
-    padding-left: 18px;
-}
-.cms-page-actions button.action-delete .icon {
-    background-image: url(remove.png);
-    padding-left: 18px;
-}
-.cms-page-actions button.action-attachments .icon {
-    background-image: url(attachment.png);
-    padding-left: 18px;
-}
-.pytis-form .actions button.action-insert .icon {
-    background: url(plus.png) left center no-repeat;
-    padding-left: 18px;
-}
-.pytis-form .actions button.action-list .icon {
-    background: url(arrow-up.png) -2px center no-repeat;
-    padding-left: 18px;
-}
-.pytis-form .actions button.action-delete .icon {
-    background: url(remove.png) left center no-repeat;
-    padding-left: 18px;
-}
-.pytis-form .actions button.action-update .icon {
-    background: url(edit-page.png) left center no-repeat;
-    padding-left: 18px;
-}
-.pytis-form .actions button.action-passwd .icon {
-    background: url(key-16x16.png) left center no-repeat;
-    padding-left: 18px;
-}
-.pytis-form .actions button.action-enable .icon {
-    background: url(thumb-up.png) left center no-repeat;
-    padding-left: 18px;
-}
-.pytis-form .actions button.action-disable .icon {
-    background: url(thumb-down.png) left center no-repeat;
-    padding-left: 18px;
-}
-
 div.wiking-image-gallery img {
     margin-right: 1.6em;
     margin-top: .8em;
@@ -382,12 +336,12 @@ form.activation-form {
 div.item span.panel-field-date { 
     font-weight: bold;
 }
-.feed-icon-link {
-    display: inline-block;
-    width: 14px;
-    height: 14px;
-    background: url(rss.png);
+.panel .feed-link {
     float: right;
+}
+.panel .feed-link .feed-icon {
+    position: relative;
+    top: -1px;
 }
 
 /* Links to unpublished pages */
@@ -408,19 +362,15 @@ div.item span.panel-field-date {
 .page-navigation.bottom {
     margin-top: 1.2em;
 }
-.page-navigation .navigation-ctrl {
-    background-repeat: no-repeat;
+.page-navigation .navigation-ctrl .icon {
+    margin-right: 2px;
+    position: relative;
+    top: -1px;
 }
-.page-navigation .navigation-ctrl.prev {
-    background-image: url(arrow-left.png);
-    background-position: left center;
-    padding-left: 16px;
-}
-.page-navigation .navigation-ctrl.next {
-    background-image: url(arrow-right.png);
-    background-position: right center;
-    padding-right: 16px;
-}
+.page-navigation .navigation-ctrl .icon.arrow-right-icon {
+    margin-left: 1px;
+    margin-right: 1px;
+}    
 .page-navigation .navigation-ctrl.dead {
     opacity: 0.6;
 }

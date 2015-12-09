@@ -542,21 +542,31 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         return wiking.Document(title, content, lang=lang, **kwargs)
 
     def _default_actions_first(self, req, record):
-        return (Action('insert', self._INSERT_LABEL, descr=self._INSERT_DESCR,
+        return (Action('insert', self._INSERT_LABEL,
+                       icon='create-icon',
+                       descr=self._INSERT_DESCR,
                        context=pp.ActionContext.GLOBAL,
                        enabled=self._insert_enabled),
-                Action('export', self._EXPORT_LABEL, descr=self._EXPORT_DESCR,
+                Action('export', self._EXPORT_LABEL,
+                       descr=self._EXPORT_DESCR,
                        context=pp.ActionContext.GLOBAL),
-                Action('view', self._VIEW_LABEL, descr=self._VIEW_DESCR),
-                Action('update', self._UPDATE_LABEL, descr=self._UPDATE_DESCR,
+                Action('view', self._VIEW_LABEL,
+                       descr=self._VIEW_DESCR),
+                Action('update', self._UPDATE_LABEL,
+                       icon='edit-icon',
+                       descr=self._UPDATE_DESCR,
                        enabled=lambda r: self._update_enabled(r.req(), r)),
                 )
 
     def _default_actions_last(self, req, record):
         return (Action('copy', self._COPY_LABEL, descr=self._COPY_DESCR),
-                Action('delete', self._DELETE_LABEL, descr=self._DELETE_DESCR,
+                Action('delete', self._DELETE_LABEL,
+                       icon='remove-icon',
+                       descr=self._DELETE_DESCR,
                        enabled=lambda r: self._delete_enabled(r.req(), r)),
-                Action('list', self._LIST_LABEL, descr=self._LIST_DESCR),
+                Action('list', self._LIST_LABEL,
+                       icon='arrow-up-icon',
+                       descr=self._LIST_DESCR),
                 )
 
     def _actions(self, req, record):

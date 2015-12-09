@@ -733,21 +733,25 @@ class Users(UserManagementModule, CachingPytisModule):
             )
         default_filter = 'enabled'
         actions = (
-            Action('passwd', _("Change password"), descr=_("Change user's password")),
+            Action('passwd', _("Change password"), icon='key-icon',
+                   descr=_("Change user's password")),
             # Translators: Button label.  Used to approve user's account by the administrator.
-            Action('enable', _("Approve"), descr=_("Aprove this account"),
+            Action('enable', _("Approve"),
+                   descr=_("Aprove this account"),
                    # Note: We use "Approve" just for consistency of the
                    # terminology in the user interface.  Technically it is the
                    # same as "Enable" (changes state to enabled).
                    visible=lambda r: r['state'].value() in (Users.AccountState.NEW,
                                                             Users.AccountState.UNAPPROVED)),
             # Translators: Button label. Computer terminology. Use common word and form.
-            Action('enable', _("Enable"), descr=_("Enable this account"),
+            Action('enable', _("Enable"), icon='thumb-up-icon',
+                   descr=_("Enable this account"),
                    enabled=lambda r: r['state'].value() != Users.AccountState.ENABLED,
                    visible=lambda r: r['state'].value() not in (Users.AccountState.NEW,
                                                                 Users.AccountState.UNAPPROVED)),
             # Translators: Button label. Computer terminology. Use common word and form.
-            Action('disable', _("Disable"), descr=_("Disable this account"),
+            Action('disable', _("Disable"), icon='thumb-down-icon',
+                   descr=_("Disable this account"),
                    enabled=lambda r: r['state'].value() == Users.AccountState.ENABLED,
                    visible=lambda r: r['state'].value() not in (Users.AccountState.NEW,
                                                                 Users.AccountState.UNAPPROVED)),

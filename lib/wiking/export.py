@@ -360,8 +360,9 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                 # Translators: ``RSS channel'' is terminology idiom, see Wikipedia.
                 # The placeholder %s is replaced by channel title.
                 channel_title = _("RSS channel %s") + ' ' + panel.title()
-                title += g.a('', href=channel, aria_label=channel_title, title=channel_title,
-                             type='application/rss+xml', cls='feed-icon-link')
+                title += g.a(g.span('', cls='feed-icon'),
+                             href=channel, aria_label=channel_title, title=channel_title,
+                             type='application/rss+xml', cls='feed-link')
             content = panel.content()
             # Add a fake container to force the heading level start at 4.
             lcg.Container(lcg.Section('', lcg.Section('', content)))

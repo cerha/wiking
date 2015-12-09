@@ -960,10 +960,10 @@ class Panels(SiteSpecificContentModule, wiking.CachingPytisModule):
         return hidden_fields
 
     def _delete_confirmation_actions(self, req, record, action):
-        return (Action('delete', self._DELETE_LABEL, _manage_cms_panels='1',
-                       panel_id=record['panel_id'].export(), submit=1),)
-
-        return
+        return (Action('delete', self._DELETE_LABEL, icon='remove-icon',
+                       kwargs=dict(_manage_cms_panels='1',
+                                   panel_id=record['panel_id'].export(),
+                                   submit=1)),)
 
     def _load_value(self, key, transaction=None):
         lang, preview_mode = key
@@ -1216,10 +1216,12 @@ class Themes(StyleManagementModule, wiking.CachingPytisModule):
         cb = CodebookSpec(display='name', prefer_display=True)
         actions = (
             # Translators: Button label
-            Action('activate', _("Activate"), descr=_("Activate this color theme"),
+            Action('activate', _("Activate"), icon='circle-up-icon',
+                   descr=_("Activate this color theme"),
                    enabled=lambda r: not r['active'].value()),
             # Translators: Button label
-            Action('activate', _("Activate default"), context=pp.ActionContext.GLOBAL,
+            Action('activate', _("Activate default"), icon='circle-up-icon',
+                   context=pp.ActionContext.GLOBAL,
                    descr=_("Activate the default color theme"),
                    enabled=lambda r: wiking.module.Config.theme_id() is not None),
         )
@@ -1456,7 +1458,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
         cb = CodebookSpec(display='title_or_identifier', prefer_display=True)
         actions = (
             # Translators: Button label. Page configuration options.
-            Action('options', _("Options"),
+            Action('options', _("Options"), icon='ellipsis-icon',
                    descr=_("Edit global options, such as visibility, "
                            "menu position and access rights.")),
             Action('commit', _("Commit"), icon='circle-up-icon',
@@ -1470,7 +1472,8 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
             # Action('translate', _("Translate"),
             #      descr=_("Create the content by translating another language variant"),
             #       enabled=lambda r: r['_content'].value() is None),
-            Action('new_page', _("New Page"), descr=_("Create a new page")),
+            Action('new_page', _("New Page"), icon='create-icon',
+                   descr=_("Create a new page")),
             # The action seems inadequate in row context menu and the help page
             # is out of date anyway.
             # Action('help', _("Help")),
@@ -2069,17 +2072,18 @@ class NavigablePages(Pages):
                     return None
             return (
                 # Translators: Label of a link in sequential navigation.
-                (target(node.prev()), 'prev', _("Previous Chapter")),
+                (target(node.prev()), 'arrow-left-icon', _("Previous Chapter")),
                 # Translators: Label of a link in sequential navigation.
-                (target(node.next()), 'next', _("Next Chapter")),
+                (target(node.next()), 'arrow-right-icon', _("Next Chapter")),
                 # Translators: Label of a link to the start page of a publication.
-                (target(top), 'top', _("Top")),
+                (target(top), 'arrow-up-icon', _("Top")),
             )
 
         def export(self, context):
             g = context.generator()
-            def ctrl(target, label, cls):
+            def ctrl(target, label, icon_cls):
                 # Check that the target node is within the publications's children.
+                cls = 'navigation-ctrl'
                 if target:
                     uri = context.uri(target)
                     title = target.title()
@@ -2090,8 +2094,12 @@ class NavigablePages(Pages):
                     uri = None
                     title = _("None")
                     cls += ' dead'
-                return g.a(label, href=uri, title=label + ': ' + title,
-                           cls='navigation-ctrl ' + cls)
+                icon = g.span('', cls='icon ' + icon_cls)
+                if icon_cls == 'arrow-right-icon':
+                    label = label + icon
+                else:
+                    label = icon + label
+                return g.a(label, href=uri, title=label + ': ' + title, cls=cls)
             return g.div(lcg.concat([ctrl(target, label, cls) for target, cls, label
                                      in self._navigation_links(context.req(), context.node())],
                                     separator=' | '),
@@ -2425,7 +2433,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter, PDFExpo
             Binding('exports', _("Exported Versions"), 'PublicationExports', 'page_key'),
         )
         actions = Pages.Spec.actions + (
-            Action('new_chapter', _("New Chapter"),
+            Action('new_chapter', _("New Chapter"), icon='create-icon',
                    descr=_("Create a new chapter in this publication.")),
         )
 
@@ -2969,7 +2977,7 @@ class PublicationExports(ContentManagementModule):
         layout = ('format', 'version', 'timestamp', 'bytesize', 'public', 'notes')
         columns = ('format', 'version', 'timestamp', 'bytesize', 'public')
         actions = (
-            Action('download', _("Download")),
+            Action('download', _("Download"), icon='circle-down-icon'),
         )
 
     # See note in Publications._publication_info() where these spans are created.
@@ -3503,7 +3511,8 @@ class Attachments(ContentManagementModule):
             #        context=pp.ActionContext.GLOBAL),
             # Translators: Button label
             Action('move', _("Move"), descr=_("Move the attachment to another page.")),
-            Action('upload_archive', _("Upload Archive"), context=pp.ActionContext.GLOBAL,
+            Action('upload_archive', _("Upload Archive"),
+                   context=pp.ActionContext.GLOBAL,
                    descr=_("Upload multiple attachments at once as a ZIP, TAR or TAR.GZ archive.")),
         )
 
