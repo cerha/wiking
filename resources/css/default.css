@@ -185,6 +185,55 @@ div.table-of-contents ul {
     margin-bottom: 0;
 }
 
+button {
+    width: auto; /* fix MSIE size */
+    overflow: visible; /* fix MSIE size */
+    color: inherit;
+    font: inherit;
+    box-shadow: inset 0 0 4px rgba(0,0,0,0.1);
+    background-image: linear-gradient(#fff, #e0e0e0);
+    background-color: #fafafa;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    padding: 2px 6px;
+    white-space: nowrap;
+    -webkit-appearance: button;
+}
+button::-moz-focus-inner {
+    padding: 0;
+    border: 0;
+}
+button:hover:enabled {
+    background-image: linear-gradient(#fff, #f0f0f0);
+}
+button:focus {
+    outline: 1px dotted;
+}
+button[disabled] span {
+    opacity: 0.5;
+    color: #000;
+}
+button .label {
+    display: inline-block;
+    line-height: 16px;
+    height: 16px;
+    vertical-align: middle;
+}
+button .icon {
+    margin-right: 2px;
+}
+.pytis-form .list-form-controls button {
+    padding: 1px 5px;
+}
+.pytis-form .submit-buttons button {
+    padding: 4px 12px;
+}
+.pytis-form .submit-buttons button .icon {
+    margin-right: 5px;
+}
+.login-form button {
+    padding: 4px 10px;
+}
 /* Wiking icons sprite */
 .user-larger-icon, .gear-larger-icon, .gear-larger-red-icon, .maximize-icon, .unmaximize-icon,
 .cart-larger-icon, .info-icon, .success-icon, .error-icon, .warning-icon, .user-icon, .gear-icon,
@@ -192,7 +241,15 @@ div.table-of-contents ul {
 .key-larger-icon, .menu-icon, .arrow-left-icon, .arrow-right-icon, .arrow-down-icon,
 .arrow-up-icon, .plus-icon, .ellipsis-icon, .users-icon, .new-user-icon, .attachment-icon,
 .feed-icon, .thumb-up-icon, .thumb-down-icon, .view-icon, .edit-icon, .create-icon,
-.circle-in-icon, .circle-out-icon, .circle-down-icon, .circle-up-icon, .circle-in-up-icon {
+.circle-in-icon, .circle-out-icon, .circle-down-icon, .circle-up-icon, .circle-in-up-icon,
+.pytis-form button.submit .icon,
+.pytis-form button.cancel .icon,
+.pytis-form button.reset .icon,
+.list-form-controls button.cancel-search .icon,
+.list-form-controls button.search .icon,
+.list-form-controls button.prev-page .icon,
+.list-form-controls button.next-page .icon,
+.pytis-form.query-fields-form button.apply-filters .icon {
     display: inline-block;
     width: 16px;
     height: 16px;
@@ -213,14 +270,22 @@ div.table-of-contents ul {
 .key-larger-icon      { background-position: -160px -66px; width: 18px; height: 18px; }
 .user-icon            { background-position: -0 -20px; }
 .gear-icon            { background-position: -16px -20px; }
+.pytis-form button.submit .icon,
 .ok-icon              { background-position: -32px -20px; }
+.pytis-form button.cancel .icon,
+.list-form-controls button.cancel-search .icon,
 .remove-icon          { background-position: -48px -20px; }
+.pytis-form.query-fields-form button.apply-filters .icon,
 .refresh-icon         { background-position: -64px -20px; }
+.pytis-form button.reset .icon,
 .undo-icon            { background-position: -80px -20px; }
+.list-form-controls button.search .icon,
 .search-icon          { background-position: -96px -20px; }
 .cart-icon            { background-position: -112px -20px; }
-.arrow-left-icon      { background-position: -0px -36px; }
-.arrow-right-icon     { background-position: -16px -36px; }
+.list-form-controls button.prev-page .icon,
+.arrow-left-icon      { background-position: -2px -36px; width: 13px; }
+.list-form-controls button.next-page .icon,
+.arrow-right-icon     { background-position: -16px -36px; width: 13px; }
 .arrow-down-icon      { background-position: -32px -36px; }
 .arrow-up-icon        { background-position: -48px -36px; }
 .plus-icon            { background-position: -64px -36px; }
@@ -254,101 +319,73 @@ div.table-of-contents ul {
     margin-top: 0;
     border-top: none;
 }
-.cms-page-actions button.disabled span { 
-    color: $color.foreground;
-    opacity: 0.4;
-}
-.cms-page-actions button.action-update span { 
+.cms-page-actions button.action-update .icon {
     background-image: url(edit-page.png);
-    padding-left: 19px;
+    padding-left: 18px;
 }
-.cms-page-actions button.action-options span { 
+.cms-page-actions button.action-options .icon {
     background-image: url(properties.png);
-    padding-left: 19px;
+    padding-left: 18px;
 }
-.cms-page-actions button.action-new_page span,
-.cms-page-actions button.action-new_chapter span {
+.cms-page-actions button.action-new_page .icon,
+.cms-page-actions button.action-new_chapter .icon {
     background-image: url(new-page.png);
-    padding-left: 19px;
+    padding-left: 18px;
 }
-.cms-page-actions button.action-delete span {
+.cms-page-actions button.action-delete .icon {
     background-image: url(remove.png);
-    padding-left: 19px;
+    padding-left: 18px;
 }
-.cms-page-actions button.action-commit span { 
+.cms-page-actions button.action-commit .icon {
     background-image: url(publish.png);
-    padding-left: 19px;
+    padding-left: 18px;
 }
-.cms-page-actions button.action-revert span { 
+.cms-page-actions button.action-revert .icon {
     background-image: url(undo.png);
-    padding-left: 19px;
+    padding-left: 18px;
 }
-.cms-page-actions button.action-attachments span { 
+.cms-page-actions button.action-attachments .icon {
     background-image: url(attachment.png);
-    padding-left: 19px;
-}
-.pytis-form.edit-form.query-fields-form .submit button.apply-filters span {
-    background-image: url(refresh.png);
-    padding-left: 19px;
-}
-.list-form-controls button.prev-page span {
-    background-image: url(arrow-left.png);
-    padding-left: 16px;
-}
-.list-form-controls button.next-page span {
-    background-image: url(arrow-right.png);
-    padding-right: 16px;
-    background-position: right center;
-}
-.list-form-controls button.search span {
-    background-image: url(search.png);
     padding-left: 18px;
 }
-.list-form-controls button.cancel-search span {
-    background-image: url(remove.png);
-    padding-left: 18px;
-}
-.pytis-form.edit-form .submit button[type="submit"] span {
-    background: url(ok.png) left center no-repeat;
-    padding-left: 19px;
-}
-.pytis-form.edit-form .submit button[name="_cancel"] span {
-    background-image: url(remove.png);
-}
-.pytis-form.edit-form .submit button[type="reset"] span {
-    background: url(undo.png) left center no-repeat;
-    padding-left: 19px;
-}
-.pytis-form.edit-form .submit button[type="submit"][name="commit"] span {
-    background-image: url(publish.png);
-}
-.pytis-form .actions button.action-insert span {
+.pytis-form .actions button.action-insert .icon {
     background: url(plus.png) left center no-repeat;
-    padding-left: 19px;
+    padding-left: 18px;
 }
-.pytis-form .actions button.action-list span {
+.pytis-form .actions button.action-list .icon {
     background: url(arrow-up.png) -2px center no-repeat;
     padding-left: 18px;
 }
-.pytis-form .actions button.action-delete span {
+.pytis-form .actions button.action-delete .icon {
     background: url(remove.png) left center no-repeat;
-    padding-left: 19px;
+    padding-left: 18px;
 }
-.pytis-form .actions button.action-update span {
+.pytis-form .actions button.action-update .icon {
     background: url(edit-page.png) left center no-repeat;
-    padding-left: 19px;
+    padding-left: 18px;
 }
-.pytis-form .actions button.action-passwd span {
+.pytis-form .actions button.action-passwd .icon {
     background: url(key-16x16.png) left center no-repeat;
-    padding-left: 19px;
+    padding-left: 18px;
 }
-.pytis-form .actions button.action-enable span {
+.pytis-form .actions button.action-enable .icon {
     background: url(thumb-up.png) left center no-repeat;
-    padding-left: 19px;
+    padding-left: 18px;
 }
-.pytis-form .actions button.action-disable span {
+.pytis-form .actions button.action-disable .icon {
     background: url(thumb-down.png) left center no-repeat;
-    padding-left: 19px;
+    padding-left: 18px;
+}
+.pytis-form.edit-form .submit-buttons button[type="submit"][name="commit"] .icon {
+    background-image: url(publish.png);
+}
+.pytis-form.publication-export-form .submit-buttons button[type="submit"][name="test"] .icon {
+    background-image: url(gear-16x16.png);
+}
+.pytis-form.publication-export-form .submit-buttons button[type="submit"] .icon {
+    background-image: url(down.png);
+    background-position: left top;
+    padding-left: 18px;
 }
 
 div.wiking-image-gallery img {
@@ -417,10 +454,10 @@ span.diff_add, span.field.id-diff_add { background-color: #aaffaa; }
 span.diff_chg, span.field.id-diff_chg { background-color: #ffff77; }
 span.diff_sub, span.field.id-diff_sub { background-color: #ffaaaa; }
 
-.pytis-form.publication-export-form div.group,
-.pytis-form.publication-export-form div.submit,
-.pytis-form.excerpt-export-form div.group,
-.pytis-form.excerpt-export-form div.submit {
+.pytis-form.publication-export-form .group,
+.pytis-form.publication-export-form .submit-buttons,
+.pytis-form.excerpt-export-form .group,
+.pytis-form.excerpt-export-form .submit-buttons {
     margin: 2px;
     padding: 0;
     border: none;
@@ -430,20 +467,12 @@ span.diff_sub, span.field.id-diff_sub { background-color: #ffaaaa; }
 .pytis-form.publication-export-form th.label {
     width: 1%; /* Prevent label spanning too wide in Safari */
 }
-.pytis-form.publication-export-form .submit button,
-.pytis-form.excerpt-export-form .submit button {
+.pytis-form.publication-export-form .submit-buttons button,
+.pytis-form.excerpt-export-form .submit-buttons button {
     margin: 0 6px 0 0;
 }
 .pytis-form.publication-export-form .radio-group label {
     margin: 0 10px 0 2px;
-}
-.pytis-form.publication-export-form div.submit button[type="submit"] span {
-    background-image: url(down.png);
-    background-position: left top;
-    padding-left: 19px;
-}
-.pytis-form.publication-export-form div.submit button[type="submit"][name="test"] span {
-    background-image: url(gear-16x16.png);
 }
 
 .export-progress-log {
@@ -981,13 +1010,11 @@ body.non-maximized #menu a.navigation-link.current .dropdown-arrow {
 }
 #site-title .separator, #site-title .subtitle { display: none; }
 
-.list-form-controls button.prev-page span,
-.list-form-controls button.next-page span,
-.list-form-controls button.cancel-search span,
-.list-form-controls button.search span {
+.list-form-controls button.prev-page .label,
+.list-form-controls button.next-page .label,
+.list-form-controls button.cancel-search .label,
+.list-form-controls button.search .label {
     width: 0px;
-    padding-left: 16px;
-    padding-right: 0;
     overflow: hidden;
 }
 
@@ -1092,12 +1119,12 @@ body .pytis-form.query-fields-form .errors {
 }
 
 body .pytis-form .group,
-body .pytis-form .submit,
+body .pytis-form .submit-buttons,
 body .pytis-form .paging-controls {
     background-color: $color.frame-bg;
     border-color: $color.frame-border;
 }
-body .pytis-form.query-fields-form .submit {
+body .pytis-form.query-fields-form .submit-buttons {
     background: none;
 }
 body .pytis-form.query-fields-form .group {
@@ -1176,7 +1203,3 @@ body .pytis-form.list-view div.summary {
 /*.pytis-form .invalid {
     background-color: $color.error-bg;
 }*/
-body .actions button[disabled] span,
-body .list-form-controls button[disabled] span {
-    color: $color.foreground;
-}
