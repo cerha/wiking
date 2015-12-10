@@ -551,6 +551,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                        descr=self._EXPORT_DESCR,
                        context=pp.ActionContext.GLOBAL),
                 Action('view', self._VIEW_LABEL,
+                       icon='view-icon',
                        descr=self._VIEW_DESCR),
                 Action('update', self._UPDATE_LABEL,
                        icon='edit-icon',
