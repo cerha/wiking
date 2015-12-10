@@ -70,10 +70,10 @@ class Module(object):
         """Deprecated: Use 'wiking.module()' instead."""
         return wiking.cfg.resolver.wiking_module(name)
 
-    
+
 class RequestHandler(object):
     """Mix-in class for modules capable of handling requests."""
-    
+
     def _base_uri(self, req):
         """Return the URI of this module as a string or None if not mapped.
 
@@ -86,7 +86,7 @@ class RequestHandler(object):
 
     def _authorized(self, req, **kwargs):
         """Return true iff the remote user is authorized to perform an action.
-        
+
         The performed action is determined by 'kwargs'.  Their meaning,
         however, is not further specified in this class (it only defines the
         common interface).  Derived classes may define the meaning of `kwargs'
@@ -97,10 +97,10 @@ class RequestHandler(object):
         resolution.
 
         The default implementation always returns true.
-        
+
         """
         return True
-    
+
     def _authorize(self, req, **kwargs):
         """Check authorization and raise error if the user has no rights to perform the action.
 
@@ -111,7 +111,7 @@ class RequestHandler(object):
 
         The meaning of keyword arguments is the same as in the '_authorized()'
         method.
-        
+
         """
         if not self._authorized(req, **kwargs):
             if not req.user():
@@ -163,13 +163,13 @@ class ActionHandler(RequestHandler):
 
     If the request parameter 'action' is not defined, the method
     '_default_action()' will be used to find out which action should be used.
-    
+
     """
-    
+
     def _action_args(self, req):
         """Return the dictionary of additional action arguments."""
         return {}
-    
+
     def _default_action(self, req, **kwargs):
         """Return the name of the default action as a string."""
         return None
@@ -182,7 +182,7 @@ class ActionHandler(RequestHandler):
 
     def _check_owner(self, req, action, **kwargs):
         return False
-        
+
     def _authorized(self, req, action, **kwargs):
         try:
             roles = getattr(self, 'RIGHTS_' + action)
@@ -240,7 +240,7 @@ class Documentation(Module, RequestHandler):
             raise Exception("Documentation directory for '%s' does not exist. "
                             "Please check 'doc_dirs' configuration option." % component)
         return basedir
-    
+
     def _document_path(self, req):
         """Return the documentation base directory."""
         if not req.unresolved_path:
@@ -385,11 +385,11 @@ class Resources(Module, RequestHandler):
 
     def resource(self, filename):
         """Obtain a 'lcg.Resource' instance from the global resource provider.
-        
+
         This method may be useful when you need to search resources in wiking
         module's code.  Otherwise the resource provider is only available in
         export time through the export context.
-        
+
         """
         return self._provider.resource(filename)
 
@@ -397,14 +397,14 @@ class Resources(Module, RequestHandler):
         """Return the global resource provider as 'lcg.ResourceProvider' instance."""
         return self._provider
 
-        
+
 class SiteIcon(Module, RequestHandler):
     """Serve site icon according to the configuration option 'site_icon'.
 
     This module is mapped to '/favicon.ico' in the default 'Application'.
 
     """
-    
+
     def _handle(self, req):
         filename = wiking.cfg.site_icon
         if filename:
@@ -422,7 +422,7 @@ class Robots(Module, RequestHandler):
     served (returns 404) when the configuration option 'crawl_delay' is None.
 
     """
-    
+
     def _handle(self, req):
         crawl_delay = wiking.cfg.crawl_delay
         if crawl_delay is not None:
@@ -432,7 +432,7 @@ class Robots(Module, RequestHandler):
         else:
             raise NotFound()
 
-    
+
 class SubmenuRedirect(Module, RequestHandler):
     """Handle all requests by redirecting to the first submenu item.
 
@@ -440,7 +440,7 @@ class SubmenuRedirect(Module, RequestHandler):
     but rather redirect the user to the first submenu item available
 
     """
-    
+
     def _handle(self, req):
         def find(items, id):
             for item in items:
@@ -460,7 +460,7 @@ class SubmenuRedirect(Module, RequestHandler):
                 raise Exception("Menu item '%s' has no childs." % id)
         else:
             raise Exception("Menu item for '%s' not found." % id)
-            
+
 
 class CookieAuthentication(object):
     """Implementation of cookie based authentication for Wiking Application.
@@ -472,7 +472,7 @@ class CookieAuthentication(object):
     This class may be used as a Mix-in class derived by the application which wishes to use it.
 
     """
-    
+
     _LOGIN_COOKIE = 'wiking_login'
     _SESSION_COOKIE = 'wiking_session_key'
     _SECURE_AUTH_COOKIES = False
@@ -496,7 +496,7 @@ class CookieAuthentication(object):
         """Check authentication password for given user.
 
         Arguments:
-        
+
           user -- 'User' instance
           password -- supplied password as a string
 
@@ -509,7 +509,7 @@ class CookieAuthentication(object):
         """Hook executed after a succesfull authentication.
 
         Arguments:
-        
+
           req -- current request object
           user -- 'User' instance of the authenticated user
 
@@ -590,7 +590,7 @@ class CookieAuthentication(object):
             # when e-mail addresses are used as logins), this causes the session
             # to be unnecessariy terminated.  We would, however, need to introduce
             # another API method (_auth_user_by_uid?) or use session_key alone to
-            # check the session (thus changing the API of Session.check()). 
+            # check the session (thus changing the API of Session.check()).
             # Wiking CMS has a hack to update login cookie after login change in
             # wiking.cms.Users._redirect_after_update() to overcome this problem.
             req.set_cookie(self._LOGIN_COOKIE, login, expires=(730 * 24 * 3600), secure=secure)

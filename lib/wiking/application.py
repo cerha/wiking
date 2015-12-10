@@ -54,7 +54,7 @@ class Application(wiking.Module):
     documentation for more information.
 
     """
-    
+
     _STYLESHEETS = (('default.css', 'all'), ('layout.css', 'screen'), ('print.css', 'print'))
     """Static list of available style sheets used by the 'stylesheets()' method.
 
@@ -63,7 +63,7 @@ class Application(wiking.Module):
 
     """
     _PREFERRED_LANGUAGE_COOKIE = 'wiking_preferred_language'
-    
+
     def __init__(self, *args, **kwargs):
         super(Application, self).__init__(*args, **kwargs)
         self._mapping = dict(self._MAPPING)
@@ -91,7 +91,7 @@ class Application(wiking.Module):
 
         """
         pass
-        
+
     def handle(self, req):
         """Handle the request.
 
@@ -143,7 +143,7 @@ class Application(wiking.Module):
         assert isinstance(mod, wiking.RequestHandler)
         req.unresolved_path.pop(0)
         return req.forward(mod)
-    
+
     def module_uri(self, req, modname):
         """Return the base URI of given Wiking module (relative to server root).
 
@@ -190,17 +190,17 @@ class Application(wiking.Module):
 
         """
         return wiking.cfg.site_subtitle
-    
+
     def menu(self, req):
         """Return the main navigation menu hierarchy.
 
         Arguments:
-        
+
           req -- the current request object.
 
         Returns a sequence of 'MenuItem' instances representing the main menu
         hierarchy.
-        
+
         The menu structure should usually remains unchanged throughout the
         application or at least throughout its major states, but this is just a
         common practice, not a requirement.  The application may decide to
@@ -208,7 +208,7 @@ class Application(wiking.Module):
 
         """
         return ()
-                
+
     def authenticate(self, req):
         """Perform authentication and return a 'User' instance if successful.
 
@@ -241,7 +241,7 @@ class Application(wiking.Module):
         """Return the sequence of user roles contained in given role.
 
         Arguments:
-        
+
           role -- User role as a 'Role' instance.
 
         In general, user roles may be contained in each other.  This means that
@@ -259,7 +259,7 @@ class Application(wiking.Module):
 
         """
         return ()
-    
+
     def panels(self, req, lang):
         """Return a list of 'Panel' instances representing panels displayed on the page.
 
@@ -272,13 +272,13 @@ class Application(wiking.Module):
 
         """
         return []
-        
+
     def languages(self):
         """Return a list of all languages supported by the application.
-        
+
         Returns a list of all supported languages as the corresponding alpha-2
         language codes.
-        
+
         You should check, whether the translations for all the specified
         languages are available in the gettext catalog for Wiking and also for
         all the components you are using, such as LCG and Pytis.
@@ -299,11 +299,11 @@ class Application(wiking.Module):
         You may need to override this method to change its logic completely or
         partially for given application if the default logic described below
         doesn't suit your needs.
-        
+
         The default implementation uses a combination of user preferences set
         in 'Accept-Language' HTTP headers, explicit language switching and
         global defaults set in configuration.
-        
+
         If the application supports language switching (the small widget at the
         top right corner in the default layout), the language selected there
         has the highest precedence (the selected value is saved in a cookie).
@@ -390,7 +390,7 @@ class Application(wiking.Module):
 
         Make sure the controls don't take too much space or make them
         responsive to the actual display size through CSS.
-        
+
         Any content acceptable by 'lcg.coerce()' may be returned ('lcg.Content'
         instance, basestring, or their sequence).  Consider using the base
         class 'wiking.TopBarControl' for definition of custom controls.
@@ -408,14 +408,14 @@ class Application(wiking.Module):
 
         """
         return None
-        
+
     def _powered_by_wiking(self, req):
         import wiking
         # Translators: Website idiom. This is followed by information on the underlying software
         # tools.  Means: This website runs on [...this and that software...].
         return (_("Powered by"), ' ',
                 lcg.link('http://www.freebsoft.org/wiking', 'Wiking'), ' ', wiking.__version__)
-    
+
     def _accessibility_statement_link(self, req):
         """Return lcg.Content containing a link to the Wiking Accessibility Statement or None.
 
@@ -445,7 +445,7 @@ class Application(wiking.Module):
         # Translators: Heading of webpage left side hierarchical navigation
         # menu containing a list of links to pages in this web section
         return _("In this section:")
-    
+
     def menu_panel_tooltip(self, req):
         """Return the tooltip of the left side hierarchical menu as a basestring.
 
@@ -454,7 +454,7 @@ class Application(wiking.Module):
 
         """
         return _("Local navigation")
-        
+
     def menu_panel_bottom_content(self, req):
         """Return the additional content to be displayed in the hierarchical menu panel.
 
@@ -464,7 +464,7 @@ class Application(wiking.Module):
 
         """
         return None
-    
+
     def right_panels_bottom_content(self, req):
         """Return the additional content to be displayed under right side panels.
 
@@ -474,7 +474,7 @@ class Application(wiking.Module):
 
         """
         return None
-    
+
     def bottom_bar_left_content(self, req):
         """Return the content displayed on the left side of the bottom bar above the page footer.
 
@@ -493,14 +493,14 @@ class Application(wiking.Module):
 
     def footer_content(self, req):
         """Return the content displayed in page footer as 'lcg.Content' element(s).
-        
+
         Any content acceptable by 'lcg.coerce()' may be returned.
 
         """
         return lcg.p(_("Contact:"), ' ',
                      lcg.link("mailto:" + wiking.cfg.webmaster_address,
                               wiking.cfg.webmaster_address))
-    
+
     def _request_info(self, req):
         return dict(
             server_hostname=req.server_hostname(),
@@ -513,10 +513,10 @@ class Application(wiking.Module):
             server_software=('Wiking %s, LCG %s, Pytis %s' %
                              (wiking.__version__, lcg.__version__, pytis.__version__)),
         )
-    
+
     def log_error(self, req, error):
         """Write information about given RequestError instance into server's log.
-        
+
         Log format is given by the 'log_format' configuration option.  Also, if
         'debug' configuration option is set, the log entry will contain basic
         traceback information (file names and line numbers).
@@ -537,7 +537,7 @@ class Application(wiking.Module):
 
         The argument 'einfo' is the exception information as returned by
         'sys.exc_info()'.
-        
+
         """
         # Just a brief traceback information is written to the log.
         # The full information from cgitb is sent by email or to the
