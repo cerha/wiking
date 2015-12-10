@@ -99,18 +99,9 @@ class Application(wiking.Module):
         further processing.  All errors and exceptions are handled by the
         handler.
 
-        The return value may be one of three kinds:
-        
-           * 'wiking.Response' instance representing directly the HTTP response
-             data and headers.
-           * 'wiking.Document' instance, which is automatically converted to a
-             'wiking.Response' by 'wiking.Handler' exporting the document into
-             HTML through 'wiking.Exporter'.
-           
+        The return value and possible exceptions is the same as described in
+        'RequestHandler.handle()'.
 
-        The method may also raise 'RequestError' exceptions to indicate special
-        states or 'Redirect' exceptions to perform HTTP redirection.
-             
         The default implementation uses static mapping of request paths (URI)
         to wiking modules defined by the class constant '\_MAPPING' to
         determine which module is responsible for processing the request and

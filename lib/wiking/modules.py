@@ -124,17 +124,23 @@ class RequestHandler(object):
 
     def _handle(self, req):
         raise Exception("Method '_handle()' not implemented.")
-        
+
     def handle(self, req):
         """Handle the request and return the result.
 
-        The result may be either a 'Document' instance or a pair (MIME_TYPE, DATA).  The document
-        instance will be exported into HTML, the MIME data will be served directly.
+        The return value may be either 'wiking.Response' instance representing
+        directly the HTTP response data and headers or a 'wiking.Document'
+        instance, which is later automatically converted to a 'wiking.Response'
+        by 'wiking.Handler' by exporting the document into HTML using a
+        'wiking.Exporter'.
 
-        This method only performs authorization check and postpones further processing to
-        '_handle()' method.  Please, never override this method (unless you want to bypass the
-        authorization checking).  Override '_handle()' instead.  The rules for the returned value
-        are the same.
+        The method may also raise 'RequestError' exceptions to indicate special
+        states or 'Redirect' exceptions to perform HTTP redirection.
+
+        This method only performs authorization check and postpones further
+        processing to '_handle()' method.  Please, never override this method
+        (unless you want to bypass the authorization checking).  Override
+        '_handle()' instead.  The rules for the returned value are the same.
 
         """
         self._authorize(req)
