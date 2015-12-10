@@ -3511,8 +3511,9 @@ class Attachments(ContentManagementModule):
             # Action('insert_image', _("New image"), descr=_("Insert a new image attachment"),
             #        context=pp.ActionContext.GLOBAL),
             # Translators: Button label
-            Action('move', _("Move"), descr=_("Move the attachment to another page.")),
-            Action('upload_archive', _("Upload Archive"),
+            Action('move', _("Move"), icon='circle-out-icon',
+                   descr=_("Move the attachment to another page.")),
+            Action('upload_archive', _("Upload Archive"), icon='circle-in-up-icon',
                    context=pp.ActionContext.GLOBAL,
                    descr=_("Upload multiple attachments at once as a ZIP, TAR or TAR.GZ archive.")),
         )
