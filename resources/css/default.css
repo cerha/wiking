@@ -284,7 +284,7 @@ button .icon {
 .undo-icon            { background-position: -80px -20px; }
 .list-form-controls button.search .icon,
 .search-icon          { background-position: -96px -20px; }
-.cart-icon            { background-position: -112px -20px; width: 17px; }
+.cart-icon            { background-position: -112px -20px; position: relative; left: -1px; }
 .list-form-controls button.prev-page .icon,
 .arrow-left-icon      { background-position: -2px -36px; width: 13px; }
 .list-form-controls button.next-page .icon,
