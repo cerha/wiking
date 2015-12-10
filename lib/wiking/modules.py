@@ -247,7 +247,6 @@ class Documentation(Module, RequestHandler):
         # reasonable output format.  Now we just search the file in all the
         # source directories and format it.  No global navigation is used.
         path = self._document_path(req)
-        wiking.debug('..', path, req.unresolved_path)
         variants = [lang for lang in wiking.module.Application.languages()
                     if os.path.exists('.'.join((path, lang, 'txt')))]
         if not variants:
