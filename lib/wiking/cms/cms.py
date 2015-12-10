@@ -1006,6 +1006,7 @@ class Panels(SiteSpecificContentModule, wiking.CachingPytisModule):
                 items = [lcg.PopupMenuItem(action.title(),
                                            tooltip=action.descr(),
                                            enabled=is_enabled(action),
+                                           icon=action.icon(),
                                            uri=req.make_uri('/', _manage_cms_panels='1',
                                                             action=action.id(),
                                                             panel_id=row['panel_id'].export()))
