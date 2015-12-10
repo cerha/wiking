@@ -239,7 +239,7 @@ button .icon {
 /* Wiking icons sprite */
 .user-larger-icon, .gear-larger-icon, .gear-larger-red-icon, .maximize-icon, .unmaximize-icon,
 .cart-larger-icon, .info-icon, .success-icon, .error-icon, .warning-icon, .user-icon, .gear-icon,
-.ok-icon, .remove-icon, .refresh-icon, .undo-icon, .search-icon, .cart-icon, .key-icon,
+.ok-icon, .remove-icon, .refresh-icon, .undo-icon, .search-icon, .cart-icon, .key-icon, .list-icon,
 .key-larger-icon, .menu-icon, .arrow-left-icon, .arrow-right-icon, .arrow-down-icon,
 .arrow-up-icon, .plus-icon, .ellipsis-icon, .users-icon, .new-user-icon, .attachment-icon,
 .feed-icon, .thumb-up-icon, .thumb-down-icon, .view-icon, .edit-icon, .create-icon,
@@ -294,6 +294,7 @@ button .icon {
 .plus-icon            { background-position: -64px -36px; }
 .ellipsis-icon        { background-position: -80px -36px; }
 .key-icon             { background-position: -96px -36px; }
+.list-icon            { background-position: -112px -36px; }
 .attachment-icon      { background-position: -0 -52px; }
 .feed-icon            { background-position: -16px -52px; }
 .thumb-up-icon        { background-position: -32px -52px; }
