@@ -513,7 +513,7 @@ h1 a { outline: none; }
     margin-bottom: 1px;
     margin-right: 4px;
 }
-#top-controls .label {
+#top-controls .ctrl-label {
     display: inline-block;
     padding: 3px 0;
     margin-right: 3px;
@@ -542,10 +542,7 @@ h1 a { outline: none; }
 .login-control .login-link:hover {
     color: $color.foreground;
 }
-.login-control li.user-profile > a > div {
-    margin-left: 22px;
-}
-.login-control li.user-profile .label {
+.login-control li.user-profile .user-label {
     font-size: 0.8em;
     color: $color.help;
 }

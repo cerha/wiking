@@ -1401,7 +1401,7 @@ class TopBarControl(lcg.Content):
         result = []
         content = self._content(context)
         if content:
-            result.append(g.span(content, cls='content'))
+            result.append(g.span(content, cls='ctrl-content'))
         items = self._menu_items(context)
         if items:
             menu_label = self._menu_label(context)
@@ -1411,7 +1411,7 @@ class TopBarControl(lcg.Content):
         if result:
             label = self._label(context)
             if label:
-                result.insert(0, g.span(label, cls='label'))
+                result.insert(0, g.span(label, cls='ctrl-label'))
             icon = self._icon(context)
             if icon:
                 result.insert(0, g.span('', cls='ctrl-icon %s-icon' % icon))
@@ -1449,7 +1449,7 @@ class LoginControl(TopBarControl):
                 if login != displayed_name:
                     displayed_name += ' (' + login + ')'
                 label = g.div((g.div(displayed_name, cls='user-name'),
-                               g.div(_("My user profile"), cls='label')))
+                               g.div(_("My user profile"), cls='user-label')))
                 items.append(lcg.PopupMenuItem(label, uri=user.uri(), icon='user-icon',
                                                cls='user-profile'))
             password_change_uri = wiking.module.Application.password_change_uri(req)
