@@ -130,6 +130,34 @@ class Application(CookieAuthentication, wiking.Application):
             req.message(message, req.WARNING)
             req.set_cookie(self._PREVIEW_MODE_COOKIE, value and '1' or '0')
 
+    def _resolve_modname(self, req):
+        """Return the wiking module name to handle this request.
+
+        Determine the name of the module responsible for handling this request.
+        The module is most typically determined from the request path and/or
+        request parameters.  The relavant part of 'req.unresolved_path' must be
+        consumed.
+
+        This method may be overriden in derived classes.
+
+        """
+        if req.unresolved_path:
+            try:
+                modname = self._mapping[req.unresolved_path[0]]
+            except KeyError:
+                return 'Pages'
+            # Consume the unresolved path if it was in static mapping or
+            # leave it for further resolution when passing to Pages.
+            del req.unresolved_path[0]
+            return modname
+        elif req.param('action'):
+            if req.param('_manage_cms_panels') == '1':
+                return 'Panels'
+            else:
+                return 'Pages'
+        else:
+            return None
+
     def handle(self, req):
         req.wmi = False # Will be set to True by `WikingManagementInterface' if needed.
         preview_mode_param = req.param(self._PREVIEW_MODE_PARAM)
@@ -137,20 +165,9 @@ class Application(CookieAuthentication, wiking.Application):
             req.set_cookie(self._PREVIEW_MODE_COOKIE, preview_mode_param == '1' and '1' or None)
         wiking.module.CachedTables.reload_info(req)
         wiking.module.Config.configure(req)
-        if req.unresolved_path:
-            try:
-                modname = self._mapping[req.unresolved_path[0]]
-            except KeyError:
-                modname = 'Pages'
-            else:
-                # Consume the unresolved path if it was in static mapping or
-                # leave it for further resolution when passing to Pages.
-                del req.unresolved_path[0]
-        elif req.param('action'):
-            if req.param('_manage_cms_panels') == '1':
-                modname = 'Panels'
-            else:
-                modname = 'Pages'
+        modname = self._resolve_modname(req)
+        if modname:
+            return req.forward(wiking.module(modname))
         else:
             try:
                 return super(Application, self).handle(req)
@@ -169,7 +186,6 @@ class Application(CookieAuthentication, wiking.Application):
                                       "to be able to access the unpublished pages."),
                                     req.WARNING)
                 raise
-        return req.forward(wiking.module(modname))
 
     def module_uri(self, req, modname):
         """Return the base URI of given Wiking module (relative to server root).
