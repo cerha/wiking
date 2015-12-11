@@ -878,7 +878,7 @@ form.login-form {
     border: 1px solid $color.frame-border;
     border-width: 1px 0;
     padding: 14px 30px;
-    margin: 0 32px 14px 0;
+    margin-bottom: 14px;
 }
 form.login-form input {
     margin-bottom: 12px;
