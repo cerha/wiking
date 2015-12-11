@@ -85,7 +85,7 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
 	// to improve the experience for screen reader users.  Don't do it in MSIE
 	// as it scrolls the current viewport so that the left side menu column is
 	// not visible.
-	if (!self.location.hash && !Prototype.Browser.IE) {
+	if (!self.location.hash && !Prototype.Browser.IE && !document.body.down('*[autofocus]')) {
 	    this.set_focus($('main-heading'));
 	}
 
