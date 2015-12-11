@@ -2125,9 +2125,9 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
             back = 'list'
         else:
             back = 'view'
-        return (Action(action, self._DELETE_LABEL, submit=1),
+        return (Action(action, self._DELETE_LABEL, icon='remove-icon', submit=1),
                 # Translators: Back button label. Standard computer terminology.
-                Action(back, _("Back")),)
+                Action(back, _("Back"), icon='arrow-up-icon',),)
 
     def action_delete(self, req, record, action='delete'):
         if req.param('submit'):
