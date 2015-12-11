@@ -698,10 +698,14 @@ body.non-maximized #menu a.navigation-link.current .dropdown-arrow {
     border: 1px solid $color.top-border;
     z-index: 2;
     font-size: 1.1em;
+    padding: 4px 4px 4px 2px;
     background-color: $color.background;
     box-shadow: 1px 1px 12px rgba(0, 0, 0, 0.6);
     -moz-box-shadow: 1px 1px 12px rgba(0, 0, 0, 0.6);
     -webkit-box-shadow: rgba(0, 0, 0, 0.6) 1px 1px 12px;
+}
+#menu .menu-dropdown li {
+    padding-right: 2px;
 }
 
 /* Hierarchical submenu */

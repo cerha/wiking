@@ -231,11 +231,13 @@ wiking.MainMenu = Class.create(lcg.Menu, {
 	    // Reset the style to the initial state (when clicking too fast, the effects
 	    // may overlap and leave a messy final style).
 	    dropdown.setAttribute('style', 'display: none;');
+	    // Setting min-width solves two problems.  A. the dropdown looks visually
+	    // odd when not wider than the item.  B. the dropdown width flickers when
+	    // hovering over its widest item.
+	    dropdown.setStyle({minWidth: Math.max(item.getWidth(), dropdown.getWidth()) + 'px',
+			       boxSizing: 'border-box'});
 	    item.addClassName('expanded');
 	    item.setAttribute('aria-expanded', 'true');
-	    // This solves two problems.  A. the dropdown looks odd when not wider than the item.
-	    // B. the dropdown width flickers when hovering over its widest item.
-	    dropdown.setStyle({width: Math.max(item.getWidth(), dropdown.getWidth()) + 'px'});
 	    new Effect.SlideDown(dropdown, {duration: 0.2});
 	    this.on_touchstart = function (event) { this.touch_moved = false; }.bind(this);
 	    this.on_touchmove = function (event) { this.touch_moved = true; }.bind(this);
