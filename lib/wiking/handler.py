@@ -193,7 +193,8 @@ class Handler(object):
                     parent = nodes[subpath]
                     break
             variants = document.variants() or parent and parent.variants() or None
-            node = mknode(wiking.MenuItem(uri, document.title(), hidden=True, variants=variants))
+            node = mknode(wiking.MenuItem(uri, document.title() or parent.title(),
+                                          hidden=True, variants=variants))
             if parent:
                 node._set_parent(parent)
                 parent._children += (node,)
