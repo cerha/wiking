@@ -38,17 +38,17 @@ class Handler(object):
 
     """
     _instance = None # Used for profiling only.
-    
+
     def __init__(self, req):
         """Initialize the global wiking handler instance.
-        
+
         The argument 'req' is the initial request which triggered the Handler
         creation, however the handler will normally exist much longer than for
         this single request and its method 'handle()' will be called to handle
         also other requests (including this one).  The constructor only needs
         the request instance to gather some global information to be able to
         initialize the configuration etc.
-        
+
         """
         # Initialize the global configuration stored in 'wiking.cfg'.
         config_file = req.option('config_file')
@@ -142,13 +142,14 @@ class Handler(object):
         application = self._application
         all_variants = application.languages()
         resource_provider = self._resource_provider(req)
+
         def mknode(item):
             # Caution - make the same uri transformation as above to get same
             # results in all cases (such as for '/').
             item_uri = '/' + item.id().strip('/')
             if item_uri == uri:
                 # Note, the document title should not override the menu item title.
-                # Only the main page heading is affected, but the ContentNode's 
+                # Only the main page heading is affected, but the ContentNode's
                 # title matches the MenuItem's title.
                 title = document.title() or item.title()
                 if title and document.subtitle():
@@ -324,7 +325,7 @@ class Handler(object):
             self._application.send_bug_report(req, einfo)
             self._application.log_traceback(req, einfo)
             return self._handle_request_error(req, wiking.InternalServerError(einfo))
-            
+
     def handle(self, req):
         if not hasattr(self, '_first_request_served'):
             if __debug__:
@@ -394,7 +395,7 @@ class Handler(object):
                     callback = None
                 wiking.WikingDefaultDataClass.close_idle_connections()
                 wiking.WikingDefaultDataClass.rollback_connections(callback=callback)
-            
+
 try:
     # Only for backwards compatibility with older Apache/mod_python
     # configurations which relied on the entry point to be located in this
