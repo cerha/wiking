@@ -1627,7 +1627,7 @@ class LoginDialog(lcg.Content):
         ]
         links = [g.li(g.a(label, href=uri)) for label, uri in
                  # Translators: Webpage link leading to registration form.
-                 ((_("New user registration"), self._registration_uri),
+                 ((_("Register a new user account"), self._registration_uri),
                   # Translators: Login dialog link to password change or password reminder (depends
                  # on configuration).
                   (_("Forgot your password?"), self._forgotten_password_uri)) if uri]
