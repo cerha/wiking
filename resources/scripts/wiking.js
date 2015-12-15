@@ -100,17 +100,19 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
 
 	// Use smooth scrolling for in-page links.
 	$$('a[href*="#"]').each(function(element) {
-	    var href = element.readAttribute('href');
-	    var uri = href.substr(0, href.indexOf('#'));
-	    if (uri === '' || uri === self.location.pathname) {
-		var anchor = href.substr(href.indexOf('#') + 1);
-		if (anchor) {
-		    var target = $(anchor) || $$('a[name=' + anchor + ']')[0];
-		    if (target && !target.hasClassName('notebook-page')) {
-			element.observe('click', function(event) {
-			    new Effect.ScrollTo(target, {offset: -wiking.scroll_offset});
-			    event.stop();
-			});
+	    if (!element.up('.foldable-tree-widget') {
+		var href = element.readAttribute('href');
+		var uri = href.substr(0, href.indexOf('#'));
+		if (uri === '' || uri === self.location.pathname) {
+		    var anchor = href.substr(href.indexOf('#') + 1);
+		    if (anchor) {
+			var target = $(anchor) || $$('a[name=' + anchor + ']')[0];
+			if (target && !target.hasClassName('notebook-page')) {
+			    element.observe('click', function(event) {
+				new Effect.ScrollTo(target, {offset: -wiking.scroll_offset});
+				event.stop();
+			    });
+			}
 		    }
 		}
 	    }
