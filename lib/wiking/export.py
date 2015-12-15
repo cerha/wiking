@@ -216,7 +216,12 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         uri = node.id()
         if not uri.startswith('/'):
             uri = '/' + uri
-        return context.generator().uri(uri, setlang=lang)
+        if '#' in uri:
+            uri, anchor = uri.split('#', 1)
+            args = (anchor,)
+        else:
+            args = ()
+        return context.generator().uri(uri, *args, setlang=lang)
 
     def _resource_uri_prefix(self, context, resource):
         return context.req().module_uri('Resources')
