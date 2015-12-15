@@ -175,11 +175,6 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             result.append(('viewport', wiking.cfg.viewport))
         return result
 
-    def _node_identification(self, context):
-        """Returns a string of CSS classes identifying the current node
-        and its context in node hierarchy
-        """
-
     def _wrap(self, context):
         g = self._generator
         return g.div(self._parts(context, self._WRAP_PARTS), id='wrap-layer1')
