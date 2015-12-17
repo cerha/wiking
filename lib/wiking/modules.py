@@ -241,21 +241,16 @@ class Documentation(Module, RequestHandler):
                             "Please check 'doc_dirs' configuration option." % component)
         return basedir
 
-    def _document_path(self, req):
-        """Return the documentation base directory."""
-        if not req.unresolved_path:
+    def _document_path(self, *path):
+        """Return full filesystem path of document given by list of relative path components."""
+        if not path:
             raise Forbidden()
-        component = req.unresolved_path.pop(0)
-        return os.path.join(self._documentation_directory(component), *req.unresolved_path)
+        return os.path.join(self._documentation_directory(path[0]), *path[1:])
 
-    def _handle(self, req):
-        # TODO: the documentation should be processed by LCG first into some
-        # reasonable output format.  Now we just search the file in all the
-        # source directories and format it.  No global navigation is used.
-        path = self._document_path(req)
+    def _variants(self, path):
         variants = [lang for lang in wiking.module.Application.languages()
                     if os.path.exists('.'.join((path, lang, 'txt')))]
-        if not variants:
+        if not variants and os.path.exists('.'.join((path, 'en', 'txt'))):
             # HACK: Try fallback to English if no application language variants
             # are available.  In fact, the application should never return
             # content in any other language, than what is defined by
@@ -264,11 +259,10 @@ class Documentation(Module, RequestHandler):
             # confusing error.  This should avoid the confusion, but a proper
             # solution would be to have all documentation files translated at
             # least to one application language.
-            if os.path.exists('.'.join((path, 'en', 'txt'))):
-                variants = ['en']
-            else:
-                raise NotFound()
-        lang = req.preferred_language(variants)
+            variants = ['en']
+        return variants
+
+    def _content(self, path, lang):
         filename = '.'.join((path, lang, 'txt'))
         f = codecs.open(filename, encoding='utf-8')
         text = "".join(f.readlines())
@@ -276,8 +270,24 @@ class Documentation(Module, RequestHandler):
         content = lcg.Parser().parse(text)
         if len(content) == 1 and isinstance(content[0], lcg.Section):
             title = content[0].title()
-            content = lcg.Container(content[0].content())
+            content = content[0].content()
         else:
+            title = None
+        return title, lcg.Container(content)
+
+    def _handle(self, req):
+        # TODO: the documentation should be processed by LCG first into some
+        # reasonable output format.  Now we just search the file in all the
+        # source directories and format it.  No global navigation is used.
+        path = self._document_path(*req.unresolved_path)
+        variants = self._variants(path)
+        if variants:
+            del req.unresolved_path[:]
+        else:
+            raise NotFound()
+        lang = req.preferred_language(variants)
+        title, content = self._content(path, lang)
+        if title is None:
             title = ' :: '.join(req.unresolved_path)
         if req.param('framed') == '1':
             # Used to display contextual help in an iframe (see pytis-ckeditor.js).
@@ -285,6 +295,9 @@ class Documentation(Module, RequestHandler):
         else:
             layout = None
         return wiking.Document(title, content, lang=lang, variants=variants, layout=layout)
+
+    def content(self, path, lang):
+        return self._content(self._document_path(*path.split('/')), lang)
 
 
 class Resources(Module, RequestHandler):
