@@ -100,7 +100,7 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
 
 	// Use smooth scrolling for in-page links.
 	$$('a[href*="#"]').each(function(element) {
-	    if (!element.up('.foldable-tree-widget') {
+	    if (!element.up('.foldable-tree-widget')) {
 		var href = element.readAttribute('href');
 		var uri = href.substr(0, href.indexOf('#'));
 		if (uri === '' || uri === self.location.pathname) {
