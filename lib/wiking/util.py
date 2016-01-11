@@ -1449,6 +1449,8 @@ class LoginControl(TopBarControl):
                 if login != displayed_name:
                     displayed_name += ' (' + login + ')'
                 label = g.div((g.div(displayed_name, cls='user-name'),
+                               # Translators: Menu item label to display a page with
+                               # details of user's account and related actions.
                                g.div(_("My user profile"), cls='user-label')))
                 items.append(lcg.PopupMenuItem(label, uri=user.uri(), icon='user-icon',
                                                cls='user-profile'))
@@ -1461,7 +1463,7 @@ class LoginControl(TopBarControl):
                                 date=lcg.LocalizableDateTime(str(password_expiration)))
                 else:
                     tooltip = None
-                # Translators: Link on login panel on the webpage.
+                # Translators: Menu item label.
                 items.append(lcg.PopupMenuItem(_("Change my password"), icon='key-icon',
                                                uri=password_change_uri, tooltip=tooltip))
             # Translators: Menu item label (verb in imperative).
