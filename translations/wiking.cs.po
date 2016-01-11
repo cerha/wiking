@@ -1,5 +1,5 @@
 # Wiking translations.
-# Copyright (C) 2006-2015 Brailcom, o.p.s.
+# Copyright (C) 2006-2016 Brailcom, o.p.s.
 # This file is distributed under the same license as the Wiking package.
 # Tomas Cerha <cerha@brailcom.org>, 2006.
 #
@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-12-15 15:35+0100\n"
-"PO-Revision-Date: 2015-12-15 15:37+0100\n"
+"POT-Creation-Date: 2016-01-11 17:44+0100\n"
+"PO-Revision-Date: 2016-01-11 17:44+0100\n"
 "Last-Translator: Hynek Hanke <hanke@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
 "Language: cs\n"
@@ -328,9 +328,9 @@ msgstr "Rozbalit/sbalit kompletní hierarchii menu"
 #. ``RSS channel'' is terminology idiom, see Wikipedia.
 #. The placeholder %s is replaced by channel title.
 #: ../lib/wiking/export.py:362
-#, fuzzy, python-format
+#, python-format
 msgid "RSS channel %s"
-msgstr "RSS kanál „%s“"
+msgstr "RSS kanál %s"
 
 #: ../lib/wiking/export.py:392
 msgid "Exit the maximized mode."
@@ -600,61 +600,58 @@ msgstr "Odhlásit"
 
 #. Login button label (verb in imperative).
 #. Login button label - verb in imperative.
-#: ../lib/wiking/util.py:1471 ../lib/wiking/util.py:1506
-#: ../lib/wiking/util.py:1626
+#: ../lib/wiking/util.py:1474 ../lib/wiking/util.py:1509
+#: ../lib/wiking/util.py:1629
 msgid "Log in"
 msgstr "Přihlásit"
 
-#: ../lib/wiking/util.py:1472
+#: ../lib/wiking/util.py:1474
 msgid "Log in to an existing user account"
 msgstr "Přihlásit ke stávajícímu uživatelskému účtu"
 
-#. Login panel/dialog registration link.  Registration allows the
-#. user to obtain access to the website/application by submitting his personal
-#. details.
-#. Webpage link leading to registration form.
-#: ../lib/wiking/util.py:1479 ../lib/wiking/util.py:1630
+#. Link/menu item to create a new
+#. user account to access the website/application.
+#: ../lib/wiking/util.py:1478 ../lib/wiking/util.py:1632
 msgid "Register a new user account"
 msgstr "Registrovat nového uživatele"
 
+#. Link/menu item to restore a forgotten password.
+#: ../lib/wiking/util.py:1481 ../lib/wiking/util.py:1633
+msgid "Restore forgotten password"
+msgstr "Obnovit zapomenuté heslo"
+
 #. Login status info.
-#: ../lib/wiking/util.py:1490
+#: ../lib/wiking/util.py:1493
 msgid "Logged in user:"
 msgstr "Přihlášený uživatel:"
 
 #. Login status info.
-#: ../lib/wiking/util.py:1509
+#: ../lib/wiking/util.py:1512
 msgid "User not logged in"
 msgstr "Uživatel nepřihlášen"
 
 #. Label for language selection followed by the
 #. current language name with a selection of other available
 #. language variants.
-#: ../lib/wiking/util.py:1530
+#: ../lib/wiking/util.py:1533
 msgid "Language:"
 msgstr "Jazyk:"
 
-#: ../lib/wiking/util.py:1533
+#: ../lib/wiking/util.py:1536
 msgid "Switch the language"
 msgstr "Přepnout jazyk"
 
-#: ../lib/wiking/util.py:1607
+#: ../lib/wiking/util.py:1610
 msgid "Your e-mail address"
 msgstr "Vaše e-mailová adresa"
 
-#: ../lib/wiking/util.py:1610
+#: ../lib/wiking/util.py:1613
 msgid "Login name"
 msgstr "Přihlašovací jméno"
 
-#: ../lib/wiking/util.py:1620
+#: ../lib/wiking/util.py:1623
 msgid "Password"
 msgstr "Heslo"
-
-#. Login dialog link to password change or password reminder (depends
-#. on configuration).
-#: ../lib/wiking/util.py:1633
-msgid "Forgot your password?"
-msgstr "Zapomenuté heslo?"
 
 #. Web form label and message
 #: ../lib/wiking/util.py:1664

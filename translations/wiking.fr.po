@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-12-15 15:35+0100\n"
+"POT-Creation-Date: 2016-01-11 17:42+0100\n"
 "PO-Revision-Date: 2010-02-02 15:44+0100\n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: French <wiking@lists.freebsoft.org>\n"
@@ -588,30 +588,34 @@ msgstr "fermer une session"
 
 #. Login button label (verb in imperative).
 #. Login button label - verb in imperative.
-#: ../lib/wiking/util.py:1471 ../lib/wiking/util.py:1506
-#: ../lib/wiking/util.py:1626
+#: ../lib/wiking/util.py:1474 ../lib/wiking/util.py:1509
+#: ../lib/wiking/util.py:1629
 msgid "Log in"
 msgstr "Connexion"
 
-#: ../lib/wiking/util.py:1472
+#: ../lib/wiking/util.py:1474
 msgid "Log in to an existing user account"
 msgstr ""
 
-#. Login panel/dialog registration link.  Registration allows the
-#. user to obtain access to the website/application by submitting his personal
-#. details.
-#. Webpage link leading to registration form.
-#: ../lib/wiking/util.py:1479 ../lib/wiking/util.py:1630
+#. Link/menu item to create a new
+#. user account to access the website/application.
+#: ../lib/wiking/util.py:1478 ../lib/wiking/util.py:1632
 msgid "Register a new user account"
 msgstr ""
 
+#. Link/menu item to restore a forgotten password.
+#: ../lib/wiking/util.py:1481 ../lib/wiking/util.py:1633
+#, fuzzy
+msgid "Restore forgotten password"
+msgstr "Vous avez oublié votre mot de passe ?"
+
 #. Login status info.
-#: ../lib/wiking/util.py:1490
+#: ../lib/wiking/util.py:1493
 msgid "Logged in user:"
 msgstr ""
 
 #. Login status info.
-#: ../lib/wiking/util.py:1509
+#: ../lib/wiking/util.py:1512
 #, fuzzy
 msgid "User not logged in"
 msgstr "non connecté"
@@ -619,31 +623,25 @@ msgstr "non connecté"
 #. Label for language selection followed by the
 #. current language name with a selection of other available
 #. language variants.
-#: ../lib/wiking/util.py:1530
+#: ../lib/wiking/util.py:1533
 msgid "Language:"
 msgstr "Langue :"
 
-#: ../lib/wiking/util.py:1533
+#: ../lib/wiking/util.py:1536
 msgid "Switch the language"
 msgstr ""
 
-#: ../lib/wiking/util.py:1607
+#: ../lib/wiking/util.py:1610
 msgid "Your e-mail address"
 msgstr ""
 
-#: ../lib/wiking/util.py:1610
+#: ../lib/wiking/util.py:1613
 msgid "Login name"
 msgstr "Identifiant"
 
-#: ../lib/wiking/util.py:1620
+#: ../lib/wiking/util.py:1623
 msgid "Password"
 msgstr "Mot de passe"
-
-#. Login dialog link to password change or password reminder (depends
-#. on configuration).
-#: ../lib/wiking/util.py:1633
-msgid "Forgot your password?"
-msgstr "Vous avez oublié votre mot de passe ?"
 
 #. Web form label and message
 #: ../lib/wiking/util.py:1664
