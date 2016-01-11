@@ -1,4 +1,4 @@
-# Copyright (C) 2006-2015 Brailcom, o.p.s.
+# Copyright (C) 2006-2016 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -1441,8 +1441,8 @@ class LoginControl(TopBarControl):
     def _menu_items(self, context):
         req = context.req()
         user = req.user()
-        items = []
         if user:
+            items = []
             if user.uri():
                 g = context.generator()
                 login, displayed_name = user.login(), user.name()
@@ -1468,16 +1468,19 @@ class LoginControl(TopBarControl):
             items.append(lcg.PopupMenuItem(_("Log out"), icon='circle-out-icon',
                                            uri=req.make_uri(req.uri(), command='logout')))
         else:
-            items.append(lcg.PopupMenuItem(_("Log in"), icon='circle-in-icon',
-                                           tooltip=_("Log in to an existing user account"),
-                                           uri=req.make_uri(req.uri(), command='login')))
-            uri = wiking.module.Application.registration_uri(req)
-            if uri:
-                # Translators: Login panel/dialog registration link.  Registration allows the
-                # user to obtain access to the website/application by submitting his personal
-                # details.
-                items.append(lcg.PopupMenuItem(_("Register a new user account"), uri=uri,
-                                               icon='new-user-icon')),
+            items = [
+                lcg.PopupMenuItem(title, icon=icon, tooltip=tooltip, uri=uri)
+                for title, tooltip, icon, uri in (
+                    (_("Log in"), _("Log in to an existing user account"), 'circle-in-icon',
+                     req.make_uri(req.uri(), command='login')),
+                    # Translators: Link/menu item to create a new
+                    # user account to access the website/application.
+                    (_("Register a new user account"), None, 'new-user-icon',
+                     wiking.module.Application.registration_uri(req)),
+                    # Translators: Link/menu item to restore a forgotten password.
+                    (_("Restore forgotten password"), None, 'key-icon',
+                     wiking.module.Application.forgotten_password_uri(req)),
+                ) if uri]
         return items
 
     def _menu_label(self, context):
@@ -1626,11 +1629,8 @@ class LoginDialog(lcg.Content):
             g.button(g.span(_("Log in")), type='submit', cls='submit'),
         ]
         links = [g.li(g.a(label, href=uri)) for label, uri in
-                 # Translators: Webpage link leading to registration form.
                  ((_("Register a new user account"), self._registration_uri),
-                  # Translators: Login dialog link to password change or password reminder (depends
-                 # on configuration).
-                  (_("Forgot your password?"), self._forgotten_password_uri)) if uri]
+                  (_("Restore forgotten password"), self._forgotten_password_uri)) if uri]
         if links:
             content.append(g.ul(*links))
         if not req.https() and wiking.cfg.force_https_login:
