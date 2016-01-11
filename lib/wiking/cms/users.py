@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2006-2015 Brailcom, o.p.s.
+# Copyright (C) 2006-2016 Brailcom, o.p.s.
 #
 # COPYRIGHT NOTICE
 #
@@ -1169,14 +1169,14 @@ class Users(UserManagementModule, CachingPytisModule):
                      server_hostname=wiking.cfg.server_hostname
                      ) + '\n\n'
         if record['autogenerate_password'].value():
-            text += _("The account was enabled with an automatically generated password.")
+            text += _("The account was enabled with an automatically generated password.") + "\n"
         elif wiking.cms.cfg.autoapprove_new_users:
-            text += _("The account was approved automatically according to server setup.")
+            text += _("The account was approved automatically according to server setup.") + "\n"
         else:
             uri = req.server_uri() + base_uri + '/' + record['login'].value()
-            text += _("Please approve the account:") + '\n' + uri
+            text += _("Please approve the account:") + '\n' + uri + '\n'
         if record['note'].value():
-            text += '\n\n' + _("Note:") + '\n\n' + record['note'].value()
+            text += '\n' + _("Note:") + '\n\n' + record['note'].value().strip() + "\n"
         sent, errors = self.send_mail(Roles.USER_ADMIN, subject, text)
         for err in errors:
             log(OPR, "Failed sending e-mail notification:", err)
