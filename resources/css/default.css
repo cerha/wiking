@@ -929,7 +929,9 @@ body.non-maximized #bottom {
 body.non-maximized #bottom-bar {
     padding: 1px 4px;
 }
-.language-selection .label { display: none; }
+#top-controls .ctrl-label {
+    display: none;
+}
 
 } /* End of tablet screen layout */
 
