@@ -2335,7 +2335,7 @@ class RESTSupport(object):
         else:
             return super(RESTSupport, self)._default_action(req, record=record)
 
-    def _json_list_condition(req):
+    def _json_list_condition(self, req):
         """Return the condition used for filtering rows in 'json_list' action output."""
         return None
 
