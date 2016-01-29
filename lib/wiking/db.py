@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2005-2015 Brailcom, o.p.s.
+# Copyright (C) 2005-2016 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -2167,25 +2167,6 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                                content_type='text/plain; charset=utf-8',
                                filename=self._export_filename(req))
 
-    def action_jsondata(self, req):
-        columns = list(self._columns(req))
-        if self._key not in columns:
-            columns.insert(0, self._key)
-        # Inspect column types in advance as it is cheaper than calling
-        # isinstance for all exported values.
-        datetime_columns = [cid for cid in columns
-                            if isinstance(self._type[cid], (pd.DateTime, pd.Time,))]
-        def export_value(record, cid):
-            value = record[cid]
-            if cid in datetime_columns:
-                result = value.export()
-            else:
-                result = value.value()
-            return result
-        data = [dict([(cid, export_value(record, cid)) for cid in columns])
-                for record in self._records(req)]
-        return wiking.Response(json.dumps(data), content_type='application/json')
-
     def action_print_field(self, req, record):
         field = self._view.field(req.param('field'))
         if not field:
@@ -2300,6 +2281,80 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
 # Module extensions
 # ==============================================================================
 
+class RESTSupport(object):
+    """Mix in class adding REST API support to a 'PytisModule'.
+
+    This is an experimental attempt to seamlessly integrate REST API support to
+    Wiking modules derived from PytisModule.  The API and usage may change
+    dramatically.
+
+    """
+
+    def __init__(self, *args, **kwargs):
+        super(RESTSupport, self).__init__(*args, **kwargs)
+
+    def _json_columns(self, req):
+        """Return a list of columns present in JSON export (action 'json_list').
+
+        Override this metod to dynamically change the list of columns present
+        in exported data.  The default implementation returns the same as
+        '_columns()' but it also includes the key column.
+
+        """
+        columns = list(self._columns(req))
+        if self._key not in columns:
+            columns.insert(0, self._key)
+        return columns
+
+    def _json_serializer(self, column_id):
+        ctype = self._type[column_id]
+        if isinstance(ctype, pd.DateTime):
+            return self._json_datetime_serializer
+        elif isinstance(ctype, pd.Array):
+            return self._json_array_serializer
+        elif isinstance(ctype, pw.Content):
+            return self._json_content_serializer
+        else:
+            return self._json_default_serializer
+
+    def _json_default_serializer(self, req, record, cid):
+        return record[cid].value()
+
+    def _json_datetime_serializer(self, req, record, cid):
+        return record[cid].export()
+
+    def _json_array_serializer(self, req, record, cid):
+        return [v.value() for v in record[cid].value()]
+
+    def _json_content_serializer(self, req, record, cid):
+        return None # TODO: export?
+
+    def _default_action(self, req, record=None):
+        if record is None and req.header('Content-Type').endswith('+json'):
+            return 'json_list'
+        else:
+            return super(RESTSupport, self)._default_action(req, record=record)
+
+    def _json_list_condition(req):
+        """Return the condition used for filtering rows in 'json_list' action output."""
+        return None
+
+    def action_json_list(self, req):
+        try:
+            serializers = self._json_serializers
+        except AttributeError:
+            # Inspect column types in advance as it is cheaper than calling
+            # isinstance for all exported rows and columns.
+            serializers = dict([(f.id(), self._json_serializer(f.id()))
+                                for f in self._view.fields()])
+            self._json_serializers = serializers
+        columns = [(cid, serializers[cid]) for cid in self._json_columns(req) if serializers[cid]]
+        limit = 100 # TODO: allow setting limit and offset dynamically.
+        rows = [dict([(cid, serializer(req, record, cid)) for cid, serializer in columns])
+                for record in self._records(req, condition=self._json_list_condition(req),
+                                            limit=limit)]
+        data = dict(rows=rows)
+        return wiking.Response(json.dumps(data), content_type='application/json')
 
 class RssModule(object):
     """Deprecated in favour of PytisRssModule defined below."""
