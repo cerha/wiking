@@ -1,4 +1,4 @@
-# Copyright (C) 2006-2015 Brailcom, o.p.s.
+# Copyright (C) 2006-2016 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -271,7 +271,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             g.div(
                 g.div((g.span(self._site_title(context), id='site-title'),
                        g.span(self._top_controls(context), id='top-controls'),
-                       g.div(g.noescape('&nbsp;'), id='top-clearing')),
+                       g.div('', id='top-clearing')),
                       id='top-layer3'),
                 id='top-layer2'),
             id='top-layer1')
@@ -404,10 +404,10 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                             name='main-heading', id='main-heading'), 1),
                     self._messages(context),
                     super(Exporter, self)._content(context)), id='content'),
-                g.div(g.noescape('&nbsp;'), id='clearing'))
+                g.div('', id='clearing'))
 
     def _page_clearing(self, context):
-        return self._generator.noescape('&nbsp;')
+        return ''
 
     def _last_change(self, context):
         # Currently unused, left here just to have the translation.
