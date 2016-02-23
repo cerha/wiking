@@ -494,7 +494,6 @@ h1 a { outline: none; }
 }
 
 #site-title {
-    display: inline-block;
     padding: 2px 0;
     font-size: 1.1em;
     float: left;
@@ -503,7 +502,6 @@ h1 a { outline: none; }
     margin: 0;
 }
 #top-controls {
-    display: inline-block;
     height: 21px;
     float: right;
 }
