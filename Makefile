@@ -9,6 +9,8 @@ compile:
 
 translations:
 	@make -C translations
+extract:
+	make -C translations extract
 
 doc:
 	lcgmake doc/src doc/html
