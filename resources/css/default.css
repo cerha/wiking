@@ -501,7 +501,10 @@ h1 a { outline: none; }
     font-size: 1.1em;
     float: left;
 }
-
+#site-title a {
+    text-decoration : none;
+    color: $color.foreground;
+}
 #top-content .top-text {
     float: right;
     margin: 0 26px;

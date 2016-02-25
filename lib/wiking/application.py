@@ -214,7 +214,7 @@ class Application(wiking.Module):
             if subtitle:
                 content += (g.strong(g.noescape(' &ndash; '), cls='separator') +
                             g.strong(subtitle, cls='subtitle'))
-            return g.div(content, id='site-title')
+            return g.div(g.a(content, href='/'), id='site-title')
         return [wiking.HtmlRenderer(site_title, self.site_title(req), self.site_subtitle(req))]
 
     def top_controls(self, req):
