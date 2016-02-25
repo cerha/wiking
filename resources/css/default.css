@@ -493,13 +493,21 @@ h1 a { outline: none; }
     z-index: 3;
 }
 
+#top-content {
+    float: left;
+}
 #site-title {
     padding: 2px 0;
     font-size: 1.1em;
     float: left;
 }
-.top-content p {
-    margin: 0;
+
+#top-content .top-text {
+    float: right;
+    margin: 0 26px;
+}
+#top-content .top-text p {
+    margin: 3px 0;
 }
 #top-controls {
     height: 21px;

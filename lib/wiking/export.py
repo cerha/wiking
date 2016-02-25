@@ -269,12 +269,21 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         g = self._generator
         return g.div(
             g.div(
-                g.div((g.div(self._site_title(context), id='site-title'),
-                       g.div(self._top_controls(context), id='top-controls'),
-                       g.div('', id='top-clearing')),
+                g.div([g.div(content, id=id_) for id_, content in
+                       (('top-content', self._top_content(context)),
+                        ('top-controls', self._top_controls(context)),
+                        ('top-clearing', ''))
+                       if content is not None],
                       id='top-layer3'),
                 id='top-layer2'),
             id='top-layer1')
+
+    def _top_content(self, context):
+        content = context.application.top_content(context.req())
+        if content:
+            return lcg.coerce(content).export(context)
+        else:
+            return None
 
     def _top_controls(self, context):
         return lcg.coerce(context.application.top_controls(context.req())).export(context)

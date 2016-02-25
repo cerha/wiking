@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2006-2015 Brailcom, o.p.s.
+# Copyright (C) 2006-2016 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -373,14 +373,15 @@ class Application(CookieAuthentication, wiking.Application):
         lang = req.preferred_language(raise_error=False) or 'en'
         return wiking.module.Texts.localized_text(req, text, lang=lang)
 
-    def top_controls(self, req):
-        controls = [wiking.LoginControl(), AdminControl(), wiking.LanguageSelection()]
+    def top_content(self, req):
+        content = super(Application, self).top_content(req)
         top_text = self._text_content(req, wiking.cms.texts.top)
         if top_text:
-            def export_top_content(renderer, context, content):
-                return context.generator().span(content.export(context), cls='top-content')
-            controls.insert(0, wiking.HtmlRenderer(export_top_content, text2content(req, top_text)))
-        return controls
+            content.append(lcg.Container(text2content(req, top_text), name='top-text'))
+        return content
+
+    def top_controls(self, req):
+        return [wiking.LoginControl(), AdminControl(), wiking.LanguageSelection()]
 
     def footer_content(self, req):
         text = self._text_content(req, wiking.cms.texts.footer)

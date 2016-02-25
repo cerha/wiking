@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2006-2015 Brailcom, o.p.s.
+# Copyright (C) 2006-2016 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -191,6 +191,57 @@ class Application(wiking.Module):
         """
         return wiking.cfg.site_subtitle
 
+    def top_content(self, req):
+        """Return the content displayed on the left side of the top bar.
+
+        The returned value is a list of 'lcg.Content' instances or any other
+        value acceptable by lcg.coerce()
+
+        The content must behave nicely with the controls displayed on the right
+        side of the top bar (see 'top_controls()').  This particularly means to
+        to style the content to be responsive to the actual display size
+        through CSS.  Otherwise the top bar may not fit to the visible area
+        (hiding the controls at the right edge).
+
+        The default implementation returns a list with just one element -- the
+        'wiking.HtmlRenderer' instance displaying the site title and subtitle
+        as returned by the methods 'site_title()' and 'site_subtitle()'.
+
+        """
+        def site_title(renderer, context, title, subtitle):
+            g = context.generator()
+            content = g.strong(title, cls='title')
+            if subtitle:
+                content += (g.strong(g.noescape(' &ndash; '), cls='separator') +
+                            g.strong(subtitle, cls='subtitle'))
+            return g.div(content, id='site-title')
+        return [wiking.HtmlRenderer(site_title, self.site_title(req), self.site_subtitle(req))]
+
+    def top_controls(self, req):
+        """Return the controls displayed on the right side of the top bar.
+
+        The top bar displays the content returned by 'top_content()' (which
+        normally is site title and subtitle) on the left and controls on the
+        right.  Controls are simple (usually interactive) widgets for
+        performing site global actions, such as logging in/out or switching
+        languages (these two controls are returned by default).  Derived
+        applications may override this method to add custom controls, customize
+        the built-in controls or re-arrange the order of controls on the top
+        bar.
+
+        Make sure the controls don't take too much space or make them
+        responsive to the actual display size through CSS.
+
+        Any content acceptable by 'lcg.coerce()' may be returned ('lcg.Content'
+        instance, basestring, or their sequence).  Consider using the base
+        class 'wiking.TopBarControl' for definition of custom controls.
+
+        The default implementation returns a list of two instances:
+        'wiking.LoginControl' and 'wiking.LanguageSelection'.
+
+        """
+        return [wiking.LoginControl(), wiking.LanguageSelection()]
+
     def menu(self, req):
         """Return the main navigation menu hierarchy.
 
@@ -376,30 +427,6 @@ class Application(wiking.Module):
 
         """
         return False
-
-    def top_controls(self, req):
-        """Return the controls displayed on the right side of the top bar.
-
-        The top bar displays the site title (and subtitle) on the left and
-        controls on the right.  Controls are simple (usually interactive)
-        widgets for performing site global actions, such as logging in/out or
-        switching languages (these two controls are returned by default).
-        Derived applications may override this method to add custom controls,
-        customize the built-in controls or re-arrange the order of controls on
-        the top bar.
-
-        Make sure the controls don't take too much space or make them
-        responsive to the actual display size through CSS.
-
-        Any content acceptable by 'lcg.coerce()' may be returned ('lcg.Content'
-        instance, basestring, or their sequence).  Consider using the base
-        class 'wiking.TopBarControl' for definition of custom controls.
-
-        The default implementation returns a list of two instances:
-        'wiking.LoginControl' and 'wiking.LanguageSelection'.
-
-        """
-        return [wiking.LoginControl(), wiking.LanguageSelection()]
 
     def login_dialog_content(self, req):
         """Return the content displayed below the login dialog as 'lcg.Content' element(s).
