@@ -1509,7 +1509,7 @@ class LoginControl(TopBarControl):
                 uri = '/' # Redirect logins from the registration forms to site root
             # Translators: Login button label (verb in imperative).
             result = g.a(g.span('', cls='ctrl-icon circle-in-icon') + _("Log in"),
-                         href=g.uri(uri, command='login'), cls='login-link',
+                         href=g.uri(uri, command='login'), cls='login-link', role='button',
                          # Translators: Login status info.
                          title=_("User not logged in"))
         else:
