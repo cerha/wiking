@@ -123,6 +123,7 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
 	    element.observe('keydown', function(event) {
 		if (this.event_key(event) === 'Space') {
 		    self.location = element.getAttribute('href');
+		    event.stop();
 		}
 	    }.bind(this))
 	}.bind(this));
