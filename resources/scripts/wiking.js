@@ -1,6 +1,6 @@
 /* -*- coding: utf-8 -*-
  *
- * Copyright (C) 2008-2013, 2015 Brailcom, o.p.s.
+ * Copyright (C) 2008-2013, 2015, 2016 Brailcom, o.p.s.
  * Author: Tomas Cerha
  *
  * This program is free software; you can redistribute it and/or modify
@@ -117,6 +117,15 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
 		}
 	    }
 	});
+
+	// These links have role='button' so they should behave like buttons (invoke on Space).
+	$$('a.login-button, a.maximized-mode-button').each(function(element) {
+	    element.observe('keydown', function(event) {
+		if (this.event_key(event) === 'Space') {
+		    self.location = element.getAttribute('href');
+		}
+	    }.bind(this))
+	}.bind(this));
 
 	wiking.handler = this;
     },

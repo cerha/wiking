@@ -542,7 +542,7 @@ h1 a { outline: none; }
     padding-left: 6px;
 }
 
-.login-control .login-link {
+.login-control .login-button {
     display: inline-block;
     color: $color.foreground;
     padding: 3px 5px;
@@ -551,7 +551,7 @@ h1 a { outline: none; }
     margin-right: 4px;
     background-color: #ddd;
 }
-.login-control .login-link:hover {
+.login-control .login-button:hover {
     color: $color.foreground;
 }
 .login-control li.user-profile .user-label {
@@ -612,7 +612,7 @@ body.non-maximized #page {
     margin-bottom: 0.3em;
 }
 
-#maximized-mode-control {
+#maximized-mode-button {
     position: absolute;
     top: 4px;
     right: 4px;
@@ -957,7 +957,7 @@ body.non-maximized div#page.with-submenu #main {
 body.non-maximized #menu a.navigation-link.current .dropdown-arrow {
     display: inline-block;
 }
-#maximized-mode-control {
+#maximized-mode-button {
     display: none;
 }
 #site-title .separator, #site-title .subtitle { display: none; }
@@ -979,7 +979,7 @@ body.non-maximized #menu a.navigation-link.current .dropdown-arrow {
 .language-selection .language-abbr { display: inline; }
 .login-control .displayed-user-name { display: none; }
 .login-control .popup-menu-ctrl-widget { background: none; }
-.login-control .login-link { display: none }
+.login-control .login-button { display: none }
 #top-controls .login-control .invoke-menu.labeled { padding-left: 0; }
 
 } /* End of smaller mobile phone screen layout */
@@ -1020,7 +1020,7 @@ form.list-form-controls .paging-controls {
     display: none;
 }
 
-#maximized-mode-control {
+#maximized-mode-button {
     display: none;
 }
 

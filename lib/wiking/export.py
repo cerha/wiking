@@ -408,7 +408,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         return (g.hr(cls='hidden'),
                 g.div((
                     g.a('', href=href, title=label, aria_label=label, cls=cls,
-                        id='maximized-mode-control', role='button'),
+                        id='maximized-mode-button', role='button'),
                     g.h(g.a(context.node().heading().export(context), tabindex=0,
                             name='main-heading', id='main-heading'), 1),
                     self._messages(context),
