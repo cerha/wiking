@@ -1,4 +1,4 @@
-# Copyright (C) 2010, 2011, 2012, 2013, 2014, 2015 Brailcom, o.p.s.
+# Copyright (C) 2010-2016 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@ import wsgiref.util
 import wsgiref.headers
 import wiking
 
-    
+
 class WsgiRequest(wiking.Request):
     """Wiking server interface implementation for WSGI.
 
@@ -32,7 +32,7 @@ class WsgiRequest(wiking.Request):
     """
     class Generator(object):
         pass
-        
+
     def __init__(self, environ, start_response, encoding='utf-8'):
         """Initializes the request with WSGI parameters.
 
@@ -67,7 +67,7 @@ class WsgiRequest(wiking.Request):
         if uri:
             uri = urlparse.urlunsplit(('', '',) + urlparse.urlsplit(uri)[2:])
         return uri
-        
+
     def param(self, name, default=None):
         def param_value(value):
             # Value processing not done in constructor (see the constructor comment).
@@ -129,7 +129,7 @@ class WsgiRequest(wiking.Request):
         if not port:
             return None
         return int(port)
-        
+
     def https(self):
         return self._environ['wsgi.url_scheme'] == 'https'
 
@@ -169,7 +169,7 @@ class WsgiEntryPoint(object):
 
     An instance of this class is created below to serve as mod_wsgi entry
     point.  The instance is callable and will be called to serve the request.
-    
+
     """
     def __init__(self):
         self._handler = None
