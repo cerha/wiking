@@ -1310,6 +1310,187 @@ class UniversalPasswordStorage(PasswordStorage):
         return self._default_prefix + ':' + self._default_storage.stored_password(password)
 
 
+class AuthenticationProvider(object):
+    """Abstract intercace for authentication providers.
+
+    Various authentication mechanisms may be implemented by implementing this
+    interface (actualy the method 'authenticate()').
+
+    An application may support multiple authentication providers which may be
+    used in a given order of precedence.  The logic and order is given by the
+    implementation od 'Application.authenticate()'.
+
+    Particular implementations handle particular authentication protocols, but
+    may be still neutral to authentication data source and session storage
+    implementation.  The 'Application' module is responsible for providing
+    authentication data through the methods 'Application.user()' and
+    'Application.verify_password()'.  The 'Session' module is responsible
+    persisting session information.  See their documentation for more details.
+
+    """
+
+    def authenticate(self, req):
+        """Perform authentication and return a 'User' instance if successful.
+
+        This method is called when authentication is needed.  A 'User' instance
+        must be returned if authentication was successful or None if not.
+        'AuthenticationError' may be raised if authentication credentials are
+        supplied but are not correct.  In other cases, None as the returned
+        value means, that the user is not logged or that the session expired.
+
+        The only argument is the request object, which may be used to obtain
+        authentication credentials, store session cookeis, headers or whatever
+        else is needed by the implemented authentication protocol.
+
+        """
+        raise NotImplementedError()
+
+
+class HTTPBasicAuthenticationProvider(AuthenticationProvider):
+    """HTTP Basic authentication provider.
+
+    HTTP authentication credentials are sent repetitively for all requests.
+    HTTP Basic authentication also doesn't support logout (there is no way to
+    tell the user agent to drop the cached credentials).  This makes HTTP
+    authentication less secure than other supported options, so this provider
+    is not included in the default setup of configuration option
+    'authentication_providers'.  However certain clients, such as some RSS
+    readers may not support other authentication mechanisms so if you care
+    about such clients, you may wish to enable HTTP Basic authentication by
+    enabling this provider through the configuration option
+    'allow_http_authentication'.
+
+    Cookies can not be used to persist the session key on the client (HTTP
+    authentication is typically the only option for clients which don't support
+    cookies).  So we use a fixed string instead of a session key.  This makes
+    the session shared for all clients of a given user.  Password must be
+    verified on every request so this causes no additional security risk.
+
+    Note, that when running on Apache and mod_wsgi, you also need to set the
+    Apache configuration option WSGIPassAuthorization to "on" to make HTTP
+    authorization work.
+
+    """
+
+    _FIXED_SESSION_KEY = 'HTTT-Basic-Authentication-Fixed-Session-Key'
+
+    def authenticate(self, req):
+        auth_header = req.header('Authorization')
+        if not auth_header or not auth_header.startswith('Basic '):
+            return None
+        credentials = auth_header.split()[1].decode("base64")
+        try:
+            login, password = [unicode(x, req.encoding()) for x in credentials.split(":", 1)]
+        except UnicodeError:
+            return None
+        application = wiking.module.Application
+        session = wiking.module.Session
+        user = application.user(req, login)
+        if not user or not application.verify_password(user, password):
+            session.failure(req, user, login)
+            raise AuthenticationError(_("Invalid login!"))
+        if not session.check(req, user, self._FIXED_SESSION_KEY):
+            application.login_hook(req, user)
+            session.init(req, user, self._FIXED_SESSION_KEY)
+        return user
+
+
+class CookieAuthenticationProvider(AuthenticationProvider):
+    """Cookie based authentication provider.
+
+    The credentials are sent just once (after login form submission).  If these
+    credentials are validated sucessfully against the stored credentials for
+    given user, a new session is initiated.  The session is identified by a
+    session key which is stored on the server as well as on the client.  Server
+    side storage is implemented by the 'Session' module, client side storage is
+    done using a browser cookie.  The session continues (and authentication is
+    accepted) as long as the server side session key matches the client side
+    key.  Each succesfull subsequent request refreshes the server side session
+    expiration interval.
+
+    Logging in is normally handled by 'LoginDialog', which is automatically
+    displayed in response to a request which raises 'AuthenticationError'.
+    When a client needs to log in programatically, the parameter '__log_in'
+    must be passed together with users login name and password in parameters
+    'login' and 'password'.
+
+    """
+    _LOGIN_COOKIE = 'wiking_login'
+    _SESSION_COOKIE = 'wiking_session_key'
+    _SECURE_AUTH_COOKIES = False
+
+    def authenticate(self, req):
+        session = wiking.module.Session
+        application = wiking.module.Application
+        if req.has_param('__log_in'):
+            # Fresh login - login form submitted.
+            login = req.param('login')
+            if not login:
+                raise AuthenticationError(_("Enter your login name, please!"))
+            password = req.param('password')
+            if not password:
+                raise AuthenticationError(_("Enter your password, please!"))
+            req.set_param('password', None)
+            user = application.user(req, login)
+            if not user or not application.verify_password(user, password):
+                session.failure(req, user, login)
+                raise AuthenticationError(_("Invalid login!"))
+            assert isinstance(user, User)
+            # Login succesfull
+            application.login_hook(req, user)
+            session_key = session.new_session_key()
+            self._set_session_cookies(req, login, session_key)
+            session.init(req, user, session_key)
+        else:
+            # Is there an existing session?
+            login, session_key = (req.cookie(self._LOGIN_COOKIE),
+                                  req.cookie(self._SESSION_COOKIE))
+            if login and session_key:
+                user = application.user(req, login)
+                if user and session.check(req, user, session_key):
+                    assert isinstance(user, User)
+                    self._set_session_cookies(req, login, session_key)
+                else:
+                    # Can not raise AuthenticationError here because of 'req.user(require=False)'.
+                    # It would also eliminate other authenication providers.
+                    # raise AuthenticationError(_("Session expired. Please log in again."))
+                    user = None
+            else:
+                user = None
+        if req.param('command') == 'logout' and user:
+            session.close(req, user, session_key)
+            req.set_cookie(self._SESSION_COOKIE, None, secure=self._SECURE_AUTH_COOKIES)
+            application.logout_hook(req, user)
+            user = None
+        elif req.param('command') == 'login' and not user:
+            raise wiking.AuthenticationRedirect()
+        return user
+
+    def _set_session_cookies(self, req, login, session_key):
+        # Session cookie expiration is used just to make the cookie persist
+        # across browser sessions.  The expiration of the cookie (client side)
+        # is, however, not decisive for the expiration of the session itself.
+        # Session expiration time is checked by the session module independently.
+        if wiking.cfg.persistent_sessions:
+            expires = wiking.cfg.session_expiration * 3600
+        else:
+            # This should make the cookie valid only until the end of the
+            # browser session.
+            expires = None
+        secure = self._SECURE_AUTH_COOKIES
+        if req.cookie(self._LOGIN_COOKIE) != login:
+            # TODO: It would be better to use UID instead of login as part of the
+            # cookie, because when login is changed during the session (typically
+            # when e-mail addresses are used as logins), this causes the session
+            # to be unnecessariy terminated.  We would, however, need to introduce
+            # another API method (user_by_uid?) or use session_key alone to
+            # check the session (thus changing the API of Session.check()).
+            # Wiking CMS has a hack to update login cookie after login change in
+            # wiking.cms.Users._redirect_after_update() to overcome this problem.
+            req.set_cookie(self._LOGIN_COOKIE, login, expires=(730 * 24 * 3600), secure=secure)
+        req.set_cookie(self._SESSION_COOKIE, session_key, expires=expires, secure=secure)
+
+
 # ============================================================================
 # Classes derived from LCG components
 # ============================================================================
@@ -1591,14 +1772,7 @@ class LoginDialog(lcg.Content):
     def export(self, context):
         g = context.generator()
         req = context.req()
-        credentials = req.credentials()
         ids = context.id_generator()
-        if credentials:
-            login = credentials[0]
-        elif req.has_param('login'):
-            login = req.param('login')
-        else:
-            login = None
         def hidden_field(name, value):
             if isinstance(value, basestring):
                 return g.hidden(name=name, value=value)
@@ -1619,7 +1793,8 @@ class LoginDialog(lcg.Content):
             for param in req.params() if param not in ('command', 'login', 'password', '__log_in')
         ] + [
             g.label(login_label + ':', for_=ids.login) + g.br(),
-            g.input(type=login_type, name='login', value=login, id=ids.login, size=18, maxlength=64,
+            g.input(type=login_type, name='login', value=req.param('login'),
+                    id=ids.login, size=18, maxlength=64,
                     autocomplete='username', autofocus=True),
             g.br(),
             g.label(_("Password") + ':', 'password') + g.br(),

@@ -24,7 +24,7 @@ The CMS application is defined as an implementation of Wiking Application Interf
 
 import lcg
 import wiking
-from wiking.cms import CMSExtension, CMSExtensionModule, CookieAuthentication, Roles, Users, \
+from wiking.cms import CMSExtension, CMSExtensionModule, Roles, Users, \
     text2content
 
 _ = lcg.TranslatableTextFactory('wiking-cms')
@@ -77,7 +77,7 @@ class AdminControl(wiking.TopBarControl):
         return items
 
 
-class Application(CookieAuthentication, wiking.Application):
+class Application(wiking.Application):
 
     _MAPPING = dict(
         wiking.Application._MAPPING,
@@ -300,38 +300,37 @@ class Application(CookieAuthentication, wiking.Application):
     def stylesheets(self, req):
         return wiking.module.StyleSheets.stylesheets(req)
 
-    def _auth_user(self, req, login):
+    def user(self, req, login):
         user = wiking.module.Users.user(req, login)
         if user is None and wiking.cms.cfg.allow_registration:
             # It is possible, that the user doesn't exist in the
             # application specific users table, but exists in the base
             # table of wiking CMS (the user was registered for some other
             # application sharing the same database).  Here we test if
-            # that's the case and handle the situation in the _auth_hook()
+            # that's the case and handle the situation in the login_hook()
             # below.
             user = wiking.module('wiking.cms.Users').user(req, login)
             if user and user.state() == Users.AccountState.NEW:
                 user = None
         return user
 
-    def _auth_hook(self, req, user):
+    def login_hook(self, req, user):
         if not wiking.module.Users.user(req, user.login()):
-            # See _auth_user() for comments.
+            # See 'user()' for comments.
             regcode = wiking.module('wiking.cms.Users').regenerate_registration_code(user)
             req.message(_("User %s is already registered for another site. "
                           "Please, confirm the account for this site.", user.login()))
             raise wiking.Redirect(req.module_uri('Registration'),
                                   action='reinsert', login=user.login(), regcode=regcode)
 
-    def _auth_check_password(self, user, password):
+    def verify_password(self, user, password):
         storage = wiking.cms.cfg.password_storage
         return storage.check_password(password, user.data()['password'].value())
 
-    def _logout_hook(self, req, user):
-        super(Application, self)._logout_hook(req, user)
-        if user is None:
-            return
-        wiking.module.CryptoKeys.clear_crypto_passwords(req, user)
+    def logout_hook(self, req, user):
+        super(Application, self).logout_hook(req, user)
+        if user is not None:
+            wiking.module.CryptoKeys.clear_crypto_passwords(req, user)
 
     def contained_roles(self, role):
         role_sets = wiking.module.RoleSets

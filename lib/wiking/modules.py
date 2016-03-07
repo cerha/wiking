@@ -1,4 +1,4 @@
-# Copyright (C) 2005-2015 Brailcom, o.p.s.
+# Copyright (C) 2005-2016 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -475,154 +475,19 @@ class SubmenuRedirect(Module, RequestHandler):
             raise Exception("Menu item for '%s' not found." % id)
 
 
-class CookieAuthentication(object):
-    """Implementation of cookie based authentication for Wiking Application.
-
-    This class implements cookie based authentication, but is still neutral to authentication data
-    source.  Any possible source of authentication data may be used by implementing the methods
-    '_auth_user()' and '_auth_check_password()'.  See their documentation for more information.
-
-    This class may be used as a Mix-in class derived by the application which wishes to use it.
-
-    """
-
-    _LOGIN_COOKIE = 'wiking_login'
-    _SESSION_COOKIE = 'wiking_session_key'
-    _SECURE_AUTH_COOKIES = False
-
-    def _auth_user(self, req, login):
-        """Return a 'User' instance for given 'login'.
-
-        This method may be used to retrieve authentication data from any
-        source, such as database table, file, LDAP server etc.  A 'User'
-        instance corresponding to given login name must be returned if it
-        exists.  'None' is returned if no such user exists.
-
-        Further password checking is performed later by the method
-        '_auth_check_password()', so this method doesn't care whether
-        authentication is valid or not.
-
-        """
-        return None
-
-    def _auth_check_password(self, user, password):
-        """Check authentication password for given user.
-
-        Arguments:
-
-          user -- 'User' instance
-          password -- supplied password as a string
-
-        Return True if given password is the correct login password for given user.
-
-        """
-        return False
-
-    def _auth_hook(self, req, user):
-        """Hook executed after a succesfull authentication.
-
-        Arguments:
-
-          req -- current request object
-          user -- 'User' instance of the authenticated user
-
-        """
-        pass
-
-    def authenticate(self, req):
-        session = wiking.module.Session
-        # When HTTP authentication is used, req.credentials() returns the
-        # credentials for every subsequent request (for cookie authentication
-        # the credentials are sent just once on login form submission).  This
-        # is quite unfortunate, since it results in new session initialization
-        # for each request.  This should be solved if HTTP authentication is
-        # used seriously.  Probably there should be two separate methods to
-        # return login form credentials and HTTP authentication credentials.
-        # HTTP authentication should probably not interfer with session at all
-        # and should be implemented in a separate class.  The question is how
-        # to combine the two methods nicely together.  It is important to
-        # support login hooks for HTTP authentication too, otherwise the users
-        # would be able to use HTTP authentication to make unnoticed logins.
-        credentials = req.credentials()
-        if credentials:
-            login, password = credentials
-            if not login:
-                raise AuthenticationError(_("Enter your login name, please!"))
-            if not password:
-                raise AuthenticationError(_("Enter your password, please!"))
-            user = self._auth_user(req, login)
-            if not user or not self._auth_check_password(user, password):
-                session.failure(req, user, login)
-                raise AuthenticationError(_("Invalid login!"))
-            assert isinstance(user, User)
-            # Login succesfull
-            self._auth_hook(req, user)
-            session_key = session.session_key()
-            self._set_session_cookies(req, login, session_key)
-            session.init(req, user, session_key)
-        else:
-            login, session_key = (req.cookie(self._LOGIN_COOKIE),
-                                  req.cookie(self._SESSION_COOKIE))
-            if login and session_key:
-                user = self._auth_user(req, login)
-                if user and session.check(req, user, session_key):
-                    assert isinstance(user, User)
-                    self._set_session_cookies(req, login, session_key)
-                else:
-                    user = None
-            else:
-                user = None
-        if req.param('command') == 'logout' and user:
-            session.close(req, user, session_key)
-            self._logout_hook(req, user)
-            user = None
-        elif req.param('command') == 'login' and not user:
-            raise wiking.AuthenticationRedirect()
-        if user is not None:
-            password_expiration = user.password_expiration()
-            if password_expiration is not None and req.uri() != self.password_change_uri(req):
-                if password_expiration <= datetime.date.today():
-                    raise wiking.PasswordExpirationError()
-        return user
-
-    def _set_session_cookies(self, req, login, session_key):
-        # Session cookie expiration is used just to make the cookie persist
-        # across browser sessions.  The expiration of the cookie (client side)
-        # is, however, not decisive for the expiration of the session itself.
-        # Session expiration time is checked by the session module independently.
-        if wiking.cfg.persistent_sessions:
-            expires = wiking.cfg.session_expiration * 3600
-        else:
-            # This should make the cookie valid only until the end of the
-            # browser session.
-            expires = None
-        secure = self._SECURE_AUTH_COOKIES
-        if req.cookie(self._LOGIN_COOKIE) != login:
-            # TODO: It would be better to use UID instead of login as part of the
-            # cookie, because when login is changed during the session (typically
-            # when e-mail addresses are used as logins), this causes the session
-            # to be unnecessariy terminated.  We would, however, need to introduce
-            # another API method (_auth_user_by_uid?) or use session_key alone to
-            # check the session (thus changing the API of Session.check()).
-            # Wiking CMS has a hack to update login cookie after login change in
-            # wiking.cms.Users._redirect_after_update() to overcome this problem.
-            req.set_cookie(self._LOGIN_COOKIE, login, expires=(730 * 24 * 3600), secure=secure)
-        req.set_cookie(self._SESSION_COOKIE, session_key, expires=expires, secure=secure)
-
-    def _logout_hook(self, req, user):
-        req.set_cookie(self._SESSION_COOKIE, None, secure=self._SECURE_AUTH_COOKIES)
-
-
 class Session(Module):
     """Session management module abstract interface.
 
-    The 'Session' module is required by 'CookieAuthentication' module.  The application must
-    implement the methods 'init()', 'check()' and 'close()' to store session information between
+    The 'Session' module may be used by 'AuthenticationProvider'
+    implementations to persist session state and data.
+
+    The implementations of this abstract interface must implement the methods
+    'init()', 'check()' and 'close()' to store session information between
     requests.
 
     """
 
-    def session_key(self, length=64):
+    def new_session_key(self, length=64):
         """Generate a new random session key and return it as a string.
 
         Arguments:
@@ -640,20 +505,25 @@ class Session(Module):
     def init(self, req, user, session_key):
         """Begin new session for given user ('User' instance) with given session key.
 
-        The method is responsible for storing given session key in a persistent storage to allow
-        later checking during upcoming requests.
+        The method is responsible for storing given session key in a persistent
+        storage to allow later checking during upcoming requests.
 
-        The caller is responsible for storing the session key within the user's browser as a cookie
-        and passing it back to the 'check()' or 'close()' methods within upcoming requests.
+        The caller is responsible for storing the session key within the user's
+        browser as a cookie and passing it back to the 'check()' or 'close()'
+        methods within upcoming requests.
 
-        The method 'session_key()' may be used to generate a new session key to be passed as the
-        'session_key' argument.
+        The method 'new_session_key()' may be used to generate a new session
+        key to be passed as the 'session_key' argument.
 
         """
         return None
 
     def check(self, req, user, session_key):
-        """Return true if session_key is valid for an active session of given user."""
+        """Return true if session_key is valid for an active session of given user.
+
+        Extend the session lifetime if the check is succesful.
+
+        """
         return False
 
     def close(self, req, user, session_key):

@@ -22,6 +22,7 @@ import re
 import pytis
 import wiking
 import lcg
+import datetime
 from wiking import OPR, log
 
 _ = lcg.TranslatableTextFactory('wiking')
@@ -74,6 +75,9 @@ class Application(wiking.Module):
             uri += '-' + wiking.cfg.resources_version
             self._mapping[uri] = 'Resources'
             self._reverse_mapping['Resources'] = uri
+        self._authentication_providers = [wiking.CookieAuthenticationProvider()]
+        if wiking.cfg.allow_http_authentication:
+            self._authentication_providers.append(wiking.HTTPBasicAuthenticationProvider())
 
 
     def initialize(self, req):
@@ -169,6 +173,130 @@ class Application(wiking.Module):
         identitier = self._reverse_mapping.get(modname)
         return identitier and '/' + identitier or None
 
+    def authenticate(self, req):
+        """Perform authentication and return a 'User' instance if successful.
+
+        This method is called when authentication is needed.  A 'User' instance
+        must be returned if authentication was successful or None if not (user
+        is not logged or session expired).
+
+        Applications should not call this method directly.  Use
+        'Request.user()' to get the cached result for the current request.
+        This method may be overriden by derived applications if they want to
+        modify its default implementation.
+
+        The default implementation uses the configured authentication
+        providers.  'CookieAuthenticationProvider' is tried first and if it
+        returns None, 'HTTPBasicAuthenticationProvider' is tried second if
+        'allow_http_authentication' configuration option is enabled.  Password
+        expiration date is verified if one of the providers returns a 'User'
+        instance (authentication was succesful).
+
+        'AuthenticationError' may be raised if login credentials were passed
+        but are not valid (what that means depends on particular authentication
+        providers).
+
+        'PasswordExpirationError' may be raised if the user is correctly
+        authenticated, but 'User.password_expiration()' date is today or
+        earlier.
+
+        """
+        for provider in self._authentication_providers:
+            user = provider.authenticate(req)
+            if user is not None:
+                password_expiration = user.password_expiration()
+                password_change_uri = self.password_change_uri(req)
+                if password_expiration is not None and req.uri() != password_change_uri:
+                    if password_expiration <= datetime.date.today():
+                        raise wiking.PasswordExpirationError()
+                return user
+        return None
+
+    def user(self, req, login):
+        """Return a 'User' instance for given 'login'.
+
+        This method must be implemented by derived applications to retrieve user's
+        data from authentication data source, such as database table, file,
+        LDAP server etc.  A 'User' instance corresponding to given login name
+        must be returned if it exists.  'None' is returned if no such user
+        exists.
+
+        Further password verification is performed later by the method
+        'verify_password()', so this method doesn't care whether authentication
+        is valid or not.
+
+        The default implementation returns None.
+
+        """
+        return None
+
+    def verify_password(self, user, password):
+        """Verify authentication password for given user.
+
+        Arguments:
+          user -- 'User' instance
+          password -- user supplied password as a string
+
+        This method must be implemented by derived applications to verify
+        user's password.  True must be returned if given password is the
+        correct login password for given user or False it it is not.
+
+        The default implementation always returns False.
+
+        """
+        return False
+
+    def login_hook(self, req, user):
+        """Hook executed after succesfull authentication.
+
+        Arguments:
+
+          req -- current request object
+          user -- 'User' instance of the authenticated user
+
+        The default implementation does nothing.  Derived applications may
+        override it.
+
+        """
+        pass
+
+    def logout_hook(self, req, user):
+        """Hook executed when session is closed explicitly by user.
+
+        Arguments:
+
+          req -- current request object
+          user -- 'User' instance of the authenticated user
+
+        The default implementation does nothing.  Derived applications may
+        override it.
+
+        """
+        pass
+
+    def contained_roles(self, role):
+        """Return the sequence of user roles contained in given role.
+
+        Arguments:
+
+          role -- User role as a 'Role' instance.
+
+        In general, user roles may be contained in each other.  This means that
+        user's membersip in one role (let's say role A) may automatically imply
+        his membership in other roles (B and C for example).  Roles B and C
+        contain role A in this example.  If role containment is supported by
+        the application, this method must be implemented and must return the
+        list of all contained roles (including the given role itself and also
+        transitively contained roles).
+
+        In any case there may be no cycles in role containment, i.e. no role
+        may contain itself, including transitive relations.  For instance, role
+        A may not contain A; or if A contains B and B contains C then C may not
+        contain A nor B nor C.
+
+        """
+        return ()
+
     def site_title(self, req):
         """Return site title as a string.
 
@@ -256,57 +384,6 @@ class Application(wiking.Module):
         application or at least throughout its major states, but this is just a
         common practice, not a requirement.  The application may decide to
         return a different menu for each request.
-
-        """
-        return ()
-
-    def authenticate(self, req):
-        """Perform authentication and return a 'User' instance if successful.
-
-        This method is called when authentication is needed.  A 'User' instance
-        must be returned if authentication was successful or None if not.
-        'AuthenticationError' may be raised if authentication credentials are
-        supplied but are not correct.  'PasswordExpirationError' may be raised
-        if the user is correctly authenticated, but user's
-        'password_expiration' date is today or earlier.  In other cases, None
-        as the returned value means, that the user is not logged or that the
-        session expired.
-
-        The only argument is the request object, which may be used to obtain
-        authentication credentials, store session data (for example as cookies)
-        or whatever else is needed by the implemented authentication mechanism.
-
-        The default implementation does nothing, so the authentication process
-        is passed succesfully, but no user is authenticated, so any further
-        authorization checking will lead to an error.
-
-        Wiking also provides the `CookieAuthentication' class, which implements
-        standard cookie based authentication and may be extended to perform
-        login validation against any external source.  This module should be
-        usefult for most real authentication scenarios.
-
-        """
-        return None
-
-    def contained_roles(self, role):
-        """Return the sequence of user roles contained in given role.
-
-        Arguments:
-
-          role -- User role as a 'Role' instance.
-
-        In general, user roles may be contained in each other.  This means that
-        user's membersip in one role (let's say role A) may automatically imply
-        his membership in other roles (B and C for example).  Roles B and C
-        contain role A in this example.  If role containment is supported by
-        the application, this method must be implemented and must return the
-        list of all contained roles (including the given role itself and also
-        transitively contained roles).
-
-        In any case there may be no cycles in role containment, i.e. no role
-        may contain itself, including transitive relations.  For instance, role
-        A may not contain A; or if A contains B and B contains C then C may not
-        contain A nor B nor C.
 
         """
         return ()

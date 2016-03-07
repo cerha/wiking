@@ -1,4 +1,4 @@
-# Copyright (C) 2006-2015 Brailcom, o.p.s.
+# Copyright (C) 2006-2016 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -288,13 +288,11 @@ class Request(ServerInterface):
         self._forwards = []
         self._module_uri = {}
         self._user = self._UNDEFINED
-        self._fresh_login = False
         self._cookies = Cookie.SimpleCookie(self.header('Cookie'))
         self._preferred_language = None
         self._preferred_languages = None
         self._timezone = self._UNDEFINED
         self._localizer = {}
-        self._credentials = self._init_credentials()
         self._decryption_password = self._init_decryption_password()
         self._messages = self._init_messages()
         if self.has_param('maximize'):
@@ -307,22 +305,6 @@ class Request(ServerInterface):
             # Prevent directory traversal attacs globally (no need to handle them all around).
             raise wiking.Forbidden()
         self.unresolved_path = list(self.path)
-
-    def _init_credentials(self):
-        login, password = None, None
-        if self.has_param('__log_in'):
-            self.set_param('__log_in', None)
-            if self.has_param('login'):
-                login = self.param('login')
-                self.set_param('login', None)
-            if self.has_param('password'):
-                password = self.param('password')
-                self.set_param('password', None)
-            self._fresh_login = True
-        if login or password:
-            return login, password
-        else:
-            return None
 
     def _init_decryption_password(self):
         password = None
@@ -396,6 +378,10 @@ class Request(ServerInterface):
             c[name]['secure'] = True
         cookie = c[name].OutputString()
         self.set_header('Set-Cookie', cookie)
+
+    def encoding(self):
+        """Return the character encoding used in HTTP communication."""
+        return self._encoding
 
     def server_uri(self, force_https=False, current=False):
         """Return full server URI as a string.
@@ -515,9 +501,7 @@ class Request(ServerInterface):
 
         """
         if content_type is not None:
-            if isinstance(content_type, unicode):
-                content_type = str(content_type)
-            self.set_header('Content-Type', content_type)
+            self.set_header('Content-Type', str(content_type))
         if content_length is not None:
             self.set_header('Content-Length', str(content_length))
         if last_modified is not None:
@@ -677,15 +661,6 @@ class Request(ServerInterface):
         if anchor:
             uri += '#' + anchor
         return uri
-
-    def fresh_login(self):
-        """Return True iff this is a fresh login.
-
-        The login is fresh when authentication was initialized witin the
-        current request (credentials were passed).
-
-        """
-        return self._fresh_login
 
     def forward(self, handler, **kwargs):
         """Pass the request on to another handler keeping track of the forwarding history.
@@ -863,38 +838,6 @@ class Request(ServerInterface):
             self._localizer[lang] = localizer
         return localizer
 
-    def credentials(self):
-        """Return the login name and password as given by the user.
-
-        The return value is either a pair of unicode strings (user, password)
-        or None if no credentials were passed with the request. The method
-        supports both, the cookie based authentication mechanism (through the
-        Wiking Login form) and standard HTTP Basic authentication in this order
-        of priority.  The difference is that HTTP authentication credentials
-        are sent repetitively for all subsequent requests, however with cookie
-        authentication, the credentials are sent just once (after login form
-        submission).  HTTP authentication also doesnt support logout (there is
-        no way to tell the user agent to drop the cached credentials).
-
-        The return value does not indicate anything about authentication.  The
-        credentials are actually used by the authentication mechanism which
-        decides whether they are valid or not.
-
-        """
-        if self._credentials:
-            return self._credentials
-        if wiking.cfg.allow_http_authentication:
-            # Return HTTP Basic auth credentials if available
-            auth_header = self.header('Authorization')
-            if auth_header and auth_header.startswith('Basic '):
-                encoded_credentials = auth_header.split()[1]
-                decoded_credentials = encoded_credentials.decode("base64").split(":", 1)
-                try:
-                    return tuple([unicode(x, self._encoding) for x in decoded_credentials])
-                except UnicodeError:
-                    return None
-        return None
-
     def decryption_password(self):
         """Return decryption password as given by the user."""
         return self._decryption_password
@@ -904,16 +847,22 @@ class Request(ServerInterface):
 
         Arguments:
 
-          require -- boolean flag indicating that the user is required to be logged (anonymous
-            access not allowed).  If set to true and no user is logged, AuthenticationError will be
-            raised (just as a convenience extension).  If false, None is returned, but
-            AuthenticationError may still be raised when login credentials are not valid.
+          require -- boolean flag indicating that the user is required to be
+            logged (anonymous access not allowed).  If set to true and no user
+            is logged, 'AuthenticationError' is raised instead of returning
+            None.  If 'require' is false and no user is logged, None is
+            silently returned.
+
+        This method actually caches the result of 'Application.authenticate()'
+        for the current request instance.  Thus any exceptions raised by this
+        method may propagate.
 
         """
         if self._user is self._UNDEFINED:
             # Set to None for the case that authentication raises an exception.
             self._user = None
             # AuthenticationError may be raised if the credentials are invalid.
+            # PasswordExpirationError may be raised if user's password expired.
             self._user = wiking.module.Application.authenticate(self)
         if require and self._user is None:
             #if session_timed_out:

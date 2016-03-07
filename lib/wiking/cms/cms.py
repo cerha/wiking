@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2006-2015 Brailcom, o.p.s.
+# Copyright (C) 2006-2016 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -356,7 +356,7 @@ class CMSModule(wiking.PytisModule, wiking.RssModule):
             raise wiking.DecryptionError(unavailable_names.pop())
 
     def _generate_crypto_cookie(self):
-        return wiking.module.Session.session_key()
+        return wiking.module.Session.new_session_key()
 
     def _panel_condition(self, req, relation):
         if relation:
