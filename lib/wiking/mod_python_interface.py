@@ -1,4 +1,4 @@
-# Copyright (C) 2006-2012 Brailcom, o.p.s.
+# Copyright (C) 2006-2012, 2016 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -58,6 +58,9 @@ class ModPythonRequest(wiking.Request):
 
     def unparsed_uri(self):
         return self._req.unparsed_uri
+
+    def method(self):
+        return self._req.method
 
     def param(self, name, default=None):
         return self._params.get(name, default)

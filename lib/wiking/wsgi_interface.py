@@ -68,6 +68,9 @@ class WsgiRequest(wiking.Request):
             uri = urlparse.urlunsplit(('', '',) + urlparse.urlsplit(uri)[2:])
         return uri
 
+    def method(self):
+        return self._environ['REQUEST_METHOD']
+
     def param(self, name, default=None):
         def param_value(value):
             # Value processing not done in constructor (see the constructor comment).

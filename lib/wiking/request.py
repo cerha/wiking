@@ -90,6 +90,14 @@ class ServerInterface(pytis.web.Request):
         """
         pass
 
+    def method(self):
+        """Return the used HTTP request method.
+
+        The returned value is a string.  One of 'GET', 'POST', 'PUT', 'DELETE', etc.
+
+        """
+        pass
+
     def param(self, name, default=None):
         """Return the value of request parameter 'name' or 'default' if not present.
 
