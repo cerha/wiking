@@ -514,8 +514,6 @@ class Request(ServerInterface):
             self.set_header('Content-Length', str(content_length))
         if last_modified is not None:
             self.set_header('Last-Modified', format_http_date(last_modified))
-        if status_code == 401:
-            self.set_header('WWW-Authenticate', 'Basic realm="%s"' % wiking.cfg.site_title)
         self.start_http_response(status_code)
 
     def send_response(self, data, content_type="text/html", content_length=None,

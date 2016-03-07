@@ -85,11 +85,15 @@ class RequestError(Exception):
         self._stack = tuple(inspect.stack()[1:])
         super(RequestError, self).__init__(*args, **kwargs)
 
+    def status_code(self):
+        """Return the HTTP response status code corresponding to the error type."""
+        return self._STATUS_CODE
+
     def title(self, req):
         if self._TITLE is not None:
             return self._TITLE
         else:
-            code = self.status_code(req)
+            code = self.status_code()
             name = " ".join(pp.split_camel_case(self.__class__.__name__))
             if code == httplib.OK:
                 return name
@@ -101,14 +105,6 @@ class RequestError(Exception):
     def content(self, req):
         """Return the error page content as an 'lcg.Content' element structure."""
         pass
-
-    def status_code(self, req):
-        """Return the HTTP response status code corresponding to this request error.
-
-        The code is 200 (OK) for errors which don't map to HTTP errors.
-
-        """
-        return self._STATUS_CODE
 
     def stack(self):
         """Return Python call stack state saved in the constructor.
@@ -126,7 +122,7 @@ class AuthenticationError(RequestError):
 
     # Translators: This is a warning on a webpage which is only accessible for logged in users
     _TITLE = _("Authentication required")
-    _HTTP_AUTH_MATCHER = re.compile('.*(Thunderbird|Icedove|Liferea|Pytis)/.*')
+    _HTTP_AUTH_MATCHER = re.compile('.*(Thunderbird|Icedove|Liferea|Pytis|unknown)/.*')
     """Regular expression matching user agents for which HTTP authentication is used automatically.
 
     HTTP authentication is normally requested by client through the special
@@ -145,28 +141,24 @@ class AuthenticationError(RequestError):
 
     """
 
-    def status_code(self, req):
-        """Return authentication error page status code.
-
-        If HTTP authentication is active (either requested explicitly or turned
-        on automatically -- see '_HTTP_AUTH_MATCHER'), the status code 401
-        (UNAUTHORIZED) is returned, otherwise the code is 200 (OK)
-        and cookie based authentication mechanism will be used.
-
-        """
-        agent = req.header('User-Agent')
-        if wiking.cfg.allow_http_authentication and \
-                (req.param('__http_auth') or
-                 agent is None or self._HTTP_AUTH_MATCHER.match(agent)):
-            # Ask for HTTP Basic authentication.
-            return httplib.UNAUTHORIZED
-        else:
-            return httplib.OK
+    _STATUS_CODE = httplib.UNAUTHORIZED
 
     def content(self, req):
-        appl = wiking.module.Application
         if self.args:
             req.message(self.args[0], req.ERROR)
+        # TODO: Setting headers here is not very elegant.  Shall we have a separate method?
+        if ((wiking.cfg.allow_http_authentication
+             and (req.param('__http_auth') # HTTP Basic auth explicitly requested.
+                  # Force Basic auth for certain clients.
+                  or self._HTTP_AUTH_MATCHER.match(req.header('User-Agent', 'unknown/?'))
+                  # This was an invalid Basic auth attempt.
+                  or req.header('Authorization', '').startswith('Basic ')))):
+            auth_type = 'Basic'
+        else:
+            # This is not a stantdard HTTP authentication type, but it is recommended by some.
+            auth_type = 'Cookie'
+        req.set_header('WWW-Authenticate', '%s realm="%s"' % (auth_type, wiking.cfg.site_title))
+        appl = wiking.module.Application
         return LoginDialog(registration_uri=appl.registration_uri(req),
                            forgotten_password_uri=appl.forgotten_password_uri(req),
                            extra_content=appl.login_dialog_content(req),

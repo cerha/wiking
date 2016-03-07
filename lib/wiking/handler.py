@@ -1,4 +1,4 @@
-# Copyright (C) 2006-2015 Brailcom, o.p.s.
+# Copyright (C) 2006-2016 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -248,7 +248,7 @@ class Handler(object):
                                   wiking.Abort, wiking.DisplayDocument)):
             self._application.log_error(req, error)
         document = wiking.Document(error.title(req), error.content(req))
-        return self._serve_document(req, document, status_code=error.status_code(req))
+        return self._serve_document(req, document, status_code=error.status_code())
 
     def _handle(self, req):
         try:
@@ -300,7 +300,7 @@ class Handler(object):
                 else:
                     raise Exception('Invalid wiking handler result: %s' % type(result))
             except wiking.NotModified as error:
-                return req.send_response('', status_code=error.status_code(req), content_type=None)
+                return req.send_response('', status_code=error.status_code(), content_type=None)
             except wiking.RequestError as error:
                 # Try to authenticate now, but ignore all errors within authentication except
                 # for AuthenticationError.
