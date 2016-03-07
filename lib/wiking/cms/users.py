@@ -989,11 +989,6 @@ class Users(UserManagementModule, CachingPytisModule):
             return '_registration'
         return super(Users, self)._base_uri(req)
 
-    def _action_subtitle(self, req, action, record=None):
-        if action == 'insert' and req.path[0] == '_registration':
-            return None
-        return super(Users, self)._action_subtitle(req, action, record=record)
-
     def _form_actions(self, req, record, form, exclude=()):
         if req.path[0] == '_registration':
             exclude += ('list',)
@@ -1428,8 +1423,8 @@ class Users(UserManagementModule, CachingPytisModule):
                         g.field(name='query', value=req.param('query'), id=ids.query,
                                 tabindex=0, size=60),
                         g.noescape('&nbsp;'),
-                        # Translators: Button name. Computer terminology. Use an appropriate term common
-                        # for submitting forms in a computer application.
+                        # Translators: Button name. Computer terminology. Use an appropriate
+                        # term common for submitting forms in a computer application.
                         g.button(g.span(_("Submit")), type='submit', cls='submit'),
                     )),
                     g.hidden('action', 'reset_password'),
@@ -1767,7 +1762,6 @@ class Registration(Module, ActionHandler):
 
     def action_reset_password(self, req):
         return wiking.module.Users.action_reset_password(req)
-
 
 
 class ActivationForm(lcg.Content):
