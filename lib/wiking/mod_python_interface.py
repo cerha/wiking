@@ -24,7 +24,7 @@ import mod_python, mod_python.util, mod_python.apache
 
 class ModPythonRequest(wiking.Request):
     """Mod_python server interface implementing the 'wiking.Request' interface."""
-    
+
     def __init__(self, req):
         self._req = req
         # UTF-8 seems to always work, but it should probably be taken from request headers
@@ -38,7 +38,7 @@ class ModPythonRequest(wiking.Request):
     def _init_options(self):
         options = self._req.get_options()
         return dict([(o, options[o]) for o in options.keys()])
-        
+
     def _init_params(self, encoding):
         def init_value(value):
             if isinstance(value, (tuple, list)):
@@ -55,26 +55,26 @@ class ModPythonRequest(wiking.Request):
 
     def uri(self):
         return self._uri
-    
+
     def unparsed_uri(self):
         return self._req.unparsed_uri
-        
+
     def param(self, name, default=None):
         return self._params.get(name, default)
-        
+
     def params(self):
         return self._params.keys()
-        
+
     def has_param(self, name):
         return name in self._params
-    
+
     def set_param(self, name, value):
         if value is None:
             if name in self._params:
                 del self._params[name]
         else:
             self._params[name] = value
-        
+
     def header(self, name, default=None):
         try:
             return self._req.headers_in[name]
@@ -88,13 +88,13 @@ class ModPythonRequest(wiking.Request):
             self._req.set_content_length(int(value))
         else:
             self._req.headers_out.add(name, value.encode(self._encoding))
-        
+
     def port(self):
         return self._req.connection.local_addr[1]
 
     def https(self):
         return self._req.connection.local_addr[1] in wiking.cfg.https_ports
-    
+
     def remote_host(self):
         return self._req.get_remote_host()
 
@@ -119,7 +119,7 @@ class ModPythonRequest(wiking.Request):
 
     def option(self, name, default=None):
         return self._options.get(name, default)
-    
+
     def certificate(self):
         if self._req.ssl_var_lookup('SSL_CLIENT_VERIFY') == 'SUCCESS':
             certificate = self._req.ssl_var_lookup('SSL_CLIENT_CERT')
@@ -138,7 +138,7 @@ class ModPythonHandler(object):
 
     An instance of this class is created below to serve as mod_python entry
     point.  The instance is callable and will be called to serve the request.
-    
+
     Mod_python instances are isolated by default, so Apache will create one
     instance of this class for each virtual host.  Moreover, there will be a
     separate set of mod_python instances for each web server instance.
