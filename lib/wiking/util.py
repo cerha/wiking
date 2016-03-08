@@ -47,38 +47,46 @@ _ = lcg.TranslatableTextFactory('wiking')
 class RequestError(Exception):
     """Base class for predefined error states within request handling.
 
-    Classes derived from this class represent typical error situations in
-    request handling.  They usually don't represent an error in the
-    application, but rater an invalid state in request processing, such as
-    unauthorized access, request for an invalid URI etc.  They usually map to
-    error states defined by the HTTP protocol.
-
-    Request errors are normally handled by displaying an error message within
-    the content part of the page.  The overall page layout, including
-    navigation and other static page content is displayed as on any other page.
-    Most error types are not logged neither emailed, since they are caused by
-    an invalid request, not a bug in the application.
+    Classes derived from this class may represent an error in the application
+    itself ('InternalServerError'), temporary state ('ServiceUnavailable'), an
+    invalid client request ('BadRequest', 'AuthenticationError', 'Forbidden',
+    'AuthorizationError', 'NotFound', 'NotAcceptable', ...) or indicate other
+    special state ('Redirect', 'NotModified', ...).  They map to error states
+    defined by the HTTP protocol
+    (https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html).
 
     The Wiking handler is responsible for handling these errors approprietly.
     This usually means to output a page with title and body content as returned
     by the methods 'title()' and 'content()' and setting the HTTP response
-    status code according to 'status_code()'.
+    status code according to 'status_code()'.  The overall page layout,
+    including navigation and other static page content is displayed as on any
+    other page.  API requests (not produced by a user from a browser) will
+    automatically obtain a machine readable representation of the error as a
+    JSON data structure.
+
+    The classes which indicate an error in the application are in addition
+    logged and serious errors are also sent by e-mail notification (if
+    configuration option 'bug_report_address' is set).
 
     This class is abstract.  The error code and error message must be defined
-    by a derived class.  The error message may also require certain constructor
-    arguments passed when raising the error.
+    by a derived class.  Some subclasses may also require certain constructor
+    arguments when the error is raised.
 
     """
+
+    _STATUS_CODE = None
+    """Relevant HTTP status code."""
+
     _TITLE = None
+    """User visible error page title.
 
-    _STATUS_CODE = httplib.OK
-    """Relevant HTTP status code.
-
-    The code may be 200 (OK) for errors which don't map to HTTP errors.
+    If None, default title is constructed from class name and status code, such
+    as "Error 404: Not Found".
 
     """
-    # TODO: The 'req' object should be required as constructor argument and
-    # avoided in all public methods.  This change requires changes in
+
+    # TODO: Maybe the 'req' instance should be required as constructor argument
+    # and avoided in all public methods.  This change requires changes in
     # applications, so it must be done carefully...
 
     def __init__(self, message=None):
