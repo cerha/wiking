@@ -47,19 +47,21 @@ _ = lcg.TranslatableTextFactory('wiking')
 class RequestError(Exception):
     """Base class for predefined error states within request handling.
 
-    Exceptions of this class represent unexpected situations in request
-    handling.  They typically don't represent an error in the application, but
-    rater an invalid state in request processing, such as unauthorized access,
-    request for an invalid URI etc.  Such errors are normally handled by
-    displaying an error message within the content part of the page.  The
-    overall page layout, including navigation and other static page content is
-    displayed as on any other page.  Most error types are not logged neither
-    emailed, since they are caused by an invalid request, not a bug in the
-    application.
+    Classes derived from this class represent typical error situations in
+    request handling.  They usually don't represent an error in the
+    application, but rater an invalid state in request processing, such as
+    unauthorized access, request for an invalid URI etc.  They usually map to
+    error states defined by the HTTP protocol.
+
+    Request errors are normally handled by displaying an error message within
+    the content part of the page.  The overall page layout, including
+    navigation and other static page content is displayed as on any other page.
+    Most error types are not logged neither emailed, since they are caused by
+    an invalid request, not a bug in the application.
 
     The Wiking handler is responsible for handling these errors approprietly.
     This usually means to output a page with title and body content as returned
-    by the methods 'title()' and 'message()' and setting the HTTP response
+    by the methods 'title()' and 'content()' and setting the HTTP response
     status code according to 'status_code()'.
 
     This class is abstract.  The error code and error message must be defined
@@ -79,17 +81,32 @@ class RequestError(Exception):
     # avoided in all public methods.  This change requires changes in
     # applications, so it must be done carefully...
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, message=None):
+        self._message = message
         import inspect
-        # Ignore the current frame as we are only interested where the constructor was called.
+        # Ignore the first frame as we are only interested where the constructor was called.
         self._stack = tuple(inspect.stack()[1:])
-        super(RequestError, self).__init__(*args, **kwargs)
+        super(RequestError, self).__init__()
+
+    def _messages(self, req):
+        """Return the error information as a tuple of (localizable) strings.
+
+        Override this method to define the information returned by 'content()'
+        and 'message()' at one place.
+
+        """
+        return (self._message,) if self._message else ()
 
     def status_code(self):
         """Return the HTTP response status code corresponding to the error type."""
         return self._STATUS_CODE
 
-    def title(self, req):
+    def headers(self, req):
+        """Return a list of (HEADER, VALUE) pairs to be set for this error response."""
+        return []
+
+    def title(self):
+        """Return the error title as a (localizable) string."""
         if self._TITLE is not None:
             return self._TITLE
         else:
@@ -102,12 +119,40 @@ class RequestError(Exception):
                 # '%(name)s' by error title.
                 return _("Error %(code)d: %(name)s", code=code, name=name)
 
+    def message(self, req):
+        """Return the error message as a (localizable) string.
+
+        This message is returned in machine readable in API request responses.
+        The information should match the information returned by 'content()',
+        but formatted in plain text.  None may be returned if no message is
+        defined.
+
+        The default implementation returns the result of '_messages()'
+        concatenated into one string by spaces.  It is recommended to override
+        '_messages()' in derived classes to define the information for
+        'content()' and 'message()' at one place.
+
+        """
+        return lcg.concat(self._messages(req), separator=' ') or None
+
     def content(self, req):
-        """Return the error page content as an 'lcg.Content' element structure."""
-        pass
+        """Return the error page content as a list of 'lcg.Content' instances.
+
+        This content is displayed to users in a browser.  The displayed
+        information should match the information returned by 'message()' but
+        formatted for visual user agent.  It may also contain additional
+        information specific for browser users.
+
+        The default implementation returns the result of '_messages()'
+        formatted as separate paragraphs.  It is recommended to override
+        '_messages()' in derived classes to define the information for
+        'content()' and 'message()' at one place.
+
+        """
+        return [lcg.p(message) for message in self._messages(req)]
 
     def stack(self):
-        """Return Python call stack state saved in the constructor.
+        """Return the Python call stack state saved in the constructor.
 
         This makes it possible to determine later where this error instance was
         created.  The returned value is a list of tuples as returned by
@@ -143,10 +188,7 @@ class AuthenticationError(RequestError):
 
     _STATUS_CODE = httplib.UNAUTHORIZED
 
-    def content(self, req):
-        if self.args:
-            req.message(self.args[0], req.ERROR)
-        # TODO: Setting headers here is not very elegant.  Shall we have a separate method?
+    def headers(self, req):
         if ((wiking.cfg.allow_http_authentication
              and (req.param('__http_auth') # HTTP Basic auth explicitly requested.
                   # Force Basic auth for certain clients.
@@ -157,7 +199,12 @@ class AuthenticationError(RequestError):
         else:
             # This is not a stantdard HTTP authentication type, but it is recommended by some.
             auth_type = 'Cookie'
-        req.set_header('WWW-Authenticate', '%s realm="%s"' % (auth_type, wiking.cfg.site_title))
+        return [('WWW-Authenticate', '%s realm="%s"' % (auth_type, wiking.cfg.site_title))]
+
+    def content(self, req):
+        message = self.message(req)
+        if message:
+            req.message(message, req.ERROR)
         appl = wiking.module.Application
         return LoginDialog(registration_uri=appl.registration_uri(req),
                            forgotten_password_uri=appl.forgotten_password_uri(req),
@@ -172,54 +219,20 @@ class AuthenticationRedirect(AuthenticationError):
     _TITLE = _("Login")
 
 
-class DisplayDocument(Exception):
-    """Exception that should result in displaying the given document."""
-    # TODO: This class is redundant.  See Abort below!
-
-    def __init__(self, document):
-        """
-        Arguments:
-
-          document -- document to display
-
-        """
-        self._document = document
-        super(DisplayDocument, self).__init__()
-
-    def document(self):
-        return self._document
-
-
-class Abort(RequestError):
-    """Error useful for aborting regular request processing and displaying substitutional content.
-
-    Raising this error leads to displaying arbitrary substitutional content (such as a
-    'ConfirmationDialog' instance).
-
-    The constructor must be called with two arguments:
-      title -- dialog title as a (translatable) string
-      content -- dialog content as an 'lcg.Content' instance or a sequence of such instances
-
-    """
-
-    def title(self, req):
-        return self.args[0]
-
-    def content(self, req):
-        return self.args[1]
-
-
 class PasswordExpirationError(RequestError):
-
     _TITLE = _("Your password expired")
 
+    def _messages(self, req):
+        return (self._message or
+                _("Your password expired.  Access to the application is now blocked for "
+                  "security reasons until you change your password."),)
+
     def content(self, req):
-        content = lcg.p(_("Your password expired.  Access to the application is now blocked for "
-                          "security reasons until you change your password."))
+        content = super(PasswordExpirationError, self).content(req)
         uri = wiking.module.Application.password_change_uri(req)
         if uri:
             # Translators: This is a link on a webpage
-            content = (content, lcg.p(lcg.link(uri, _("Change your password"))))
+            content.append(lcg.p(lcg.link(uri, _("Change your password"))))
         return content
 
 
@@ -235,9 +248,9 @@ class Forbidden(RequestError):
     """
     _STATUS_CODE = httplib.FORBIDDEN
 
-    def content(self, req):
-        return (lcg.p(_("The item '%s' is not available.", req.uri())),
-                lcg.p(_("The item exists on the server, but can not be accessed.")))
+    def _messages(self, req):
+        return (self._message or _("The item '%s' is not available.", req.uri()),
+                _("The item exists on the server, but can not be accessed."))
 
 
 class AuthorizationError(Forbidden):
@@ -257,13 +270,16 @@ class AuthorizationError(Forbidden):
     # Translators: An error message
     _TITLE = _("Access Denied")
 
+    def _messages(self, req):
+        return (self._message or
+                _("You don't have sufficient privilegs for this action."),
+                _("If you are sure that you are logged in under the right account "
+                  "and you believe that this is a problem of access rights assignment, "
+                  "please contact the administrator at %s.", wiking.cfg.webmaster_address))
+
     def content(self, req):
-        messages = self.args or (_("You don't have sufficient privilegs for this action."),)
-        notice = _("If you are sure that you are logged in under the right account "
-                   "and you believe that this is a problem of access rights assignment, "
-                   "please contact the administrator at %s.", wiking.cfg.webmaster_address)
-        return (lcg.coerce([lcg.p(msg) for msg in messages]),
-                lcg.p(req.translate(notice), formatted=True))
+        message, notice = self._messages(req)
+        return [lcg.p(message), lcg.p(req.translate(notice), formatted=True)]
 
 
 class DecryptionError(RequestError):
@@ -273,7 +289,7 @@ class DecryptionError(RequestError):
 
     """
     def content(self, req):
-        return DecryptionDialog(self.args[0])
+        return DecryptionDialog(self.message(req))
 
 
 class BadRequest(RequestError):
@@ -292,30 +308,30 @@ class BadRequest(RequestError):
     """
     _STATUS_CODE = httplib.BAD_REQUEST
 
-    def content(self, req):
-        if self.args:
-            messages = self.args
-        else:
-            messages = (_("Invalid request arguments."),)
-        messages += (_("Please, contact the administrator if you got this "
-                       "response after a legitimate action."),)
-        return [lcg.p(msg) for msg in messages]
+    def _messages(self, req):
+        return (self._message or _("Invalid request arguments."),
+                _("Please, contact the administrator if you got this "
+                  "response after a legitimate action."))
 
 
 class NotFound(RequestError):
     """Error indicating invalid request target."""
     _STATUS_CODE = httplib.NOT_FOUND
 
+    def _messages(self, req):
+        return (self._message or
+                # Translators: The word 'item' is intentionaly very generic,
+                # since it may mean a page, image, streaming video, RSS channel
+                # or anything else.
+                _("The item '%s' does not exist on this server or cannot be served.",
+                  req.uri()),
+                _("If you are sure the web address is correct, but are encountering "
+                  "this error, please contact the administrator at %s.",
+                  wiking.cfg.webmaster_address))
+
     def content(self, req):
-        # Translators: The word 'item' is intentionaly very generic, since it may mean a page,
-        # image, streaming video, RSS channel or anything else.
-        return (lcg.p(_("The item '%s' does not exist on this server or cannot be served.",
-                        req.uri())),
-                lcg.p(_("If you are sure the web address is correct, but are encountering "
-                        "this error, please contact the administrator at %s.",
-                        wiking.cfg.webmaster_address),
-                      formatted=True))
-    # return lcg.coerce([lcg.p(p) for p in msg])
+        message, notice = self._messages(req)
+        return [lcg.p(message), lcg.p(req.translate(notice), formatted=True)]
 
 
 class NotModified(RequestError):
@@ -330,33 +346,45 @@ class NotModified(RequestError):
 
 
 class NotAcceptable(RequestError):
-    """Error indicating unavailability of the resource in the requested language.
-
-    Constructor may be called with a sequence of language codes as its first argument.  This
-    sequence denotes the list of available language variants of the requested
-    page/document/resource.
-
-    """
+    """Error indicating unavailability of the resource in the requested language."""
     # Translators: Title of a dialog on a webpage
     _TITLE = _("Language selection")
     _STATUS_CODE = httplib.NOT_ACCEPTABLE
 
+    def __init__(self, message=None, variants=()):
+        """Arguments:
+
+          message -- as in the parent class
+          variants -- sequence of language codes of available language variants
+            of the requested resource (page/document/...).
+
+        """
+        super(NotAcceptable, self).__init__(message=message)
+        self._variants = variants
+
+    def _messages(self, req):
+        return (self._message or _("The resource '%s' is not available in either "
+                                   "of the requested languages.", req.uri()),)
+
     def content(self, req):
-        msg = (lcg.p(_("The resource '%s' is not available in either of the requested languages.",
-                       req.uri())),)
-        if self.args:
+        content = super(NotAcceptable, self).content(req)
+        if self._variants:
             # Translators: Meaning language variants. A selection of links to various language
             # versions follows.
-            msg += (lcg.p(_("The available variants are:")),
-                    lcg.ul([lcg.link("%s?setlang=%s" % (req.uri(), l),
-                                     label=lcg.language_name(l) or l)
-                            for l in self.args[0]]))
-        msg += (lcg.HorizontalSeparator(),
-                lcg.p(_("Your browser is configured to accept only the following languages:")),
-                lcg.ul([lcg.language_name(l) or l for l in req.preferred_languages()]),
-                lcg.p(_("If you want to accept other languages permanently, setup the language "
-                        "preferences in your browser or contact your system administrator.")))
-        return msg
+            content.extend((
+                lcg.p(_("The available variants are:")),
+                lcg.ul([lcg.link("%s?setlang=%s" % (req.uri(), l),
+                                 label=lcg.language_name(l) or l)
+                        for l in self._variants]),
+            ))
+        content.extend((
+            lcg.HorizontalSeparator(),
+            lcg.p(_("Your browser is configured to accept only the following languages:")),
+            lcg.ul([lcg.language_name(l) or l for l in req.preferred_languages()]),
+            lcg.p(_("If you want to accept other languages permanently, setup the language "
+                    "preferences in your browser or contact your system administrator.")),
+        ))
+        return content
 
 
 class InternalServerError(RequestError):
@@ -370,17 +398,16 @@ class InternalServerError(RequestError):
         if issubclass(einfo[0], pytis.data.DBSystemException):
             message = _("Unable to perform a database operation.")
         else:
-            message = ''.join(traceback.format_exception_only(*einfo[:2]))
+            message = ''.join(traceback.format_exception_only(*einfo[:2])).strip()
         tb = einfo[2]
         while tb.tb_next is not None:
             tb = tb.tb_next
         if wiking.cfg.debug:
             self._html_traceback = HtmlTraceback(einfo)
-        self._message = message
         self._exception_class = einfo[0]
         self._filename = os.path.split(tb.tb_frame.f_code.co_filename)[-1]
         self._lineno = tb.tb_lineno
-        super(InternalServerError, self).__init__()
+        super(InternalServerError, self).__init__(message=message)
 
     def buginfo(self):
         """Return a short textual information about the error and its location."""
@@ -394,8 +421,9 @@ class InternalServerError(RequestError):
             return self._html_traceback
         else:
             return (lcg.p(_("The server was unable to complete your request.")),
-                    lcg.p(_("Please inform the server administrator, %s if the problem "
-                            "persists.", wiking.cfg.webmaster_address), formatted=True),
+                    lcg.p(req.translate(_("Please inform the server administrator, "
+                                          "%s if the problem persists.",
+                                          wiking.cfg.webmaster_address)), formatted=True),
                     lcg.p(_("The error message was:")),
                     lcg.PreformattedText(self._message))
 
@@ -405,15 +433,19 @@ class ServiceUnavailable(RequestError):
     _TITLE = _("Service Unavailable")
     _STATUS_CODE = httplib.SERVICE_UNAVAILABLE
 
+    def _messages(self, req):
+        return (self._message or
+                _("The requested function is currently unavailable. "
+                  "Try repeating your request later."),)
+
     def content(self, req):
-        return (lcg.p(_("The requested function is currently unavailable. "
-                        "Try repeating your request later.")),
-                lcg.p(_("Please inform the server administrator, %s if the problem "
-                        "persists.", wiking.cfg.webmaster_address), formatted=True))
+        return (super(ServiceUnavailable, self).content(req) +
+                [lcg.p(_("Please inform the server administrator, %s if the problem "
+                         "persists.", wiking.cfg.webmaster_address), formatted=True)])
 
 
-class Redirect(Exception):
-    """Exception class for HTTP redirection.
+class Redirect(RequestError):
+    """Perform an HTTP redirection to given URI.
 
     Raising an exception of this class at any point of Wiking request
     processing will lead to HTTP redirection to the URI given to the exception
@@ -425,7 +457,7 @@ class Redirect(Exception):
     you need a permanent redirection.
 
     """
-    _PERMANENT = False
+    _STATUS_CODE = httplib.FOUND
 
     def __init__(self, uri, *args, **kwargs):
         """Arguments:
@@ -442,6 +474,7 @@ class Redirect(Exception):
             'Request.make_uri()' apply.
 
         """
+        super(Redirect, self).__init__()
         self._uri = uri
         self._args = args + tuple(kwargs.items())
 
@@ -457,21 +490,51 @@ class Redirect(Exception):
         """
         return self._args
 
-    def permanent(self):
-        """Return true if the redirection is permanent according to HTTP specification."""
-        return self._PERMANENT
-
 
 class PermanentRedirect(Redirect):
-    """Exception class for permanent HTTP redirection.
+    """Perform a permanent HTTP redirection to given URI.
 
     Same as the parent class, but results in permanent redirection according to
     HTTP specification.
 
     """
-    _PERMANENT = True
+    _STATUS_CODE = httplib.MOVED_PERMANENTLY
+
 
 # ============================================================================
+# NOTE: Abort is not a RequestError subclass!
+
+class Abort(Exception):
+    """Exception aborting regular request processing displaying arbitrary content.
+
+    Raising this error leads to displaying arbitrary substitutional content
+    (such as a 'ConfirmationDialog' instance).  It is useful in situations
+    where you need to abort regular request processing.  Raising this exception
+    has the same effect as returning a document from 'RequestHandler.handle()',
+    but may be invoked from anywhere, even from places where you do not have a
+    chance to influence the 'RequestHandler.handle()' return value.
+
+    """
+    def __init__(self, title, content, **kwargs):
+        """Arguments:
+
+        title -- displayed document title as a (translatable) string.
+        content -- displayed document content as an 'lcg.Content'
+          instance or a sequence of such instances.
+        **kwargs -- any other arguments to be passed to the 'Document'
+          constructor.
+
+        """
+        self._document = wiking.Document(title=title, content=content, **kwargs)
+        super(Abort, self).__init__()
+
+    def document(self):
+        """Return the content to be displayed as a 'Document' instance."""
+        return self._document
+
+
+# ============================================================================
+
 
 class Theme(object):
     """Color theme representation.

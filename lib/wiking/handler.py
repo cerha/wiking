@@ -21,6 +21,7 @@ import sys
 import traceback
 import urllib
 import urlparse
+import json
 
 import wiking
 import lcg
@@ -244,11 +245,21 @@ class Handler(object):
                                  status_code=httplib.SERVICE_UNAVAILABLE)
 
     def _handle_request_error(self, req, error):
-        if not isinstance(error, (wiking.AuthenticationError,
-                                  wiking.Abort, wiking.DisplayDocument)):
+        if not isinstance(error, wiking.AuthenticationError):
             self._application.log_error(req, error)
-        document = wiking.Document(error.title(req), error.content(req))
-        return self._serve_document(req, document, status_code=error.status_code())
+        for header, value in error.headers(req):
+            req.set_header(header, value)
+        if req.header('Accept').endswith('+json'):
+            data = dict(error=dict(
+                title=req.localize(error.title()),
+                type=error.__class__.__name__,
+                message=req.localize(error.message(req)),
+            ))
+            return req.send_response(json.dumps(data), status_code=error.status_code(),
+                                     content_type='application/json')
+        else:
+            document = wiking.Document(error.title(), error.content(req))
+            return self._serve_document(req, document, status_code=error.status_code())
 
     def _handle(self, req):
         try:
@@ -301,6 +312,8 @@ class Handler(object):
                     raise Exception('Invalid wiking handler result: %s' % type(result))
             except wiking.NotModified as error:
                 return req.send_response('', status_code=error.status_code(), content_type=None)
+            except wiking.Redirect as r:
+                return req.redirect(r.uri(), r.args(), status_code=r.status_code())
             except wiking.RequestError as error:
                 # Try to authenticate now, but ignore all errors within authentication except
                 # for AuthenticationError.
@@ -311,12 +324,10 @@ class Handler(object):
                 except wiking.AuthenticationError as auth_error:
                     error = auth_error
                 return self._handle_request_error(req, error)
-            except wiking.DisplayDocument as e:
+            except wiking.Abort as e:
                 return self._serve_document(req, e.document())
             except wiking.ClosedConnection:
                 return []
-            except wiking.Redirect as r:
-                return req.redirect(r.uri(), args=r.args(), permanent=r.permanent())
         except Exception:
             # Any other unhandled exception is an Internal Server Error.  It is
             # handled in a separate try/except block to chatch also errors in

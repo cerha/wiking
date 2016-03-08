@@ -558,33 +558,7 @@ class Request(ServerInterface):
                             last_modified=last_modified)
         return result
 
-    def _redirect(self, uri, permanent=False):
-        """Implement the actual request redirection for the already completed absolute URI."""
-        if self._messages:
-            # Store the current list of interactive messages in browsers cookie
-            # to allow loading the same messages within the redirected request.
-            # Store them together with the target URI to recognize for which
-            # request they should be loaded.  Of course, this will not work,
-            # when the redirection target is outside the current wiking host.
-            # Translate the messages before quoting, since the resulting strings
-            # wil not be translatable enymore.  We make the assumption, that the
-            # redirected request's locale will be the same as for this request,
-            # but that seems quite appropriate assumption.
-            lines = [urllib.quote(uri.encode(self._encoding))] + \
-                [type + ':' + urllib.quote(self.localize(message).encode(self._encoding))
-                 for message, type in self._messages]
-            self.set_cookie(self._MESSAGES_COOKIE, "\n".join(lines))
-        html = ("<html><head><title>Redirected</title></head>"
-                "<body>Your request has been redirected to "
-                "<a href='" + uri + "'>" + uri + "</a>.</body></html>").encode(self._encoding)
-        self.set_header('Location', uri)
-        if permanent:
-            status_code = httplib.MOVED_PERMANENTLY
-        else:
-            status_code = httplib.FOUND
-        return self.send_response(html, status_code=status_code, content_type="text/html")
-
-    def redirect(self, uri, args=(), permanent=False):
+    def redirect(self, uri, args=(), status_code=httplib.FOUND):
         """Send an HTTP redirection response to the browser.
 
         Arguments:
@@ -599,24 +573,36 @@ class Request(ServerInterface):
             The value may by a tuple of (NAME, VALUE) pairs or a dictionary.
             All conditions defined by 'make_uri()' apply for uri argument
             encoding.
-          permanent -- boolean flag indicatnig whether this is a permanent
-            (moved permanently) or temporary (moved temporarily) redirect
-            according to HTTP specification.
+          status_code -- HTTP status code of the response.
 
-        Calling this method directly from application code is deprecated.
-        Redirection should be now triggered by raising the `wiking.Redirect'
-        exception.
+        This method should not be called from application code.  Raise the
+        'wiking.Redirect' exception instead.
 
         """
         if not (uri.startswith('http://') or uri.startswith('https://')):
             if not uri.startswith('/'):
                 uri = '/' + uri
             uri = self.server_uri(current=True) + uri
-        if isinstance(args, tuple):
-            uri = self.make_uri(uri, *args)
-        else:
-            uri = self.make_uri(uri, **args)
-        return self._redirect(uri, permanent=permanent)
+        uri = self.make_uri(uri, *args)
+        if self._messages:
+            # Store the current list of interactive messages in browsers cookie
+            # to allow loading the same messages within the redirected request.
+            # Store them together with the target URI to recognize for which
+            # request they should be loaded.  Of course, this will not work,
+            # when the redirection target is outside the current wiking host.
+            # Translate the messages before quoting, since the resulting strings
+            # will not be translatable anymore.  We make the assumption, that the
+            # redirected request's locale will be the same as for this request,
+            # but that seems quite appropriate assumption.
+            lines = [urllib.quote(uri.encode(self._encoding))] + \
+                [type + ':' + urllib.quote(self.localize(message).encode(self._encoding))
+                 for message, type in self._messages]
+            self.set_cookie(self._MESSAGES_COOKIE, "\n".join(lines))
+        html = ("<html><head><title>Redirected</title></head>"
+                "<body>Your request has been redirected to "
+                "<a href='" + uri + "'>" + uri + "</a>.</body></html>").encode(self._encoding)
+        self.set_header('Location', uri)
+        return self.send_response(html, status_code=status_code, content_type="text/html")
 
     def make_uri(self, base_uri, *args, **kwargs):
         """Return a URI constructed from given base URI and arguments.
@@ -780,7 +766,7 @@ class Request(ServerInterface):
                     self._preferred_language = lang
                 return lang
         if raise_error:
-            raise wiking.NotAcceptable(variants)
+            raise wiking.NotAcceptable(variants=variants)
         else:
             return None
 
