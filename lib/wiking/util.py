@@ -162,6 +162,118 @@ class RequestError(Exception):
         return self._stack
 
 
+class PasswordExpirationError(RequestError):
+    """Exception raised on password expiration."""
+    # TODO: There is no matching HTTP error status for this error.  Maybe
+    # we should use 403 (UNAUTHORIZED)?  Or solve the situation by Abort?
+
+    _TITLE = _("Your password expired")
+    _STATUS_CODE = httplib.OK
+
+    def _messages(self, req):
+        return (self._message or
+                _("Your password expired.  Access to the application is now blocked for "
+                  "security reasons until you change your password."),)
+
+    def content(self, req):
+        content = super(PasswordExpirationError, self).content(req)
+        uri = wiking.module.Application.password_change_uri(req)
+        if uri:
+            # Translators: This is a link on a webpage
+            content.append(lcg.p(lcg.link(uri, _("Change your password"))))
+        return content
+
+
+class Redirect(RequestError):
+    """Perform an HTTP redirection to given URI.
+
+    Raising an exception of this class at any point of Wiking request
+    processing will lead to HTTP redirection to the URI given to the exception
+    instance constructor.  Wiking handler will automatically send the correct
+    redirection response to the client (setting the appropriate HTTP headers
+    and return codes).
+
+    This class results in temporary redirection.  See 'PermanentRedirect' if
+    you need a permanent redirection.
+
+    """
+    _STATUS_CODE = httplib.FOUND
+
+    def __init__(self, uri, *args, **kwargs):
+        """Arguments:
+
+          uri -- redirection target URI as a string.  May be relative to the
+            current request server address or absolute (beginning with
+            'http://' or 'https://').  Relative URI is automatically prepended
+            by the current request server address (the HTTP specification
+            requires absolute URIs).  The URI can not contain any encoded query
+            arguments or anchor.  If needed, they must be passed separately as
+            additional positional or keyword arguments (see below).
+          args, kwargs -- query arguments (and/or anchor) to be encoded into
+            the final uri.  The same rules as for the arguments of
+            'Request.make_uri()' apply.
+
+        """
+        super(Redirect, self).__init__()
+        self._uri = uri
+        self._args = args + tuple(kwargs.items())
+
+    def uri(self):
+        """Return the redirection target URI."""
+        return self._uri
+
+    def args(self):
+        """Return the tuple of query arguments to be encoded to the URI.
+
+        The arguments are returned in the form expected by 'Request.make_uri()'.
+
+        """
+        return self._args
+
+
+class PermanentRedirect(Redirect):
+    """Perform a permanent HTTP redirection to given URI.
+
+    Same as the parent class, but results in permanent redirection according to
+    HTTP specification.
+
+    """
+    _STATUS_CODE = httplib.MOVED_PERMANENTLY
+
+
+class NotModified(RequestError):
+    """Exception indicating that the requested has not been changed on server.
+
+    Use when the current version of the resource is not newer than the version
+    cached by the client.  Usually based on 'If-Modified-Since' headers or
+    similar negotiation mechanism.
+
+    """
+    _STATUS_CODE = httplib.NOT_MODIFIED
+
+
+class BadRequest(RequestError):
+    """Error indicating invalid request argument values or their combination.
+
+    Wiking applications usually ignore request arguments which they don't
+    recognize.  This error is mostly usefull in situations, where the required
+    arguments are missing or contain invalid values or their combinations.
+
+    More precise error description may be optionally passed as constructor
+    argument.  This message will be printed into user's browser window.  If
+    no argument is passed, the default message `Invalid request arguments.'
+    is printed.  If more arguments are passed, each message is printed as a
+    separate paragraph.
+
+    """
+    _STATUS_CODE = httplib.BAD_REQUEST
+
+    def _messages(self, req):
+        return (self._message or _("Invalid request arguments."),
+                _("Please, contact the administrator if you got this "
+                  "response after a legitimate action."))
+
+
 class AuthenticationError(RequestError):
     """Error indicating that authentication is required for the resource."""
 
@@ -219,23 +331,6 @@ class AuthenticationRedirect(AuthenticationError):
     _TITLE = _("Login")
 
 
-class PasswordExpirationError(RequestError):
-    _TITLE = _("Your password expired")
-
-    def _messages(self, req):
-        return (self._message or
-                _("Your password expired.  Access to the application is now blocked for "
-                  "security reasons until you change your password."),)
-
-    def content(self, req):
-        content = super(PasswordExpirationError, self).content(req)
-        uri = wiking.module.Application.password_change_uri(req)
-        if uri:
-            # Translators: This is a link on a webpage
-            content.append(lcg.p(lcg.link(uri, _("Change your password"))))
-        return content
-
-
 class Forbidden(RequestError):
     """Error indicating unavailable request target.
 
@@ -282,28 +377,6 @@ class AuthorizationError(Forbidden):
         return [lcg.p(message), lcg.p(req.translate(notice), formatted=True)]
 
 
-class BadRequest(RequestError):
-    """Error indicating invalid request argument values or their combination.
-
-    Wiking applications usually ignore request arguments which they don't
-    recognize.  This error is mostly usefull in situations, where the required
-    arguments are missing or contain invalid values or their combinations.
-
-    More precise error description may be optionally passed as constructor
-    argument.  This message will be printed into user's browser window.  If
-    no argument is passed, the default message `Invalid request arguments.'
-    is printed.  If more arguments are passed, each message is printed as a
-    separate paragraph.
-
-    """
-    _STATUS_CODE = httplib.BAD_REQUEST
-
-    def _messages(self, req):
-        return (self._message or _("Invalid request arguments."),
-                _("Please, contact the administrator if you got this "
-                  "response after a legitimate action."))
-
-
 class NotFound(RequestError):
     """Error indicating invalid request target."""
     _STATUS_CODE = httplib.NOT_FOUND
@@ -322,17 +395,6 @@ class NotFound(RequestError):
     def content(self, req):
         message, notice = self._messages(req)
         return [lcg.p(message), lcg.p(req.translate(notice), formatted=True)]
-
-
-class NotModified(RequestError):
-    """Exception indicating that the requested has not been changed on server.
-
-    Use when the current version of the resource is not newer than the version
-    cached by the client.  Usually based on 'If-Modified-Since' headers or
-    similar negotiation mechanism.
-
-    """
-    _STATUS_CODE = httplib.NOT_MODIFIED
 
 
 class NotAcceptable(RequestError):
@@ -432,63 +494,6 @@ class ServiceUnavailable(RequestError):
         return (super(ServiceUnavailable, self).content(req) +
                 [lcg.p(_("Please inform the server administrator, %s if the problem "
                          "persists.", wiking.cfg.webmaster_address), formatted=True)])
-
-
-class Redirect(RequestError):
-    """Perform an HTTP redirection to given URI.
-
-    Raising an exception of this class at any point of Wiking request
-    processing will lead to HTTP redirection to the URI given to the exception
-    instance constructor.  Wiking handler will automatically send the correct
-    redirection response to the client (setting the appropriate HTTP headers
-    and return codes).
-
-    This class results in temporary redirection.  See 'PermanentRedirect' if
-    you need a permanent redirection.
-
-    """
-    _STATUS_CODE = httplib.FOUND
-
-    def __init__(self, uri, *args, **kwargs):
-        """Arguments:
-
-          uri -- redirection target URI as a string.  May be relative to the
-            current request server address or absolute (beginning with
-            'http://' or 'https://').  Relative URI is automatically prepended
-            by the current request server address (the HTTP specification
-            requires absolute URIs).  The URI can not contain any encoded query
-            arguments or anchor.  If needed, they must be passed separately as
-            additional positional or keyword arguments (see below).
-          args, kwargs -- query arguments (and/or anchor) to be encoded into
-            the final uri.  The same rules as for the arguments of
-            'Request.make_uri()' apply.
-
-        """
-        super(Redirect, self).__init__()
-        self._uri = uri
-        self._args = args + tuple(kwargs.items())
-
-    def uri(self):
-        """Return the redirection target URI."""
-        return self._uri
-
-    def args(self):
-        """Return the tuple of query arguments to be encoded to the URI.
-
-        The arguments are returned in the form expected by 'Request.make_uri()'.
-
-        """
-        return self._args
-
-
-class PermanentRedirect(Redirect):
-    """Perform a permanent HTTP redirection to given URI.
-
-    Same as the parent class, but results in permanent redirection according to
-    HTTP specification.
-
-    """
-    _STATUS_CODE = httplib.MOVED_PERMANENTLY
 
 
 # ============================================================================
