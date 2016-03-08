@@ -167,8 +167,8 @@ class PasswordExpirationError(RequestError):
     # TODO: There is no matching HTTP error status for this error.  Maybe
     # we should use 403 (UNAUTHORIZED)?  Or solve the situation by Abort?
 
+    _STATUS_CODE = httplib.OK # 200
     _TITLE = _("Your password expired")
-    _STATUS_CODE = httplib.OK
 
     def _messages(self, req):
         return (self._message or
@@ -197,7 +197,7 @@ class Redirect(RequestError):
     you need a permanent redirection.
 
     """
-    _STATUS_CODE = httplib.FOUND
+    _STATUS_CODE = httplib.FOUND # 302
 
     def __init__(self, uri, *args, **kwargs):
         """Arguments:
@@ -238,7 +238,7 @@ class PermanentRedirect(Redirect):
     HTTP specification.
 
     """
-    _STATUS_CODE = httplib.MOVED_PERMANENTLY
+    _STATUS_CODE = httplib.MOVED_PERMANENTLY # 301
 
 
 class NotModified(RequestError):
@@ -249,7 +249,7 @@ class NotModified(RequestError):
     similar negotiation mechanism.
 
     """
-    _STATUS_CODE = httplib.NOT_MODIFIED
+    _STATUS_CODE = httplib.NOT_MODIFIED # 304
 
 
 class BadRequest(RequestError):
@@ -266,7 +266,7 @@ class BadRequest(RequestError):
     separate paragraph.
 
     """
-    _STATUS_CODE = httplib.BAD_REQUEST
+    _STATUS_CODE = httplib.BAD_REQUEST # 400
 
     def _messages(self, req):
         return (self._message or _("Invalid request arguments."),
@@ -277,8 +277,10 @@ class BadRequest(RequestError):
 class AuthenticationError(RequestError):
     """Error indicating that authentication is required for the resource."""
 
+    _STATUS_CODE = httplib.UNAUTHORIZED # 401
     # Translators: This is a warning on a webpage which is only accessible for logged in users
     _TITLE = _("Authentication required")
+
     _HTTP_AUTH_MATCHER = re.compile('.*(Thunderbird|Icedove|Liferea|Pytis|unknown)/.*')
     """Regular expression matching user agents for which HTTP authentication is used automatically.
 
@@ -297,8 +299,6 @@ class AuthenticationError(RequestError):
     built in RSS support) and Liferea.
 
     """
-
-    _STATUS_CODE = httplib.UNAUTHORIZED
 
     def headers(self, req):
         if ((wiking.cfg.allow_http_authentication
@@ -341,7 +341,7 @@ class Forbidden(RequestError):
     accessible.
 
     """
-    _STATUS_CODE = httplib.FORBIDDEN
+    _STATUS_CODE = httplib.FORBIDDEN # 403
 
     def _messages(self, req):
         return (self._message or _("The item '%s' is not available.", req.uri()),
@@ -379,7 +379,7 @@ class AuthorizationError(Forbidden):
 
 class NotFound(RequestError):
     """Error indicating invalid request target."""
-    _STATUS_CODE = httplib.NOT_FOUND
+    _STATUS_CODE = httplib.NOT_FOUND # 404
 
     def _messages(self, req):
         return (self._message or
@@ -399,9 +399,9 @@ class NotFound(RequestError):
 
 class NotAcceptable(RequestError):
     """Error indicating unavailability of the resource in the requested language."""
+    _STATUS_CODE = httplib.NOT_ACCEPTABLE # 406
     # Translators: Title of a dialog on a webpage
     _TITLE = _("Language selection")
-    _STATUS_CODE = httplib.NOT_ACCEPTABLE
 
     def __init__(self, message=None, variants=()):
         """Arguments:
@@ -441,8 +441,8 @@ class NotAcceptable(RequestError):
 
 class InternalServerError(RequestError):
     """General error in application -- error message is required as an argument."""
+    _STATUS_CODE = httplib.INTERNAL_SERVER_ERROR # 500
     _TITLE = _("Internal Server Error")
-    _STATUS_CODE = httplib.INTERNAL_SERVER_ERROR
 
     def __init__(self, einfo):
         import traceback
@@ -482,8 +482,8 @@ class InternalServerError(RequestError):
 
 class ServiceUnavailable(RequestError):
     """Error indicating a temporary problem, which may not appaper in further requests."""
+    _STATUS_CODE = httplib.SERVICE_UNAVAILABLE # 503
     _TITLE = _("Service Unavailable")
-    _STATUS_CODE = httplib.SERVICE_UNAVAILABLE
 
     def _messages(self, req):
         return (self._message or
