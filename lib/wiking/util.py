@@ -1430,7 +1430,7 @@ class HTTPBasicAuthenticationProvider(AuthenticationProvider):
 
     """
 
-    _FIXED_SESSION_KEY = 'HTTT-Basic-Authentication-Fixed-Session-Key'
+    _FIXED_SESSION_KEY = 'HTTP-Basic-Authentication-Fixed-Session-Key'
 
     def authenticate(self, req):
         auth_header = req.header('Authorization')
