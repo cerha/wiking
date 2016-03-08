@@ -282,16 +282,6 @@ class AuthorizationError(Forbidden):
         return [lcg.p(message), lcg.p(req.translate(notice), formatted=True)]
 
 
-class DecryptionError(RequestError):
-    """Error signalling that a decryption key is missing.
-
-    Its argument is the name of the inaccessible encryption area.
-
-    """
-    def content(self, req):
-        return DecryptionDialog(self.message(req))
-
-
 class BadRequest(RequestError):
     """Error indicating invalid request argument values or their combination.
 

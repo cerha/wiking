@@ -353,7 +353,8 @@ class CMSModule(wiking.PytisModule, wiking.RssModule):
         unavailable_names = (set(crypto_names) - available_names -
                              set(wiking.cfg.ignored_crypto_names))
         if unavailable_names:
-            raise wiking.DecryptionError(unavailable_names.pop())
+            raise wiking.Abort(title=_("Attempting to Access Encrypted Area"),
+                               content=wiking.DecryptionDialog(unavailable_names.pop()))
 
     def _generate_crypto_cookie(self):
         return wiking.module.Session.new_session_key()
