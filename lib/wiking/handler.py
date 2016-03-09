@@ -283,6 +283,13 @@ class Handler(object):
                     content_type, data = result
                     result = wiking.Response(data, content_type=content_type)
                 if isinstance(result, (lcg.Content, wiking.Document)):
+                    if req.is_api_request():
+                        # This is a very generic detection of invalid API
+                        # requests.  We just assume, that the clients, which
+                        # indicate that they accept JSON responses are API
+                        # clients and they are not interested in responses, which
+                        # display human readable content.
+                        raise wiking.BadRequest(_("This URI does not belong to server API."))
                     # Always perform authentication (if it was not performed before) to handle
                     # authentication exceptions here and prevent them in export time.
                     req.user()
