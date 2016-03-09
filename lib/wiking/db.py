@@ -2330,7 +2330,7 @@ class RESTSupport(object):
         return None # TODO: export?
 
     def _default_action(self, req, record=None):
-        if record is None and req.header('Accept').endswith('+json'):
+        if record is None and req.is_api_request():
             return 'json_list'
         else:
             return super(RESTSupport, self)._default_action(req, record=record)

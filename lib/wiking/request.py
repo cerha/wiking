@@ -969,6 +969,21 @@ class Request(ServerInterface):
             messages = [m for m in self._messages if m[1] != self.HEADING]
         return tuple(messages)
 
+    def is_api_request(self):
+        """Return True if the current request looks like an API request.
+
+        API requests are such requests which require a machine readable
+        respopnse, such as JSON data.  Their handling may differ from "browser"
+        requests, which typically expect a human readable response, such as an
+        HTML page.
+
+        Requests with the HTTP header 'Accept' set to a value ending with
+        '+json' are currently recognized as API requests, but the precise
+        criteria may change in the future.
+
+        """
+        return self.header('Accept').endswith('+json')
+
 
 class User(object):
     """Representation of the logged in user.

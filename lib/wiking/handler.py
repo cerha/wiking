@@ -249,7 +249,7 @@ class Handler(object):
             self._application.log_error(req, error)
         for header, value in error.headers(req):
             req.set_header(header, value)
-        if req.header('Accept').endswith('+json'):
+        if req.is_api_request():
             data = dict(error=dict(
                 title=req.localize(error.title()),
                 type=error.__class__.__name__,
