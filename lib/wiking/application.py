@@ -178,7 +178,11 @@ class Application(wiking.Module):
 
         This method is called when authentication is needed.  A 'User' instance
         must be returned if authentication was successful or None if not (user
-        is not logged or session expired).
+        is not logged or session expired).  This method is not called for every
+        request.  It is only called when request handling checks for
+        authorization and if authorization requires knowledge of the current
+        user.
+
 
         Applications should not call this method directly.  Use
         'Request.user()' to get the cached result for the current request.
