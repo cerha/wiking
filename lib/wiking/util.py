@@ -100,7 +100,7 @@ class RequestError(Exception):
         """Return the error information as a tuple of (localizable) strings.
 
         Override this method to define the information returned by 'content()'
-        and 'message()' at one place.
+        and 'data()' at one place.
 
         """
         return (self._message,) if self._message else ()
@@ -127,37 +127,43 @@ class RequestError(Exception):
                 # '%(name)s' by error title.
                 return _("Error %(code)d: %(name)s", code=code, name=name)
 
-    def message(self, req):
-        """Return the error message as a (localizable) string.
-
-        This message is returned in machine readable in API request responses.
-        The information should match the information returned by 'content()',
-        but formatted in plain text.  None may be returned if no message is
-        defined.
-
-        The default implementation returns the result of '_messages()'
-        concatenated into one string by spaces.  It is recommended to override
-        '_messages()' in derived classes to define the information for
-        'content()' and 'message()' at one place.
-
-        """
-        return lcg.concat(self._messages(req), separator=' ') or None
-
     def content(self, req):
         """Return the error page content as a list of 'lcg.Content' instances.
 
         This content is displayed to users in a browser.  The displayed
-        information should match the information returned by 'message()' but
+        information should match the information returned by 'data()' but
         formatted for visual user agent.  It may also contain additional
         information specific for browser users.
 
         The default implementation returns the result of '_messages()'
         formatted as separate paragraphs.  It is recommended to override
         '_messages()' in derived classes to define the information for
-        'content()' and 'message()' at one place.
+        'content()' and 'data()' at one place.
 
         """
         return [lcg.p(message) for message in self._messages(req)]
+
+    def data(self, req):
+        """Return machine readable error representation as a dictionary.
+
+        This representation is returned in API request responses.  The
+        information should match the information returned by 'content()', but
+        formatted as a dictionary of serializable values.
+
+        The default implementation returns a dictionary with keys 'title'
+        (result of 'title()'), 'type' (class name) and message (result of
+        '_messages()' concatenated into one string by spaces).  It is
+        recommended to override '_messages()' in derived classes to define the
+        information for 'content()' and 'data()' at one place.  This method may
+        be overriden to add additional values specific for a particular error
+        type.
+
+        """
+        return dict(
+            title=req.localize(self.title()),
+            type=self.__class__.__name__,
+            message=req.localize(lcg.concat(self._messages(req), separator=' ') or None),
+        )
 
     def stack(self):
         """Return the Python call stack state saved in the constructor.
@@ -420,7 +426,7 @@ class NotAcceptable(RequestError):
 
         """
         super(NotAcceptable, self).__init__(message=message)
-        self._variants = variants
+        self._variants = tuple(variants)
 
     def _messages(self, req):
         return (self._message or _("The resource '%s' is not available in either "
@@ -445,6 +451,13 @@ class NotAcceptable(RequestError):
                     "preferences in your browser or contact your system administrator.")),
         ))
         return content
+
+    def data(self, req):
+        return dict(
+            super(NotAcceptable, self).data(req),
+            variants=self._variants,
+        )
+
 
 
 class InternalServerError(RequestError):

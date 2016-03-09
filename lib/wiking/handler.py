@@ -250,12 +250,8 @@ class Handler(object):
         for header, value in error.headers(req):
             req.set_header(header, value)
         if req.is_api_request():
-            data = dict(error=dict(
-                title=req.localize(error.title()),
-                type=error.__class__.__name__,
-                message=req.localize(error.message(req)),
-            ))
-            return req.send_response(json.dumps(data), status_code=error.status_code(),
+            return req.send_response(json.dumps(dict(error=error.data(req))),
+                                     status_code=error.status_code(),
                                      content_type='application/json')
         else:
             document = wiking.Document(error.title(), error.content(req))
