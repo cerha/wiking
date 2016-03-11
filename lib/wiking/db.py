@@ -1252,56 +1252,32 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
             arguments = None
         return arguments
 
-    def _rows(self, req, condition=None, lang=None, limit=None, sorting=None):
-        return list(self._rows_generator(req, condition=condition, lang=lang, limit=limit,
-                                         sorting=sorting))
-
-    def _rows_generator(self, req, condition=None, lang=None, limit=None, sorting=None):
-        def generator(cond, args):
-            data = self._data
-            count = 0
-            try:
-                data.select(condition=cond, arguments=args, sort=sorting or self._sorting)
-                while True:
-                    if limit is not None and count >= limit:
-                        break
-                    row = data.fetchone()
-                    if row is None:
-                        break
-                    count += 1
-                    yield row
-            finally:
-                try:
-                    data.close()
-                except:
-                    pass
-        # Note, condition and arguments must be computed here, not within the
-        # generator function itself because it depends on the current state of
-        # 'req'.  In practise it means, that binding forward condition would
-        # not be included in condition because req._forwards is popped after
-        # handle() returns (see 'Request.forward()') and the generator will run
-        # after that.
+    def _make_condition(self, req, condition=None, lang=None):
         if self._LIST_BY_LANGUAGE:
             if lang is None:
                 lang = req.preferred_language()
-            lcondition = pd.EQ('lang', pd.sval(lang))
+            lang_condition = pd.EQ('lang', pd.sval(lang))
         else:
-            lcondition = None
-        return generator(pd.AND(self._condition(req), condition, lcondition),
-                         self._arguments(req))
+            lang_condition = None
+        return pd.AND(self._condition(req), condition, lang_condition)
 
-    def _records(self, req, condition=None, lang=None, limit=None, sorting=None):
-        record = self._record(req, None)
-        # Call self._rows_generator() outside the generator function to compute
-        # the condition and other `req' dependent data now, not when the
-        # generator runs.
-        rows = self._rows_generator(req, condition=condition, lang=lang, limit=limit,
-                                    sorting=sorting)
-        def generator():
-            for row in rows:
-                record.set_row(row)
-                yield record
-        return generator()
+    def _records(self, req, condition=None, lang=None, limit=None, offset=0, sorting=None):
+        return wiking.RecordsIterator(self._record(req, None),
+                                      condition=self._make_condition(req, condition, lang=lang),
+                                      arguments=self._arguments(req),
+                                      sorting=sorting or self._sorting,
+                                      limit=limit, offset=offset)
+
+    def _rows_iterator(self, req, condition=None, lang=None, limit=None, offset=0, sorting=None):
+        return wiking.RowsIterator(self._data,
+                                   condition=self._make_condition(req, condition, lang=lang),
+                                   arguments=self._arguments(req),
+                                   sorting=sorting or self._sorting,
+                                   limit=limit, offset=offset)
+
+    def _rows(self, req, condition=None, lang=None, limit=None, sorting=None):
+        return list(self._rows_iterator(req, condition=condition, lang=lang, limit=limit,
+                                        sorting=sorting))
 
     def _handle(self, req, action, **kwargs):
         record = kwargs.get('record')
@@ -2349,11 +2325,18 @@ class RESTSupport(object):
                                 for f in self._view.fields()])
             self._json_serializers = serializers
         columns = [(cid, serializers[cid]) for cid in self._json_columns(req) if serializers[cid]]
-        limit = 100 # TODO: allow setting limit and offset dynamically.
+        try:
+            limit = int(req.param('limit', 100))
+            offset = int(req.param('offset', 0))
+        except ValueError:
+            raise wiking.BadRequest()
+        if limit <= 0 or limit > 1000 or offset < 0:
+            raise wiking.BadRequest()
+        records = self._records(req, condition=self._json_list_condition(req),
+                                limit=limit, offset=offset)
         rows = [dict([(cid, serializer(req, record, cid)) for cid, serializer in columns])
-                for record in self._records(req, condition=self._json_list_condition(req),
-                                            limit=limit)]
-        data = dict(rows=rows)
+                for record in records]
+        data = dict(rows=rows, total=len(records))
         return wiking.Response(json.dumps(data), content_type='application/json')
 
 class RssModule(object):
