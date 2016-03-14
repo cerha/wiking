@@ -78,13 +78,7 @@ class RequestError(Exception):
     """Relevant HTTP status code."""
 
     _TITLE = None
-    """User visible error page title.
-
-    If None, default title is constructed from class name and status code, such
-    as "Error 404: Not Found".
-
-    """
-
+    """User visible error page title."""
     # TODO: Maybe the 'req' instance should be required as constructor argument
     # and avoided in all public methods.  This change requires changes in
     # applications, so it must be done carefully...
@@ -115,17 +109,7 @@ class RequestError(Exception):
 
     def title(self):
         """Return the error title as a (localizable) string."""
-        if self._TITLE is not None:
-            return self._TITLE
-        else:
-            code = self.status_code()
-            name = " ".join(pp.split_camel_case(self.__class__.__name__))
-            if code == httplib.OK:
-                return name
-            else:
-                # Translators: '%(code)d' is replaced by error number and
-                # '%(name)s' by error title.
-                return _("Error %(code)d: %(name)s", code=code, name=name)
+        return self._TITLE
 
     def content(self, req):
         """Return the error page content as a list of 'lcg.Content' instances.
@@ -263,6 +247,8 @@ class BadRequest(RequestError):
 
     """
     _STATUS_CODE = httplib.BAD_REQUEST # 400
+    # Translators: An error page title
+    _TITLE = _("Invalid Request")
 
     def _messages(self, req):
         return (self._message or _("Invalid request arguments."),
@@ -337,6 +323,8 @@ class Forbidden(RequestError):
 
     """
     _STATUS_CODE = httplib.FORBIDDEN # 403
+    # Translators: An error page title
+    _TITLE = _("Access Denied")
 
     def _messages(self, req):
         return (self._message or _("The item '%s' is not available.", req.uri()),
@@ -356,10 +344,6 @@ class AuthorizationError(Forbidden):
     this action." is used.
 
     """
-
-    # Translators: An error message
-    _TITLE = _("Access Denied")
-
     def _messages(self, req):
         return (self._message or
                 _("You don't have sufficient privilegs for this action."),
@@ -397,6 +381,8 @@ class PasswordExpirationError(Forbidden):
 class NotFound(RequestError):
     """Error indicating invalid request target."""
     _STATUS_CODE = httplib.NOT_FOUND # 404
+    # Translators: Error page title when requesting URI which does not exist on server.
+    _TITLE = _("Item Not Found")
 
     def _messages(self, req):
         return (self._message or
