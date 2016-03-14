@@ -150,13 +150,17 @@ class RequestError(Exception):
         information should match the information returned by 'content()', but
         formatted as a dictionary of serializable values.
 
-        The default implementation returns a dictionary with keys 'title'
-        (result of 'title()'), 'type' (class name) and message (result of
-        '_messages()' concatenated into one string by spaces).  It is
-        recommended to override '_messages()' in derived classes to define the
-        information for 'content()' and 'data()' at one place.  This method may
-        be overriden to add additional values specific for a particular error
-        type.
+        The base class returns a dictionary with keys:
+          type -- exception class name
+          title -- result of 'title()'
+          message -- result of '_messages()' concatenated into one string
+            by spaces.
+
+        It is recommended to override '_messages()' in derived classes to
+        define the information for 'content()' and 'data()' at one place.
+
+        This method may be overriden in derived classes to add additional
+        values specific for a particular error type.
 
         """
         return dict(
