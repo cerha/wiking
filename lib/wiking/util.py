@@ -180,28 +180,6 @@ class RequestError(Exception):
         return self._stack
 
 
-class PasswordExpirationError(RequestError):
-    """Exception raised on password expiration."""
-    # TODO: There is no matching HTTP error status for this error.  Maybe
-    # we should use 403 (UNAUTHORIZED)?  Or solve the situation by Abort?
-
-    _STATUS_CODE = httplib.OK # 200
-    _TITLE = _("Your password expired")
-
-    def _messages(self, req):
-        return (self._message or
-                _("Your password expired.  Access to the application is now blocked for "
-                  "security reasons until you change your password."),)
-
-    def content(self, req):
-        content = super(PasswordExpirationError, self).content(req)
-        uri = wiking.module.Application.password_change_uri(req)
-        if uri:
-            # Translators: This is a link on a webpage
-            content.append(lcg.p(lcg.link(uri, _("Change your password"))))
-        return content
-
-
 class Redirect(RequestError):
     """Perform an HTTP redirection to given URI.
 
@@ -392,6 +370,28 @@ class AuthorizationError(Forbidden):
     def content(self, req):
         message, notice = self._messages(req)
         return [lcg.p(message), lcg.p(req.translate(notice), formatted=True)]
+
+
+class PasswordExpirationError(Forbidden):
+    """Exception raised on password expiration."""
+
+    # Translators: An error page title
+    _TITLE = _("Your password expired")
+
+    def _messages(self, req):
+        return (self._message or
+                _("Your password expired.  Access to the application is now blocked for "
+                  "security reasons until you change your password."),)
+
+    def content(self, req):
+        content = super(PasswordExpirationError, self).content(req)
+        uri = wiking.module.Application.password_change_uri(req)
+        if uri:
+            # Translators: This is a link on a webpage
+            content.append(lcg.p(lcg.link(uri, _("Change your password"))))
+        return content
+
+
 
 
 class NotFound(RequestError):
