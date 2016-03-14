@@ -328,9 +328,8 @@ class AuthenticationError(RequestError):
         return [('WWW-Authenticate', '%s realm="%s"' % (auth_type, wiking.cfg.site_title))]
 
     def content(self, req):
-        message = self.message(req)
-        if message:
-            req.message(message, req.ERROR)
+        if self._message:
+            req.message(self._message, req.ERROR)
         appl = wiking.module.Application
         return LoginDialog(registration_uri=appl.registration_uri(req),
                            forgotten_password_uri=appl.forgotten_password_uri(req),
