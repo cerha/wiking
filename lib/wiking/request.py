@@ -350,6 +350,56 @@ class Request(ServerInterface):
                 self.set_cookie(self._MESSAGES_COOKIE, None)
         return messages
 
+    def _parse_accept_header(self, header):
+        """Return the items present in given HTTP header.
+
+        HTTP headers, such as 'Accept' or 'Accept-Language' share the same
+        syntax for expressing multiple accepted variants and their precedence.
+        For example the 'Accept' header may have the following value:
+
+        text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+
+        This method parses the header value and returns a list of items.  Each
+        item has a value (string) and parameters (dictionary) which may be
+        accessed via 'item.value' and 'item.params'.  The special parameter 'q'
+        (if present) has a float value, other parameters have string values.
+
+        The items appear in the returned list in the order of their presence in
+        the header, but sorting the list will put them to the order of their
+        precedence (actually lowest precedence first because sorting normally
+        sorts lowest values first).  The precedence is given by the value of
+        the 'q' parameter as describerd by the HTTP standard.
+
+        Any items with invalid syntax or values are ignored.
+
+        """
+        class Item(object):
+            def __init__(self, value, params):
+                self.value = value
+                self.params = params
+            def __cmp__(self, other):
+                return cmp(self.params.get('q', 1.0), other.params.get('q', 1.0))
+        items = []
+        for item in self.header(header, '').split(','):
+            try:
+                if ';' in item:
+                    parts = item.split(';')
+                    value = parts[0].strip()
+                    params = dict([[x.strip() for x in part.split('=', 1)]
+                                   for part in parts[1:]])
+                    if 'q' in params:
+                        q = float(params['q'])
+                        if q > 1.0 or q < 0.0:
+                            continue
+                        params['q'] = q
+                else:
+                    value, params = item.strip(), {}
+            except ValueError:
+                continue
+            if value:
+                items.append(Item(value, params))
+        return items
+
     def cookie(self, name, default=None):
         """Get the value of given cookie as unicode or return DEFAULT if cookie was not set."""
         if name in self._cookies:
@@ -704,26 +754,15 @@ class Request(ServerInterface):
         specific list of preferred languages.
 
         """
-        accepted = []
-        for item in self.header('Accept-Language', '').lower().split(','):
-            if item:
-                x = item.split(';')
+        languages = []
+        for item in reversed(sorted(self._parse_accept_header('Accept-Language'))):
+            lang = item.value
+            if '-' in lang:
                 # For now we ignore the country part and recognize just the core languages.
-                lang = x[0].split('-')[0]
-                if len(x) == 1:
-                    q = 1.0
-                elif x[1].startswith('q='):
-                    try:
-                        q = float(x[1][2:])
-                    except ValueError:
-                        continue
-                else:
-                    continue
-                if lang not in [l for _q, l in accepted]:
-                    accepted.append((q, lang))
-        accepted.sort()
-        accepted.reverse()
-        return tuple([lang for q, lang in accepted])
+                lang = lang.split('-')[0].lower()
+            if lang not in languages:
+                languages.append(lang)
+        return languages
 
     def preferred_languages(self):
         """Return a list of user's preferred languages in the order of their preference.
@@ -978,13 +1017,23 @@ class Request(ServerInterface):
         requests, which typically expect a human readable response, such as an
         HTML page.
 
-        Requests with the HTTP header 'Accept' set to a value ending with
-        '+json' are currently recognized as API requests, but the precise
-        criteria may change in the future.
+        True is currently returned when 'application/json' or
+        'application/vnd.*+json' appears in the HTTP header 'Accept' with a
+        higher precedence than 'text/html'.
 
         """
         if self._is_api_request is None:
-            self._is_api_request = self.header('Accept').endswith('+json')
+            def is_api_request():
+                for item in reversed(sorted(self._parse_accept_header('Accept'))):
+                    mime_type = item.value
+                    if mime_type == 'text/html':
+                        return False
+                    elif mime_type == 'application/json':
+                        return True
+                    elif mime_type.startswith('application/vnd.') and mime_type.endswith('+json'):
+                        return True
+                return False
+            self._is_api_request = is_api_request()
         return self._is_api_request
 
 
