@@ -303,6 +303,7 @@ class Request(ServerInterface):
         self._localizer = {}
         self._decryption_password = self._init_decryption_password()
         self._messages = self._init_messages()
+        self._is_api_request = None
         if self.has_param('maximize'):
             self._maximized = self.param('maximize') == '1'
             self.set_cookie(self._MAXIMIZED_MODE_COOKIE, self._maximized and 'yes' or 'no')
@@ -982,7 +983,9 @@ class Request(ServerInterface):
         criteria may change in the future.
 
         """
-        return self.header('Accept').endswith('+json')
+        if self._is_api_request is None:
+            self._is_api_request = self.header('Accept').endswith('+json')
+        return self._is_api_request
 
 
 class User(object):
