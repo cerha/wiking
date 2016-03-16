@@ -93,7 +93,8 @@ class ServerInterface(pytis.web.Request):
     def method(self):
         """Return the used HTTP request method.
 
-        The returned value is a string.  One of 'GET', 'POST', 'PUT', 'DELETE', etc.
+        The returned value is a string.  One of 'GET', 'POST', 'PUT', 'DELETE',
+        etc.
 
         """
         pass
@@ -128,7 +129,7 @@ class ServerInterface(pytis.web.Request):
         pass
 
     def header(self, name, default=None):
-        """Return the value of given (incomming) request HTTP header or 'default' if unset."""
+        """Return value of given (incomming) request HTTP header or 'default' if unset."""
         pass
 
     def set_header(self, name, value):
@@ -221,22 +222,25 @@ class Request(ServerInterface):
     class ForwardInfo(object):
         """Request forwarding information.
 
-        The method 'forward()' automatically adds forward information (as an instance of the
-        'ForwardInfo' class) to the stack, which may be later inspected through the method
-        'forwards()'.
+        The method 'forward()' automatically adds forward information (as an
+        instance of the 'ForwardInfo' class) to the stack, which may be later
+        inspected through the method 'forwards()'.
 
         """
         def __init__(self, module, resolved_path, unresolved_path, **kwargs):
             """Arguments:
 
               module -- the handler instance to which the request was forwarded
-              resolved_path -- sequence of request path items (strings) corresponding to the
-                resolved portion of the path at the time of the forward
-              unresolved_path -- sequence of request path items (strings) corresponding to the
-                unresolved portion of the path at the time of the forward
-              kwargs -- any keyword arguments passed to the forward method call.  These arguments
-                may be later inspected through the 'arg()' method and make it possible to pass any
-                application defined data for later inspection.
+              resolved_path -- sequence of request path items (strings)
+                corresponding to the resolved portion of the path at the time
+                of the forward
+              unresolved_path -- sequence of request path items (strings)
+                corresponding to the unresolved portion of the path at the time
+                of the forward
+              kwargs -- any keyword arguments passed to the forward method
+                call.  These arguments may be later inspected through the
+                'arg()' method and make it possible to pass any application
+                defined data for later inspection.
 
             """
             self._module = module
@@ -416,8 +420,10 @@ class Request(ServerInterface):
         Arguments:
           name -- cookie name as a string.
           value -- unicode value to store or None to remove the cookie.
-          expires -- cookie expiration time in seconds or None for unlimited cookie.
-          secure -- if True, the cookie will only be returned by the browser on secure connections.
+          expires -- cookie expiration time in seconds or None for unlimited
+            cookie.
+          secure -- if True, the cookie will only be returned by the browser on
+            secure connections.
 
         """
         if value is None:
@@ -481,7 +487,7 @@ class Request(ServerInterface):
         return result
 
     def cached_since(self, mtime):
-        """Return true if the client's cached resource is from given 'mtime' or later.
+        """Return true if client's cached resource is from given 'mtime' or later.
 
         Arguments:
           mtime -- last modification time of the resource on the
@@ -533,13 +539,16 @@ class Request(ServerInterface):
             guaranteed to be the first argument in future versions), altough it
             is still optional.  It is recommended to use 'httplib' constants
             for the status codes.
-          content_type -- equivalent to calling "set_header('Content-Type', ...)"
-            prior to this call.
-          content_length -- equivalent to calling "set_header('Content-Length', ...)"
-            prior to this call.
+
+          content_type -- equivalent to setting 'Content-Type' by calling
+            'set_header()' prior to this call.
+
+          content_length -- equivalent to setting 'Content-Length' by calling
+             'set_header()' prior to this call.
+
           last_modified -- last modification time as a python datetime
-            instance.  Equivalent to calling "set_header('Last-Modified',
-            format_http_date(...))"  prior to this call.
+            instance.  Equivalent to setting 'Last-Modified' by calling
+            'set_header()' prior to this call.
 
         This is actually just a little more convenient way of calling
         'start_http_response()' defined by the low level server API.  Calling
@@ -547,12 +556,12 @@ class Request(ServerInterface):
         'set_header()' calls after calling this method are ignored.
 
         If 'status_code' is set to 401 (UNAUTHORIZED), the 'WWW-Authenticate'
-        header is automatically set to 'Basic realm="<wiking.cfg.site_title>"'.  Use
-        the lower level method 'start_http_response()' if you want to avoid
+        header is automatically set to 'Basic realm="<wiking.cfg.site_title>"'.
+        Use the lower level method 'start_http_response()' if you want to avoid
         this side effect.
 
-        Raises 'ClosedConnection' if the client closes the connection during the
-        operation.
+        Raises 'ClosedConnection' if the client closes the connection during
+        the operation.
 
         The method should not be used directly by Wiking applications.
         Application code should return 'wiking.Response' and 'wiking.Handler'
@@ -660,17 +669,15 @@ class Request(ServerInterface):
 
         Arguments:
 
-          base_uri -- base URI.  May be a relative path, such as '/xx/yy', absolute
-            URI, such as 'http://host.domain.com/xx/yy' or a mailto URI, such
-            as 'mailto:name@domain.com'.
-
+          base_uri -- base URI.  May be a relative path, such as '/xx/yy',
+            absolute URI, such as 'http://host.domain.com/xx/yy' or a mailto
+            URI, such as 'mailto:name@domain.com'.
           *args -- pairs (NAME, VALUE) representing arguments appended to
             'base_uri' in the order in which they appear.  The first positional
             argument may also be a string representing an anchor name.  If
             that's the case, the anchor is appended to 'base_uri' after a '#'
             sign and the first argument is not considered to be a (NAME, VALUE)
             pair.
-
           **kwargs -- keyword arguments representing additional arguments to
             append to the URI.  Use 'kwargs' if you don't care about the order
             of arguments in the returned URI, otherwise use 'args'.
@@ -706,12 +713,13 @@ class Request(ServerInterface):
         return uri
 
     def forward(self, handler, **kwargs):
-        """Pass the request on to another handler keeping track of the forwarding history.
+        """Pass handling on to another handler keeping track of forwarding history.
 
         Arguments:
           handler -- 'wiking.RequestHandler' instance to handle request.
-          kwargs -- all keyword arguments are passed to the 'ForwardInfo' instance created for
-            this forward (later available in forward history using the method 'forwards()').
+          kwargs -- all keyword arguments are passed to the 'ForwardInfo'
+            instance created for this forward (later available in forward
+            history using the method 'forwards()').
 
         Returns the result of calling 'handler.handle(req)'.
 
@@ -728,11 +736,11 @@ class Request(ServerInterface):
             self._forwards.pop()
 
     def forwards(self):
-        """Return the tuple of `ForwardInfo' instances representing the current forwarding stack.
+        """Return tuple of `ForwardInfo' instances from current forwarding stack.
 
-        The items are returned in the order in which the corresponding 'forward()' calls were
-        made.  The current 'Application', which normally starts the request handling, is not
-        included in this list.
+        The items are returned in the order in which the corresponding
+        'forward()' calls were made.  The current 'Application', which normally
+        starts the request handling, is not included in this list.
 
         """
         return tuple(self._forwards)
@@ -747,7 +755,7 @@ class Request(ServerInterface):
         return self._maximized
 
     def accepted_languages(self):
-        """Return the tuple of language codes set in 'Accept-Language' sorted by their preference.
+        """Return tuple of language codes accepted by client sorted by preference.
 
         This is just a convenience method to parse the HTTP 'Accept-Language'
         header.  See the method 'preferred_languages()' for application
@@ -786,9 +794,9 @@ class Request(ServerInterface):
 
         Arguments:
 
-          variants -- list of language codes of avialable language variants.  If None (default),
-            all languages defined by the current Wiking application will be considered.
-
+          variants -- list of language codes of avialable language variants.
+            If None (default), all languages defined by the current Wiking
+            application will be considered.
           raise_error -- if false, None is returned if there is no acceptable
             variant in the list.  Otherwise NotAcceptable error is raised.
 
@@ -905,11 +913,12 @@ class Request(ServerInterface):
     def check_roles(self, *args):
         """Return true, iff the current user belongs to at least one of given roles.
 
-        Arguments may be roles or nested sequences of roles, which will be unpacked.  Roles are
-        represented by 'Role' instances.
+        Arguments may be roles or nested sequences of roles, which will be
+        unpacked.  Roles are represented by 'Role' instances.
 
-        Authentication will be performed only if needed.  In other words, if 'args' contain
-        ANYONE, True will be returned without an attempt to authenticate the user.
+        Authentication will be performed only if needed.  In other words, if
+        'args' contain ANYONE, True will be returned without an attempt to
+        authenticate the user.
 
         """
         return self.check_user_roles(self.user(), *args)
@@ -918,11 +927,13 @@ class Request(ServerInterface):
     def check_user_roles(class_, user, *args):
         """Return true, iff the given user belongs to at least one of given roles.
 
-        Arguments may be roles or nested sequences of roles, which will be unpacked.  Roles are
-        represented by 'Role' instances.  'user' is a 'User' instance or 'None'.
+        Arguments may be roles or nested sequences of roles, which will be
+        unpacked.  Roles are represented by 'Role' instances.  'user' is a
+        'User' instance or 'None'.
 
-        Authentication will be performed only if needed.  In other words, if 'args' contain
-        ANYONE, True will be returned without an attempt to authenticate the user.
+        Authentication will be performed only if needed.  In other words, if
+        'args' contain ANYONE, True will be returned without an attempt to
+        authenticate the user.
 
         """
 
@@ -1062,22 +1073,27 @@ class User(object):
         Arguments:
 
           login -- user's login name as a string
-          uid -- user identifier used for ownership determination (see role OWNER)
+          uid -- user identifier used for ownership determination (see role
+            OWNER)
           name -- visible name as a string (login is used if None)
-          roles -- sequence of user roles as 'Role' instances.  Since every user must be
-            authenticated, roles must always contain at least the role 'Roles.AUTHENTICATED'.
+          roles -- sequence of user roles as 'Role' instances.  Since every
+            user must be authenticated, roles must always contain at least the
+            role 'Roles.AUTHENTICATED'.
           email -- e-mail address as a string
-          password -- user's expected authentication password or None if password authentication is
-            not allowed.  The login password will be checked against this value for authentication
-            to succeed.
-          password_expiration -- password expiration date as a Python 'date' instance or None
-          gender -- User's gender as one of MALE/FEMALE class constants or None if unknown
+          password -- user's expected authentication password or None if
+            password authentication is not allowed.  The login password will be
+            checked against this value for authentication to succeed.
+          password_expiration -- password expiration date as a Python 'date'
+            instance or None
+          gender -- User's gender as one of MALE/FEMALE class constants or None
+            if unknown
           lang -- code of the user's preferred language
           uri -- user's profile URI or None
           data -- application specific data
 
-        Please note, that password expiration date has currently no impact on the authentication
-        process.  It will just be displayed in the login panel, if defined.
+        Please note, that password expiration date has currently no impact on
+        the authentication process.  It will just be displayed in the login
+        panel, if defined.
 
         """
         assert isinstance(login, (unicode, str))
@@ -1249,19 +1265,24 @@ class Roles(object):
     # Translators: Short description of a user group purpose.
     AUTHENTICATED = Role('authenticated', _("Any authenticated user"))
     """Any authenticated user.
+
     Note that authenticated users may be further split into more specific
     groups of authenticated users, based on their actual level of access to the
-    application.  See L{wiking.cms.Roles} for examples of such more specific roles.
+    application.  See L{wiking.cms.Roles} for examples of such more specific
+    roles.
+
     """
     # Translators: Short description of a user group purpose.
     OWNER = Role('owner', _("Current record owner"))
     """The owner of the item being operated.
+
     Interpretation of the term I{owner} is on the particular application.
     Standard way of owner identification is implemented in
     L{PytisModule._check_owner}, based on the owner of the processed database
     record.  Applications may redefine this method or implement their own
     L{Module._check_owner} method to change the concept of owner authorization
     when needed.
+
     """
 
     @classmethod
