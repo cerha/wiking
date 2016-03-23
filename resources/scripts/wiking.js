@@ -132,9 +132,14 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
     },
 
     keymap: function () {
+	// None of the shortcuts defined here are essential.  Most users
+	// will not know about them, but they may improve the experience
+	// for "expert" screen reader users.
 	return {
 	    'Ctrl-Shift-m': this.cmd_menu,
-	    'Ctrl-Shift-Up': this.cmd_menu,
+	    // These shortcuts (up/down) don't work on Windows, but make
+	    // a pleasant convenience on Linux and Mac OS.
+	    'Ctrl-Shift-Up': this.cmd_top_controls,
 	    'Ctrl-Shift-Down': this.cmd_notebook
 	};
     },
@@ -148,6 +153,17 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
 	    var menu = $('main-menu');
 	    if (menu) {
 		lcg.widget_instance(menu).focus();
+	    }
+	}
+    },
+
+    cmd_top_controls: function (element) {
+	// Move focus to the top bar.
+	var controls = $('top-controls');
+	if (controls) {
+	    var item = controls.down('a, [tabindex=0]');
+	    if (item) {
+		item.focus();
 	    }
 	}
     },
