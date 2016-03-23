@@ -419,7 +419,7 @@ class Application(wiking.Module):
         return ['en']
 
     def preferred_languages(self, req):
-        """Return a list of languages accepted by the current user in the order of their preference.
+        """Return a list of languages accepted by the user in the order of their preference.
 
         The list of prefered languages allows wiking applications to serve
         multilingual content using the automatic Content Negotiation techique
