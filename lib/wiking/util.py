@@ -1968,7 +1968,17 @@ class Message(lcg.Container):
     def __init__(self, content, formatted=False, kind=INFO, **kwargs):
         assert kind in (self.INFO, self.SUCCESS, self.WARNING, self.ERROR)
         icon = HtmlRenderer(lambda renderer, context: self._export_icon(context))
-        content = lcg.coerce(content, formatted=formatted)
+        if formatted and isinstance(content, lcg.Localizable):
+            # Parsing must be done after localization, but lcg.coerce()
+            # does parsing first.  Maybe lcg.coerce() should be changed
+            # this way, but it might have unknown consequences...
+            class FormattedString(lcg.TextContent):
+                def export(self, context):
+                    localized_text = context.localize(self._text)
+                    return lcg.Parser().parse_inline_markup(localized_text).export(context)
+            content = FormattedString(content)
+        else:
+            content = lcg.coerce(content, formatted=formatted)
         if kind == wiking.Request.WARNING:
             content = lcg.coerce((_("Warning"), ': ', content))
         super(Message, self).__init__((icon, lcg.Container(content, id='content')),
