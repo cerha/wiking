@@ -125,7 +125,7 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
 		    self.location = element.getAttribute('href');
 		    event.stop();
 		}
-	    }.bind(this))
+	    }.bind(this));
 	}.bind(this));
 
 	wiking.handler = this;
