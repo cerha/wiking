@@ -1,5 +1,64 @@
+Version 2.0.0 (2016-04-12):
 
- * Fixes:
+ Changes have not been tracked in detail for this version so refer to git logs
+ for more details.  Some most important highlights of 2.0.0 are:
+
+ * User interface redesign
+
+   - The user interface has heen greatly refactored to allow responsivity so
+     that Wiking applications can be used on mobile devices such as phones and
+     tablets.
+
+   - Icon theme has been improved for better visual consistency, more icons
+     have been added where appropriate and stylesheets have been fine tuned to
+     improve overall appearance and consistency across different browsers and
+     with respect to mobile devices.
+
+   - Improved page load speed by greatly improved use of caching, using image
+     sprites, merging stylesheets and many many optimizations.
+
+   - HTML 5 is now used by default.
+
+ * Improved security
+
+   - Wiking CMS passwords are now by default hashed using salted PBKDF2 hashes
+     instead of just MD5.  Other password storage schemes can be added quickly
+     by overriding the 'PasswordStorage' class.
+
+   - Forgotten password helper now uses a more secure mechanism with e-mail
+     tokens.
+
+   - Improved protection against possible XSS and CSRF attacks.
+
+ * API chages and additions
+
+   - Wiking applications can now simply add REST API support for modules based on
+     'PytisModule'.
+
+   - Support for caching added by 'CachingPytisModule'.
+
+   - Support for other authentication schemes can now be simpy added using
+     'AuthenticationProvider' API.
+
+   - 'ApplicationConfiguration' class allows simple definition of application
+     specific configuration options.
+
+ * Wiking CMS Publications
+
+   - CMS now supports creation of separate "publications" in the same manner as
+     CMS apges are managed.
+
+   - Publications can be exported into EPUB 3, PDF and Braille
+
+   - Page texts (CMS pages ase well as publications) can now be edited using a
+     WISIWIG editor.  Creation of interactive exercises, MathML and other
+     advanced content is supported.
+
+   - Many features supporting more advanced editing, versioning and access
+     control have been integrated into page/publication management.
+
+ * Fixes
+ 
    - Maintenance mode made to work
 
 Version 1.3.2 (2012-03-30):
