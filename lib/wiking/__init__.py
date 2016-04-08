@@ -1,4 +1,4 @@
-# Copyright (C) 2006-2015 Brailcom, o.p.s.
+# Copyright (C) 2006-2016 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-__version__ = '1.4.0'
+__version__ = '2.0.0'
 
 import sys, os, time, string, re, copy, urllib, imp
 
@@ -29,7 +29,7 @@ import pytis.presentation as pp
 import pytis.web as pw
 
 import lcg
-from lcg import log as debug 
+from lcg import log as debug
 
 from util import *
 from request import *
@@ -49,4 +49,3 @@ import util, modules, db, application, export, request, handler
 for _file in (util, modules, db, application, export, handler):
     _file.__dict__.update(_globals)
 del _globals, k, v, _file
-
