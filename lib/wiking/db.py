@@ -2264,6 +2264,30 @@ class APIProvider(object):
     Wiking modules derived from PytisModule.  The API and usage may change.
 
     """
+    _API_LIST_MAX_LIMIT = 1000
+    """Maximal allowed value of 'limit' passed to '_api_list()'.
+
+    The query parameter 'limit' limits the number of records in '_api_list()'
+    response.  If the query produces more result rows than 'limit', the
+    response will be paged (the client will have to ask for the following pages
+    in further requests).  This constant determines the maximal acceptable
+    value of 'limit' passed by the client.  This value is also used when the
+    query parameter limit has the special value 'max'.
+
+    Limiting the maximal limit aims to be a very basic protection against
+    malicious clients requesting gigantic amounts of data through the API.
+    Such danger, however, very much depends on the potential number of records
+    in the module's database view and their size, so this constant may be
+    overriden in derived classes to make sense for given module.  Set to 'None'
+    when listing all records at once doesn't pose a threat to the server.
+
+    """
+    _API_LIST_DEFAULT_LIMIT = 100
+    """Default maximal number of result rows in '_api_list()' response when 'limit' not passed.
+
+    See '_API_LIST_MAX_LIMIT' for more detailed explanation.
+
+    """
 
     def __init__(self, *args, **kwargs):
         super(APIProvider, self).__init__(*args, **kwargs)
@@ -2319,11 +2343,17 @@ class APIProvider(object):
             self._api_serializers = serializers
         columns = [(cid, serializers[cid]) for cid in self._api_columns(req) if serializers[cid]]
         try:
-            limit = int(req.param('limit', 100))
+            plimit = req.param('limit')
+            if plimit is None:
+                limit = self._API_LIST_DEFAULT_LIMIT
+            elif plimit == 'max':
+                limit = self._API_LIST_MAX_LIMIT
+            else:
+                limit = int(plimit)
             offset = int(req.param('offset', 0))
         except ValueError:
             raise wiking.BadRequest()
-        if limit <= 0 or limit > 1000 or offset < 0:
+        if limit is not None and (limit <= 0 or limit > self._API_LIST_MAX_LIMIT) or offset < 0:
             raise wiking.BadRequest()
         records = self._records(req, condition=self._api_list_condition(req),
                                 limit=limit, offset=offset)
