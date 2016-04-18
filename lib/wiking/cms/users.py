@@ -1182,8 +1182,8 @@ class Users(UserManagementModule, CachingPytisModule):
         if record.field_changed('login'):
             # HACK: Update login in session cookies to let the session continue after login change.
             # See also comment in wiking.CookieAuthenticationProvider._set_session_cookies().
-            req.set_cookie(wiking.module.Application._LOGIN_COOKIE, record['login'].value(),
-                           expires=(730 * 24 * 3600),
+            req.set_cookie(wiking.CookieAuthenticationProvider._LOGIN_COOKIE,
+                           record['login'].value(), expires=(730 * 24 * 3600),
                            secure=wiking.CookieAuthenticationProvider._SECURE_AUTH_COOKIES)
             req.message(_("You can use %s to log in next time.", record['login'].value()))
         if req.param('action') == 'reset_password':
