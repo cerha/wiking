@@ -617,7 +617,7 @@ class Theme(object):
                  'table-cell2': '#f1f3f2',
                  'top-bg': '#efebe7',
                  'top-border': '#b4c4d4',
-                 'highlight-bg': '#41b7d8',
+                 'highlight-bg': '#ffd0c0',
                  'inactive-folder': '#e4e5eb',
                  }
 
