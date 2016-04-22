@@ -600,13 +600,13 @@ class Theme(object):
 
     _DEFAULTS = {'foreground': '#000',
                  'background': '#fff',
-                 'border': '#bcd',
-                 'heading-bg': '#d8e0f0',
+                 'border': '#cadaea',
+                 'heading-bg': '#dae6f6',
                  'heading-line': '#ccc',
-                 'frame-bg': '#eee',
-                 'frame-border': '#ddd',
-                 'link': '#03b',
-                 'link-hover': '#d60',
+                 'frame-bg': '#f0f0f0',
+                 'frame-border': '#e0e0e0',
+                 'link': '#019',
+                 'link-hover': '#006',
                  'meta-fg': '#840',
                  'help': '#444',
                  'error-bg': '#fdb',
@@ -616,9 +616,9 @@ class Theme(object):
                  'table-cell': '#f8fafb',
                  'table-cell2': '#f1f3f2',
                  'top-bg': '#efebe7',
-                 'top-border': '#9ab',
-                 'highlight-bg': '#fc8',
-                 'inactive-folder': '#d2d8e0',
+                 'top-border': '#b4c4d4',
+                 'highlight-bg': '#41b7d8',
+                 'inactive-folder': '#e4e5eb',
                  }
 
     def __init__(self, colors=None):
