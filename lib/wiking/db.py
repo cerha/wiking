@@ -2332,6 +2332,10 @@ class APIProvider(object):
         """Return the condition used for filtering rows in '_api_list()' output."""
         return None
 
+    def _api_list_sorting(self, req):
+        """Return the Pytis sorting specification for sorting '_api_list()' output."""
+        return self._sorting
+
     def _api_list(self, req):
         try:
             serializers = self._api_serializers
@@ -2356,7 +2360,7 @@ class APIProvider(object):
         if limit is not None and (limit <= 0 or limit > self._API_LIST_MAX_LIMIT) or offset < 0:
             raise wiking.BadRequest()
         records = self._records(req, condition=self._api_list_condition(req),
-                                limit=limit, offset=offset)
+                                sorting=self._api_list_sorting(req), limit=limit, offset=offset)
         rows = [dict([(cid, serializer(req, record, cid)) for cid, serializer in columns])
                 for record in records]
         data = dict(rows=rows, total=len(records))
