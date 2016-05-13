@@ -626,10 +626,10 @@ class Config(SettingsManagementModule, wiking.CachingPytisModule):
                         descr = option.documentation()
                     if transform_default is None:
                         if isinstance(option, wiking.cfg.BooleanOption):
-                            transform_default = lambda x: x and _("enabled") or _("disabled")
+                            transform_default = lambda x: x and _("checked") or _("unchecked")
                         else:
-                            transform_default = lambda x: x is None and _("undefined") or repr(x)
-                    descr += ' ' + _("The default value is %s.", transform_default(default))
+                            transform_default = lambda x: x is None and _("empty value") or repr(x)
+                    descr += ' ' + _("The default setting is %s.", transform_default(default))
                 self._cfg_option = option
                 self._default_value = default
                 Field.__init__(self, name, label, descr=descr, **kwargs)
