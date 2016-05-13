@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2006, 2007, 2008, 2009, 2012, 2014, 2015 Brailcom, o.p.s.
+# Copyright (C) 2006, 2007, 2008, 2009, 2012, 2014, 2015, 2016 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -32,14 +32,6 @@ _ = lcg.TranslatableTextFactory('wiking-cms')
 
 class CMSConfiguration(cfg):
     """CMS Specific Configuration."""
-        
-    class _Option_allow_login_panel(cfg.BooleanOption):
-        # Translators: Yes/No configuration option label. Should the login panel be visible?
-        _DESCR = _("Allow login panel")
-        _DOC = _("If enabled, the information about the currently logged user and login/logout "
-                 "controls will be present on each page as a separate panel.  This panel will "
-                 "always be the first panel on the page.")
-        _DEFAULT = True
 
     class _Option_allow_wmi_link(cfg.BooleanOption):
         # Translators: Yes/No configuration option label. Should link to WMI be visible?  "WMI"
@@ -105,13 +97,13 @@ class CMSConfiguration(cfg):
         _DESCR = _("Whether to use e-mails as login names")
         _DOC = _("Iff true, users must use e-mail addresses as their login names.")
         _DEFAULT = False
- 
+
     class _Option_registration_expiry_days(cfg.NumericOption):
         _DESCR = "Number of days after which an unanswered user registration expires"
         _DOC = ("When registration by e-mail is enabled, each newly registered user is required "
                 "to answer the registration e-mail within the limit given here.")
         _DEFAULT = 2
- 
+
     class _Option_reset_password_expiry_minutes(cfg.NumericOption):
         _DESCR = "Number of minutes after which an unanswered password reset request expires"
         _DOC = ("Forgotten password can be reset using an e-mail loop. The user is required "
@@ -119,7 +111,7 @@ class CMSConfiguration(cfg):
                 "limit gives more space to attackers, so you should rarely set it to more "
                 "than the default (15 minutes).")
         _DEFAULT = 15
- 
+
     class _Option_autoapprove_new_users(cfg.StringOption):
         # Change in this option requires server restart to take full effect (the
         # default value of system text 'cms.regsucess' depends on it and system
@@ -130,18 +122,18 @@ class CMSConfiguration(cfg):
                  "groups to grant them further privileges, but the accounts are enabled right "
                  "after the user confirms the registration code.")
         _DEFAULT = False
- 
+
     class _Option_storage(cfg.StringOption):
         _DESCR = "Directory for storing uploaded files"
         _DOC = ("The directory must be writable by the web-server user.")
         _DEFAULT = '/var/lib/wiking'
-        
+
     class _Option_sql_dir(cfg.StringOption):
         _DESCR = "SQL directory"
         _DOC = ("The directory where Wiking CMS database initialization/upgrade scripts "
                 "can be found.")
         _DEFAULT = '/usr/local/share/wiking/sql'
-        
+
     class _Option_image_thumbnail_sizes(cfg.Option):
         _DESCR = "Sequence available image thumbnail sizes"
         _DOC = ("Sequence of three integers denoting the pixel size of small, "
@@ -149,7 +141,7 @@ class CMSConfiguration(cfg):
                 "that their longer side is at most given size (the short side "
                 "is smaller to maintain the image proportion).")
         _DEFAULT = (120, 180, 240)
-        
+
     class _Option_image_screen_size(cfg.Option):
         _DESCR = "Enlarged image screen size"
         _DOC = ("Pair of integers (width, height) in pixels denoting the maximal size "
@@ -158,7 +150,7 @@ class CMSConfiguration(cfg):
                 "size is usually smaller than the original image size (which "
                 "may be larger than the screen size).  If the original is smaller")
         _DEFAULT = (800, 800)
-        
+
     class _Option_content_editor(cfg.StringOption):
         _DESCR = "CMS text editor to be used"
         _DOC = ("The currently supported options are 'plain' for plain text editor "
@@ -168,5 +160,3 @@ class CMSConfiguration(cfg):
                 "for an existing database and there is no support for conversion.  You "
                 "must decide before site creation.")
         _DEFAULT = 'plain'
-        
-        

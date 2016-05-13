@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2006-2015 Brailcom, o.p.s.
+# Copyright (C) 2006-2016 Brailcom, o.p.s.
 #
 # COPYRIGHT NOTICE
 #
@@ -59,7 +59,6 @@ class CmsConfig(CommonAccesRights, Base_CachingTable):
     fields = (sql.PrimaryColumn('site', pytis.data.String()),
               sql.Column('site_title', pytis.data.String()),
               sql.Column('site_subtitle', pytis.data.String()),
-              sql.Column('allow_login_panel', pytis.data.Boolean(not_null=True), default=True),
               sql.Column('allow_registration', pytis.data.Boolean(not_null=True), default=True),
               sql.Column('login_is_email', pytis.data.Boolean(not_null=True), default=False),
               sql.Column('registration_expiration', pytis.data.Integer()),
@@ -355,7 +354,7 @@ class CmsSession(CommonAccesRights, sql.SQLTable):
     #             where(log.c.session_id == sqlalchemy.literal_column('old.session_id')).
     #             values(end_time=sqlalchemy.literal_column('old.last_access')),)
     depends_on = (CmsSessionLog,)
-    
+
 class CmsVSessionLog(CommonAccesRights, sql.SQLView):
     name = 'cms_v_session_log'
     @classmethod
@@ -614,7 +613,7 @@ class CmsPageExcerpts(sql.SQLTable):
               sql.Column('content', pytis.data.String(not_null=True)),
               )
     access_rights = (('ALL', 'www-data',),)
-    
+
 #
 
 class CmsPageAttachments(CommonAccesRights, sql.SQLTable):
@@ -894,7 +893,7 @@ class CmsPublicationExports(CommonAccesRights, sql.SQLTable):
         sql.Column('log', pytis.data.String()),
     )
     unique = (('page_id', 'lang', 'format', 'version',),)
-    
+
 class CmsVPublicationExports(CommonAccesRights, sql.SQLView):
     name = 'cms_v_publication_exports'
     @classmethod
@@ -1286,7 +1285,7 @@ class CmsAddEmailLabel(sql.SQLPlFunction):
     name = 'cms_add_email_label'
     arguments = (sql.Column('_label', pytis.data.Name()),)
     result_type = None
-    
+
 class CmsEmails(CommonAccesRights, sql.SQLTable):
     name = 'cms_emails'
     fields = (sql.Column('label', pytis.data.Name(not_null=True),

@@ -658,14 +658,13 @@ class Config(SettingsManagementModule, wiking.CachingPytisModule):
                           "password reminders, bug-reports etc. will use this sender address. "
                           "Please make sure that this address is valid, since users may reply "
                           "to such messages if they encounter problems.")),
-                F('allow_login_panel'),
                 F('allow_registration'),
                 F('force_https_login'),
                 F('upload_limit',
                   transform_default=lambda n: repr(n) + ' (' + format_byte_size(n) + ')'),
             )
         layout = ('site_title', 'site_subtitle', 'webmaster_address', 'default_sender_address',
-                  'allow_login_panel', 'allow_registration', 'force_https_login', 'upload_limit')
+                  'allow_registration', 'force_https_login', 'upload_limit')
     _TITLE_TEMPLATE = _("Basic Configuration")
 
     def _resolve(self, req):
