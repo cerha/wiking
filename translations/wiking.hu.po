@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-03-14 09:47+0100\n"
+"POT-Creation-Date: 2016-05-13 09:38+0200\n"
 "PO-Revision-Date: 2010-02-04 00:17+0100\n"
 "Last-Translator: Hostomský Károly <khostomsky@gmail.com>\n"
 "Language-Team: Hungarian <wiking@lists.freebsoft.org>\n"
@@ -244,21 +244,21 @@ msgid "Back"
 msgstr "Vissza"
 
 #. RSS channel is a computer idiom, see Wikipedia.
-#: ../lib/wiking/db.py:2374 ../lib/wiking/db.py:2530
+#: ../lib/wiking/db.py:2408 ../lib/wiking/db.py:2564
 msgid "An RSS channel is available for this section:"
 msgstr "RSS csatorna elérhető a következő szekcióhoz:"
 
 #. RSS channel is a computer idiom, see Wikipedia.  Don't translateg 'RSS'.
-#: ../lib/wiking/db.py:2378 ../lib/wiking/db.py:2528
+#: ../lib/wiking/db.py:2412 ../lib/wiking/db.py:2562
 msgid "more about RSS"
 msgstr "több információ az RSS-ről"
 
-#: ../lib/wiking/db.py:2523
+#: ../lib/wiking/db.py:2557
 #, fuzzy, python-format
 msgid "RSS channel \"%s\""
 msgstr "RSS csatorna"
 
-#: ../lib/wiking/db.py:2533
+#: ../lib/wiking/db.py:2567
 #, fuzzy
 msgid "RSS channels are available for this section"
 msgstr "RSS csatorna elérhető a következő szekcióhoz:"
@@ -377,18 +377,18 @@ msgid "Reload"
 msgstr "Frissít"
 
 #. Short description of a user group purpose.
-#: ../lib/wiking/request.py:1195
+#: ../lib/wiking/request.py:1263
 msgid "Anyone"
 msgstr ""
 
 #. Short description of a user group purpose.
-#: ../lib/wiking/request.py:1198
+#: ../lib/wiking/request.py:1266
 #, fuzzy
 msgid "Any authenticated user"
 msgstr "Hitelesítés kötelező"
 
 #. Short description of a user group purpose.
-#: ../lib/wiking/request.py:1205
+#: ../lib/wiking/request.py:1276
 msgid "Current record owner"
 msgstr ""
 
@@ -663,34 +663,34 @@ msgstr "Jelszó"
 msgid "Continue"
 msgstr ""
 
-#: ../lib/wiking/util.py:1984
+#: ../lib/wiking/util.py:1994
 msgid "Warning"
 msgstr "Figyelmeztetés"
 
-#: ../lib/wiking/util.py:2882
+#: ../lib/wiking/util.py:2892
 #, fuzzy
 msgid "Invalid e-mail address format."
 msgstr "Érvénytelen formátum"
 
 #. Computer terminology. `gmail.com' is a domain name in email address
 #. `joe@gmail.com'.
-#: ../lib/wiking/util.py:2890 ../lib/wiking/util.py:2898
+#: ../lib/wiking/util.py:2900 ../lib/wiking/util.py:2908
 #, fuzzy
 msgid "Domain not found."
 msgstr "Domain nem található"
 
 #. Computer terminology.  Don't translate the acronym `DNS'.
-#: ../lib/wiking/util.py:2893 ../lib/wiking/util.py:2901
+#: ../lib/wiking/util.py:2903 ../lib/wiking/util.py:2911
 #, python-format
 msgid "Unable to retrieve DNS records: %s"
 msgstr ""
 
-#: ../lib/wiking/util.py:2929
+#: ../lib/wiking/util.py:2939
 #, python-format
 msgid "Invalid e-mail address: %s"
 msgstr ""
 
-#: ../lib/wiking/util.py:2931
+#: ../lib/wiking/util.py:2941
 #, python-format
 msgid ""
 "Unable to verify e-mail address: Mail servers for '%s' are temporarily "
