@@ -277,7 +277,10 @@ class Handler(object):
                              (urllib.unquote(referer_uri.path) !=
                               urlparse.urlparse(req.uri()).path))):
                             raise wiking.Redirect(req.server_uri(current=True))
-                result = self._application.handle(req)
+                try:
+                    result = self._application.handle(req)
+                except wiking.Abort as abort:
+                    result = abort.result()
                 if isinstance(result, (tuple, list)):
                     # Temporary backwards compatibility conversion.
                     content_type, data = result
@@ -327,8 +330,6 @@ class Handler(object):
                 except wiking.AuthenticationError as auth_error:
                     error = auth_error
                 return self._handle_request_error(req, error)
-            except wiking.Abort as e:
-                return self._serve_document(req, e.document())
             except wiking.ClosedConnection:
                 return []
         except Exception:

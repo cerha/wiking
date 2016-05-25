@@ -510,32 +510,30 @@ class ServiceUnavailable(RequestError):
 # NOTE: Abort is not a RequestError subclass!
 
 class Abort(Exception):
-    """Exception aborting regular request processing displaying arbitrary content.
+    """Exception aborting regular request processing and returning arbitrary result.
 
-    Raising this error leads to displaying arbitrary substitutional content
-    (such as a 'ConfirmationDialog' instance).  It is useful in situations
-    where you need to abort regular request processing.  Raising this exception
-    has the same effect as returning a document from 'RequestHandler.handle()',
-    but may be invoked from anywhere, even from places where you do not have a
-    chance to influence the 'RequestHandler.handle()' return value.
+    Raising this error interrupts regular request processing chain and forces
+    given result as the result of top level request handler.  Raising this
+    exception has the same effect as returning given result from
+    'Application.handle()', but may be invoked from anywhere, even from places
+    where you otherwise can not influence the final return value of the request
+    handler.
 
     """
-    def __init__(self, title, content, **kwargs):
+    def __init__(self, result):
         """Arguments:
 
-        title -- displayed document title as a (translatable) string.
-        content -- displayed document content as an 'lcg.Content'
-          instance or a sequence of such instances.
-        **kwargs -- any other arguments to be passed to the 'Document'
-          constructor.
+        result -- request processing result as 'lcg.Content', 'wiking.Document'
+          or 'wiking.Response' instance.
 
         """
-        self._document = wiking.Document(title=title, content=content, **kwargs)
+        assert isinstance(result, (lcg.Content, wiking.Document, wiking.Response))
+        self._result = result
         super(Abort, self).__init__()
 
-    def document(self):
-        """Return the content to be displayed as a 'Document' instance."""
-        return self._document
+    def result(self):
+        """Return the request processing result passed to the constructor."""
+        return self._result
 
 
 # ============================================================================

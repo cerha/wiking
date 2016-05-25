@@ -1142,8 +1142,10 @@ class Users(UserManagementModule, CachingPytisModule):
         code = record['regcode'].value()
         if not code or code != req.param('regcode'):
             req.message(_("Invalid activation code."), req.ERROR)
-            raise wiking.Abort(_("Account not activated"),
-                               ActivationForm(uid.value(), allow_bypass=False))
+            raise wiking.Abort(wiking.Document(
+                title=_("Account not activated"),
+                content=ActivationForm(uid.value(), allow_bypass=False),
+            ))
         return record
 
     def _send_admin_approval_mail(self, req, record):
@@ -1822,7 +1824,7 @@ class Session(PytisModule, wiking.Session):
                 content = (content, form)
             else:
                 content = ConfirmationDialog(content)
-            raise wiking.Abort(title, content)
+            raise wiking.Abort(wiking.Document(title=title, content=content))
         import wiking.cms.texts
         state = user.state()
         if state == Users.AccountState.DISABLED:
