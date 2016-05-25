@@ -1761,6 +1761,8 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                               profiles=self._profiles(req), filter_sets=self._filter_sets(req),
                               actions=self._form_actions_argument(req),
                               **form_kwargs)
+            if form.is_ajax_request(req) and req.param('form_name') == self.name():
+                raise wiking.Abort(wiking.ajax_response(req, form))
             content = self._list_form_content(req, form, uri=binding_uri)
         return lcg.Container(content)
 
