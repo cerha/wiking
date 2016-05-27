@@ -7,9 +7,10 @@
   * python >= 2.6
   * apache >= 2.0
   * mod_wsgi >= 3.3 (recommended) or mod_python >= 3.2.10
-  * python-dnspython - DNS client module for Python
-  * python-imaging - Python Imaging Library (needed only when using Image
-    galeries)
+  * python modules:
+      - dns.resolver (Debian package python-dnspython) - DNS client module for Python
+      - PIL (Debian package python-imaging) - Python Imaging Library
+      - pbkdf2 (pip install pbkdf2) - for PBKDF2 password hashing
 
 Apart from that, you also need two external components, which are developed
 within the Free(b)soft project as Wiking itself and all their dependencies:
