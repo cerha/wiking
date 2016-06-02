@@ -268,15 +268,13 @@ class Handler(object):
                     # directly in MinimalExporter.
                     return self._handle_maintenance_mode(req)
                 # Very basic CSRF prevention
-                if req.param('submit'):
-                    referer = req.header('Referer')
-                    if referer:
-                        referer_uri = urlparse.urlparse(referer)
-                        if ((referer_uri.scheme not in ('', 'http', 'https',) or
-                             (referer_uri.netloc and referer_uri.netloc != req.server_hostname()) or
-                             (urllib.unquote(referer_uri.path) !=
-                              urlparse.urlparse(req.uri()).path))):
-                            raise wiking.Redirect(req.server_uri(current=True))
+                if req.param('submit') and req.header('Referer'):
+                    referer = urlparse.urlparse(req.header('Referer'))
+                    if ((referer.scheme + '://' + referer.netloc != req.server_uri() or
+                         urllib.unquote(referer.path) != urlparse.urlparse(req.uri()).path)):
+                        # Inform the user to help debugging a posiibly surprising situation...
+                        req.message(_("Request rejected due to CSRF protection."), req.ERROR)
+                        raise wiking.Redirect(req.server_uri(current=True))
                 try:
                     result = self._application.handle(req)
                 except wiking.Abort as abort:
