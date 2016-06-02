@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-06-02 10:34+0200\n"
+"POT-Creation-Date: 2016-06-02 11:44+0200\n"
 "PO-Revision-Date: 2010-01-19 16:40+0100\n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -238,26 +238,26 @@ msgid "Unable to perform a database operation:"
 msgstr ""
 
 #. Back button label. Standard computer terminology.
-#: ../lib/wiking/db.py:2108
+#: ../lib/wiking/db.py:2109
 msgid "Back"
 msgstr "Tilbake"
 
 #. RSS channel is a computer idiom, see Wikipedia.
-#: ../lib/wiking/db.py:2410 ../lib/wiking/db.py:2566
+#: ../lib/wiking/db.py:2411 ../lib/wiking/db.py:2567
 msgid "An RSS channel is available for this section:"
 msgstr "En RSS-kanal  er tilgjengelig for denne seksjonen:"
 
 #. RSS channel is a computer idiom, see Wikipedia.  Don't translateg 'RSS'.
-#: ../lib/wiking/db.py:2414 ../lib/wiking/db.py:2564
+#: ../lib/wiking/db.py:2415 ../lib/wiking/db.py:2565
 msgid "more about RSS"
 msgstr "mer om RSS"
 
-#: ../lib/wiking/db.py:2559
+#: ../lib/wiking/db.py:2560
 #, fuzzy, python-format
 msgid "RSS channel \"%s\""
 msgstr "RSS-kanal"
 
-#: ../lib/wiking/db.py:2569
+#: ../lib/wiking/db.py:2570
 #, fuzzy
 msgid "RSS channels are available for this section"
 msgstr "En RSS-kanal  er tilgjengelig for denne seksjonen:"
@@ -339,7 +339,11 @@ msgstr "Vedlikeholdsmodus"
 msgid "The system is temporarily down for maintenance."
 msgstr "Systemet er midlertidig nede for vedlikehold."
 
-#: ../lib/wiking/handler.py:295
+#: ../lib/wiking/handler.py:276
+msgid "Request rejected due to CSRF protection."
+msgstr ""
+
+#: ../lib/wiking/handler.py:293
 msgid "This URI does not belong to server API."
 msgstr ""
 

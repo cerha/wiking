@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-06-02 10:34+0200\n"
-"PO-Revision-Date: 2016-03-14 09:50+0100\n"
+"POT-Creation-Date: 2016-06-02 11:44+0200\n"
+"PO-Revision-Date: 2016-06-02 11:44+0200\n"
 "Last-Translator: Hynek Hanke <hanke@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
 "Language: cs\n"
@@ -258,26 +258,26 @@ msgid "Unable to perform a database operation:"
 msgstr "Provedení databázové operace se nezdařilo:"
 
 #. Back button label. Standard computer terminology.
-#: ../lib/wiking/db.py:2108
+#: ../lib/wiking/db.py:2109
 msgid "Back"
 msgstr "Zpět"
 
 #. RSS channel is a computer idiom, see Wikipedia.
-#: ../lib/wiking/db.py:2410 ../lib/wiking/db.py:2566
+#: ../lib/wiking/db.py:2411 ../lib/wiking/db.py:2567
 msgid "An RSS channel is available for this section:"
 msgstr "K dispozici je také RSS kanál pro tuto sekci:"
 
 #. RSS channel is a computer idiom, see Wikipedia.  Don't translateg 'RSS'.
-#: ../lib/wiking/db.py:2414 ../lib/wiking/db.py:2564
+#: ../lib/wiking/db.py:2415 ../lib/wiking/db.py:2565
 msgid "more about RSS"
 msgstr "více o RSS"
 
-#: ../lib/wiking/db.py:2559
+#: ../lib/wiking/db.py:2560
 #, python-format
 msgid "RSS channel \"%s\""
 msgstr "RSS kanál „%s“"
 
-#: ../lib/wiking/db.py:2569
+#: ../lib/wiking/db.py:2570
 msgid "RSS channels are available for this section"
 msgstr "Pro tuto sekci jsou k dispozici RSS kanály"
 
@@ -357,7 +357,11 @@ msgstr "Probíhá údržba systému"
 msgid "The system is temporarily down for maintenance."
 msgstr "Systém je dočasně mimo provoz z důvodů údržby."
 
-#: ../lib/wiking/handler.py:295
+#: ../lib/wiking/handler.py:276
+msgid "Request rejected due to CSRF protection."
+msgstr "Dotaz byl odmítnut na základě CSRF ochrany."
+
+#: ../lib/wiking/handler.py:293
 msgid "This URI does not belong to server API."
 msgstr "Tato adresa nepatří do veřejného API serveru."
 
