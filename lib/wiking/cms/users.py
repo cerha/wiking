@@ -70,33 +70,32 @@ class RoleSets(UserManagementModule, CachingPytisModule):
             Field('role_set_id'),
             Field('role_id', _("Group"), not_null=True, codebook='ApplicationRoles'),
             Field('member_role_id', _("Gets rights of"), not_null=True, codebook='UserGroups'),
-            Field('delete', virtual=True, computer=computer(lambda r: _("Remove"))),
         )
         columns = layout = ('role_id', 'member_role_id')
 
     _TITLE_COLUMN = 'member_role_id'
     _INSERT_LABEL = _("Add rights of group")
+    _DELETE_LABEL = _("Revoke")
+    _DELETE_PROMPT = _("Please, confirm revoking group relationship.")
+    _ROW_ACTIONS = True
 
     _roles_instance = None
     _cache_ids = ('containment', 'resolution',)
     _DEFAULT_CACHE_ID = 'containment'
 
+    def _authorized(self, req, action, **kwargs):
+        if action in ('view', 'update'):
+            return False
+        else:
+            return super(RoleSets, self)._authorized(req, action, **kwargs)
+
     def _layout(self, req, action, record=None):
         return (self._TITLE_COLUMN,)
 
-    def _list_form_kwargs(self, req, form_cls):
-        kwargs = super(RoleSets, self)._list_form_kwargs(req, form_cls)
-        if issubclass(form_cls, pw.ItemizedView) and req.check_roles(Roles.USER_ADMIN):
-            kwargs['template'] = lcg.TranslatableText("%%(%s)s [%%(delete)s]" % self._TITLE_COLUMN)
-        return kwargs
-
     def _link_provider(self, req, uri, record, cid, **kwargs):
         if cid is None:
-            return self._link_provider(req, uri, record, self._TITLE_COLUMN, **kwargs)
-        elif cid == 'delete':
-            return req.make_uri(uri + '/' + record['role_set_id'].export(), action='delete')
-        else:
-            return super(RoleSets, self)._link_provider(req, uri, record, cid, **kwargs)
+            cid = self._TITLE_COLUMN
+        return super(RoleSets, self)._link_provider(req, uri, record, cid, **kwargs)
 
     def _load_cache(self, transaction=None):
         super(RoleSets, self)._load_cache(transaction=transaction)
@@ -231,29 +230,27 @@ class RoleMembers(UserManagementModule):
                       inline_display='user_name', inline_referer='user_login'),
                 Field('user_login'),
                 Field('user_name'),
-                Field('delete', virtual=True, computer=computer(lambda r: _("Remove"))),
             )
         columns = layout = ('role_id', 'uid',)
 
     _TITLE_COLUMN = 'uid'
     _INSERT_LABEL = _("Add member")
+    _DELETE_LABEL = _("Remove from group")
+    _ROW_ACTIONS = True
+
+    def _authorized(self, req, action, **kwargs):
+        if action in ('view', 'update'):
+            return False
+        else:
+            return super(RoleMembers, self)._authorized(req, action, **kwargs)
 
     def _layout(self, req, action, record=None):
         return (self._TITLE_COLUMN,)
 
-    def _list_form_kwargs(self, req, form_cls):
-        kwargs = super(RoleMembers, self)._list_form_kwargs(req, form_cls)
-        if issubclass(form_cls, pw.ItemizedView) and req.check_roles(Roles.USER_ADMIN):
-            kwargs['template'] = lcg.TranslatableText("%%(%s)s [%%(delete)s]" % self._TITLE_COLUMN)
-        return kwargs
-
     def _link_provider(self, req, uri, record, cid, **kwargs):
         if cid is None:
-            return self._link_provider(req, uri, record, self._TITLE_COLUMN, **kwargs)
-        elif cid == 'delete':
-            return req.make_uri(uri + '/' + record['role_member_id'].export(), action='delete')
-        else:
-            return super(RoleMembers, self)._link_provider(req, uri, record, cid, **kwargs)
+            cid = self._TITLE_COLUMN
+        return super(RoleMembers, self)._link_provider(req, uri, record, cid, **kwargs)
 
     def user_ids(self, role, strict=False):
         """
