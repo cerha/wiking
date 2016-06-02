@@ -236,6 +236,7 @@ class RoleMembers(UserManagementModule):
     _TITLE_COLUMN = 'uid'
     _INSERT_LABEL = _("Add member")
     _DELETE_LABEL = _("Remove from group")
+    _DELETE_PROMPT = _("Please, confirm removing the user from the group.")
     _ROW_ACTIONS = True
 
     def _authorized(self, req, action, **kwargs):

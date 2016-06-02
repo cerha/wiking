@@ -346,6 +346,12 @@ div.item span.panel-field-date {
     position: relative;
     top: -1px;
 }
+.pytis-form.itemized-view.user-roles div.summary,
+.pytis-form.itemized-view.role-members div.summary,
+.pytis-form.itemized-view.contained-roles div.summary,
+.pytis-form.itemized-view.containing-roles div.summary {
+    display: none;
+}
 
 /* Links to unpublished pages */
 .unpublished { text-decoration: line-through; }
