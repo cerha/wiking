@@ -1969,7 +1969,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                     if preview_mode:
                         req.message(_("This page has no content. "
                                       "Users will be redirected to the first visible "
-                                      "subpage in production mode.", req.WARNING))
+                                      "subpage in production mode."), req.WARNING)
                         break
                     else:
                         raise Redirect('/' + row['identifier'].value())
