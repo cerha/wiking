@@ -241,11 +241,12 @@ class Documentation(Module, RequestHandler):
                             "Please check 'doc_dirs' configuration option." % component)
         return basedir
 
-    def _document_path(self, *path):
+    def _document_path(self, req):
         """Return full filesystem path of document given by list of relative path components."""
-        if not path:
+        if not req.unresolved_path:
             raise Forbidden()
-        return os.path.join(self._documentation_directory(path[0]), *path[1:])
+        component, relpath = req.unresolved_path[0], req.unresolved_path[1:]
+        return os.path.join(self._documentation_directory(component), *relpath)
 
     def _variants(self, path):
         variants = [lang for lang in wiking.module.Application.languages()
@@ -278,8 +279,8 @@ class Documentation(Module, RequestHandler):
     def _handle(self, req):
         # TODO: the documentation should be processed by LCG first into some
         # reasonable output format.  Now we just search the file in all the
-        # source directories and format it.  No global navigation is used.
-        path = self._document_path(*req.unresolved_path)
+        # source directories and format it.
+        path = self._document_path(req)
         variants = self._variants(path)
         if variants:
             del req.unresolved_path[:]
@@ -296,8 +297,10 @@ class Documentation(Module, RequestHandler):
             layout = None
         return wiking.Document(title, content, lang=lang, variants=variants, layout=layout)
 
-    def content(self, path, lang):
-        return self._content(self._document_path(*path.split('/')), lang)
+    def document_content(self, component, uri, lang):
+        """Return the content of the document given by its relative URI."""
+        path = os.path.join(self._documentation_directory(component), *uri.split('/'))
+        return self._content(path, lang)
 
 
 class Resources(Module, RequestHandler):
