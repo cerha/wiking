@@ -10,23 +10,12 @@ hardware a uživatelským nastavením.  Výsledné stránky by tedy měly být
 použitelné bez ohledu na použitý prohlížeč, typ a velikost písma, rozlišení
 obrazovky, zpřístupňující technologie atd.
 
-Implementace respektuje relevantní standardy W3C.  S ohledem na zpřístupnění je
-to zejména dokument >>[http://www.w3.org/TR/WAI-WEBCONTENT/ Web Content
-Accessibility Guidelines 1.0]<<.  Ačkoli věříme, že požadavky WCAG 1.0 jsou
-splněny v úrovni AAA, musíme připustit, že řada parametrů je natolik
-subjektivní povahy, že přesné zařazení není možné.  Produkt byl také testován
-uživateli různých kombinací zpřístupňujících technologií a byla přijata řada
-opatření pro zajištění co nejlepší použitelnosti ve všech případech.
+Systém byl vyvinut s ohledem na formální standardy pro zpřístupnění, jako např.
+>>[http://www.w3.org/TR/WCAG20/ Web Content Accessibility Guidelines 2.0]<<
+nebo [https://www.section508.gov Sekce 508], stejně jako na skutečnou zkušenost
+koncového uživatele.  Zpřístupnění a použitelnost bylt testovány s různými
+kombinacemi zpřístupňujících technologií, zejména odečítačů obrazovky.
 
 Informace o navigačních možnostech, včetně popisu vlastností podporujících
 zpřístupnění, naleznete v kapitole [navigation Navigace] uživatelské příručky
 systému Wiking.
-
-Na výslednou kvalitu zpřístupnění webových stránek má vliv nejen použitý
-vyvojářský nástroj, ale také způsob jeho použití a v neposlední řadě také
-vlastní obsah.  Systém Wiking se snaží tvůrcům obsahu pomoci i v této oblasti,
-ale není možné zaručit, že obsah a použití systému budou vždy správné.  Proto
-prosím v případě potíží kontaktujte vždy nejprve správce daného webu.  Jeho
-adresu naleznete v zápatí stránky.  Teprve pokud jste si jisti, že jde o
-vlastnost systému Wiking, kontaktujte jeho vývojáře.  Kontaktní informace
-naleznate na [http://www.freebsoft.org/wiking stránkách projektu Wiking].
