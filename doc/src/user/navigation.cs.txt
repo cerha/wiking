@@ -54,7 +54,7 @@ např. různé navigační prvky apod.  V případě systému Wiking to typicky 
   * [#breadcrumb-navigation]
   * [#languages]
   * [#menus]
-  * [#panels]
+  * [#side-panels]
 
 Vizuálně orientovaný uživatel může tyto části snadno ignorovat, protože jsou od
 vlastního obsahu viditelně odlišeny.  Pro zrakově postižené uživatele však tyto
@@ -167,13 +167,13 @@ internetových kavárnách, na veřejných terminálech apod.).  Správné nasta
 jazykových předvoleb prohlížeče by však mělo být vždy preferovaným řešením.
 
 
-== Panely == panels
+== Panely == side-panels
 
 Panely jsou malá informační okénka, která jsou ve výchozím stylu zobrazena po
-pravém boku stránky.  Většinou slouží ke shrnutí nejdůležitějších informací z
-daného portálu.  Panely jsou stejné na každé stránce portálu.  Například panel
-Novinek může zobrazovat souhrn nejčerstvějších zpráv s odkazy na kompletní
-znění každé zprávy v sekci Novinky.
+pravém boku stránky.  Většinou slouží k zobrazení doplňujících informací a
+obvykle jsou stejné na každé stránce portálu.  Například panel Novinek může
+zobrazovat souhrn nejčerstvějších zpráv s odkazy na kompletní znění každé
+zprávy v sekci Novinky.
 
 Pokud nás panely obtěžují, je možné je skrýt pomocí odkazu „Skrýt panely“,
 který naleznete nad panely.  Pokud jsou povoleny „>>cookies<<“, je ukrytí

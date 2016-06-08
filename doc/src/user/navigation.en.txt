@@ -53,7 +53,7 @@ page are:
   * [#breadcrumb-navigation]
   * [#languages]
   * [#menus]
-  * [#panels]
+  * [#side-panels]
 
 A visually oriented user may ignore those parts, since they are visually
 distinguished from the main content.  They may, however, impose a problem for
@@ -158,13 +158,13 @@ can't modify them, such as in an Internet cafe or at a public terminal.
 Correct browser settings should still be the preferred solution, however.
 
 
-== Panels == panels
+== Panels == side-panels
 
 Panels are brief information windows, which are displayed by the right hand
-side in the default style.  They usually summarize the most important
-information from given website.  Panels appear unchanged on each page of the
-site.  For example a News panel may display the most recent news with links to
-more detailed messages within the News section.
+side in the default style.  They typically include some additional site-wide
+information and usually the same panels appear on each page of the site.  For
+example a News panel may display the most recent news with links to more
+detailed messages within the News section.
 
 Panels can be hidden, using the "Hide panels" link (located above them).  This
 setting is sticky (panels stay hidden for the following requests) when
