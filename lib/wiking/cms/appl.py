@@ -38,7 +38,10 @@ class AdminControl(wiking.TopBarControl):
             return 'gear-larger'
 
     def _menu_title(self, context):
-        return _("Website Administration")
+        if wiking.module.WikingManagementInterface.authorized(context.req()):
+            return _("Website Administration")
+        else:
+            return _("Content Management")
 
     def _menu_items(self, context):
         req = context.req()
