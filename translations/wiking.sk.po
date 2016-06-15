@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-06-02 11:44+0200\n"
+"POT-Creation-Date: 2016-06-15 14:42+0200\n"
 "PO-Revision-Date: 2010-01-19 16:43+0100\n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: Slovak <wiking@lists.freebsoft.org>\n"
@@ -348,37 +348,37 @@ msgstr ""
 msgid "This URI does not belong to server API."
 msgstr ""
 
-#: ../lib/wiking/modules.py:540
+#: ../lib/wiking/modules.py:543
 msgid "Searching"
 msgstr "Vyhľadávanie"
 
-#: ../lib/wiking/modules.py:541
+#: ../lib/wiking/modules.py:544
 msgid "Search results"
 msgstr "Výsledky vyhľadávania"
 
-#: ../lib/wiking/modules.py:542
+#: ../lib/wiking/modules.py:545
 msgid "Given search term doesn't contain any searchable term."
 msgstr ""
 "Zadaný vyhľadávací výraz neobsahuje nič, podľa čoho by bolo možné "
 "vyhľadávanie uskutočniť."
 
-#: ../lib/wiking/modules.py:546
+#: ../lib/wiking/modules.py:549
 msgid "Search words:"
 msgstr "Vyhľadať slová:"
 
-#: ../lib/wiking/modules.py:547
+#: ../lib/wiking/modules.py:550
 msgid "Search"
 msgstr "Vyhľadať"
 
-#: ../lib/wiking/modules.py:603
+#: ../lib/wiking/modules.py:606
 msgid "Nothing found."
 msgstr "Nič nebolo nájdené."
 
-#: ../lib/wiking/modules.py:660
+#: ../lib/wiking/modules.py:663
 msgid "The following modules were successfully reloaded:"
 msgstr "Nasledujúce moduly boli úspešne prečítané znovu:"
 
-#: ../lib/wiking/modules.py:662
+#: ../lib/wiking/modules.py:665
 msgid "Reload"
 msgstr "Načítať znovu"
 

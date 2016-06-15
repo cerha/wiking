@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-06-02 10:41+0200\n"
+"POT-Creation-Date: 2016-06-15 14:44+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: \n"
@@ -11,75 +11,80 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../lib/wiking/cms/appl.py:41
+#: ../lib/wiking/cms/appl.py:42
 #, fuzzy
 msgid "Website Administration"
 msgstr "Administrador"
 
-#: ../lib/wiking/cms/appl.py:48
+#: ../lib/wiking/cms/appl.py:44
+#, fuzzy
+msgid "Content Management"
+msgstr "Administração dos utentes"
+
+#: ../lib/wiking/cms/appl.py:51
 #, fuzzy
 msgid "Enter the Management Interface"
 msgstr "Entra na administração do site"
 
-#: ../lib/wiking/cms/appl.py:51
+#: ../lib/wiking/cms/appl.py:54
 msgid "Leave the Management Interface"
 msgstr "Deixa a administração do site"
 
-#: ../lib/wiking/cms/appl.py:63
+#: ../lib/wiking/cms/appl.py:66
 #, fuzzy
 msgid "Switch to Production Mode"
 msgstr "Torna a página invisível ao exterior. "
 
-#: ../lib/wiking/cms/appl.py:65
+#: ../lib/wiking/cms/appl.py:68
 #, fuzzy
 msgid "Switch to Preview Mode"
 msgstr "Anterior"
 
-#: ../lib/wiking/cms/appl.py:71
+#: ../lib/wiking/cms/appl.py:74
 msgid "Edit the Current Page"
 msgstr ""
 
-#: ../lib/wiking/cms/appl.py:75
+#: ../lib/wiking/cms/appl.py:78
 #, fuzzy
 msgid "Create a New Page"
 msgstr "Nova página"
 
-#: ../lib/wiking/cms/appl.py:127
+#: ../lib/wiking/cms/appl.py:130
 #, fuzzy
 msgid "Switching to preview mode"
 msgstr "Anterior"
 
-#: ../lib/wiking/cms/appl.py:129
+#: ../lib/wiking/cms/appl.py:132
 #, fuzzy
 msgid "Switching to production mode"
 msgstr "Torna a página invisível ao exterior. "
 
-#: ../lib/wiking/cms/appl.py:180
+#: ../lib/wiking/cms/appl.py:183
 msgid "Welcome to Wiking CMS"
 msgstr ""
 
-#: ../lib/wiking/cms/appl.py:183 ../lib/wiking/cms/cms.py:1479
+#: ../lib/wiking/cms/appl.py:186 ../lib/wiking/cms/cms.py:1479
 msgid "Create a new page"
 msgstr ""
 
-#: ../lib/wiking/cms/appl.py:186
+#: ../lib/wiking/cms/appl.py:189
 msgid ""
 "There are no published pages. You need to switch to the Preview mode to be "
 "able to access the unpublished pages."
 msgstr ""
 
-#: ../lib/wiking/cms/appl.py:282
+#: ../lib/wiking/cms/appl.py:285
 msgid "Wiking Management Interface"
 msgstr "Administração do site"
 
-#: ../lib/wiking/cms/appl.py:324 ../lib/wiking/cms/users.py:1033
+#: ../lib/wiking/cms/appl.py:327 ../lib/wiking/cms/users.py:1033
 #, python-format
 msgid ""
 "User %s is already registered for another site. Please, confirm the account "
 "for this site."
 msgstr ""
 
-#: ../lib/wiking/cms/appl.py:364
+#: ../lib/wiking/cms/appl.py:367
 #, fuzzy
 msgid "New Panel"
 msgstr "Nova página"
@@ -866,9 +871,9 @@ msgstr ""
 msgid ""
 "When \"%(always)s\" is selected, unauthorized users see the menu item, but "
 "still can not open the page.  When \"%(authorized)s\" is selected, "
-"visibility is controlled by the \"Access Rights\" settings below.  Note, "
-"that when access rights are restricted, the item will be hidden until the "
-"user logs in, which may be confusing (the expected item is not there)."
+"visibility is controlled by the \"Access Rights\" settings below.  Note that "
+"when access rights are restricted, the item will be hidden until the user "
+"logs in, which may be confusing (the expected item is not there)."
 msgstr ""
 
 #: ../lib/wiking/cms/cms.py:1364
@@ -1788,9 +1793,10 @@ msgid "File"
 msgstr "Ficheiro"
 
 #: ../lib/wiking/cms/cms.py:3338
+#, fuzzy
 msgid ""
 "Upload a file from your local system.  The file name will be used to refer "
-"to the attachment within the page content.  Please note, that the file will "
+"to the attachment within the page content.  Please note that the file will "
 "be served over the internet, so the filename should not contain any special "
 "characters.  Letters, digits, underscores, dashes and dots are safe.  You "
 "risk problems with most other characters."
@@ -3311,7 +3317,7 @@ msgid ""
 "Your password is: %(password)s\n"
 "\n"
 "It is recommended to change the password as soon as possible.\n"
-"Note, that the password is case sensitive.  Use the link below\n"
+"Note that the password is case sensitive.  Use the link below\n"
 "to log in:\n"
 "\n"
 "%(uri)s\n"

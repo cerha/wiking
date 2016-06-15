@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-06-02 11:44+0200\n"
+"POT-Creation-Date: 2016-06-15 14:42+0200\n"
 "PO-Revision-Date: 2010-01-19 16:27+0100\n"
 "Last-Translator: kkkk <kkkkkkkkkkk>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -350,35 +350,35 @@ msgstr ""
 msgid "This URI does not belong to server API."
 msgstr ""
 
-#: ../lib/wiking/modules.py:540
+#: ../lib/wiking/modules.py:543
 msgid "Searching"
 msgstr "Ricerca"
 
-#: ../lib/wiking/modules.py:541
+#: ../lib/wiking/modules.py:544
 msgid "Search results"
 msgstr "Risultati della ricerca"
 
-#: ../lib/wiking/modules.py:542
+#: ../lib/wiking/modules.py:545
 msgid "Given search term doesn't contain any searchable term."
 msgstr "Espressione cercata non contiene alcun termine per la ricerca."
 
-#: ../lib/wiking/modules.py:546
+#: ../lib/wiking/modules.py:549
 msgid "Search words:"
 msgstr "Ricerca parole:"
 
-#: ../lib/wiking/modules.py:547
+#: ../lib/wiking/modules.py:550
 msgid "Search"
 msgstr "Ricerca"
 
-#: ../lib/wiking/modules.py:603
+#: ../lib/wiking/modules.py:606
 msgid "Nothing found."
 msgstr "Nessuna soluzione trovata."
 
-#: ../lib/wiking/modules.py:660
+#: ../lib/wiking/modules.py:663
 msgid "The following modules were successfully reloaded:"
 msgstr "Seguenti moduli sono stati caricati con successo:"
 
-#: ../lib/wiking/modules.py:662
+#: ../lib/wiking/modules.py:665
 msgid "Reload"
 msgstr "Ricarica"
 

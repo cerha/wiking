@@ -513,7 +513,7 @@ class CMSExtension(wiking.Module, Embeddable, wiking.RequestHandler):
                  'modname' to lower case using dashes to separate camel case words.  This
                  identifier is used as part of the URI of the item.
                enabled -- function of one argument (the request object) determining whether the
-                 item is enabled (visible) in given context.  Note, that the URI of a disabled item
+                 item is enabled (visible) in given context.  Note that the URI of a disabled item
                  remains valid, so you still need to restrict access to the module by defining
                  access rights or any other means appropriate for the reason of unavalability of
                  the item.  This option only controls the presence of the item in the menu.  If
@@ -1356,7 +1356,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                       descr=_('When "%(always)s" is selected, unauthorized users see the menu '
                               'item, but still can not open the page.  When "%(authorized)s" '
                               'is selected, visibility is controlled by the "Access Rights" '
-                              'settings below.  Note, that when access rights are restricted, '
+                              'settings below.  Note that when access rights are restricted, '
                               'the item will be hidden until the user logs in, which may be '
                               'confusing (the expected item is not there).',
                               always=dict(Pages.MenuVisibility.enumeration).get('always'),
@@ -3336,7 +3336,7 @@ class Attachments(ContentManagementModule):
                 Field('upload', _("File"), virtual=True, editable=ALWAYS,
                       type=pd.Binary(not_null=True, maxlen=wiking.cms.cfg.upload_limit),
                       descr=_("Upload a file from your local system.  The file name will be used "
-                              "to refer to the attachment within the page content.  Please note, "
+                              "to refer to the attachment within the page content.  Please note "
                               "that the file will be served over the internet, so the filename "
                               "should not contain any special characters.  Letters, digits, "
                               "underscores, dashes and dots are safe.  "

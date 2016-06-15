@@ -618,7 +618,7 @@ class Users(UserManagementModule, CachingPytisModule):
 
         def _default_state(self, record, autogenerate_password):
             req = record.req()
-            # Note, autogenerate_password is important here to detect
+            # Note: autogenerate_password is important here to detect
             # re-registration in _redirect_after_insert.  Also it makes
             # the process a little safer because if the email is wrong,
             # the user will not be able to find out his password.
@@ -1098,7 +1098,7 @@ class Users(UserManagementModule, CachingPytisModule):
             text = _("Your account at %(server_hostname)s was created.\n\n"
                      "Your password is: %(password)s\n\n"
                      "It is recommended to change the password as soon as possible.\n"
-                     "Note, that the password is case sensitive.  Use the link below\n"
+                     "Note that the password is case sensitive.  Use the link below\n"
                      "to log in:\n\n"
                      "%(uri)s\n\n",
                      server_hostname=wiking.cfg.server_hostname,
