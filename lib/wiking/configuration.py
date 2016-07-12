@@ -564,8 +564,8 @@ class Configuration(pytis.util.Configuration):
         _DOC = ("The viewport meta tag may be used to control the page's "
                 "dimensions and scaling within the browser window. "
                 "Check https://developer.mozilla.org/en-US/docs/Mozilla/Mobile/Viewport_meta_tag "
-                "for more information.  Typical value for responsive "
-                "websites is 'width=device-width, initial-scale=1'.")
+                "for more information.")
+        _DEFAULT = 'width=device-width, initial-scale=1'
 
 
 class ApplicationConfiguration(pytis.util.Configuration):
