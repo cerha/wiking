@@ -1,4 +1,4 @@
-# Copyright (C) 2006 - 2015 Brailcom, o.p.s.
+# Copyright (C) 2006 - 2016 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -57,7 +57,7 @@ class Configuration(pytis.util.Configuration):
     through a site specific configuration file.
 
     The global configuration file is searched in the following locations:
-    
+
       * \/etc/wiking/config.py
       * \/etc/wiking.py
       * \/usr/local/etc/wiking/config.py
@@ -74,14 +74,14 @@ class Configuration(pytis.util.Configuration):
     -----
       PythonOption config_file /etc/wiking/sites/mysite.py
     -----
-    
+
     Apache/mod_wsgi (inside the VirtualHost directive):
     -----
       SetEnv wiking.config_file /etc/wiking/sites/mysite.py
     -----
 
     See [apache] for more details.
-    
+
     Once the configuration file is set, its actual content is independent of
     the web server environment.  The configuration file uses Python syntax to
     assign values to configuration options.  The supported options are
@@ -98,7 +98,7 @@ class Configuration(pytis.util.Configuration):
     options by values set through the Wiking Management Interface.
 
     """
-    
+
     class _Option_config_file(pc.StringOption, pc.HiddenOption):
         _DESCR = "Wiking global configuration file location"
         def default(self):
@@ -119,14 +119,14 @@ class Configuration(pytis.util.Configuration):
             if filename.endswith('.pyc') or filename.endswith('.pyo'):
                 filename = filename[:-1]
             return filename
-        
+
     class _Option_modules(pc.Option):
         _DESCR = "Wiking module search order"
         _DOC = ("A sequence of names of Python modules (as strings) used to search for Wiking "
                 "module class definitions.  The named Python modules will be searched in given "
                 "order and they must be available through Python path.")
         _DEFAULT = ('wiking.cms', )
-        
+
     class _Option_dbname(pc.StringOption):
         _DESCR = "Database name"
         _DOC = ("Name of the database to connect to.  If not defined, the server name of the "
@@ -143,13 +143,13 @@ class Configuration(pytis.util.Configuration):
 
     class _Option_dbuser(pc.StringOption):
         _DESCR = "Database user"
-        
+
     class _Option_dbpass(pc.StringOption):
         _DESCR = "Database password"
-        
+
     class _Option_dbsslm(pc.StringOption):
         _DESCR = "Database ssl mode"
-        
+
     class _Option_dbschemas(pc.StringOption):
         _DESCR = "List of database schemas to use in the order of their preference"
 
@@ -168,7 +168,7 @@ class Configuration(pytis.util.Configuration):
                 "meaning and default values are the same as for the configuration options of the "
                 "same names specifying the properties of the default connection.")
         _DEFAULT = {}
-        
+
     class _Option_maintenance(pc.BooleanOption):
         _DESCR = "Maintenance mode flag"
         _DOC = ("Setting this value to True will tell Wiking to run in the maintenance mode. "
@@ -177,7 +177,7 @@ class Configuration(pytis.util.Configuration):
                 "the database in this mode and will display a polite error message in response "
                 "to all requests.")
         _DEFAULT = False
-        
+
     class _Option_smtp_server(pc.StringOption):
         _DESCR = "Name or address of SMTP server"
         _DOC = ("SMTP server is used for sending bug reports by e-mail.  To allow this feature, "
@@ -198,7 +198,7 @@ class Configuration(pytis.util.Configuration):
                 "in such situations.  If disabled, the mail addres domain is only checked "
                 "through DNS")
         _DEFAULT = True
-        
+
     class _Option_debug(pc.BooleanOption):
         _DESCR = "Debugging mode"
         _DOC = ("Turn on the debugging mode to allow sending detailed exception tracebacks to "
@@ -224,7 +224,7 @@ class Configuration(pytis.util.Configuration):
     class _Option_log_format(pc.StringOption):
         _DESCR = "Logging format"
         _DOC = ("""Python format string used for printing error message to the system log.
-    
+
                 The format string may use the following format variables:
                   error_type -- error class name string (the class derived from 'RequestError'),
                   server_hostname -- requested server host name (virtual host),
@@ -239,10 +239,10 @@ class Configuration(pytis.util.Configuration):
                     header,
                   server_software -- server software identification (current versions of
                     Wiking, LCG and Pytis)
-         
+
                 """)
         _DEFAULT = "%(error_type)s: %(abs_uri)s [%(user)s@%(remote_host)s]"
-        
+
     class _Option_bug_report_address(pc.StringOption):
         _DESCR = "E-mail address where bug reports will be sent"
         _DOC = ("Tracebacks of uncaught exceptions are sent automatically by e-mail to the "
@@ -270,13 +270,13 @@ class Configuration(pytis.util.Configuration):
                 "whole server hostname in other cases.  Please make sure that this address is "
                 "valid (e-mail sent to it is delivered to a responsible person).")
         _DEFAULT = None
-        
+
     class _Option_https_ports(pc.Option):
         _DESCR = "HTTPS port numbers"
         _DOC = ("The default HTTPS port is 443 but certain server configurations may require "
                 "using a different port or several ports for HTTPS connections.")
         _DEFAULT = (443,)
-        
+
     class _Option_force_https_login(pc.BooleanOption):
         # Translation: ``Force'' means ,,do not allow otherwise'',
         # sentence in imperative followed by a checkbox.
@@ -321,7 +321,7 @@ class Configuration(pytis.util.Configuration):
             return ('/usr/local/share/wiking/resources',
                     '/usr/local/share/lcg/resources',
                     '/usr/local/share/pytis/resources')
-        
+
     class _Option_doc_dirs(pc.Option):
         _DESCR = "Documentation search directories"
         _DOC = ("The value is a dictionary of directory names keyed by component "
@@ -348,7 +348,7 @@ class Configuration(pytis.util.Configuration):
                 "however, is typically still a virtual server and there may be "
                 "several primary servers on one physical host.")
         _DEFAULT = None
-        
+
     class _Option_site_title(pc.StringOption):
         # Translators: Site means a webpage or web application.
         _DESCR = _("Site title")
@@ -364,7 +364,7 @@ class Configuration(pytis.util.Configuration):
                  "appear at the top of every page together with site title, but where brevity "
                  "matters, only title will be used.")
         _DEFAULT = None
-        
+
     class _Option_site_icon(pc.StringOption):
         # Translators: Web page or web application specific image.
         _DESCR = _("Site icon")
@@ -412,7 +412,7 @@ class Configuration(pytis.util.Configuration):
                  "available at least in the default language variant if you want to avoid 606 "
                  "errors completely.")
         _DEFAULT = None
-            
+
     class _Option_default_language_by_domain(pc.Option):
         # Translators: Settings label. Meaning default language
         # according to the domain a user comes from
@@ -423,7 +423,7 @@ class Configuration(pytis.util.Configuration):
                 "dictionary, the assigned value overrides the value of 'default_language' for "
                 "given request.")
         _DEFAULT = {}
-        
+
     class _Option_language_selection_image(pc.StringOption):
         # Translators: Settings label. URI means a link. Do not translate ''URI''.
         _DESCR = "URI of images used in language selection menu."
@@ -448,14 +448,14 @@ class Configuration(pytis.util.Configuration):
         _DOC = ("A number of hours to keep the login session alive.  The session is automatically "
                 "terminated when the user has no activity for given time interval.")
         _DEFAULT = 2
-      
+
     class _Option_persistent_sessions(pc.BooleanOption):
         _DESCR = "Persistent sessions"
         _DOC = ("When set to False (by default), the session will be ended when the browser "
                 "is closed.  When True, the remote session overlaps browser life time, but "
                 "in both cases, the option 'session_expiration' is honoured.")
         _DEFAULT = False
-      
+
     class _Option_resolver(pc.Option):
         _DESCR = "Wiking module resolver"
         _DOC = ("Module resolver is used to locate available Wiking modules.  The value must be "
@@ -463,7 +463,7 @@ class Configuration(pytis.util.Configuration):
                 "by Wiking handler in the initialization phase, passing it the value of "
                 "the configuration option 'modules' defined above.  If you supply your own "
                 "instance, the configured value of 'modules' will have no effect.")
-        
+
     class _Option_exporter(pc.Option):
         _DESCR = "Page exporter class"
         _DOC = ("Exporter is responsible for rendering the final page.  It gets the logical "
@@ -503,7 +503,7 @@ class Configuration(pytis.util.Configuration):
                 "directive set to given number.  See "
                 "http://en.wikipedia.org/wiki/Robots_exclusion_standard for more info.")
         _DEFAULT = None
-        
+
     class _Option_special_cc_addresses(pc.Option):
         _DESCR = "Sequence of e-mail addresses to add to CC under certain circumstances."
         _DOC = ("Those addresses are added to CC of e-mails sent by Wiking where user id "
