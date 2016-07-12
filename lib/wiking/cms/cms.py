@@ -2123,30 +2123,31 @@ class BrailleExporter(wiking.Module):
 
     @classmethod
     def braille_presentation(cls):
-        presentation = lcg.braille_presentation()
-        try:
-            local_presentation = lcg.braille_presentation('presentation-braille-local.py')
-        except IOError:
-            pass
+        if hasattr(lcg, 'braille_presentation'):
+            presentation = lcg.braille_presentation()
+            try:
+                local_presentation = lcg.braille_presentation('presentation-braille-local.py')
+            except IOError:
+                pass
+            else:
+                for o in dir(local_presentation):
+                    if o[0] in string.lowercase and hasattr(presentation, o):
+                        setattr(presentation, o, getattr(local_presentation, o))
         else:
-            for o in dir(local_presentation):
-                if o[0] in string.lowercase and hasattr(presentation, o):
-                    setattr(presentation, o, getattr(local_presentation, o))
+            presentation = None
         return presentation
 
     @classmethod
+    def braille_available(cls):
+        return cls.braille_presentation() is not None
+
+    @classmethod
     def braille_option_fields(cls, virtual=False):
-        try:
-            presentation = cls.braille_presentation()
-        except:
-            printers = ()
-            default_printer = None
-        else:
-            printers = presentation.printers.keys()
-            default_printer = presentation.default_printer
+        presentation = cls.braille_presentation()
         return (
             Field('printer', _("Printer"), virtual=virtual, type=pd.String(),
-                  enumerator=enum(printers), default=default_printer, not_null=False),
+                  enumerator=enum(presentation and presentation.printers.keys() or ()),
+                  default=presentation and presentation.default_printer or None, not_null=False),
             Field('page_width', _("Characters per line"), width=3, virtual=virtual,
                   type=pd.Integer(), default=33),
             Field('page_height', _("Page lines"), width=3, virtual=virtual,
@@ -2556,9 +2557,12 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter, PDFExpo
             req, dict(
                 fields=(
                     Field('format', _("Format"), not_null=True,
-                          enumerator=PublicationExports.Formats),
-                ) +
-                self.braille_option_fields() + self.epub_option_fields() + self.pdf_option_fields(),
+                          enumerator=PublicationExports.Formats,
+                          runtime_filter=computer(lambda r: (lambda x: x != 'braille'
+                                                             or self.braille_available()))),
+                ) + self.braille_option_fields() + \
+                    self.epub_option_fields() + \
+                    self.pdf_option_fields(),
                 layout=(
                     'format',
                     self.BRAILLE_EXPORT_OPTIONS_FIELDSET,
