@@ -126,7 +126,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         'bottom': _("Page footer"),
         'language_selection': _("Language selection"),
     }
-    _PART_LABELEDBY = {
+    _PART_LABELLEDBY = {
         'main': 'main-heading',
     }
     _LANDMARKS = {
@@ -201,8 +201,8 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                 attr = {}
             if name in self._PART_TITLE:
                 attr['aria_label'] = self._PART_TITLE[name]
-            if name in self._PART_LABELEDBY:
-                attr['aria_labeledby'] = self._PART_LABELEDBY[name]
+            if name in self._PART_LABELLEDBY:
+                attr['aria_labelledby'] = self._PART_LABELLEDBY[name]
             if name in self._LANDMARKS:
                 attr['role'] = self._LANDMARKS[name]
             return self._generator.div(content, id=name.replace('_', '-'), **attr)
