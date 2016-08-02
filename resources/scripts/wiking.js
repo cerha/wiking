@@ -234,6 +234,12 @@ wiking.MainMenu = Class.create(lcg.Menu, {
 				  dropdown.down('.foldable-tree-widget').getAttribute('id'));
 	    }
 	}
+	// The attribute 'aria-selected' is not allowed on a pure link element
+	// (see init_items() for a reason why we are using pure links), so we
+	// unset 'aria-selected' to be standards compliant (the attribute is
+	// allowed only for certain ARIA roles).  The question is how to announce
+	// the current main menu item to the screen reader user.
+	item.removeAttribute('aria-selected');
 	this.bind_tree_menu_parent(submenu, item);
 	this.bind_tree_menu_parent(dropdown, item);
 	item._wiking_submenu = submenu;
