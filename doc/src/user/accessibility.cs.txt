@@ -13,7 +13,7 @@ obrazovky, zpřístupňující technologie atd.
 Systém byl vyvinut s ohledem na formální standardy pro zpřístupnění, jako např.
 >>[http://www.w3.org/TR/WCAG20/ Web Content Accessibility Guidelines 2.0]<<
 nebo [https://www.section508.gov Sekce 508], stejně jako na skutečnou zkušenost
-koncového uživatele.  Zpřístupnění a použitelnost bylt testovány s různými
+koncového uživatele.  Zpřístupnění a použitelnost byly testovány s různými
 kombinacemi zpřístupňujících technologií, zejména odečítačů obrazovky.
 
 Informace o navigačních možnostech, včetně popisu vlastností podporujících
