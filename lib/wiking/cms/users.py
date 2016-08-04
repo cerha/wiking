@@ -709,27 +709,28 @@ class Users(UserManagementModule, CachingPytisModule):
         sorting = (('surname', ASC), ('firstname', ASC))
         layout = () # Force specific layout definition for each action.
         cb = CodebookSpec(display='user', prefer_display=True)
-        def filters(self):
-            return (
+        def profiles(self):
+            return pp.Profiles(
                 # Translators: Name of group of users who have full access to the system.
-                pp.Filter('enabled', _("Active users"),
-                          pd.EQ('state', pd.Value(pd.String(), Users.AccountState.ENABLED))),
+                pp.Profile('enabled', _("Active users"),
+                           filter=pd.EQ('state', pd.sval(Users.AccountState.ENABLED))),
                 # Translators: Name for a group of users accounts, who were not yet approved by the
                 # administrator.
-                pp.Filter('unapproved', _("Unapproved accounts (pending admin approvals)"),
-                          pd.EQ('state', pd.Value(pd.String(), Users.AccountState.UNAPPROVED))),
+                pp.Profile('unapproved', _("Unapproved accounts (pending admin approvals)"),
+                           filter=pd.EQ('state', pd.sval(Users.AccountState.UNAPPROVED))),
                 # Translators: Name for a group of users which did not confirm their registration
                 # yet by replying to an email with an activation code.
-                pp.Filter('new',
-                          _("Unfinished registration requests (activation code not confirmed)"),
-                          pd.EQ('state', pd.Value(pd.String(), Users.AccountState.NEW))),
+                pp.Profile('new',
+                           _("Unfinished registration requests (activation code not confirmed)"),
+                           filter=pd.EQ('state', pd.sval(Users.AccountState.NEW))),
                 # Translators: Name for a group of users whose accounts were blocked.
-                pp.Filter('disabled', _("Disabled users"),
-                          pd.EQ('state', pd.Value(pd.String(), Users.AccountState.DISABLED))),
+                pp.Profile('disabled', _("Disabled users"),
+                           filter=pd.EQ('state', pd.sval(Users.AccountState.DISABLED)),
+                ),
                 # Translators: Accounts as in user accounts (computer terminology).
-                pp.Filter('all', _("All accounts"), None),
+                pp.Profile('all', _("All accounts"), None),
+                default='enabled',
             )
-        default_filter = 'enabled'
         actions = (
             Action('passwd', _("Change password"), icon='key-icon',
                    descr=_("Change user's password")),
@@ -1680,9 +1681,8 @@ class ActiveUsers(Users, EmbeddableCMSModule):
         title = _("Active users")
         help = _("Listing of all active user accounts.")
         condition = pd.EQ('state', pd.Value(pd.String(), Users.AccountState.ENABLED))
-        filters = ()
+        profiles = ()
         columns = ('fullname', 'nickname', 'email', 'since')
-        default_filter = None
     _INSERT_LABEL = lcg.TranslatableText("New user registration", _domain='wiking')
 
 
