@@ -1855,7 +1855,7 @@ class LoginDialog(lcg.Content):
                     id=ids.login, size=18, maxlength=64,
                     autocomplete='username', autofocus=True),
             g.br(),
-            g.label(_("Password") + ':', 'password') + g.br(),
+            g.label(_("Password") + ':', for_=ids.password) + g.br(),
             g.input(type='password', name='password', id=ids.password, size=18, maxlength=32,
                     autocomplete='current-password'),
             g.br(),
