@@ -278,7 +278,7 @@ class Configuration(pytis.util.Configuration):
         _DEFAULT = (443,)
 
     class _Option_force_https_login(pc.BooleanOption):
-        # Translation: ``Force'' means ,,do not allow otherwise'',
+        # Translators: ``Force'' means ,,do not allow otherwise'',
         # sentence in imperative followed by a checkbox.
         _DESCR = _("Force HTTPS login")
         _DOC = _("If enabled, the login form will always be redirected to an HTTPS address "
@@ -288,8 +288,6 @@ class Configuration(pytis.util.Configuration):
         _DEFAULT = False
 
     class _Option_allow_http_authentication(pc.BooleanOption):
-        # Translation: ``Force'' means ,,do not allow otherwise'',
-        # sentence in imperative followed by a checkbox.
         _DESCR = _("Allow HTTP authentication")
         _DOC = ("Wiking supports HTTP Basic authentication scheme.  You may need to "
                 "disable it if you want to perform HTTP authentication outside Wiking "
