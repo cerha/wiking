@@ -21,9 +21,9 @@ before_script:
   - "createlang -U postgres plpythonu test"
   - "psql -U postgres -1c \"ALTER DATABASE test SET default_text_search_config to \'simple\'\" test"
   - "psql -U postgres -1c 'CREATE EXTENSION pgcrypto;' test"
-  - "pytis/tools/gsql.py pytis.dbdefs.db_pytis_crypto > pytis_db_crypto.sql && psql -1f pytis_db_crypto.sql test"
-  - "pytis/tools/gsql.py wiking.dbdefs.wiking_db > wiking_db.sql && psql -1f wiking_db.sql test"
-  - "pytis/tools/gsql.py wiking.dbdefs.wiking_cms > wiking_cms.sql && psql -1f wiking_cms.sql test"
+  - "pytis/tools/gsql.py pytis.dbdefs.db_pytis_crypto > pytis_db_crypto.sql && psql -v ON_ERROR_STOP=1 -1f pytis_db_crypto.sql test"
+  - "pytis/tools/gsql.py wiking.dbdefs.wiking_db > wiking_db.sql && psql -v ON_ERROR_STOP=1 -1f wiking_db.sql test"
+  - "pytis/tools/gsql.py wiking.dbdefs.wiking_cms > wiking_cms.sql && psql -v ON_ERROR_STOP=1 -1f wiking_cms.sql test"
 script:
   - "coverage run --source=lib/wiking lib/wiking/_test.py"
 after_success:
