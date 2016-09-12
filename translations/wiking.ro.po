@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-06-15 14:42+0200\n"
+"POT-Creation-Date: 2016-09-12 14:22+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: \n"
@@ -13,25 +13,25 @@ msgstr ""
 
 #. Website idiom. This is followed by information on the underlying software
 #. tools.  Means: This website runs on [...this and that software...].
-#: ../lib/wiking/application.py:524
+#: ../lib/wiking/application.py:536
 msgid "Powered by"
 msgstr "Oferit de "
 
-#: ../lib/wiking/application.py:542
+#: ../lib/wiking/application.py:554
 msgid "Accessibility Statement"
 msgstr "Declaraţie de Accesibilitate"
 
 #. Heading of webpage left side hierarchical navigation
 #. menu containing a list of links to pages in this web section
-#: ../lib/wiking/application.py:555
+#: ../lib/wiking/application.py:567
 msgid "In this section:"
 msgstr "În această secţiune:"
 
-#: ../lib/wiking/application.py:564
+#: ../lib/wiking/application.py:576
 msgid "Local navigation"
 msgstr "Navigaţia acestei secţiuni "
 
-#: ../lib/wiking/application.py:608
+#: ../lib/wiking/application.py:620
 msgid "Contact:"
 msgstr "Contact:"
 
@@ -43,6 +43,8 @@ msgstr ""
 msgid "Default sender address"
 msgstr ""
 
+#. ``Force'' means ,,do not allow otherwise'',
+#. sentence in imperative followed by a checkbox.
 #: ../lib/wiking/configuration.py:283
 msgid "Force HTTPS login"
 msgstr ""
@@ -55,16 +57,16 @@ msgid ""
 "and pass them to Wiking."
 msgstr ""
 
-#: ../lib/wiking/configuration.py:293
+#: ../lib/wiking/configuration.py:291
 msgid "Allow HTTP authentication"
 msgstr ""
 
 #. Site means a webpage or web application.
-#: ../lib/wiking/configuration.py:354
+#: ../lib/wiking/configuration.py:352
 msgid "Site title"
 msgstr ""
 
-#: ../lib/wiking/configuration.py:355
+#: ../lib/wiking/configuration.py:353
 msgid ""
 "Site title is a short and (hopefully) unique title of the whole website. It "
 "will appear at the top of every page."
@@ -72,11 +74,11 @@ msgstr ""
 
 #. Site means a webpage or web application.
 #. Subtitle as in ,,title -- subtitle''.
-#: ../lib/wiking/configuration.py:362
+#: ../lib/wiking/configuration.py:360
 msgid "Site subtitle"
 msgstr ""
 
-#: ../lib/wiking/configuration.py:363
+#: ../lib/wiking/configuration.py:361
 msgid ""
 "Site subtitle is an optional more descriptive title of the website.  It will "
 "appear at the top of every page together with site title, but where brevity "
@@ -84,18 +86,18 @@ msgid ""
 msgstr ""
 
 #. Web page or web application specific image.
-#: ../lib/wiking/configuration.py:370
+#: ../lib/wiking/configuration.py:368
 msgid "Site icon"
 msgstr ""
 
-#: ../lib/wiking/configuration.py:399
+#: ../lib/wiking/configuration.py:397
 msgid "Default language"
 msgstr ""
 
 #. Language negotiation means the process where the server is trying
 #. to find a language that matches with what the users internet browser asks
 #. for.
-#: ../lib/wiking/configuration.py:402
+#: ../lib/wiking/configuration.py:400
 msgid ""
 "Defines the language (lowercase ISO 639-1 Alpha-2 code) to be used when "
 "content language negotiation fails. If not set (which is the default), the "
@@ -109,6 +111,12 @@ msgid ""
 "error is raised anyway, so you need to make sure that all documents are "
 "available at least in the default language variant if you want to avoid 606 "
 "errors completely."
+msgstr ""
+
+#. Yes/No configuration option label.  Should the "Log in"
+#. button be displayed?
+#: ../lib/wiking/configuration.py:568
+msgid "Show login control"
 msgstr ""
 
 #: ../lib/wiking/db.py:107
@@ -275,7 +283,7 @@ msgid "Page footer"
 msgstr "Subsolul paginii"
 
 #. Title of a dialog on a webpage
-#: ../lib/wiking/export.py:127 ../lib/wiking/util.py:418
+#: ../lib/wiking/export.py:127 ../lib/wiking/util.py:408
 msgid "Language selection"
 msgstr "Selectare limbă"
 
@@ -392,50 +400,50 @@ msgid "Current record owner"
 msgstr ""
 
 #. An error page title
-#: ../lib/wiking/util.py:262
+#: ../lib/wiking/util.py:251
 #, fuzzy
 msgid "Invalid Request"
 msgstr "Argumentele cererii invalide."
 
-#: ../lib/wiking/util.py:265
+#: ../lib/wiking/util.py:254
 msgid "Invalid request arguments."
 msgstr "Argumentele cererii invalide."
 
-#: ../lib/wiking/util.py:266
+#: ../lib/wiking/util.py:255
 msgid ""
 "Please, contact the administrator if you got this response after a "
 "legitimate action."
 msgstr ""
 
 #. This is a warning on a webpage which is only accessible for logged in users
-#: ../lib/wiking/util.py:275
+#: ../lib/wiking/util.py:264
 msgid "Authentication required"
 msgstr "Acţiunea solicită autentificare"
 
 #. Login dialog page title (use a noun).
-#: ../lib/wiking/util.py:323
+#: ../lib/wiking/util.py:313
 msgid "Login"
 msgstr "Autentifică-te"
 
 #. An error page title
-#: ../lib/wiking/util.py:338
+#: ../lib/wiking/util.py:328
 msgid "Access Denied"
 msgstr "Accesul refuzat"
 
-#: ../lib/wiking/util.py:341
+#: ../lib/wiking/util.py:331
 #, python-format
 msgid "The item '%s' is not available."
 msgstr "Obiectul '%s' nu este accesibil."
 
-#: ../lib/wiking/util.py:342
+#: ../lib/wiking/util.py:332
 msgid "The item exists on the server, but can not be accessed."
 msgstr "Obiectul solicitat există la serverul nostru, dar nu poate fi afişat."
 
-#: ../lib/wiking/util.py:360
+#: ../lib/wiking/util.py:350
 msgid "You don't have sufficient privilegs for this action."
 msgstr "Nu aveţi drepturi suficiente pentru efectuarea acestei acţiuni."
 
-#: ../lib/wiking/util.py:361
+#: ../lib/wiking/util.py:351
 #, python-format
 msgid ""
 "If you are sure that you are logged in under the right account and you "
@@ -447,11 +455,11 @@ msgstr ""
 "adresa % s."
 
 #. An error page title
-#: ../lib/wiking/util.py:374
+#: ../lib/wiking/util.py:364
 msgid "Your password expired"
 msgstr "Parolă expirată"
 
-#: ../lib/wiking/util.py:378
+#: ../lib/wiking/util.py:368
 msgid ""
 "Your password expired.  Access to the application is now blocked for "
 "security reasons until you change your password."
@@ -460,25 +468,25 @@ msgstr ""
 "blocat până la schimbarea parolei."
 
 #. This is a link on a webpage
-#: ../lib/wiking/util.py:386
+#: ../lib/wiking/util.py:376
 msgid "Change your password"
 msgstr "Schimbă parola"
 
 #. Error page title when requesting URI which does not exist on server.
-#: ../lib/wiking/util.py:396
+#: ../lib/wiking/util.py:386
 msgid "Item Not Found"
 msgstr ""
 
 #. The word 'item' is intentionaly very generic,
 #. since it may mean a page, image, streaming video, RSS channel
 #. or anything else.
-#: ../lib/wiking/util.py:404
+#: ../lib/wiking/util.py:394
 #, python-format
 msgid "The item '%s' does not exist on this server or cannot be served."
 msgstr ""
 "Obiectul solicitat '%s' nu există pe acest server sau nu poate fi servit."
 
-#: ../lib/wiking/util.py:405
+#: ../lib/wiking/util.py:395
 #, python-format
 msgid ""
 "If you are sure the web address is correct, but are encountering this error, "
@@ -488,7 +496,7 @@ msgstr ""
 "intervine această eroare, vă rugăm să contactaţi administratorul la adresa "
 "% s."
 
-#: ../lib/wiking/util.py:433
+#: ../lib/wiking/util.py:423
 #, python-format
 msgid ""
 "The resource '%s' is not available in either of the requested languages."
@@ -496,15 +504,15 @@ msgstr ""
 "Obiectul solicitat '%s' nu este accesibil în nici una dintre limbile "
 "solicitate."
 
-#: ../lib/wiking/util.py:441
+#: ../lib/wiking/util.py:431
 msgid "The available variants are:"
 msgstr "Variantele accesibile sunt:"
 
-#: ../lib/wiking/util.py:448
+#: ../lib/wiking/util.py:438
 msgid "Your browser is configured to accept only the following languages:"
 msgstr "Browser-ul dvs. este configurat pentru a accepta următoarele limbi:"
 
-#: ../lib/wiking/util.py:450
+#: ../lib/wiking/util.py:440
 msgid ""
 "If you want to accept other languages permanently, setup the language "
 "preferences in your browser or contact your system administrator."
@@ -513,33 +521,33 @@ msgstr ""
 "configuraţi preferinţele de limbă din browser-ul dvs. sau contactaţi "
 "administratorul sistemului."
 
-#: ../lib/wiking/util.py:466
+#: ../lib/wiking/util.py:456
 msgid "Internal Server Error"
 msgstr "Eroare internă a sistemului"
 
-#: ../lib/wiking/util.py:472
+#: ../lib/wiking/util.py:462
 msgid "Unable to perform a database operation."
 msgstr "Efectuarea operaţiei de bază de date a eşuat."
 
-#: ../lib/wiking/util.py:496
+#: ../lib/wiking/util.py:486
 msgid "The server was unable to complete your request."
 msgstr "Serverul nu a fost capabil să rezolve solicitarea dvs."
 
-#: ../lib/wiking/util.py:497 ../lib/wiking/util.py:516
+#: ../lib/wiking/util.py:487 ../lib/wiking/util.py:506
 #, python-format
 msgid "Please inform the server administrator, %s if the problem persists."
 msgstr ""
 "Vă rugăm să informaţi administratorul serverului, %s dacă problema persistă."
 
-#: ../lib/wiking/util.py:500
+#: ../lib/wiking/util.py:490
 msgid "The error message was:"
 msgstr "Mesajul de eroare a fost:"
 
-#: ../lib/wiking/util.py:507
+#: ../lib/wiking/util.py:497
 msgid "Service Unavailable"
 msgstr "Serviciu indisponibil"
 
-#: ../lib/wiking/util.py:511
+#: ../lib/wiking/util.py:501
 msgid ""
 "The requested function is currently unavailable. Try repeating your request "
 "later."
@@ -547,83 +555,83 @@ msgstr ""
 "Funcţia solicitată este momentan inaccesibilă. Încercaţi să repetaţi cererea "
 "mai târziu."
 
-#: ../lib/wiking/util.py:1460 ../lib/wiking/util.py:1506
+#: ../lib/wiking/util.py:1450 ../lib/wiking/util.py:1496
 msgid "Invalid login!"
 msgstr "Autentificare invalidă!"
 
-#: ../lib/wiking/util.py:1498
+#: ../lib/wiking/util.py:1488
 msgid "Enter your login name, please!"
 msgstr "Vă rugăm să introduceţi numele de utilizator!"
 
-#: ../lib/wiking/util.py:1501
+#: ../lib/wiking/util.py:1491
 msgid "Enter your password, please!"
 msgstr "Vă rugăm să introduceţi parola!"
 
-#: ../lib/wiking/util.py:1687
+#: ../lib/wiking/util.py:1677
 #, fuzzy
 msgid "User actions"
 msgstr "Acţiuni:"
 
-#: ../lib/wiking/util.py:1689
+#: ../lib/wiking/util.py:1679
 #, fuzzy
 msgid "Login and registration"
 msgstr "Înregistrare utilizator nou"
 
 #. Menu item label to display a page with
 #. details of user's account and related actions.
-#: ../lib/wiking/util.py:1704
+#: ../lib/wiking/util.py:1694
 #, fuzzy
 msgid "My user profile"
 msgstr "Afişează profilul utilizatorului"
 
 #. Login panel info. '%(date)s' is replaced by a concrete date.
-#: ../lib/wiking/util.py:1713
+#: ../lib/wiking/util.py:1703
 #, python-format
 msgid "Your password expires on %(date)s"
 msgstr "Valabilitatea parolei până la %(date)s"
 
 #. Menu item label.
-#: ../lib/wiking/util.py:1717
+#: ../lib/wiking/util.py:1707
 #, fuzzy
 msgid "Change my password"
 msgstr "Schimbă parola"
 
 #. Menu item label (verb in imperative).
-#: ../lib/wiking/util.py:1720
+#: ../lib/wiking/util.py:1710
 #, fuzzy
 msgid "Log out"
 msgstr "ieşire din cont"
 
 #. Login button label (verb in imperative).
 #. Login button label - verb in imperative.
-#: ../lib/wiking/util.py:1726 ../lib/wiking/util.py:1761
-#: ../lib/wiking/util.py:1875
+#: ../lib/wiking/util.py:1716 ../lib/wiking/util.py:1751
+#: ../lib/wiking/util.py:1866
 msgid "Log in"
 msgstr "Intrare în cont"
 
-#: ../lib/wiking/util.py:1726
+#: ../lib/wiking/util.py:1716
 msgid "Log in to an existing user account"
 msgstr ""
 
 #. Link/menu item to create a new
 #. user account to access the website/application.
-#: ../lib/wiking/util.py:1730 ../lib/wiking/util.py:1878
+#: ../lib/wiking/util.py:1720 ../lib/wiking/util.py:1869
 msgid "Register a new user account"
 msgstr ""
 
 #. Link/menu item to restore a forgotten password.
-#: ../lib/wiking/util.py:1733 ../lib/wiking/util.py:1879
+#: ../lib/wiking/util.py:1723 ../lib/wiking/util.py:1870
 #, fuzzy
 msgid "Restore forgotten password"
 msgstr "Ţi-ai uitat parola?"
 
 #. Login status info.
-#: ../lib/wiking/util.py:1745
+#: ../lib/wiking/util.py:1735
 msgid "Logged in user:"
 msgstr ""
 
 #. Login status info.
-#: ../lib/wiking/util.py:1764
+#: ../lib/wiking/util.py:1754
 #, fuzzy
 msgid "User not logged in"
 msgstr "neautentificat"
@@ -631,71 +639,71 @@ msgstr "neautentificat"
 #. Label for language selection followed by the
 #. current language name with a selection of other available
 #. language variants.
-#: ../lib/wiking/util.py:1785
+#: ../lib/wiking/util.py:1775
 msgid "Language:"
 msgstr "Limba:"
 
-#: ../lib/wiking/util.py:1788
+#: ../lib/wiking/util.py:1778
 msgid "Switch the language"
 msgstr ""
 
-#: ../lib/wiking/util.py:1855
+#: ../lib/wiking/util.py:1846
 msgid "Your e-mail address"
 msgstr ""
 
-#: ../lib/wiking/util.py:1858
+#: ../lib/wiking/util.py:1849
 msgid "Login name"
 msgstr "Nume de autentificare"
 
-#: ../lib/wiking/util.py:1869
+#: ../lib/wiking/util.py:1860
 msgid "Password"
 msgstr "Parola"
 
 #. Web form label and message
-#: ../lib/wiking/util.py:1910
+#: ../lib/wiking/util.py:1904
 #, python-format
 msgid "Decryption password for '%s'"
 msgstr ""
 
 #. Web form button.
-#: ../lib/wiking/util.py:1917
+#: ../lib/wiking/util.py:1911
 #, fuzzy
 msgid "Send password"
 msgstr "Parola"
 
 #. Confirmation button
-#: ../lib/wiking/util.py:1939
+#: ../lib/wiking/util.py:1933
 msgid "Continue"
 msgstr ""
 
-#: ../lib/wiking/util.py:1992
+#: ../lib/wiking/util.py:1986
 msgid "Warning"
 msgstr "Atenţie"
 
-#: ../lib/wiking/util.py:2890
+#: ../lib/wiking/util.py:2884
 #, fuzzy
 msgid "Invalid e-mail address format."
 msgstr "Format invalid"
 
 #. Computer terminology. `gmail.com' is a domain name in email address
 #. `joe@gmail.com'.
-#: ../lib/wiking/util.py:2898 ../lib/wiking/util.py:2906
+#: ../lib/wiking/util.py:2892 ../lib/wiking/util.py:2900
 #, fuzzy
 msgid "Domain not found."
 msgstr "Domeniul nu a fost găsit"
 
 #. Computer terminology.  Don't translate the acronym `DNS'.
-#: ../lib/wiking/util.py:2901 ../lib/wiking/util.py:2909
+#: ../lib/wiking/util.py:2895 ../lib/wiking/util.py:2903
 #, python-format
 msgid "Unable to retrieve DNS records: %s"
 msgstr ""
 
-#: ../lib/wiking/util.py:2937
+#: ../lib/wiking/util.py:2931
 #, python-format
 msgid "Invalid e-mail address: %s"
 msgstr ""
 
-#: ../lib/wiking/util.py:2939
+#: ../lib/wiking/util.py:2933
 #, python-format
 msgid ""
 "Unable to verify e-mail address: Mail servers for '%s' are temporarily "
