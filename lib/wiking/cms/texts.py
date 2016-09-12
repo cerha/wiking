@@ -24,7 +24,7 @@ _ = lcg.TranslatableTextFactory('wiking-cms')
 
 top = Text(
     'cms.top',
-    _("Text displayed at the very top of every page under the site title."),
+    _("Text displayed at the very top of every page next to the site title"),
     u'')
 
 disabled = Text(
@@ -57,7 +57,7 @@ unapproved = Text(
     _("Information about an account waiting for admin approval"),
     # Translators: Text presented to a user in a web page
     _("""Your account is waiting for approval by the administrator.
-                  
+
 The protected services are not available until the account gets approved.
 If the account remains unapproved for a long time, contact the application administrator."""))
 
@@ -70,14 +70,15 @@ regsuccess = Text(
     'cms.regsuccess',
     _("Text displayed after successful user registration"),
     _("Your account now awaits administrator's approval."))
-    
+
 regsuccess_autoapproved = Text(
     'cms.regsuccess_autoapproved',
-    _("Text displayed after successful user registration when autoapprove_new_users is set in configuration"),
+    _("Text displayed after successful user registration when autoapprove_new_users is set "
+      "in configuration"),
     _("Your account is now fully functional. You can [%s log in] now.\n\n"
       "You may still need some futher privileges to access certain restricted services.",
       '?command=login'))
-    
+
 regconfirm = Text(
     'cms.regconfirm',
     _("Information displayed above the checkbox for confirmation of site specific "
