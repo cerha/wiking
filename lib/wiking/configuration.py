@@ -412,8 +412,6 @@ class Configuration(pytis.util.Configuration):
         _DEFAULT = None
 
     class _Option_default_language_by_domain(pc.Option):
-        # Translators: Settings label. Meaning default language
-        # according to the domain a user comes from
         _DESCR = "Default language by server domain name"
         _DOC = ("Allows setting different default language based on the server domain name.  The "
                 "value is a dictionary, where the server name is a key and language code is "
@@ -423,7 +421,6 @@ class Configuration(pytis.util.Configuration):
         _DEFAULT = {}
 
     class _Option_language_selection_image(pc.StringOption):
-        # Translators: Settings label. URI means a link. Do not translate ''URI''.
         _DESCR = "URI of images used in language selection menu."
         _DOC = ("If defined, the language selection links will include images (typically national "
                 "flags).  The value is a string where '%s' is replaced by the language code of a "
