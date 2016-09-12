@@ -33,15 +33,19 @@ _ = lcg.TranslatableTextFactory('wiking-cms')
 class CMSConfiguration(cfg):
     """CMS Specific Configuration."""
 
-    class _Option_allow_wmi_link(cfg.BooleanOption):
-        # Translators: Yes/No configuration option label. Should link to WMI be visible?  "WMI"
-        # stands for Wiking Management Interface.  Don't feel obliged to use an abbreviation.  Use
-        # whatever brief form obviously referning to whatever translation you used for "Wiking
-        # Management Interface".
-        _DESCR = _("Allow WMI link")
-        _DOC = ("Set to true to disable the link to the Wiking Management Interface in page "
-                "footer.")
-        _DEFAULT = True
+    class _Option_always_show_admin_control(cfg.BooleanOption):
+        # Translators: Yes/No configuration option label.  Should site
+        # administration menu be always displayed?
+        _DESCR = _("Always show admin control")
+        _DOC = ("The site administration menu is normally only displayed "
+                "to logged-in users with administration privileges.  When "
+                "set to true, the menu (the gear icon at the top right "
+                "corner of the page) will be displayed also to anonymous "
+                "users (authorization will be requested after invocation "
+                "of any administrative action).  This may be particilarly "
+                "useful in combination with option 'Show login control' "
+                "set to false.")
+        _DEFAULT = False
 
     class _Option_allow_registration(cfg.BooleanOption):
         # Translators: Yes/no configuration label. Can new users register to this
