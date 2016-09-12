@@ -1680,8 +1680,8 @@ class LoginControl(TopBarControl):
     def _menu_items(self, context):
         req = context.req()
         user = req.user()
+        items = []
         if user:
-            items = []
             if user.uri():
                 g = context.generator()
                 login, displayed_name = user.login(), user.name()
@@ -1708,8 +1708,8 @@ class LoginControl(TopBarControl):
             # Translators: Menu item label (verb in imperative).
             items.append(lcg.PopupMenuItem(_("Log out"), icon='circle-out-icon',
                                            uri=req.make_uri(req.uri(), command='logout')))
-        else:
-            items = [
+        elif wiking.cfg.show_login_control:
+            items.extend([
                 lcg.PopupMenuItem(title, icon=icon, tooltip=tooltip, uri=uri)
                 for title, tooltip, icon, uri in (
                     (_("Log in"), _("Log in to an existing user account"), 'circle-in-icon',
@@ -1721,7 +1721,7 @@ class LoginControl(TopBarControl):
                     # Translators: Link/menu item to restore a forgotten password.
                     (_("Restore forgotten password"), None, 'key-icon',
                      wiking.module.Application.forgotten_password_uri(req)),
-                ) if uri]
+                ) if uri])
         return items
 
     def _menu_label(self, context):
@@ -1741,7 +1741,7 @@ class LoginControl(TopBarControl):
 
     def _content(self, context):
         req = context.req()
-        if req.user() is None:
+        if wiking.cfg.show_login_control and req.user() is None:
             g = context.generator()
             uri = req.uri()
             if uri.endswith('_registration'):

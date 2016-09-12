@@ -560,10 +560,23 @@ class Configuration(pytis.util.Configuration):
     class _Option_viewport(pc.StringOption):
         _DESCR = "String value for the HTML head 'viewport' META tag."
         _DOC = ("The viewport meta tag may be used to control the page's "
-                "dimensions and scaling within the browser window. "
-                "Check https://developer.mozilla.org/en-US/docs/Mozilla/Mobile/Viewport_meta_tag "
+                "dimensions and scaling within the browser window. Check "
+                "https://developer.mozilla.org/en-US/docs/Mozilla/Mobile/Viewport_meta_tag "
                 "for more information.")
         _DEFAULT = 'width=device-width, initial-scale=1'
+
+    class _Option_show_login_control(pc.BooleanOption):
+        # Translators: Yes/No configuration option label.  Should the "Log in"
+        # button be displayed?
+        _DESCR = _("Show login control")
+        _DOC = ("The 'Log in' button, together with the login menu "
+                "(registration, forgotten password, ...) is normally displayed "
+                "to anonymous users (when not logged in) at the top right corner "
+                "of the page.  This option may be used to disable these controls "
+                "for sites where users are normally not supposed to log in or "
+                "register.  This will avoid confusion and improve usability "
+                "(reduce unecessary 'clutter' on the page).")
+        _DEFAULT = True
 
 
 class ApplicationConfiguration(pytis.util.Configuration):
