@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2009-2014 Brailcom, o.p.s.
+# Copyright (C) 2009-2016 Brailcom, o.p.s.
 #
 # COPYRIGHT NOTICE
 #
@@ -95,9 +95,18 @@ footer = Text(
     _("Text displayed at the very bottom of every page"),
     # Translators: Label followed by an email address link.
     _("Contact:") + ' $webmaster_address')
-    
 
 default_copyright_notice = Text(
     'cms.default_copyright_notice',
     _("Default value of the Copyright Notice field for newly created publications."),
+    None)
+
+login_dialog_top_text = Text(
+    'cms.login_dialog_top_text',
+    _("Text displayed above the login dialog"),
+    None)
+
+login_dialog_bottom_text = Text(
+    'cms.login_dialog_bottom_text',
+    _("Text displayed below the login dialog"),
     None)

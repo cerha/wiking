@@ -509,12 +509,24 @@ class Application(wiking.Module):
         """
         return False
 
-    def login_dialog_content(self, req):
+    def login_dialog_top_content(self, req):
+        """Return the content displayed above the login dialog as 'lcg.Content' element(s).
+
+        Any content acceptable by 'lcg.coerce()' may be returned.
+
+        """
+        return None
+
+    def login_dialog_bottom_content(self, req):
         """Return the content displayed below the login dialog as 'lcg.Content' element(s).
 
         Any content acceptable by 'lcg.coerce()' may be returned.
 
         """
+        return self.login_dialog_content(req)
+
+    def login_dialog_content(self, req):
+        """Deprecated.  Use 'login_dialog_bottom_content()'."""
         return None
 
     def _powered_by_wiking(self, req):

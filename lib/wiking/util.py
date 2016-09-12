@@ -301,7 +301,8 @@ class AuthenticationError(RequestError):
         appl = wiking.module.Application
         return LoginDialog(registration_uri=appl.registration_uri(req),
                            forgotten_password_uri=appl.forgotten_password_uri(req),
-                           extra_content=appl.login_dialog_content(req),
+                           top_content=appl.login_dialog_top_content(req),
+                           bottom_content=appl.login_dialog_bottom_content(req),
                            login_is_email=appl.login_is_email(req))
 
 
@@ -1820,10 +1821,11 @@ class PanelItem(lcg.Content):
 class LoginDialog(lcg.Content):
     """Login dialog for entering login name and password."""
     def __init__(self, registration_uri=None, forgotten_password_uri=None,
-                 extra_content=None, login_is_email=False):
+                 top_content=None, bottom_content=None, login_is_email=False):
         self._registration_uri = registration_uri
         self._forgotten_password_uri = forgotten_password_uri
-        self._extra_content = extra_content
+        self._top_content = top_content
+        self._bottom_content = bottom_content
         self._login_is_email = login_is_email
         super(LoginDialog, self).__init__()
 
@@ -1879,9 +1881,12 @@ class LoginDialog(lcg.Content):
                   g.script("onload_ = window.onload; window.onload = function() { "
                            "if (onload_) onload_(); "
                            "setTimeout(function () { document.login_form.login.focus() }, 0); };"))
-        if self._extra_content:
-            exported = lcg.coerce(self._extra_content).export(context)
-            result += g.escape("\n") + g.div(exported, cls='login-dialog-content')
+        if self._top_content:
+            result = g.div(lcg.coerce(self._top_content).export(context),
+                           cls='login-dialog-content login-dialog-top-content') + result
+        if self._bottom_content:
+            result += g.div(lcg.coerce(self._bottom_content).export(context),
+                            cls='login-dialog-content login-dialog-bottom-content')
         return result
 
 

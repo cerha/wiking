@@ -391,3 +391,9 @@ class Application(wiking.Application):
     def footer_content(self, req):
         text = self._text_content(req, wiking.cms.texts.footer)
         return text2content(req, text.replace('$webmaster_address', wiking.cfg.webmaster_address))
+
+    def login_dialog_top_content(self, req):
+        return text2content(req, self._text_content(req, wiking.cms.texts.login_dialog_top_text))
+
+    def login_dialog_bottom_content(self, req):
+        return text2content(req, self._text_content(req, wiking.cms.texts.login_dialog_bottom_text))
