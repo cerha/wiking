@@ -4825,14 +4825,21 @@ class Discussions(ContentManagementModule, EmbeddableCMSModule):
         return content
 
 
-class SiteMap(wiking.Module, Embeddable):
-    """Extend page content by including a hierarchical listing of the main menu."""
+class SiteMap(wiking.Module, Embeddable, wiking.RequestHandler):
+    """Extend page content by including a hierarchical listing of the main menu
 
+    This module can be embedded in CMS page content as well as mapped directly
+    as a request handler.
+
+    """
     # Translators: Section heading and menu item. Computer terminology idiom.
     _TITLE = _("Site Map")
 
     def embed(self, req):
         return [lcg.RootIndex()]
+
+    def handle(self, req):
+        return wiking.Document(self._TITLE, self.embed(req))
 
 
 class ContactForm(wiking.Module, Embeddable):

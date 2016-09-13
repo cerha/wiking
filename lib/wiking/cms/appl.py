@@ -87,6 +87,7 @@ class Application(wiking.Application):
         wiking.Application._MAPPING,
         _wmi='WikingManagementInterface',
         _registration='Registration',
+        _sitemap='SiteMap',
     )
 
     _PREVIEW_MODE_COOKIE = 'wiking_cms_preview_mode'
@@ -387,6 +388,10 @@ class Application(wiking.Application):
 
     def top_controls(self, req):
         return [wiking.LoginControl(), AdminControl(), wiking.LanguageSelection()]
+
+    def bottom_bar_right_content(self, req):
+        return (super(Application, self).bottom_bar_right_content(req), ', ',
+                lcg.Link('/_sitemap', wiking.module.SiteMap.title()))
 
     def footer_content(self, req):
         text = self._text_content(req, wiking.cms.texts.footer)
