@@ -81,9 +81,11 @@ class ContentField(Field):
                 descr = ''
             descr += _("The content should be formatted as LCG structured text. "
                        "See the %(manual)s.",
-                       manual=lcg.format('<a target="help" href="%s">%s</a>',
-                                         '/_doc/lcg/structured-text',
-                                         _("formatting manual")))
+                       manual=lcg.HtmlEscapedUnicode(
+                           lcg.format('<a target="help" href="%s">%s</a>',
+                                      '/_doc/lcg/structured-text',
+                                      _("formatting manual")),
+                           escape=False))
         Field.__init__(self, name, label, descr=descr, text_format=text_format, **kwargs)
 
 
