@@ -2082,7 +2082,11 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         if req.param('_cancel'):
             # Check this AFTER AJAX handling, because AJAX requests have
             # all submit button parameters set.
-            raise Redirect(req.uri())
+            if req.param('__invoked_from') in ('ListView', 'ItemizedView'):
+                raise Redirect(self._current_base_uri(req, record),
+                               form_name=self.name(), search=record[self._key].export())
+            else:
+                raise Redirect(req.uri())
         if req.param('submit') and form.validate(req):
             # The form works with another Record instance (see '_form()') and we
             # need to save the instance that passed validation.  Maybe that
