@@ -446,6 +446,16 @@ span.diff_sub, span.field.id-diff_sub { background-color: #ffaaaa; }
     font-weight: bold;
 }
 
+.cms-text-not-found p {
+    padding-left: 32px;
+}
+.cms-text-not-found .error-icon {
+    float: left;
+    margin: 5px;
+}
+.cms-text-empty-value {
+    color: #666;
+}
 /* Screen layout */
 @media screen {
 

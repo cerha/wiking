@@ -5081,7 +5081,7 @@ class CommonTexts(SettingsManagementModule):
         def fields(self):
             return (
                 Field('text_id'),
-                Field('label', _("Label"), width=32),
+                Field('label'),
                 Field('lang'),
                 Field('description'),
                 Field('descr', _("Purpose"), width=64, virtual=True,
@@ -5099,7 +5099,6 @@ class CommonTexts(SettingsManagementModule):
                              text_format=pp.TextFormat.HTML, width=80, height=10),
             )
 
-        columns = ('label', 'descr',)
         sorting = (('label', ASC,),)
 
         def _description(self, row, label, description):
@@ -5172,7 +5171,7 @@ class CommonTexts(SettingsManagementModule):
             content_field = 'content'
         else:
             raise Exception('Unsupported text format: %s' % text_format)
-        return ('label', 'descr', content_field,)
+        return (content_field,)
 
     def _update(self, req, record, transaction):
         # Use the value of the layout column for update.
@@ -5218,6 +5217,13 @@ class Texts(CommonTexts, wiking.CachingPytisModule):
     'label' attribute).  See 'Text' class for more details.
 
     """
+    class TextStates(pp.Enumeration):
+        enumeration = (
+            ('unknown', _("Unknown text")),
+            ('default', _("Default")),
+            ('custom', _("Edited")),
+        )
+
     class Spec(CommonTexts.Spec):
         table = 'cms_v_system_texts'
         title = _("System Texts")
@@ -5225,11 +5231,33 @@ class Texts(CommonTexts, wiking.CachingPytisModule):
         def fields(self):
             extra = (
                 Field('site'),
+                Field('title', label=_("Title"), virtual=True,
+                      computer=computer(lambda r, label, descr: descr or label)),
+                Field('state', label=_("State"), virtual=True, computer=computer(self._state),
+                      enumerator=Texts.TextStates),
             )
             return self._inherited_fields(Texts.Spec) + extra
+        columns = ('title', 'state',)
+        def _state(self, record, label, content):
+            if label not in self._texts:
+                return 'unknown'
+            elif content is None:
+                return 'default'
+            else:
+                return 'custom'
+        def row_style(self, record):
+            state = record['state'].value()
+            if state == 'unknown':
+                return pp.Style(foreground='#f00')
+            elif state == 'custom':
+                return pp.Style(bold=True)
+            else:
+                return None
 
     _DB_FUNCTIONS = dict(CommonTexts._DB_FUNCTIONS,
                          cms_add_text_label=(('label', pd.String()), ('site', pd.String())))
+    _ROW_EXPANSION = True
+    _ASYNC_ROW_EXPANSION = True
 
     def _refered_row_values(self, req, value):
         return dict(super(Texts, self)._refered_row_values(req, value),
@@ -5248,8 +5276,11 @@ class Texts(CommonTexts, wiking.CachingPytisModule):
             if label is None:
                 return ''
             lang = record['lang'].value()
-            text = self.Spec._texts[label]
-            return req.localize(text.text(), lang)
+            try:
+                text = self.Spec._texts[label]
+                return req.localize(text.text(), lang)
+            except KeyError:
+                return ''
         return (('content', content,),)
 
     def _register_texts(self):
@@ -5264,6 +5295,28 @@ class Texts(CommonTexts, wiking.CachingPytisModule):
                         for row in self._data.get_rows(label=label, site=site)
                         if row['content'].value() is not None]
         return dict(translations)
+
+    def _link_provider(self, req, uri, record, cid, **kwargs):
+        if cid is None and not kwargs:
+            return self._link_provider(req, uri, record, None, action='update',
+                                       __invoked_from='ListView')
+        return super(Texts, self)._link_provider(req, uri, record, cid, **kwargs)
+
+    def _expand_row(self, req, record, form):
+        try:
+            text = self.Spec._texts[record['label'].value()]
+        except KeyError:
+            return lcg.container(lcg.container('', name='error-icon'),
+                                 lcg.p(_("The text '%s' exists in the database, but "
+                                         "is not defined by the application.",
+                                         record['label'].value())),
+                                 lcg.p(_("This may be an old text which is not used anymore. "
+                                         "You can remove it if this is the case.")),
+                                 name='cms-text-not-found')
+        content = self.parsed_text(req, text)
+        if not content or isinstance(content, lcg.Container) and not content.content():
+            return lcg.em(_("Empty value"), name='cms-text-empty-value')
+        return content
 
     def text(self, text):
         """Return text corresponding to 'text' as 'lcg.TranslatableText' instance.
