@@ -5315,7 +5315,7 @@ class Texts(CommonTexts, wiking.CachingPytisModule):
                                  name='cms-text-not-found')
         content = self.parsed_text(req, text)
         if not content or isinstance(content, lcg.Container) and not content.content():
-            return lcg.em(_("Empty value"), name='cms-text-empty-value')
+            return lcg.em(_("empty value"), name='cms-text-empty-value')
         return content
 
     def text(self, text):
