@@ -37,7 +37,7 @@ upgrade_directory = os.path.abspath(os.path.join(os.path.realpath(os.path.dirnam
 upgrade_files = glob.glob(os.path.join(upgrade_directory, 'upgrade.*.sql'))
 assert upgrade_files, 'No upgrade files found in upgrade directory: %s' % upgrade_directory
 last_upgrade_script = max(upgrade_files)
-version = int(last_upgrade_script[len(upgrade_directory)+len(os.sep)+8:-4])
+version = int(last_upgrade_script[len(upgrade_directory) + len(os.sep) + 8:-4])
 
 class CmsDatabaseVersion(sql.SQLTable):
     name = 'cms_database_version'
