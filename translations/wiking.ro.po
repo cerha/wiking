@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-09-12 14:22+0200\n"
+"POT-Creation-Date: 2016-09-14 22:13+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: \n"
@@ -242,26 +242,26 @@ msgid "Unable to perform a database operation:"
 msgstr "Efectuarea operaţiei de bază de date a eşuat."
 
 #. Back button label. Standard computer terminology.
-#: ../lib/wiking/db.py:2109
+#: ../lib/wiking/db.py:2113
 msgid "Back"
 msgstr "Înapoi"
 
 #. RSS channel is a computer idiom, see Wikipedia.
-#: ../lib/wiking/db.py:2411 ../lib/wiking/db.py:2567
+#: ../lib/wiking/db.py:2415 ../lib/wiking/db.py:2571
 msgid "An RSS channel is available for this section:"
 msgstr "Pentru această secţiune este disponibil şi un canal RSS:"
 
 #. RSS channel is a computer idiom, see Wikipedia.  Don't translateg 'RSS'.
-#: ../lib/wiking/db.py:2415 ../lib/wiking/db.py:2565
+#: ../lib/wiking/db.py:2419 ../lib/wiking/db.py:2569
 msgid "more about RSS"
 msgstr "mai mult despre RSS"
 
-#: ../lib/wiking/db.py:2560
+#: ../lib/wiking/db.py:2564
 #, fuzzy, python-format
 msgid "RSS channel \"%s\""
 msgstr "RSS canal"
 
-#: ../lib/wiking/db.py:2570
+#: ../lib/wiking/db.py:2574
 #, fuzzy
 msgid "RSS channels are available for this section"
 msgstr "Pentru această secţiune este disponibil şi un canal RSS:"
