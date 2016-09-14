@@ -1252,18 +1252,29 @@ class CmsSystemTexts(CommonAccesRights, Base_CachingTable):
                           (sql.r.CmsSystemTextLabels.label, sql.r.CmsSystemTextLabels.site,),
                           onupdate='CASCADE', ondelete='CASCADE'),)
 
+class CmsVSystemTextLabels(CommonAccesRights, sql.SQLView):
+    name = 'cms_v_system_text_labels'
+    @classmethod
+    def query(cls):
+        labels = sql.t.CmsSystemTextLabels
+        languages = sql.t.CmsLanguages
+        return select([labels.c.label, labels.c.site, languages.c.lang],
+                      from_obj=[labels, languages])
+
 class CmsVSystemTexts(CommonAccesRights, sql.SQLView):
     name = 'cms_v_system_texts'
     @classmethod
     def query(cls):
-        tl = sql.c.CmsSystemTextLabels
-        l = sql.c.CmsLanguages
-        t = sql.c.CmsSystemTexts
-        return select([(tl.label + sval(':') + tl.site + sval(':') + l.lang).label('text_id'),
-                       tl.label, tl.site, l.lang, t.description, t.content],
-                      from_obj=[sql.t.CmsSystemTextLabels,
-                                sql.t.CmsLanguages.outerjoin(sql.t.CmsSystemTexts)],
-                      whereclause=and_(tl.label == t.label, tl.site == t.site, l.lang == t.lang))
+        labels = sql.t.CmsVSystemTextLabels
+        texts = sql.t.CmsSystemTexts
+        return select(
+            [(labels.c.label + sval(':') + labels.c.site + sval(':') + labels.c.lang)
+             .label('text_id'),
+             labels.c.label, labels.c.site, labels.c.lang, texts.c.description, texts.c.content],
+            from_obj=[labels.outerjoin(texts, and_(labels.c.lang == texts.c.lang,
+                                                   labels.c.label == texts.c.label,
+                                                   labels.c.site == texts.c.site))],
+        )
     def on_update(self):
         return ("""(
     delete from cms_system_texts where label = new.label and lang = new.lang and site = new.site;
