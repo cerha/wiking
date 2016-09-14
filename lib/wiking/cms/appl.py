@@ -46,8 +46,7 @@ class AdminControl(wiking.TopBarControl):
     def _menu_items(self, context):
         req = context.req()
         items = []
-        force_visible = wiking.cms.cfg.always_show_admin_control and req.user() is None
-        if wiking.module.WikingManagementInterface.authorized(req) or force_visible:
+        if wiking.module.WikingManagementInterface.authorized(req):
             if not req.wmi:
                 items.append(lcg.PopupMenuItem(_("Enter the Management Interface"), uri='/_wmi/',
                                                icon='gear-icon'))
@@ -71,13 +70,16 @@ class AdminControl(wiking.TopBarControl):
             items.append(lcg.PopupMenuItem(label, uri='%s?%s=%s' % (req.uri(), param, value),
                                            icon='refresh-icon'))
         if not req.wmi:
-            if hasattr(req, 'page_write_access') and req.page_write_access or force_visible:
+            if hasattr(req, 'page_write_access') and req.page_write_access:
                 items.append(lcg.PopupMenuItem(_("Edit the Current Page"),
                                                uri=req.uri() + '?action=update',
                                                icon='edit-icon'))
-            if req.check_roles(wiking.cms.Roles.CONTENT_ADMIN) or force_visible:
+            if req.check_roles(wiking.cms.Roles.CONTENT_ADMIN):
                 items.append(lcg.PopupMenuItem(_("Create a New Page"), uri='/?action=insert',
                                                icon='create-icon'))
+        if not items and wiking.cms.cfg.always_show_admin_control:
+            items.append(lcg.PopupMenuItem(_("Log in for site administration"),
+                                           uri='/?command=login', icon='circle-in-icon'))
         return items
 
 
