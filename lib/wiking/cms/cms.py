@@ -325,15 +325,6 @@ class CMSModule(wiking.PytisModule, wiking.RssModule):
             binding = None
         return binding
 
-    def _list_form_content(self, req, form, uri=None):
-        # Add short module help text above the list form in WMI.
-        content = []
-        if req.wmi:
-            help = self._view.help()
-            if help:
-                content = [lcg.p(help)]
-        return content + super(CMSModule, self)._list_form_content(req, form, uri=uri)
-
     def _check_crypto_passwords(self, req):
         crypto_names = self._data.crypto_names()
         if not crypto_names:
@@ -398,12 +389,24 @@ class CMSModule(wiking.PytisModule, wiking.RssModule):
 
 
 class _ManagementModule(CMSModule):
+    """Base class for modules used for site management."""
+
     _ADMIN_ROLES = ()
+
     def _authorized(self, req, action, **kwargs):
         if action in ('insert', 'update', 'delete'):
             return req.check_roles(*self._ADMIN_ROLES)
         else:
             return super(_ManagementModule, self)._authorized(req, action, **kwargs)
+
+    def _list_form_content(self, req, form, uri=None):
+        # Add short module help text above the list form.
+        content = []
+        description = self._view.help()
+        if description:
+            content = [lcg.p(description)]
+        return content + super(CMSModule, self)._list_form_content(req, form, uri=uri)
+
 
 class ContentManagementModule(_ManagementModule):
     """Base class for WMI modules managed by L{Roles.CONTENT_ADMIN}."""
@@ -1299,7 +1302,8 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
     class Spec(Specification):
         # Translators: Heading and menu item. Meaning web pages.
         title = _("Pages")
-        help = _("Manage available pages and their content.")
+        help = _("Note: Please, reload the page if the list has just one item "
+                 "(temporary workaround for a known issue).")
         table = 'cms_v_pages'
         def fields(self):
             return (
