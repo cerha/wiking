@@ -1458,7 +1458,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
         # grouping = 'grouping'
         # group_heading = 'title'
         layout = () # Defined by _layout() method.
-        columns = ('title_or_identifier', 'identifier', 'modname', 'status',
+        columns = ('title_or_identifier', 'modname', 'status',
                    'menu_visibility', 'read_role_id', 'write_role_id')
         cb = CodebookSpec(display='title_or_identifier', prefer_display=True)
         actions = (
