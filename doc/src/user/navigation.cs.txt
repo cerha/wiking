@@ -87,17 +87,6 @@ právě přihlášeného uživatele.  I v tomto případě lze tuto informaci na
 vyskakovací nabídce u položky „Můj uživatelský profil”.
 
 
-=== Indikátor přihlášeného uživatele === sec-login-indicator
-
-Po úspěšném přihlášení je v pravé části horní lišty aplikace vedle ikonky s
-lidskou hlavou zobrazena e-mailová adresa uživatele v podobě tlačítka s
-vysakovací nabídkou.  Uživatelé mobilních zařízení s menší obrazovkou zde mohou
-vidět pouze malé tlačítko s ikonkou vyskakovací nabídky (trojúhelníková šipka
-směřující dolů), protože celá e-mailová adresa se na obrazovku nevejde.
-Uživatelům odečítačů obrazovek toto tlačítko ohlásí přítomnost vyskakovací
-nabídky „Akce uživatele”.  Stiskem tlačítka lze tuto nabídku vyvolat.
-
-
 === Přepínání jazyka === sec-language-selection
 
 Pokud je daná stránka dostupná ve více jazycích, můžeme na horní liště úplně v
