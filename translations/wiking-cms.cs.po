@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-09-14 22:20+0200\n"
-"PO-Revision-Date: 2016-09-14 22:20+0200\n"
+"POT-Creation-Date: 2016-09-15 09:37+0200\n"
+"PO-Revision-Date: 2016-09-15 09:39+0200\n"
 "Last-Translator: Hynek Hanke <hanke@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
 "Language: cs\n"
@@ -78,10 +78,10 @@ msgstr ""
 "chcete přistupovat k nezveřejněným stránkám."
 
 #: ../lib/wiking/cms/appl.py:289
-msgid "Wiking Management Interface"
+msgid "Management Interface"
 msgstr "Správcovské rozhraní"
 
-#: ../lib/wiking/cms/appl.py:331 ../lib/wiking/cms/users.py:1034
+#: ../lib/wiking/cms/appl.py:325 ../lib/wiking/cms/users.py:1034
 #, python-format
 msgid ""
 "User %s is already registered for another site. Please, confirm the account "
@@ -90,7 +90,7 @@ msgstr ""
 "Uživatel %s je již registrován pro přidružený web.  Potvrďte prosím účet pro "
 "tento web."
 
-#: ../lib/wiking/cms/appl.py:371
+#: ../lib/wiking/cms/appl.py:365
 msgid "New Panel"
 msgstr "Nový panel"
 
@@ -3822,6 +3822,9 @@ msgstr "Export spuštěn..."
 #: ../resources/scripts/wiking-cms.js:117
 msgid "Export finished."
 msgstr "Export dokončen."
+
+#~ msgid "Wiking Management Interface"
+#~ msgstr "Správcovské rozhraní"
 
 #~ msgid "Empty value"
 #~ msgstr "Prázdná hodnota"

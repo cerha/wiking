@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-09-14 22:20+0200\n"
+"POT-Creation-Date: 2016-09-15 09:37+0200\n"
 "PO-Revision-Date: 2009-09-14 15:18+0100\n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: Slovak <wiking@lists.freebsoft.org>\n"
@@ -85,17 +85,17 @@ msgstr ""
 
 #: ../lib/wiking/cms/appl.py:289
 #, fuzzy
-msgid "Wiking Management Interface"
+msgid "Management Interface"
 msgstr "Vstúpiť do rozhrania správy obsahu"
 
-#: ../lib/wiking/cms/appl.py:331 ../lib/wiking/cms/users.py:1034
+#: ../lib/wiking/cms/appl.py:325 ../lib/wiking/cms/users.py:1034
 #, python-format
 msgid ""
 "User %s is already registered for another site. Please, confirm the account "
 "for this site."
 msgstr ""
 
-#: ../lib/wiking/cms/appl.py:371
+#: ../lib/wiking/cms/appl.py:365
 #, fuzzy
 msgid "New Panel"
 msgstr "Nová stránka"
@@ -3766,6 +3766,10 @@ msgstr ""
 #: ../resources/scripts/wiking-cms.js:117
 msgid "Export finished."
 msgstr ""
+
+#, fuzzy
+#~ msgid "Wiking Management Interface"
+#~ msgstr "Vstúpiť do rozhrania správy obsahu"
 
 #~ msgid "Label"
 #~ msgstr "Názov"

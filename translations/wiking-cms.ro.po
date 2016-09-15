@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-09-14 22:20+0200\n"
+"POT-Creation-Date: 2016-09-15 09:37+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: \n"
@@ -79,17 +79,18 @@ msgid ""
 msgstr ""
 
 #: ../lib/wiking/cms/appl.py:289
-msgid "Wiking Management Interface"
+#, fuzzy
+msgid "Management Interface"
 msgstr "Interfaţa administrării cuprinsului"
 
-#: ../lib/wiking/cms/appl.py:331 ../lib/wiking/cms/users.py:1034
+#: ../lib/wiking/cms/appl.py:325 ../lib/wiking/cms/users.py:1034
 #, python-format
 msgid ""
 "User %s is already registered for another site. Please, confirm the account "
 "for this site."
 msgstr ""
 
-#: ../lib/wiking/cms/appl.py:371
+#: ../lib/wiking/cms/appl.py:365
 #, fuzzy
 msgid "New Panel"
 msgstr "Pagină nouă"
@@ -3803,6 +3804,9 @@ msgstr ""
 #: ../resources/scripts/wiking-cms.js:117
 msgid "Export finished."
 msgstr ""
+
+#~ msgid "Wiking Management Interface"
+#~ msgstr "Interfaţa administrării cuprinsului"
 
 #~ msgid "Label"
 #~ msgstr "Denumire"

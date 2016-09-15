@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-09-14 22:20+0200\n"
+"POT-Creation-Date: 2016-09-15 09:37+0200\n"
 "PO-Revision-Date: 2010-02-04 00:15+0100\n"
 "Last-Translator: Hostomský Károly <khostomsky@gmail.com>\n"
 "Language-Team: Hungarian <wiking@lists.freebsoft.org>\n"
@@ -84,17 +84,18 @@ msgid ""
 msgstr ""
 
 #: ../lib/wiking/cms/appl.py:289
-msgid "Wiking Management Interface"
+#, fuzzy
+msgid "Management Interface"
 msgstr "Wiking kezelőfelület"
 
-#: ../lib/wiking/cms/appl.py:331 ../lib/wiking/cms/users.py:1034
+#: ../lib/wiking/cms/appl.py:325 ../lib/wiking/cms/users.py:1034
 #, python-format
 msgid ""
 "User %s is already registered for another site. Please, confirm the account "
 "for this site."
 msgstr ""
 
-#: ../lib/wiking/cms/appl.py:371
+#: ../lib/wiking/cms/appl.py:365
 #, fuzzy
 msgid "New Panel"
 msgstr "Új oldal"
@@ -3762,6 +3763,9 @@ msgstr ""
 #: ../resources/scripts/wiking-cms.js:117
 msgid "Export finished."
 msgstr ""
+
+#~ msgid "Wiking Management Interface"
+#~ msgstr "Wiking kezelőfelület"
 
 #~ msgid "Label"
 #~ msgstr "Címke"
