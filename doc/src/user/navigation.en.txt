@@ -37,13 +37,13 @@ the website title on its left side and some important control elements on its
 right side.     
 
 The available controls on the right side may depend on the currently logged in
-user and his/her priviledges or on some other state of the application.
+user and his/her privileges or on some other state of the application.
 However, normally it contains:
 
 * [#sec-login-control] if the current site allows logging in,
 * [#sec-language-selection] if the page is available in multiple languages.
 
-Screen reader users may get to the top bar most easilly by jumping to the very
+Screen reader users may get to the top bar most easily by jumping to the very
 top of the screen and then navigating by the TAB key through its items.  Because
 all control elements in the top bar are represented by buttons (which usually
 have a dropdown menu) it is also possible to use screen reader button navigation
@@ -102,10 +102,10 @@ cookies).
 
 Hierarchical menus are used as the primary means of navigation within a web site
 or application.  The items at the top level of the hierarchy are presented as a
-set of horizontal tabs.  Each tab may have a subhierarchy of items, which is
-presented as a dropdown menu.  Tabs which have a submenu can be recognized by an
-icon of a small triangular arrow pointing down.  When such tab is pushed, the
-submenu opens.
+set of horizontal tabs.  Each tab may have a subordinate hierarchy of items,
+which is presented as a dropdown menu.  Tabs which have a submenu can be
+recognized by an icon of a small triangular arrow pointing down.  When such tab
+is pushed, the submenu opens.
 
 The submenu of the currently active tab is displayed on the left side of the
 page, so it can be seen and accessed directly, without going through the
@@ -123,9 +123,9 @@ arrow keys.
 The tabs of the top level menu can be navigated using left and right arrows.  If
 the item has a submenu, the submenu can be entered by arrow down and further
 navigated up and down.  If the submenu contains items of lower hierarchy levels,
-thes sublevels can be arranged into a foldable tree.  A foldable item can be
-unfolded by arrow right or folded by arrow left.  Enter invokes the current menu
-item.
+these subordinate levels can be arranged into a foldable tree.  A foldable item
+can be unfolded by arrow right or folded by arrow left.  Enter invokes the
+current menu item.
 
 Complete overview of menu keyboard shortcuts:
 
@@ -180,6 +180,4 @@ readers.
 
 
 # TODO: Maximized mode
-
-
 
