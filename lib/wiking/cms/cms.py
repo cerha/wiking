@@ -883,8 +883,6 @@ class Panels(SiteSpecificContentModule, wiking.CachingPytisModule):
         # webpage.  To avoid confusion, we should avoid terms such as "windows", "frames"
         # etc. which all have their specific meaning in computer terminology.
         title = _("Panels")
-        help = _(u"Manage panels – the small windows shown by the side of "
-                 "every page.")
         table = 'cms_v_panels'
         def fields(self):
             return (
@@ -3325,7 +3323,6 @@ class Attachments(ContentManagementModule):
 
         # Translators: Section title. Attachments as in email attachments.
         title = _("Attachments")
-        help = _("Manage page attachments. Go to a page to create new attachments.")
         table = 'cms_v_page_attachments'
         def fields(self):
             return (
