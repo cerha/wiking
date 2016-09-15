@@ -2564,9 +2564,9 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter, PDFExpo
                           enumerator=PublicationExports.Formats,
                           runtime_filter=computer(lambda r: (lambda x: x != 'braille'
                                                              or self.braille_available()))),
-                ) + self.braille_option_fields() + \
-                    self.epub_option_fields() + \
-                    self.pdf_option_fields(),
+                ) + (self.braille_option_fields() +
+                     self.epub_option_fields() +
+                     self.pdf_option_fields()),
                 layout=(
                     'format',
                     self.BRAILLE_EXPORT_OPTIONS_FIELDSET,
