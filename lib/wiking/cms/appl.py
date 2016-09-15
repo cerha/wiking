@@ -284,15 +284,9 @@ class Application(wiking.Application):
                     uri = wiking.module.WikingManagementInterface.module_uri(req, modname)
         return uri
 
-    def site_title(self, req):
-        if req.wmi:
-            return _("Wiking Management Interface")
-        else:
-            return wiking.cfg.site_title
-
     def site_subtitle(self, req):
         if req.wmi:
-            return None
+            return _("Management Interface")
         else:
             return wiking.cfg.site_subtitle
 
