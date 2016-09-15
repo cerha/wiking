@@ -2,175 +2,184 @@
 
 = Navigation =
 
-Table of Contents: @TOC@
+This chapter contains general information about the application window layout,
+navigation between its various parts and advice for using the user interface
+efficiently.  It is important mainly for the users of assistive technologies
+because it clarifies the meaning and relation of different page parts and
+navigation between them.
+
+Obsah: @TOC@
+
+== Basic layout ==
+
+The application window consists of the main content, which is unique for every
+page/screen of the website/application and surrounding parts which typically
+repeat unchanged on all pages or screens.
+
+The main content is always marked by the first level heading.  Thus screen
+reader users can always get back to the beginning of the main content using the
+shortcut for this heading.  There is no other first level heading on the page.
+
+The cursor is always moved to the beginning of the main content after the page
+is loaded.  So this is the starting point of navigation.  The user will get to
+the main content of the current page by moving the cursor forward or to the
+controls such as [#sec-menu menus] or [#sec-top-bar top bar] by moving backward.
+
+Apart from using headings to distinguish different parts of the page, some areas
+are also marked by so called /ARIA landmarks/, so modern assistive technologies
+will also allow navigation by these landmarks more comfortably.
 
 
-== Navigation Menus == menus
+== Top bar == sec-top-bar
 
-A Wiking site may have two levels of navigation:
-  * Main menu
-  * Local menu of the current section
+The top bar is the narrow stripe by the top edge of the page.  The bar contains
+the website title on its left side and some important control elements on its
+right side.     
 
-The main menu contains top level sections and is displayed as a row of folders
-at the top of the page by default (the appearance may vary significantly when
-the site uses custom styles).
+The available controls on the right side may depend on the currently logged in
+user and his/her priviledges or on some other state of the application.
+However, normally it contains:
 
-The local menu displays a hierarchical list of all subsections of the current
-top level section.  It is by default displayed on the left side of the page as
-a separate column labeled "In this section:".  When there are no sub-ordinary
-sections within the current top level section, the local menu will not be
-displayed at all.
+* [#sec-login-control] if the current site allows logging in,
+* [#sec-language-selection] if the page is available in multiple languages.
 
-The current menu item is visually emphasized so that the user always knows
-where he is at the moment.  If this visual information is not accessible for
-you, you may still find out where you are using the [#breadcrumb-navigation].
+Screen reader users may get to the top bar most easilly by jumping to the very
+top of the screen and then navigating by the TAB key through its items.  Because
+all control elements in the top bar are represented by buttons (which usually
+have a dropdown menu) it is also possible to use screen reader button navigation
+shortcut (typically „b”).
 
-Users of assistive technologies may want to skip the menus, since they are
-repeated at the top of each page.  See the section [#moving-around] for more
-information.
+There is also a keyboard shortcut to get to the first top bar control (usually
+the login control) from anywhere on the page.  The shortcut is /Ctrl-Shift-arrow
+up/, but it doesn't seem to work on all systems because of conflicts with other
+browser/screen reader shortcuts.  It was, however, verified to work well with
+Firefox/Orca and Safari/Voice Over.  If it works in your case, it may be a
+faster alternative for top bar access.
 
-== Breadcrumb navigation == breadcrumb-navigation
-
-The so called "breadcrumb path" displays your current position within the site
-contents hierarchy as a set of links.  The path starts with the current top
-level section and ends by the current page, allowing you to jump directly to any
-higher level in the hierarchy.  It can be found at the top of the page and it
-is labeled "You are here".
-
-See the related [http://en.wikipedia.org/wiki/Breadcrumb_(navigation) Wikipedia
-article] for more information about breadcrumb navigation techniques.
-
-The breadcrumbs in Wiking are primarily used as an aid for users of assistive
-technologies and are not displayed in visual browsers by default.
+The following sections describe different controls of the top bar.
 
 
-== Moving around the current page == moving-around
+=== Login control === sec-login-control
 
-Apart from the actual content, web pages often contain fixed parts which repeat
-on each page throughout a website.  The typical repetitive parts of a Wiking
-page are:
+If the site permits users logging in, the top bar will include the login
+control.  The control is visually indicated by an icon of a human head.
 
-  * [#breadcrumb-navigation]
-  * [#languages]
-  * [#menus]
-  * [#side-panels]
+If the user is currently logged in, the user's login name is displayed right
+from the icon.  If not logged in, there is a button labeled “Log in”.
 
-A visually oriented user may ignore those parts, since they are visually
-distinguished from the main content.  They may, however, impose a problem for
-AT users.  Wiking tries to help by a "screen reader friendly" implementation of
-these parts and by providing additional navigation mechanisms.  These may or
-may not be suitable depending on the assistive technology being used.
+In both cases there is a dropdown menu control indicated by an icon of a small
+triangular arrow pointing down.  Screen readers will announce the drop down menu
+control as “User actions” when logged in or „Login and registration” in the
+other case not.  Pushing the button will open the drop down menu.  If the user
+is logged in, the menu contains items for updating user's profile, changing the
+password and logging out.  If not logged in, there are items to log in with an
+existing account, register a new user to create a new account and to renew a
+forgotten password.
 
-Screen reader driven navigation
-   Users of modern screen readers may skip the repetitive parts simply -- menus
-   and all panels are labeled by level 3 headings and precede the main content.
-   The main content starts with a top level heading.  So you can get to the
-   main content by one key-press or jump around menus and panels by repeating a
-   third level heading jump.
-
-Page navigation links
-   You will find a set of links labeled "Jump in page" at the very top of the
-   page.  The first of them will always get you to the main content, the
-   following will move your focus to the menus, panels and language selection.
-   These links are most convenient for text oriented browsers.
-
-Keyboard shortcuts
-   Some of the [#shortcuts] also allow you to jump within the page.
+The “Log in” button may be hidden on smaller displays to save space in which
+case the same action can be invoked from the dropdown menu.  The same applies
+for the login name displayed at the control – if it is hidden, it can be found
+after opening the dropdown.
 
 
-== Shortcut Keys == shortcuts
+=== Language selection === sec-language-selection
 
-There are several shortcut keys (access-keys) simplifying navigation:
+If there are multiple language variants of the current page, the top bar will
+also include a language selection control at its right edge.  It allows
+switching between different language versions of the current page.  The control
+is again created as a button with a drop down menu.  The current language is
+indicated as the label of the button and activation of the button will open a
+drop down menu with all available language variants where each item switches to
+given language.
 
-  * *1* ... go to the home page
-  * *2* ... skip repetitive parts (go the the actual page content)
-  * *3* ... skip to the main menu
-  * *9* ... enter/leave the Wiking Management Interface
-  * *0* ... show the Accessibility Statement
-
-Usage in different types of browsers:
-
-  * Internet Explorer -- Alt + number Enter
-  * Firefox 1.x, Mozilla, Netscape 7+  -- Alt + number
-  * Konqueror -- press and release Ctrl, number
-  * Opera -- Shift + Esc + number
-  * Safari, Firefox, Mozilla, Netscape, Omniweb (on Mac OS X) -- Ctrl +
-    number
-
-Shortcut keys should not be considered the primary means of navigation.  Their
-usage varies from browser to browser and some browsers don't support them at
-all.  In addition, the key bindings are not standardized, so the behavior
-differs from site to site.
-
-Many assistive technologies implement their own page navigation features.  If
-these features substitute the above commands, they should be always preferred.
-For example the page content begins with a top level heading, thus it may be
-possible to get to it using the heading navigation feature of the AT.
+When visiting a multilingual page for the first time, the language is selected
+automatically according to user's browser settings.  When the language is
+switched, however, the preferred language is remembered by the browser (in so called
+cookies).
 
 
-== Tables of Contents ==
+== Main menu == sec-menu
 
-Tables of Contents show the hierarchy of the current page content.  As opposed
-to [#menus], they don't refer to other pages, but just to subsections of the
-current page.
+Hierarchical menus are used as the primary means of navigation within a web site
+or application.  The items at the top level of the hierarchy are presented as a
+set of horizontal tabs.  Each tab may have a subhierarchy of items, which is
+presented as a dropdown menu.  Tabs which have a submenu can be recognized by an
+icon of a small triangular arrow pointing down.  When such tab is pushed, the
+submenu opens.
 
-They display a set of links allowing you to jump to a selected section
-directly.  Each section header also acts as a link back to the Table of
-Contents.  This feature may significantly simplify page navigation in longer
-texts.  Give it a try right on this page...
+The submenu of the currently active tab is displayed on the left side of the
+page, so it can be seen and accessed directly, without going through the
+dropdown.  This is, however not possible on small screens where there is not
+enough space on the left side.  Thus portable devices will not display the
+submenu this way and will display it as dropdown even for the current tab of the
+main menu.
 
-Some pages may use multiple Tables of Contents in different levels of
-hierarchy.  In this case, the back-reference links from section headers lead
-always to the nearest TOC up in the hierarchy.
+The keyboard shortcut Ctrl-Shift-m will move the cursor to the menu, starting at
+the item corresponding to the currently displayed page.  Alternatively the menu
+can be located by jumping to the top of the page and tabbing through the top bar
+down to the menu.  From there on, menus can be efficiently navigated using just
+arrow keys.
+
+The tabs of the top level menu can be navigated using left and right arrows.  If
+the item has a submenu, the submenu can be entered by arrow down and further
+navigated up and down.  If the submenu contains items of lower hierarchy levels,
+thes sublevels can be arranged into a foldable tree.  A foldable item can be
+unfolded by arrow right or folded by arrow left.  Enter invokes the current menu
+item.
+
+Complete overview of menu keyboard shortcuts:
+
+  * *arrow down* - Move to the next visible item.
+  * *arrow up* - Move to the previous visible item.
+  * *arrow right* - If there is a folded submenu, unfold it.  If already
+    unfolded, jump to its first item.
+  * *arrow left* - If there is an unfolded submenu, fold it (hide).  If already
+    folded, jump to the parent item in the hierarchy.
+ 
+  * *Shift + arrow down* - Move to the next item of the same level
+    (don't dive to submenus even if unfolded).
+  * *Shift + arrow up* - Move to the previous item of the same level
+    (don't dive to submenus even if unfolded).
+  * *Enter* - Invoke the current item.
+  * *Escape* - Jump out of the menu to the main content of the page.
+
+/Note for VoiceOver users:/ These shortcuts work correctly in VoiceOver only
+when the quick navigation mode is off.  Quick navigation can be switched on and
+of by pressing left and right arrow keys at the same time.
+
+/Note for JAWS users:/ Before pressing Ctrl-Shift-m it is necessary to press the
+so called Pass Key Through shortcut - JAWS key + 3 (JAWS key is usually Insert
+or CapsLock).
+
+If your system supports ARIA accessibility standards, it will automatically
+announce the position in the hierarchy and the available keyboard commands.  If
+you are using older technologies, folding/unfolding menus may not work
+correctly.  In this case it is possible to navigate the menus using the TAB key.
+If you need to get into folded areas, you may use the button labeled
+“Fold/unfold complete menu hierarchy” to make all items accessible by tabbing.
+Navigation is then less convenient, but at least possible.  You will find this
+button as the last element in tabbing order at the very end of the menu.
 
 
-== Language Selection == languages
+== Panels ==
 
-Wiking supports serving content in multiple languages.
+Some sites may contain several complementary “windows” with additional
+information permanently displayed at every page in a form of so called panels.
+Panels are normally displayed on the right side of the window next to the main
+content on desktop computers (with larger displays) or at the bottom of every
+page below the main content on mobile devices with smaller screens.
 
-Selection of the most appropriate language for each user is performed
-automatically based on the [http://en.wikipedia.org/wiki/Content_negotiation
-Content Negotiation] technique.  This technique relies on the language
-preference settings of your browser.  An English speaking user, for example,
-should have English set as his/her primary language, plus any number of
-additional languages which he/she understands with their respective precedence.
+In any case the panels follow after the main content in the order of page
+navigation for screen reader users.  Each panel is marked by a heading of level
+3.  Thus jumping to the end of the screen and navigating backwards by third
+level headings is an easy way to get directly to panels.
 
-A selection algorithm is performed on each request.  If given page is available
-in one of the preferred languages, the highest precedence variant is returned to
-the user.  When none of the requested languages can be served, an error page
-406 (Not Acceptable) is returned and the user can select one of the available
-language variants manually.
-
-Besides the automatic selection described below, user can also select the
-language explicitly from the language selection menu.  This menu is displayed
-in the top right corner of the page (in the default style) when there are
-several language variants of the current page.  When there is just one variant,
-the language selection menu is not shown.  The menu appears right after the
-main navigation menu in a text browser.  Since the set of available language
-variants may be different for each page, the language selection menu may differ
-as well.  Current language (as well as current menu item) is emphasized
-visually and marked by an asterisk in a text browser.
-
-If "cookies" are enabled, the manually selected language will be kept as the
-preferred language for further requests with even higher priority than the
-browser settings.  This feature allows you to override browser settings when you
-can't modify them, such as in an Internet cafe or at a public terminal.
-Correct browser settings should still be the preferred solution, however.
+Panels are also marked by /ARIA landmarks/ as so called „complementary content”.
+These landmarks can also be used for efficient navigation with some screen
+readers.
 
 
-== Panels == side-panels
+# TODO: Maximized mode
 
-Panels are brief information windows, which are displayed by the right hand
-side in the default style.  They typically include some additional site-wide
-information and usually the same panels appear on each page of the site.  For
-example a News panel may display the most recent news with links to more
-detailed messages within the News section.
 
-Panels can be hidden, using the "Hide panels" link (located above them).  This
-setting is sticky (panels stay hidden for the following requests) when
-"cookies" are enabled in the browser.  Panels can be unhidden again using the
-"Show panels" link.  Of course, when a page doesn't use any panels, these links
-don't appear on the page.
 
-Users of assistive technologies may want to skip panels, since they are
-repeated on each page.  See the section [#moving-around] for more information.

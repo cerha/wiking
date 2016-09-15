@@ -2,185 +2,206 @@
 
 = Navigace =
 
+Tato kapitola obsahuje obecné informace o rozložení okna aplikace, navigaci mezi
+jednotlivými částmi a rady pro efektivní používání uživatelského rozhraní.
+Důležitá je především pro uživatele odečítačů obrazovky, protože objasňuje jak
+je stránka poskládána a jak se v ní pohybovat.
+
 Obsah: @TOC@
 
+== Základní rozložení stránky ==
 
-== Navigační menu == menus
+Okno aplikace se skládá z několika částí, které jsou přítomné vždy a hlavního
+obsahu, který se mění podle toho se kterou stránkou nebo funkcí aplikace
+uživatel právě pracuje.
 
-Stránky využívající CMS Wiking mohou mít dvě úrovně navigace:
-  * Menu hlavních sekcí (hlavní menu)
-  * Hierarchické menu podsekcí aktuální hlavní sekce (lokální menu)
+Hlavní obsah je vždy uvozen nadpisem první úrovně.  Uživatelé odečítačů se tedy
+na hlavní obsah mohou vždy přesunout pomocí zkratky pro nadpis první úrovně.
+Jiný nadpis první úrovně na stránce není.  Pro větší pohodlí uživatelů je kurzor
+odečítače obrazovky po načtení každé stránky aplikace automaticky přesunut na
+začátek hlavního obsahu.  To je tedy také výchozí bod, ze kterého se pohybem
+vpřed dostanete na obsah aktuální stránky, nebo pohybem vzad na ovládací prvky
+aplikace, jako jsou [#sec-menu nabídky] nebo [#sec-top-bar horní lišta].
 
-Hlavní menu obsahuje pouze sekce nejvyšší úrovně.  Ve výchozím stylu je
-zobrazeno jako lišta záložek při horním okraji stránky, avšak jeho vzhled může
-být odlišný v závislosti na použitém stylu.
-
-Lokální menu zobrazuje hierarchický seznam všech podsekcí aktuální sekce
-nejvyšší úrovně.  Ve výchozím stylu je zobrazeno po levém boku stránky v
-samostatném sloupci označeném nadpisem „V této sekci:“.  Pokud aktuální sekce
-nejvyšší úrovně neobsahuje žádné podřízené stránky, menu není zobrazeno.
-
-Aktuální položka menu je vždy vizuálně zvýrazněna, takže uživatel má přehled
-kde se právě nachází.  Pokud tato vizuální informace není pro daného uživatele
-přístupná, je možné využít [#breadcrumb-navigation lištu aktuální pozice].
-
-Vzhledem k tomu, že se menu opakuje na každé stránce, může uživatelům
-zpřístupňujících technologií komplikovat pohyb po stránce.  O možnostech jak
-pohyb usnadnit se dozvíte v kapitole [#moving-around].
+Kromě nadpisů je pro označení oblastí stránky použito také tzv. /ARIA
+landmarks/, takže s modernějším odečítačem bude pohodlnější namísto nadpisů
+využít příslušnou navigační možnost pro /landmarks/.
 
 
-== Lišta aktuální pozice == breadcrumb-navigation
+== Horní lišta == sec-top-bar
 
-Aktuální pozice v rámci hierarchie stránek je zobrazena pomocí lišty označené
-nápisem "Nacházíte se zde", kterou najdete na začátku stránky.  Lišta zobrazuje
-cestu od aktuální sekce nejvyšší úrovně až po současnou stránku jako sadu
-odkazů, takže je možné jednoduše přejít na libovolnou vyšší úroveň v
-hierarchii.
+Horní lištou je myšlen úzký pruh na horním okraji okna prohlížeče, který
+obsahuje v levé části název webu a v pravé části některé důležité ovládací
+prvky, které musí být vždy dostupné.
 
-Tato technika bývá běžně označována jako
-[http://en.wikipedia.org/wiki/Breadcrumb_(navigation) breadcrumb navigation].
+Podoba horní lišty se liší pro přihlášeného a nepřihlášeného uživatele a v
+různých situacích může obsahovat i další ovládací prvky specifické pro urřitou
+aplikaci, nebo dostupúné pro určitou skupinu uživatelů. Obvykle však obsahuje
+především:
 
-Lišta aktuální pozice je systémem Wiking využívána především jako pomůcka pro
-uživatele zpřístupňujících technologií, takže ve výchozím stylu pro vizuální
-prohlížeče není zobrazena.
+* [#sec-login-indicator] pokud je uživatel přihlášen nebo
+  [#sec-login-control] pokud přihlášen není,
+* [#sec-language-selection] pokud je stránka vícejazyčná.
 
+Uživatelé odečítačů obrazovky se do horní lišty dostanou nejsnáze skokem na
+začátek stránky.  Následným pohybem pomocí tabelátoru lze procházet jednotlivé
+prvky lišty.  Protože všechny ovládací prvky v liště jsou tlačítka, lze namísto
+tabelátoru použít také klávesovou zkratku pro pohyb po tlačítkách (typicky
+„b”).
 
-== Pohyb v rámci aktuální stránky == moving-around
+Pro rychlý přesun na první položku lišty (tlačítko přihlášení) ze kteréhokoliv
+místa aplikace lze použít také zkratku Ctrl-Shift-šipka nahoru, ale tato
+zkratka nefunguje na všech systémech kvůli konfliktům s jinými funkcemi
+prohlížečů.  Ověřena je její funkčnost ve Firefoxu s odečítačem Orca a v
+některých případech také v Safari na Mac OS X s odečítačem VoiceOver.  Pokud ve
+Vašem případě zkratka funguje, může být rychlejší alternativou pro přístup do
+horní lišty.
 
-Kromě vlastního obsahu většina webových stránek zobrazuje také neměnné části,
-které se v nezměněné podobě opakují na všech stránkách daného webu, jako
-např. různé navigační prvky apod.  V případě systému Wiking to typicky jsou:
-
-  * [#breadcrumb-navigation]
-  * [#languages]
-  * [#menus]
-  * [#side-panels]
-
-Vizuálně orientovaný uživatel může tyto části snadno ignorovat, protože jsou od
-vlastního obsahu viditelně odlišeny.  Pro zrakově postižené uživatele však tyto
-opakující se části mohou znamenat zbytečné překážky.  Systém Wiking tuto
-situaci řeší pomocí takové implementace těchto částí, která je přátelská vůči
-zpřístupňujícím technologiím a také pomocí dodatečných navigačních mechanismů.
-Ty mohou nebo nemusí být vhodné v závislosti na použité zpřístupňující
-technologii.
-
-Navigace pomocí čtečky obrazovky (screen readeru)
-   Uživatelé moderních screen readerů mohou opakující se části jednoduše
-   přeskakovat pomocí příkazů pro pohyb po nadpisech.  Menu i všechny panely
-   jsou vždy uvozeny nadpisem třetí úrovně a na stránce se nachází před
-   vlastním obsahem, který je uvozen nadpisem první úrovně.  Na hlavní obsah
-   dokumentu se tedy lze dostat jedním stiskem klávesy, menu a panely lze
-   procházet postupným skákáním po nadpisech třetí úrovně.
-
-Odkazy v rámci stránky
-   Hned na začátku každé stránky najdete sadu odkazů označenou nápisem „Přejít
-   ve stránce“.  První položka vždy odkazuje na hlavní obsah dokumentu a za ní
-   následují odkazy na menu, jednotlivé panely i výběr jazyka.  Tyto odkazy
-   jsou pravděpodobně nejpohodlnější pro uživatele textových prohlížečů a ve
-   výchozím stylu jsou pro ostatní prohlížeče skryty.
-
-Klávesové zkratky
-   Některé [#shortcuts] také umožňují pohyb v rámci stránky.
+Následující kapitoly popisují jednotlivé prvky horní lišty.
 
 
-== Klávesové zkratky == shortcuts
+=== Ovládání přihlášení === sec-login-control
 
-Pro usnadnění pohybu na stránkách je definováno také několik klávesových
-zkratek:
+Pokud daný web umožňuje přihlašování uživatelů, bude v pravé části horní lišty
+aplikace zobrazen ovládací prvek přihlášení.  Tento prvek je vizuálně indikován
+ikonkou lidské hlavy.
 
-  * *1* ... přechod na domovskou stránku
-  * *2* ... přeskočení navigace (přesun na vlastní obsah stránky)
-  * *3* ... přesun na hlavní navigační nabídku
-  * *9* ... vstup/opuštění do rozhraní správy obsahu
-  * *0* ... zobrazit prohlášení o zpřístupnění
+Pokud je uživatel přihlášen, bude vedle ikonky s lidskou hlavou zobrazeno
+přihlašovací jméno aktivního uživatele.  Pokud přihlášen není, bude na stejném
+místě zobrazeno tlačítko „Přihlásit”.
 
-Použití klávesových zkratek (accesskeys) v jednotlivých typech prohlížečů:
+V obou případech následuje tlačítko s ikonkou vyskakovací nabídky
+(trojúhelníková šipka směřující dolů).  Uživatelům odečítačů obrazovek toto
+tlačítko ohlásí přítomnost vyskakovací nabídky „Akce uživatele” v případě
+přihlášeného uživatele nebo „Přihlášení a registrace” v případě, že uživatel
+přihlášen není.  Stiskem tlačítka lze tuto nabídku vyvolat.  Pro přihlášeného
+uživatele nabídka obsahuje položky pro úpravy uživatelského profilu, změnu hesla
+a odhlášení.  Nepřihlášený uživatel zde nelezne položky pro přihlášení ke
+stávajícímu účtu, registraci nového uživate (vytvoření nového účtu), a obnovení
+zapomenutého hesla.
 
-  * Internet Explorer ... Alt + číslo Enter
-  * Firefox (Windows/Linux) ... Alt + Shift + číslo
-  * Chrome (Windows/Linux) ... Alt + číslo
-  * Safari (Windows) ... Alt + číslo
-  * Safari, Chrome, Firefox (Mac) ... Control + Alt + číslo
-  * Opera ... Shift + Esc + číslo
-
-Klávesové zkratky by neměly být považovány za primární způsob navigace.  Jejich
-použití se mezi prohlížeči různí a některé prohlížeče je nepodporují vůbec.
-Navíc jejich přiřazení není nijak standardizováno, takže chování každé stránky
-je pro uživatele jiné.
-
-Mnohé zpřístupňující technologie obsahují vlastní funkce pro pohyb po stránce,
-které mohou nahradit funkce dostupné pomocí výše zmíněných klávesových zkratek.
-Například obsah stránky je uvozen nadpisem první úrovně, proto k přesunu na
-obsah použijte funkce navigace po nadpisech, pokud to vaše zpřístupňující
-technologie umožňuje.
+Tlačítko „Přihlásit” může být na přenosných zařízeních s menší obrazovkou skryto
+pro úsporu místa.  V tom případě může být přihlášení vyvoláno z vyskakovací
+nabídky.  Obdobně může být pro úsporu místa skryto zobrazení uživatelského jména
+právě přihlášeného uživatele.  I v tomto případě lze tuto informaci nalézt ve
+vyskakovací nabídce u položky „Můj uživatelský profil”.
 
 
-== Rejstříky ==
+=== Indikátor přihlášeného uživatele === sec-login-indicator
 
-Obsáhlejší stránky, které se skládají z více samostatných kapitol většinou
-obsahují rejstřík.  Rejstřík zachycuje hierarchii kapitol a umožňuje přesun na
-libovolnou kapitolu formou odkazu.  Na rozdíl od [#menus navigačních menu]
-rejstřík neodkazuje na jiné stránky ale pouze na jednotlivé kapitoly v rámci
-současné stránky.
-
-Nadpis každé kapitoly zároveň funguje jako odkaz zpět do rejstříku, čímž je
-podstatně zjednodušena navigace v obsáhlejších dokumentech.  Vyzkoušejte si
-tuto funkcionalitu přímo na této stránce.
-
-Některé stránky mohou obsahovat více rejstříků v různých stupních hierarchie.
-V tom případě vede odkaz z nadpisu kapitoly vždy na nejbližší nadřazený
-rejstřík.
+Po úspěšném přihlášení je v pravé části horní lišty aplikace vedle ikonky s
+lidskou hlavou zobrazena e-mailová adresa uživatele v podobě tlačítka s
+vysakovací nabídkou.  Uživatelé mobilních zařízení s menší obrazovkou zde mohou
+vidět pouze malé tlačítko s ikonkou vyskakovací nabídky (trojúhelníková šipka
+směřující dolů), protože celá e-mailová adresa se na obrazovku nevejde.
+Uživatelům odečítačů obrazovek toto tlačítko ohlásí přítomnost vyskakovací
+nabídky „Akce uživatele”.  Stiskem tlačítka lze tuto nabídku vyvolat.
 
 
-== Volba jazyka == languages
+=== Přepínání jazyka === sec-language-selection
 
-Systém Wiking umožňuje poskytování obsahu v několika jazykových variantách.
+Pokud je daná stránka dostupná ve více jazycích, můžeme na horní liště úplně v
+pravo nalézt ovládací prvek přepínání jazyka.  Ten umožňuje přepínání mezi
+dostupnými jazykovými verzemi dané stránky.  Prvek je opět realizován jako
+tlačítko s vyskakovací nabídkou.  Aktuální jazyk je indikován nápisem na
+tlačítku a aktivací tlačítka lze zobrazit nabídku, ze které lze jazyk přepnout
+na jiný.
 
-Výběr nejvhodnějšího jazyka provádí systém automaticky na základě technologie
->>[http://en.wikipedia.org/wiki/Content_negotiation Content Negotiation]<<.
-Vychází přitom z nastavení jazykových preferencí ve Vašem prohlížeči.  Český
-uživatel by například měl mít ve svém prohlížeči nastavenu češtinu jako
-primární jazyk.  Pokud ovládáte také další jazyky, přidejte je do jazykového
-nastavení svého prohlížeče s příslušnou prioritou.
-
-Pokud máte prohlížeč správně nastavený, je při požadavku na určitou stránku
-nejprve proveden výběr z dostupných jazykových variant a je vrácena ta s
-nejvyšší nastavenou prioritou.  Pokud není obsah dostupný v žádném z
-požadovaných jazyků, je vrácena chybová stránka 406 (Not Acceptable) a
-uživateli je umožněno vybrat z dostupných jazykových variant.
-
-Kromě výše popsaného automatického určení jazyka je možné přepnout jazyk
-manuálně.  Pokud je obsah dané stránky dostupný ve více jazykových variantách,
-je jejich seznam zobrazen v pravém horním rohu stránky (umístění může být
-ovlivněno nastavením stylů).  V textových prohlížečích výběr jazyka následuje
-ihned za hlavní nabídkou.  Pokud je daná stránka dostupná pouze v jednom
-jazyce, výběr jazyků se nezobrazí.  Protože dostupné jazykové varianty jsou pro
-každou stránku nezávislé, mohou se nabízené jazyky pro různé stránky lišit.
-Aktuální jazyk, podobně jako aktuální položka menu, je vizuálně odlišen a v
-textovém prohlížeči je označen hvězdičkou.
-
-Pokud má uživatel v prohlížeči povolen příjem „>>cookies<<“, bude vybraný jazyk
-v příštích relacích považován za preferovaný.  Toto nastavení má vyšší prioritu
-než jazykové nastavení prohlížeče, čímž je umožněno pohodlné přepnutí jazyka i
-v případech, kdy uživatel nemá možnost nastavení prohlížeče změnit (např. v
-internetových kavárnách, na veřejných terminálech apod.).  Správné nastavení
-jazykových předvoleb prohlížeče by však mělo být vždy preferovaným řešením.
+Při prvním příchodu na vícejazyčnou stránku je jazyk zvolen automaticky podle
+nastavení prohlížeče.  Pokud je však jazyk pomocí přepínače změněn, bude toto
+nastavení zapamatováno pro daný prohlížeč (prostřednictvím tzv. cookies). i pro
+všechna další sezení.
 
 
-== Panely == side-panels
+== Hlavní nabídka == sec-menu
 
-Panely jsou malá informační okénka, která jsou ve výchozím stylu zobrazena po
-pravém boku stránky.  Většinou slouží k zobrazení doplňujících informací a
-obvykle jsou stejné na každé stránce portálu.  Například panel Novinek může
-zobrazovat souhrn nejčerstvějších zpráv s odkazy na kompletní znění každé
-zprávy v sekci Novinky.
+Hierarchické nabídky jsou používány jako hlavní způsob navigace v rámci dané
+webové stránky nebo aplikace.  První úroveň nabídek je prezentována formou
+vodorovné lišty se záložkami.  Každá záložka může mít pod sebou další hierarchii
+položek, která je potom prezentována formou vyskakovací nabídky.  Možnost
+rozbalit u dané záložky vyskakovací podnabídku je symbolizována ikonkou malé
+trojúhelníkové šipky směřující dolů.
 
-Pokud nás panely obtěžují, je možné je skrýt pomocí odkazu „Skrýt panely“,
-který naleznete nad panely.  Pokud jsou povoleny „>>cookies<<“, je ukrytí
-panelů permanentní, to znamená že panely zůstanou skryty i pro všechny
-následující relace, dokud je opět nezobrazíme pomocí odkazu „Zobrazit panely“.
-Pokud stránka žádné panely neobsahuje, tyto odkazy nejsou dostupné.
+Klávesová zkratka Ctrl-Shift-m přesune kurzor do nabídky na položku odpovídající
+aktuálně zobrazené stránce.  Alternativně se do nabídky lze dostat odskokem na
+začátek stránky a tabulátorem.  Jakmile je kurzor v nabídce, lze se po po jejích
+položkách pohybovat jednoduše šipkami.
 
-Vzhledem k tomu, že se panely opakují na každé stránce, mohou uživatelům
-zpřístupňujících technologií komplikovat pohyb po stránce.  O možnostech jak
-pohyb usnadnit se dozvíte v kapitole [#moving-around].
+Po záložkách hlavní úrovně nabídek se lze pohybovat šipkami vpravo a vlevo.  Do
+podnabídky, je-li přítomna, lze vstoupit šipkou dolů a po jejích položkách se
+dále pohybovat pomocí šipek nahoru a dolů.  Pokud podnabídka obsahuje položky
+více úrovní hierarchie, mohou být tyto položky uspořádány formou rozbalovacího
+stromu.  Rozbalení části stromu lze šipkou vpravo, sbalení šipkou vlevo.
+Klávesa Enter aktivuje aktuální položku.
+
+Kompletní přehled funkce kláves v nabídce:
+
+  * *šipka dolů* - Přejdi na následující viditelnou položku.
+  * *šipka nahoru* - Přejdi na předchozí viditelnou položku.
+  * *šipka vpravo* - Pokud má aktuální položka podpoložky, rozbal je.  Pokud
+    jsou podpoložky již rozbalené, skoč na první podpoložku.
+  * *šipka vlevo* - Pokud má aktuální položka podpoložky, zabal je (skryj).
+    Pokud jsou podpoložky již sbalené, skoč na nadřazenou položku v hierarchii.
+  * *Shift + šipka dolů* - Přejdi na následující položku na stejné úrovni
+    (nezanořuj se do podpoložek i když jsou rozbalené).
+  * *Shift + šipka nahoru* - Přejdi na předchozí viditelnou položku na stejné
+    úrovni (nezanořuj se do podpoložek i když jsou rozbalené).
+  * *Enter* - Potvrdit přepnutí do odpovídající části aplikace.
+  * *Escape* - Vyskočit z nabídky na hlavní obsah stránky.
+
+/Poznámka pro uživatele VoiceOveru:/ V odečítači VoiceOver funguje popsané
+ovládání klávesami správně pouze pokud je vypnut režim rychlé navigace.  Rychlá
+navigace se zapíná a vypíná současným stiskem šipky vpravo a šipky vlevo.
+
+/Poznámka pro uživatele JAWSu:/ V odečítači JAWS je před klávesovou zkratkou
+Ctrl-Shift-m nutné stisknout tzv. propouštěcí zkratku: JAWS klávesa (obykle
+Insert nebo CapsLock) + 3.
+
+Pokud váš systém podporuje zpřístupnění pomocí standardů ARIA, bude vám
+automaticky pozici v nabídce a ovládání oznamovat.  Naopak, pokud používáte
+zastaralejší technologie, nemusí vám procházení a rozbalování nabídek fungovat
+správně.  Potom můžete nabídky procházet pomocí tabulátoru.  Pokud se
+potřebujete dostat do sbalených oblastí, použijte tlačítko „Rozbalit/sbalit
+kompletní hierarchii menu“ a zpřístupní se vám kompletně všechny položky.
+Jejich procházení tabulátorem bude vzhledem k rozsahu nabídek méně pohodlné, ale
+aplikace zůstává stále použitelnou.  Tlačítko naleznete v tabulačním pořadí na
+samém konci nabídky.
+
+
+# == Lišta aktuální pozice == sec-breadcrumb-navigation
+#  
+# Aktuální pozice v rámci hierarchie stránek je zobrazena pomocí lišty označené
+# nápisem "Nacházíte se zde", kterou najdete na začátku stránky.  Lišta zobrazuje
+# cestu od aktuální sekce nejvyšší úrovně až po současnou stránku jako sadu
+# odkazů, takže je možné jednoduše přejít na libovolnou vyšší úroveň v
+# hierarchii.
+#  
+# Tato technika bývá běžně označována jako
+# [http://en.wikipedia.org/wiki/Breadcrumb_(navigation) breadcrumb navigation].
+#  
+# Lišta aktuální pozice je systémem Wiking využívána především jako pomůcka pro
+# uživatele zpřístupňujících technologií, takže ve výchozím stylu pro vizuální
+# prohlížeče není zobrazena.
+
+
+== Panely ==
+
+Aplikace může obsahovat několik oken s doplňujícími informacemi, které jsou
+permanentně viditelné na každé stránce v podobě tzv. panelů.  Na stolním
+počítači se panely zobrazují obvykle vpravo vedle hlavního obsahu stránky.  Na
+mobilních zařízeních s menší šířkou obrazovky se panely pro úsporu místa
+přesunou dolů pod hlavní obsah stránky.
+
+Panely jsou umístěny v pořadí procházení (pro uživatele odečítačů) hned za
+hlavním obsahem stránky a jsou uvozeny nadpisy třetí úrovně.  Přesunem na konec
+stránky a zpětným pohybem po nadpisech třetí úrovně se můžete poměrně rychle
+dostat k vybranému panelu.
+
+Panely jsou také označeny pomocí /ARIA landmarks/ jako tzv. „komplementární
+obsah”.  I toho lze v některých odečítačích využít pro snažší navigaci nebo
+orientaci.
+
+
+
+
+
