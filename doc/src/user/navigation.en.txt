@@ -8,7 +8,7 @@ efficiently.  It is important mainly for the users of assistive technologies
 because it clarifies the meaning and relation of different page parts and
 navigation between them.
 
-Obsah: @TOC@
+Table of Contents: @TOC@
 
 == Basic layout ==
 
