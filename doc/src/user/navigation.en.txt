@@ -171,7 +171,7 @@ page below the main content on mobile devices with smaller screens.
 
 In any case the panels follow after the main content in the order of page
 navigation for screen reader users.  Each panel is marked by a heading of level
-3.  Thus jumping to the end of the screen and navigating backwards by third
+three.  Thus jumping to the end of the screen and navigating backwards by third
 level headings is an easy way to get directly to panels.
 
 Panels are also marked by /ARIA landmarks/ as so called „complementary content”.
