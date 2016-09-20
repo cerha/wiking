@@ -114,7 +114,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
 
         """
 
-    _BODY_PARTS = ('wrap', 'media_player')
+    _BODY_PARTS = ('wrap',)
     _WRAP_PARTS = ('top', 'middle', 'bottom')
     _MIDDLE_PARTS = ('page',)
     _PAGE_PARTS = ('links', 'breadcrumbs', 'menu', 'submenu', 'main', 'panels', 'page_clearing')

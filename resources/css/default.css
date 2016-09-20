@@ -881,19 +881,6 @@ body.maximized #panels .panel {
     font-size: 0.75em;
 }
 
-#shared-audio-player {
-    position: fixed;
-    bottom: 0;
-    right: 0;
-    z-index: 1;
-}
-div#shared-audio-player {
-    color: $color.error-fg;
-    background-color: $color.error-bg;
-    border: solid 1px $color.error-border;
-    padding: .1em;
-}
-
 #footer {
     font-size: 0.9em;
     text-align: center;
