@@ -1117,36 +1117,6 @@ class Users(UserManagementModule, CachingPytisModule):
                          _("Your registration at %s", wiking.cfg.server_hostname),
                          text, export=True, lang=record['lang'].value())
 
-    def _check_registration_code(self, req):
-        """Check whether given request contains valid login and activation code.
-
-        Return a 'Record' instance corresponding to the user id given in the request (if the uid
-        and activation code are valid) or raise 'wiking.BadRequest' exception.
-
-        """
-        uid, error = pytis.data.Integer().validate(req.param('uid'))
-        if error is not None or uid.value() is None:
-            raise wiking.BadRequest()
-        # This doesn't prevent double registration confirmation, but how to
-        # avoid it?
-        row = self._data.get_row(uid=uid.value())
-        if row is None:
-            record = None
-        else:
-            record = self._record(req, row)
-        if record is None:
-            raise wiking.BadRequest()
-        if not record['state'].value() == Users.AccountState.NEW:
-            raise wiking.BadRequest(_("User registration already confirmed."))
-        code = record['regcode'].value()
-        if not code or code != req.param('regcode'):
-            req.message(_("Invalid activation code."), req.ERROR)
-            raise wiking.Abort(wiking.Document(
-                title=_("Account not activated"),
-                content=ActivationForm(uid.value(), allow_bypass=False),
-            ))
-        return record
-
     def _send_admin_approval_mail(self, req, record):
         base_uri = req.module_uri(self.name()) or '/_wmi/' + self.name()
         subject = _("New user account:") + ' ' + record['fullname'].value()
@@ -1255,20 +1225,37 @@ class Users(UserManagementModule, CachingPytisModule):
 
         """
         if req.param('success') == 'yes':
-            return Document(_("Registration confirmed"),
+            return Document(_("Account activated"),
                             content=self._confirmation_success_content(req))
-        record = self._check_registration_code(req)
-        if wiking.cms.cfg.autoapprove_new_users:
-            state = self.AccountState.ENABLED
-        else:
-            state = self.AccountState.UNAPPROVED
-        record.update(state=state, regcode=None)
-        self._send_admin_approval_mail(req, record)
-        return self._redirect_after_confirm(req, record)
+        try:
+            uid = int(req.param('uid'))
+        except (ValueError, TypeError):
+            raise wiking.BadRequest()
+        regcode = req.param('regcode')
+        if regcode:
+            row = self._data.get_row(uid=uid)
+            if row is None:
+                raise wiking.BadRequest()
+            if row['state'].value() != Users.AccountState.NEW:
+                raise wiking.BadRequest(_("User account already activated."))
+            if row['regcode'].value() == regcode:
+                if wiking.cms.cfg.autoapprove_new_users:
+                    state = self.AccountState.ENABLED
+                else:
+                    state = self.AccountState.UNAPPROVED
+                record.update(state=state, regcode=None)
+                self._send_admin_approval_mail(req, record)
+                req.message(_("Registration completed successfuly."), type=req.SUCCESS)
+                # Redirect - don't display the response here to avoid multiple submissions...
+                return self._redirect_after_confirm(req, record)
+            else:
+                req.message(_("Invalid activation code."), req.ERROR)
+        return wiking.Document(
+            title=_("Activate your account"),
+            content=ActivationForm(uid),
+        )
 
     def _redirect_after_confirm(self, req, record):
-        # Redirect - don't display the response here to avoid multiple submissions...
-        req.message(_("Registration completed successfuly."), req.SUCCESS)
         raise wiking.Redirect(req.uri(), action='confirm', success='yes')
 
     def _change_state(self, req, record, state, transaction=None):
@@ -1775,27 +1762,26 @@ class ActivationForm(lcg.Content):
     will be displayed in such cases prompting the user for the code.
 
     """
-    def __init__(self, uid, allow_bypass=True):
+    def __init__(self, uid):
         self._uid = uid
-        self._allow_bypass = allow_bypass
         super(ActivationForm, self).__init__()
 
     def export(self, context):
         g = context.generator()
         req = context.req()
-        uri = req.server_uri() + req.module_uri('Registration')
         field_id = 'confirmation-code-field'
-        result = g.form((g.hidden('action', 'confirm'),
-                         # req.user() is None here (still in authentication).
-                         g.hidden('uid', self._uid),
-                         g.label(_("Enter the activation code:"), field_id),
-                         g.field(name='regcode', value=req.param('regcode'), id=field_id),
-                         g.button(g.span(_("Submit")), type='submit')),
-                        method='POST', action=uri, cls='activation-form')
-        if self._allow_bypass:
-            result += g.form((g.button(g.span(_("Continue without activation")), type='submit'),),
-                             method='GET', action=req.uri())
-        return result
+        return g.form(
+            content=(
+                g.hidden('action', 'confirm'),
+                g.hidden('uid', self._uid),
+                g.label(_("Enter the activation code:"), field_id),
+                g.field(name='regcode', value=req.param('regcode'), id=field_id),
+                g.button(g.span(_("Submit")), type='submit'),
+            ),
+            action=req.module_uri('Registration'),
+            method='POST',
+            cls='activation-form',
+        )
 
 
 class Session(PytisModule, wiking.Session):
@@ -1815,27 +1801,22 @@ class Session(PytisModule, wiking.Session):
         row, success = data.insert(data.make_row(uid=uid, session_key=session_key,
                                                  last_access=now_))
         wiking.module.SessionLog.log(req, now_, row['session_id'].value(), uid, user.login())
-        # Display info page for users without proper access
-        def abort(title, text_id, form=None):
-            content = wiking.module.Texts.parsed_text(req, text_id, lang=req.preferred_language())
-            if form:
-                content = (content, form)
-            else:
-                content = ConfirmationDialog(content)
-            raise wiking.Abort(wiking.Document(title=title, content=content))
         import wiking.cms.texts
         state = user.state()
+        state = Users.AccountState.NEW
         if state == Users.AccountState.DISABLED:
-            # Translators: Dialog title (account in the meaning of user account).
-            abort(_("Account disabled"), wiking.cms.texts.disabled)
+            msg = wiking.module.Texts.text(wiking.cms.texts.disabled)
+            req.message(msg, req.WARNING)
         elif state == Users.AccountState.NEW:
-            abort(_("Account not activated"), wiking.cms.texts.unconfirmed, ActivationForm(uid))
+            uri = req.make_uri(req.module_uri('Registration'), action='confirm', uid=uid)
+            msg = wiking.module.Texts.parsed_text(req, wiking.cms.texts.unconfirmed, args=dict(uri=uri))
+            req.message(msg, req.WARNING)
         elif state == Users.AccountState.UNAPPROVED:
-            abort(_("Account not approved"), wiking.cms.texts.unapproved)
+            msg = wiking.module.Texts.text(wiking.cms.texts.unapproved)
+            req.message(msg, req.WARNING)
 
     def failure(self, req, user, login):
-        wiking.module.SessionLog.log(req, now(), None,
-                                     user and user.uid(), login[:64])
+        wiking.module.SessionLog.log(req, now(), None, user and user.uid(), login[:64])
 
     def check(self, req, user, session_key):
         row = self._data.get_row(uid=user.uid(), session_key=session_key)

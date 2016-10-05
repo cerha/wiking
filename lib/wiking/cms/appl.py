@@ -183,12 +183,12 @@ class Application(wiking.Application):
                 if req.check_roles(Roles.CONTENT_ADMIN):
                     # Give the administrator some hints on a fresh install.
                     if wiking.module.Pages.empty(req):
-                        raise wiking.Abort(wiking.Document(
+                        return wiking.Document(
                             title=_("Welcome to Wiking CMS"),
                             content=lcg.Container((lcg.p("There are currently no pages."),
                                                    lcg.p(lcg.link("/?action=insert",
                                                                   _("Create a new page"))))),
-                        ))
+                        )
                     elif not self.preview_mode(req):
                         req.message(_("There are no published pages. "
                                       "You need to switch to the Preview mode "

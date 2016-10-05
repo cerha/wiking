@@ -1982,8 +1982,6 @@ class Message(lcg.Container):
             content = FormattedString(content)
         else:
             content = lcg.coerce(content, formatted=formatted)
-        if kind == wiking.Request.WARNING:
-            content = lcg.coerce((_("Warning"), ': ', content))
         super(Message, self).__init__((icon, lcg.Container(content, id='content')),
                                       id='message %s' % kind, **kwargs)
         self._kind = kind
