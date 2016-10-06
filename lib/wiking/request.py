@@ -1013,7 +1013,7 @@ class Request(ServerInterface):
 
         """
         if heading is None:
-            messages = tuple(self._messages)
+            messages = self._messages
         elif heading:
             messages = [m for m in self._messages if m[1] == self.HEADING]
         else:
