@@ -275,6 +275,7 @@ class Handler(object):
                         # Inform the user to help debugging a posiibly surprising situation...
                         req.message(_("Request rejected due to CSRF protection."), req.ERROR)
                         raise wiking.Redirect(req.server_uri(current=True))
+                # Regular processing starts here.
                 try:
                     result = self._application.handle(req)
                 except wiking.Abort as abort:
@@ -291,8 +292,12 @@ class Handler(object):
                         # clients and they are not interested in responses, which
                         # display human readable content.
                         raise wiking.BadRequest(_("This URI does not belong to server API."))
-                    # Always perform authentication (if it was not performed before) to handle
-                    # authentication exceptions here and prevent them in export time.
+                    # Always perform authentication (if it was not performed
+                    # before) to handle authentication exceptions here and
+                    # prevent them in export time.  If the result is a
+                    # document, we will surely need to authenticate anyway,
+                    # because we need to display the login control at the top
+                    # of the page.
                     req.user()
                     if isinstance(result, wiking.Document):
                         return self._serve_document(req, result)
