@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-09-15 10:15+0200\n"
+"POT-Creation-Date: 2016-10-06 13:03+0200\n"
 "PO-Revision-Date: 2009-09-08 09:23+0100\n"
 "Last-Translator: Jostein Sand Nilsen <nistonasneslin@gmail.com>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -1670,15 +1670,15 @@ msgid ""
 "there is nothing important to note."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:3037 ../resources/scripts/wiking-cms.js:96
+#: ../lib/wiking/cms/cms.py:3037 ../resources/scripts/wiking-cms.js:88
 msgid "Warning"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:3038 ../resources/scripts/wiking-cms.js:97
+#: ../lib/wiking/cms/cms.py:3038 ../resources/scripts/wiking-cms.js:89
 msgid "Error"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:3047 ../resources/scripts/wiking-cms.js:112
+#: ../lib/wiking/cms/cms.py:3047 ../resources/scripts/wiking-cms.js:104
 #, fuzzy
 msgid "Summary"
 msgstr "Bytt passord"
@@ -2020,7 +2020,7 @@ msgstr "Vist navn"
 msgid "Number of days the item stays displayed in news."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:4064 ../lib/wiking/cms/users.py:1900
+#: ../lib/wiking/cms/cms.py:4064 ../lib/wiking/cms/users.py:1883
 msgid "Show"
 msgstr ""
 
@@ -2157,7 +2157,7 @@ msgstr ""
 
 #: ../lib/wiking/cms/cms.py:4280 ../lib/wiking/cms/crypto.py:85
 #: ../lib/wiking/cms/users.py:229 ../lib/wiking/cms/users.py:562
-#: ../lib/wiking/cms/users.py:1867
+#: ../lib/wiking/cms/users.py:1850
 msgid "User"
 msgstr "Bruker"
 
@@ -2220,12 +2220,12 @@ msgid ""
 msgstr ""
 
 #: ../lib/wiking/cms/cms.py:4370 ../lib/wiking/cms/users.py:1057
-#: ../lib/wiking/cms/users.py:1403 ../lib/wiking/cms/users.py:1438
+#: ../lib/wiking/cms/users.py:1390 ../lib/wiking/cms/users.py:1425
 #, fuzzy
 msgid "Failed sending e-mail:"
 msgstr "Klarte ikke å sende e-postmelding:"
 
-#: ../lib/wiking/cms/cms.py:4371 ../lib/wiking/cms/users.py:1404
+#: ../lib/wiking/cms/cms.py:4371 ../lib/wiking/cms/users.py:1391
 #, fuzzy
 msgid ""
 "Please, try repeating your request later or contact the administrator if the "
@@ -2431,8 +2431,8 @@ msgstr ""
 
 #. Button name. Computer terminology. Use an appropriate
 #. term common for submitting forms in a computer application.
-#: ../lib/wiking/cms/cms.py:4873 ../lib/wiking/cms/users.py:1429
-#: ../lib/wiking/cms/users.py:1793
+#: ../lib/wiking/cms/cms.py:4873 ../lib/wiking/cms/users.py:1416
+#: ../lib/wiking/cms/users.py:1779
 msgid "Submit"
 msgstr "Send"
 
@@ -2495,7 +2495,7 @@ msgstr "Filnavn"
 
 #. Table column heading.
 #. Whether the account is active. Values are yes/no.
-#: ../lib/wiking/cms/cms.py:4964 ../lib/wiking/cms/users.py:1881
+#: ../lib/wiking/cms/cms.py:4964 ../lib/wiking/cms/users.py:1864
 msgid "Active"
 msgstr "Aktiv"
 
@@ -2764,24 +2764,22 @@ msgstr ""
 msgid "The user couldn't be deleted. Maybe he is the last key holder?"
 msgstr ""
 
-#: ../lib/wiking/cms/texts.py:27
+#: ../lib/wiking/cms/texts.py:28
 msgid "Text displayed at the very top of every page next to the site title"
 msgstr ""
 
 #. Web form label (account in the meaning of user account)
-#: ../lib/wiking/cms/texts.py:33
+#: ../lib/wiking/cms/texts.py:34
 #, fuzzy
 msgid "Information about a locked account"
 msgstr ""
 "Ugyldige registreringforespørsler (enda ikke avgjort e-postgodkjenning)"
 
 #. Text presented to a user in a web page
-#: ../lib/wiking/cms/texts.py:35
+#: ../lib/wiking/cms/texts.py:36
 msgid ""
-"Your account is currently disabled.\n"
-"\n"
-"The protected services are not available to you.\n"
-"Contact the application administrator to get the account enabled."
+"Your account is disabled. Protected services are not available. Contact the "
+"administrators to get the account enabled."
 msgstr ""
 
 #. Web form label
@@ -2793,55 +2791,50 @@ msgstr ""
 
 #. Text presented to a user in a web page
 #: ../lib/wiking/cms/texts.py:45
+#, python-format
 msgid ""
-"Your account is inactive because\n"
-"you have not yet confirmed the activation code sent to you by e-mail.\n"
-"\n"
-"Please, check your e-mail and follow the provided link or enter the\n"
-"activation code into the field below.\n"
-"\n"
-"You can also continue without entering the activation code, but\n"
-"the protected services will not be available to you."
+"Your account has not been activated yet.  Please, check your e-mail and "
+"follow the provided link or enter the activation code into the [%(uri)s "
+"activation form].  Protected services will not be available until you "
+"perform activation."
 msgstr ""
 
 #. Web form label
-#: ../lib/wiking/cms/texts.py:57
+#: ../lib/wiking/cms/texts.py:54
 #, fuzzy
 msgid "Information about an account waiting for admin approval"
 msgstr ""
 "Ugyldige registreringforespørsler (enda ikke avgjort e-postgodkjenning)"
 
 #. Text presented to a user in a web page
-#: ../lib/wiking/cms/texts.py:59
+#: ../lib/wiking/cms/texts.py:56
 msgid ""
-"Your account is waiting for approval by the administrator.\n"
-"\n"
-"The protected services are not available until the account gets approved.\n"
-"If the account remains unapproved for a long time, contact the application "
-"administrator."
+"Your account is waiting for approval by the administrator. The protected "
+"services are not available until the account gets approved. Contact the "
+"administrators if you feel it takes too long."
 msgstr ""
 
-#: ../lib/wiking/cms/texts.py:66
+#: ../lib/wiking/cms/texts.py:63
 msgid "Introductory text displayed above the registration form"
 msgstr ""
 
-#: ../lib/wiking/cms/texts.py:71
+#: ../lib/wiking/cms/texts.py:68
 msgid "Text displayed after successful user registration"
 msgstr ""
 
-#: ../lib/wiking/cms/texts.py:72
+#: ../lib/wiking/cms/texts.py:69
 #, fuzzy
 msgid "Your account now awaits administrator's approval."
 msgstr ""
 "Registrering avsluttet. Din konto nå venter på administratorens godkjenning."
 
-#: ../lib/wiking/cms/texts.py:76
+#: ../lib/wiking/cms/texts.py:73
 msgid ""
 "Text displayed after successful user registration when autoapprove_new_users "
 "is set in configuration"
 msgstr ""
 
-#: ../lib/wiking/cms/texts.py:78
+#: ../lib/wiking/cms/texts.py:75
 #, python-format
 msgid ""
 "Your account is now fully functional. You can [%s log in] now.\n"
@@ -2850,44 +2843,44 @@ msgid ""
 "services."
 msgstr ""
 
-#: ../lib/wiking/cms/texts.py:84
+#: ../lib/wiking/cms/texts.py:81
 msgid ""
 "Information displayed above the checkbox for confirmation of site specific "
 "conditions during registration and in profile edit form (if empty, no "
 "confirmation is required)"
 msgstr ""
 
-#: ../lib/wiking/cms/texts.py:91
+#: ../lib/wiking/cms/texts.py:88
 msgid ""
 "Information displayed to users who have already confirmed the site specific "
 "conditions"
 msgstr ""
 
-#: ../lib/wiking/cms/texts.py:92
+#: ../lib/wiking/cms/texts.py:89
 msgid "You have agreed to the site conditions."
 msgstr ""
 
-#: ../lib/wiking/cms/texts.py:96
+#: ../lib/wiking/cms/texts.py:93
 msgid "Text displayed at the very bottom of every page"
 msgstr ""
 
 #. Label followed by an email address link.
-#: ../lib/wiking/cms/texts.py:98
+#: ../lib/wiking/cms/texts.py:95
 #, fuzzy
 msgid "Contact:"
 msgstr "Innhold"
 
-#: ../lib/wiking/cms/texts.py:102
+#: ../lib/wiking/cms/texts.py:99
 msgid ""
 "Default value of the Copyright Notice field for newly created publications."
 msgstr ""
 
-#: ../lib/wiking/cms/texts.py:107
+#: ../lib/wiking/cms/texts.py:104
 #, fuzzy
 msgid "Text displayed above the login dialog"
 msgstr "Ytterligere tekst vist på panelet."
 
-#: ../lib/wiking/cms/texts.py:112
+#: ../lib/wiking/cms/texts.py:109
 #, fuzzy
 msgid "Text displayed below the login dialog"
 msgstr "Ytterligere tekst vist på panelet."
@@ -3149,7 +3142,7 @@ msgid "User's Groups"
 msgstr "Brukere"
 
 #. Heading for an overview when and how the user has accessed the application.
-#: ../lib/wiking/cms/users.py:703 ../lib/wiking/cms/users.py:1860
+#: ../lib/wiking/cms/users.py:703 ../lib/wiking/cms/users.py:1843
 msgid "Login History"
 msgstr "Innloggingshistorikk"
 
@@ -3158,7 +3151,7 @@ msgid "Crypto Keys"
 msgstr ""
 
 #. Name of group of users who have full access to the system.
-#: ../lib/wiking/cms/users.py:715 ../lib/wiking/cms/users.py:1681
+#: ../lib/wiking/cms/users.py:715 ../lib/wiking/cms/users.py:1668
 msgid "Active users"
 msgstr "Aktive brukere"
 
@@ -3249,8 +3242,7 @@ msgstr "Nytt vedlegg"
 msgid "Unapproved account"
 msgstr "Nytt vedlegg"
 
-#. Dialog title (account in the meaning of user account).
-#: ../lib/wiking/cms/users.py:793 ../lib/wiking/cms/users.py:1830
+#: ../lib/wiking/cms/users.py:793
 msgid "Account disabled"
 msgstr "Konto deaktivert"
 
@@ -3338,7 +3330,7 @@ msgstr "Kontoen ble aktivert."
 msgid "The generated password was sent to %s."
 msgstr "Det nye passordet er det samme som det gamle."
 
-#: ../lib/wiking/cms/users.py:1082 ../lib/wiking/cms/users.py:1440
+#: ../lib/wiking/cms/users.py:1082 ../lib/wiking/cms/users.py:1427
 #, fuzzy, python-format
 msgid "The activation code was sent to %s."
 msgstr "Brukerregistrering allerede bekreftet."
@@ -3385,33 +3377,19 @@ msgstr ""
 msgid "Your registration at %s"
 msgstr "Din registrering på %s"
 
-#: ../lib/wiking/cms/users.py:1140
-msgid "User registration already confirmed."
-msgstr "Brukerregistrering allerede bekreftet."
-
-#: ../lib/wiking/cms/users.py:1143
-#, fuzzy
-msgid "Invalid activation code."
-msgstr "Ugyldig registreringkode."
-
-#: ../lib/wiking/cms/users.py:1145 ../lib/wiking/cms/users.py:1832
-#, fuzzy
-msgid "Account not activated"
-msgstr "Konto deaktivert"
-
-#: ../lib/wiking/cms/users.py:1152
+#: ../lib/wiking/cms/users.py:1122
 #, fuzzy
 msgid "New user account:"
 msgstr "Nytt vedlegg"
 
-#: ../lib/wiking/cms/users.py:1157
+#: ../lib/wiking/cms/users.py:1127
 #, fuzzy, python-format
 msgid "New user %(fullname)s registered at %(server_hostname)s."
 msgstr ""
 "Ny bruker %(fullname)s er registrert i %(server_hostname)s. Godkjenn "
 "kontoen: %(uri)s"
 
-#: ../lib/wiking/cms/users.py:1164
+#: ../lib/wiking/cms/users.py:1134
 #, fuzzy, python-format
 msgid ""
 "New account for %(fullname)s was created by %(admin_name)s at "
@@ -3420,119 +3398,135 @@ msgstr ""
 "Ny bruker %(fullname)s er registrert i %(server_hostname)s. Godkjenn "
 "kontoen: %(uri)s"
 
-#: ../lib/wiking/cms/users.py:1168
+#: ../lib/wiking/cms/users.py:1138
 msgid "The account was enabled with an automatically generated password."
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:1170
+#: ../lib/wiking/cms/users.py:1140
 msgid "The account was approved automatically according to server setup."
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:1173
+#: ../lib/wiking/cms/users.py:1143
 #, fuzzy
 msgid "Please approve the account:"
 msgstr "Aktiver denne konto"
 
-#: ../lib/wiking/cms/users.py:1175
+#: ../lib/wiking/cms/users.py:1145
 #, fuzzy
 msgid "Note:"
 msgstr "Notater"
 
-#: ../lib/wiking/cms/users.py:1180
+#: ../lib/wiking/cms/users.py:1150
 #, fuzzy
 msgid "E-mail notification has been sent to server administrators."
 msgstr "E-postmelding ble sendt til serveradministrator."
 
-#: ../lib/wiking/cms/users.py:1189
+#: ../lib/wiking/cms/users.py:1159
 #, python-format
 msgid "You can use %s to log in next time."
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:1191
+#: ../lib/wiking/cms/users.py:1161
 #, fuzzy
 msgid "You can log in now with the new password."
 msgstr "Skriv inn det nye passordet."
 
-#: ../lib/wiking/cms/users.py:1197 ../lib/wiking/cms/users.py:1324
+#: ../lib/wiking/cms/users.py:1167 ../lib/wiking/cms/users.py:1311
 msgid "Forgotten Password Reset"
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:1204
+#: ../lib/wiking/cms/users.py:1174
 msgid ""
 "The activation code was not yet confirmed by the user. Therefore it is not "
 "possible to trust that given e-mail address belongs to the person who "
 "requested the registration."
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:1211
+#: ../lib/wiking/cms/users.py:1181
 #, python-format
 msgid ""
 "The activation code will expire on %(date)s and the user will not be able to "
 "complete the registration anymore."
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:1213
+#: ../lib/wiking/cms/users.py:1183
 msgid ""
 "Use the button \"Resend activation code\" below to remind the user of his "
 "pending registration."
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:1219
+#: ../lib/wiking/cms/users.py:1189
 #, python-format
 msgid ""
 "The registration expired on %(date)s.  The user didn't confirm the "
 "activation code sent to the declared e-mail address in time."
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:1221
+#: ../lib/wiking/cms/users.py:1191
 msgid ""
 "The account should be deleted automatically if the server maintenence script "
 "is installed correctly.  Otherwise you can delete the account manually."
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:1225
+#: ../lib/wiking/cms/users.py:1195
 #, fuzzy
 msgid "The activation code was succesfully confirmed."
 msgstr "Brukerregistrering allerede bekreftet."
 
-#: ../lib/wiking/cms/users.py:1228
+#: ../lib/wiking/cms/users.py:1198
 msgid ""
 "Therefore it was verified that given e-mail address belongs to the person "
 "who requested the registration."
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:1230
+#: ../lib/wiking/cms/users.py:1200
 msgid ""
 "The user is now able to log in, but still has no rights (other than an "
 "anonymous user)."
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:1232
+#: ../lib/wiking/cms/users.py:1202
 #, fuzzy
 msgid "The account now awaits administrator's action to be approved."
 msgstr ""
 "Registrering avsluttet. Din konto nå venter på administratorens godkjenning."
 
-#: ../lib/wiking/cms/users.py:1234
+#: ../lib/wiking/cms/users.py:1204
 msgid ""
 "The account is blocked.  The user is able to log in, but has no access to "
 "protected services until the administrator enables the account again."
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:1258
-msgid "Registration confirmed"
-msgstr "Registrering bekreftet"
+#: ../lib/wiking/cms/users.py:1228
+#, fuzzy
+msgid "Account activated"
+msgstr "Konto deaktivert"
 
-#: ../lib/wiking/cms/users.py:1271
+#: ../lib/wiking/cms/users.py:1240
+#, fuzzy
+msgid "User account already activated."
+msgstr "Brukerregistrering allerede bekreftet."
+
+#: ../lib/wiking/cms/users.py:1248
 #, fuzzy
 msgid "Registration completed successfuly."
 msgstr "Registrering bekreftet"
 
-#: ../lib/wiking/cms/users.py:1284
+#: ../lib/wiking/cms/users.py:1252
+#, fuzzy
+msgid "Invalid activation code."
+msgstr "Ugyldig registreringkode."
+
+#: ../lib/wiking/cms/users.py:1254
+#, fuzzy
+msgid "Activate your account"
+msgstr "Nytt vedlegg"
+
+#: ../lib/wiking/cms/users.py:1271
 msgid "The account was enabled."
 msgstr "Kontoen ble aktivert."
 
-#: ../lib/wiking/cms/users.py:1288
+#: ../lib/wiking/cms/users.py:1275
 #, python-format
 msgid ""
 "Your account at %(uri)s has been enabled. Please log in with username "
@@ -3541,99 +3535,99 @@ msgstr ""
 "Kontoen din på %(uri)s er aktivert. Vennligst logg inn med brukernavn "
 "'%(login)s ' og passordet ditt."
 
-#: ../lib/wiking/cms/users.py:1289
+#: ../lib/wiking/cms/users.py:1276
 msgid "Your account has been enabled."
 msgstr "Din konto ble aktivert."
 
-#: ../lib/wiking/cms/users.py:1292
+#: ../lib/wiking/cms/users.py:1279
 msgid "Failed sending e-mail notification:"
 msgstr "Klarte ikke å sende e-postmelding:"
 
-#: ../lib/wiking/cms/users.py:1294
+#: ../lib/wiking/cms/users.py:1281
 msgid "E-mail notification has been sent to:"
 msgstr "E-postmelding ble sendt til:"
 
-#: ../lib/wiking/cms/users.py:1296
+#: ../lib/wiking/cms/users.py:1283
 #, fuzzy
 msgid "The account was disabled."
 msgstr "Kontoen ble aktivert."
 
-#: ../lib/wiking/cms/users.py:1303
+#: ../lib/wiking/cms/users.py:1290
 #, fuzzy, python-format
 msgid "The registration expired on %(date)s."
 msgstr "Brukerregistrering allerede bekreftet."
 
-#: ../lib/wiking/cms/users.py:1305
+#: ../lib/wiking/cms/users.py:1292
 #, fuzzy
 msgid "Continue"
 msgstr "Innhold"
 
 #. Button label to get to a previous state.
-#: ../lib/wiking/cms/users.py:1307
+#: ../lib/wiking/cms/users.py:1294
 msgid "Back"
 msgstr "Tilbake"
 
-#: ../lib/wiking/cms/users.py:1308
+#: ../lib/wiking/cms/users.py:1295
 #, fuzzy
 msgid "The registration code was not confirmed by the user!"
 msgstr "Brukerregistrering allerede bekreftet."
 
-#: ../lib/wiking/cms/users.py:1309
+#: ../lib/wiking/cms/users.py:1296
 msgid ""
 "Please enable the account only if you are sure that the e-mail address "
 "belongs to given user."
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:1332 ../lib/wiking/cms/users.py:1360
+#: ../lib/wiking/cms/users.py:1319 ../lib/wiking/cms/users.py:1347
 #, fuzzy
 msgid "Invalid password reset request."
 msgstr "Ugyldig passord."
 
-#: ../lib/wiking/cms/users.py:1344
+#: ../lib/wiking/cms/users.py:1331
 msgid "Multiple user accounts found for given email address."
 msgstr "Flere brukerkontoer funnet for gitt e-postadresse."
 
-#: ../lib/wiking/cms/users.py:1345
+#: ../lib/wiking/cms/users.py:1332
 #, fuzzy
 msgid "Please, select the account for which you want to reset the password:"
 msgstr "Vennligst velg kontoen du vil ha påminnelse for:"
 
-#: ../lib/wiking/cms/users.py:1356
+#: ../lib/wiking/cms/users.py:1343
 #, fuzzy
 msgid "This password reset request has already been processed."
 msgstr "En forespørsel om passordpåminnelse har blitt gjort på %(server_uri)s."
 
-#: ../lib/wiking/cms/users.py:1358
+#: ../lib/wiking/cms/users.py:1345
 msgid "Can not repeat the action."
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:1362
+#: ../lib/wiking/cms/users.py:1349
 #, python-format
 msgid ""
 "The request has expired. Please, repeat the request and finish the procedure "
 "in %d minutes."
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:1371
+#: ../lib/wiking/cms/users.py:1358
 msgid "Security code verified. You can change your password now."
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:1385
+#: ../lib/wiking/cms/users.py:1372
 #, fuzzy, python-format
 msgid "A password reset request has been made at %(server_uri)s."
 msgstr "En forespørsel om passordpåminnelse har blitt gjort på %(server_uri)s."
 
-#: ../lib/wiking/cms/users.py:1388
+#: ../lib/wiking/cms/users.py:1375
 #, python-format
 msgid "Please, follow this link to reset the password for user %s:"
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:1393
+#: ../lib/wiking/cms/users.py:1380
 #, python-format
 msgid "The link expires in %d minutes. You need to act immediately."
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:1399
+#: ../lib/wiking/cms/users.py:1386
 #, python-format
 msgid ""
 "If you didn't request to reset your password at %(server_uri)s, it is "
@@ -3641,7 +3635,7 @@ msgid ""
 "administrator if in doubt."
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:1407
+#: ../lib/wiking/cms/users.py:1394
 #, python-format
 msgid ""
 "E-mail with a security code has been sent to your e-mail address for "
@@ -3649,109 +3643,110 @@ msgid ""
 "within %d minutes to be able reset your password."
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:1414
+#: ../lib/wiking/cms/users.py:1401
 msgid "No user account for your query."
 msgstr "Ingen brukerkonto svarer til ditt søk."
 
-#: ../lib/wiking/cms/users.py:1421
+#: ../lib/wiking/cms/users.py:1408
 msgid "Enter your login name or e-mail address"
 msgstr "Angi innloggingsnavn eller e-postadresse"
 
-#: ../lib/wiking/cms/users.py:1682
+#: ../lib/wiking/cms/users.py:1669
 msgid "Listing of all active user accounts."
 msgstr "Liste over alle aktive brukerkontoer."
 
-#: ../lib/wiking/cms/users.py:1791
+#: ../lib/wiking/cms/users.py:1777
 #, fuzzy
 msgid "Enter the activation code:"
 msgstr "Send registreringskode på nytt"
 
-#: ../lib/wiking/cms/users.py:1796
-#, fuzzy
-msgid "Continue without activation"
-msgstr "Send registreringskode på nytt"
-
-#: ../lib/wiking/cms/users.py:1834
-#, fuzzy
-msgid "Account not approved"
-msgstr "Konto deaktivert"
-
-#: ../lib/wiking/cms/users.py:1861
+#: ../lib/wiking/cms/users.py:1844
 msgid "History of successful login sessions and unsuccessful login attempts."
 msgstr ""
 "Historikk over vellykkede påloggingsøkter og mislykkede påloggingsforsøk."
 
 #. Login name.
-#: ../lib/wiking/cms/users.py:1870
+#: ../lib/wiking/cms/users.py:1853
 msgid "Login"
 msgstr "Innlogget"
 
 #. Form field saying whether the users attempt was succesful.
 #. Values are Yes/No.
-#: ../lib/wiking/cms/users.py:1873
+#: ../lib/wiking/cms/users.py:1856
 msgid "Success"
 msgstr "Vellykket"
 
 #. Table column heading.
 #. Time of the start of user session, followed by a date and time.
-#: ../lib/wiking/cms/users.py:1876
+#: ../lib/wiking/cms/users.py:1859
 msgid "Start time"
 msgstr "Starttid"
 
 #. Table column heading. The length of user session. Contains time.
-#: ../lib/wiking/cms/users.py:1878
+#: ../lib/wiking/cms/users.py:1861
 msgid "Duration"
 msgstr "Varighet"
 
-#: ../lib/wiking/cms/users.py:1882
+#: ../lib/wiking/cms/users.py:1865
 msgid "IP address"
 msgstr "IP-adresse"
 
 #. Internet name of the remote computer (computer terminology).
-#: ../lib/wiking/cms/users.py:1884
+#: ../lib/wiking/cms/users.py:1867
 msgid "Hostname"
 msgstr "Hostnavn"
 
 #. "User agent" is a generalized name for browser or more precisely the
 #. software which produced the HTTP request (was used to access the website).
-#: ../lib/wiking/cms/users.py:1887
+#: ../lib/wiking/cms/users.py:1870
 msgid "User agent"
 msgstr "User agent"
 
 #. Meaning where the user came from. Computer terminology.
 #. Do not translate
 #. "HTTP" and if unsure, don't translate at all (it is a very technical term).
-#: ../lib/wiking/cms/users.py:1891
+#: ../lib/wiking/cms/users.py:1874
 msgid "HTTP Referer"
 msgstr "HTTP-refererer"
 
-#: ../lib/wiking/cms/users.py:1901
+#: ../lib/wiking/cms/users.py:1884
 msgid "Successful logins"
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:1902
+#: ../lib/wiking/cms/users.py:1885
 msgid "Unsuccessful attempts"
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:1903
+#: ../lib/wiking/cms/users.py:1886
 msgid "Everything"
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:1904
+#: ../lib/wiking/cms/users.py:1887
 msgid "From"
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:1905
+#: ../lib/wiking/cms/users.py:1888
 msgid "To"
 msgstr ""
 
-#: ../resources/scripts/wiking-cms.js:85
+#: ../resources/scripts/wiking-cms.js:77
 msgid "Export started..."
 msgstr ""
 
-#: ../resources/scripts/wiking-cms.js:117
+#: ../resources/scripts/wiking-cms.js:109
 msgid "Export finished."
 msgstr ""
+
+#~ msgid "Registration confirmed"
+#~ msgstr "Registrering bekreftet"
+
+#, fuzzy
+#~ msgid "Continue without activation"
+#~ msgstr "Send registreringskode på nytt"
+
+#, fuzzy
+#~ msgid "Account not approved"
+#~ msgstr "Konto deaktivert"
 
 #~ msgid "Manage panels – the small windows shown by the side of every page."
 #~ msgstr ""
