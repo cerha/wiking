@@ -343,14 +343,14 @@ class Request(ServerInterface):
                 # possibility as optional in future.
                 for line in lines[1:]:
                     try:
-                        type, quoted = line.split(':', 1)
-                        if type not in self._MESSAGE_TYPES:
-                            raise ValueError("Invalid type:", type)
+                        mtype, formatted, quoted = line.split(':', 2)
+                        if mtype not in self._MESSAGE_TYPES or formatted not in ('t', 'f'):
+                            raise ValueError("Invalid values:", mtype, formatted)
                         message = urllib.unquote(str(quoted)).decode(self._encoding)
                     except Exception as e:
                         log(OPR, "Error unpacking stored messages:", e)
                     else:
-                        messages.append((message, type))
+                        messages.append((message, mtype, formatted == 't'))
                 self.set_cookie(self._MESSAGES_COOKIE, None)
         return messages
 
@@ -655,8 +655,9 @@ class Request(ServerInterface):
             # redirected request's locale will be the same as for this request,
             # but that seems quite appropriate assumption.
             lines = [urllib.quote(uri.encode(self._encoding))] + \
-                [type + ':' + urllib.quote(self.localize(message).encode(self._encoding))
-                 for message, type in self._messages]
+                [':'.join((mtype, 't' if formatted else 'f',
+                           urllib.quote(self.localize(message).encode(self._encoding))))
+                 for message, mtype, formatted in self._messages]
             self.set_cookie(self._MESSAGES_COOKIE, "\n".join(lines))
         html = ("<html><head><title>Redirected</title></head>"
                 "<body>Your request has been redirected to "
@@ -987,7 +988,7 @@ class Request(ServerInterface):
             uri = self._module_uri[modname] = application.module_uri(self, modname)
         return uri
 
-    def message(self, message, type=None):
+    def message(self, message, type=None, formatted=False):
         """Add a message to the stack.
 
         Arguments:
@@ -995,15 +996,18 @@ class Request(ServerInterface):
           type -- message text as one of INFO, WARNING, ERROR, HEADING
             constants of the class.  If None, the default is INFO.  Should be
             passed as positional if not omitted.
+          formatted -- If True, the message may include LCG inline markup for
+            'lcg.Parser.parse_inline_markup()'.  False (the default) indicates
+            a plain text message with no further processing (displayed as is).
 
         The stacked messages can be later retrieved using the 'messages()' method.
 
         """
         assert type is None or type in self._MESSAGE_TYPES
-        self._messages.append((message, type or self.INFO))
+        self._messages.append((message, type or self.INFO, formatted))
 
     def messages(self, heading=False):
-        """Return the current stack of messages as a tuple of pairs (MESSAGE, TYPE).
+        """Return the current stack of messages as a tuple of tripples (MESSAGE, TYPE, FORMATTED).
 
         Arguments:
 

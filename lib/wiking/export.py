@@ -389,8 +389,8 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         messages = context.req().messages()
         if messages:
             g = self._generator
-            return g.div([wiking.Message(message, kind=kind).export(context)
-                          for message, kind in messages],
+            return g.div([wiking.Message(message, kind=kind, formatted=formatted).export(context)
+                          for message, kind, formatted in messages],
                          id='messages')
         else:
             return ''

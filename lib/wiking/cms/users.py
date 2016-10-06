@@ -1791,6 +1791,11 @@ class Session(PytisModule, wiking.Session):
         fields = [Field(_id) for _id in ('session_id', 'uid', 'session_key', 'last_access')]
 
     def init(self, req, user, session_key):
+        def warn(text, **kwargs):
+            message = wiking.module.Texts.text(text)
+            if kwargs:
+                message = message.interpolate(lambda x: kwargs[x])
+            req.message(message, req.WARNING, formatted=True)
         import wiking # Don't know why, but it needs to be here...
         # Delete all expired records first.
         data = self._data
@@ -1803,16 +1808,14 @@ class Session(PytisModule, wiking.Session):
         wiking.module.SessionLog.log(req, now_, row['session_id'].value(), uid, user.login())
         import wiking.cms.texts
         state = user.state()
+        # This check is done here to display the message only once after logging in...
         if state == Users.AccountState.DISABLED:
-            msg = wiking.module.Texts.text(wiking.cms.texts.disabled)
-            req.message(msg, req.WARNING)
+            warn(wiking.cms.texts.disabled)
         elif state == Users.AccountState.NEW:
-            uri = req.make_uri(req.module_uri('Registration'), action='confirm', uid=uid)
-            msg = wiking.module.Texts.parsed_text(req, wiking.cms.texts.unconfirmed, args=dict(uri=uri))
-            req.message(msg, req.WARNING)
+            warn(wiking.cms.texts.unconfirmed,
+                 uri=req.make_uri(req.module_uri('Registration'), action='confirm', uid=uid))
         elif state == Users.AccountState.UNAPPROVED:
-            msg = wiking.module.Texts.text(wiking.cms.texts.unapproved)
-            req.message(msg, req.WARNING)
+            warn(wiking.cms.texts.unapproved)
 
     def failure(self, req, user, login):
         wiking.module.SessionLog.log(req, now(), None, user and user.uid(), login[:64])
