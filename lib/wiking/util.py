@@ -377,8 +377,6 @@ class PasswordExpirationError(Forbidden):
         return content
 
 
-
-
 class NotFound(RequestError):
     """Error indicating invalid request target."""
     _STATUS_CODE = httplib.NOT_FOUND # 404
@@ -447,7 +445,6 @@ class NotAcceptable(RequestError):
             super(NotAcceptable, self).data(req),
             variants=self._variants,
         )
-
 
 
 class InternalServerError(RequestError):
@@ -1377,7 +1374,7 @@ class AuthenticationProvider(object):
 
     An application may support multiple authentication providers which may be
     used in a given order of precedence.  The logic and order is given by the
-    implementation od 'Application.authenticate()'.
+    implementation of 'Application.authenticate()'.
 
     Particular implementations handle particular authentication protocols, but
     may be still neutral to authentication data source and session storage
@@ -1494,7 +1491,7 @@ class CookieAuthenticationProvider(AuthenticationProvider):
             if not user or not application.verify_password(user, password):
                 session.failure(req, user, login)
                 raise AuthenticationError(_("Invalid login!"))
-            assert isinstance(user, User)
+            assert isinstance(user, wiking.User)
             # Login succesfull
             application.login_hook(req, user)
             session_key = session.new_session_key()
@@ -1507,7 +1504,7 @@ class CookieAuthenticationProvider(AuthenticationProvider):
             if login and session_key:
                 user = application.user(req, login)
                 if user and session.check(req, user, session_key):
-                    assert isinstance(user, User)
+                    assert isinstance(user, wiking.User)
                     self._set_session_cookies(req, login, session_key)
                 else:
                     # Can not raise AuthenticationError here because of 'req.user(require=False)'.
