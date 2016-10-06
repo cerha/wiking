@@ -1524,28 +1524,49 @@ class CookieAuthenticationProvider(AuthenticationProvider):
 
     def _set_session_cookies(self, req, login, session_key):
         # Session cookie expiration is used just to make the cookie persist
-        # across browser sessions.  The expiration of the cookie (client side)
-        # is, however, not decisive for the expiration of the session itself.
-        # Session expiration time is checked by the session module independently.
-        if wiking.cfg.persistent_sessions:
+        # when the browser is closed.  Cookies which don't expire ('expires'
+        # unset) are discarded when the browser is closed.  Note that the
+        # expiration of the cookie (client side) is not decisive for the
+        # expiration of the session itself.  Session expiration is checked by
+        # the session module independently on session cookie verification.  The
+        # cookie just should not expire sooner than the session to make the
+        # verification work.
+        if ((wiking.cfg.persistent_sessions or
+             re.search(r' OS 10_\d+_\d+ like Mac OS X', req.header('User-Agent')))):
+            # The User-Agent check above is used to detect iOS 10.x devices and
+            # force cookie expiration set in this case to work around
+            # AppleCoreMedia bug (or missfeature?) which causes media files
+            # referenced in <audio> and <video> tags to be downloaded without
+            # sending all cookies.  Only cookies with expiration set are sent
+            # with the request and others are ignored.  Forcing cookie
+            # expiration on iOS 10 devices unfortunately causes the user
+            # sessions to be always persistent in this case, but this actually
+            # doesn't seem to be a huge problem because the browser is
+            # typically never closed on iOS so the users won't expect the
+            # session to end unless they explicitly log out.  Also the iOS
+            # devices are often personal so the risk of stealing user's session
+            # is minimized by their typical usage scenario.  Without this work
+            # around, media playback will not work if these media files require
+            # authentication.  At this time it is not known whether Apple is
+            # going to fix this issue and in which iOS version, so the regexp
+            # matches all 10.x iOS versions.  Once this is known, the regexp
+            # can be more specific.
             expires = wiking.cfg.session_expiration * 3600
         else:
-            # This should make the cookie valid only until the end of the
-            # browser session.
-            expires = None
+            expires = None # Cookie discarded when browser closed.
         secure = self._SECURE_AUTH_COOKIES
         if req.cookie(self._LOGIN_COOKIE) != login:
-            # TODO: It would be better to use UID instead of login as part of the
-            # cookie, because when login is changed during the session (typically
-            # when e-mail addresses are used as logins), this causes the session
-            # to be unnecessariy terminated.  We would, however, need to introduce
-            # another API method (user_by_uid?) or use session_key alone to
-            # check the session (thus changing the API of Session.check()).
-            # Wiking CMS has a hack to update login cookie after login change in
-            # wiking.cms.Users._redirect_after_update() to overcome this problem.
+            # TODO: It would be better to use UID instead of login as part of
+            # the cookie, because when login is changed during the session
+            # (typically when e-mail addresses are used as logins), this causes
+            # the session to be unnecessariy terminated.  We would, however,
+            # need to introduce another API method (user_by_uid?) or use
+            # session_key alone to check the session (thus changing the API of
+            # Session.check()).  Wiking CMS has a hack to update login cookie
+            # after login change in wiking.cms.Users._redirect_after_update()
+            # to overcome this problem.
             req.set_cookie(self._LOGIN_COOKIE, login, expires=(730 * 24 * 3600), secure=secure)
         req.set_cookie(self._SESSION_COOKIE, session_key, expires=expires, secure=secure)
-
 
 # ============================================================================
 # Classes derived from LCG components
