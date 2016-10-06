@@ -1803,7 +1803,6 @@ class Session(PytisModule, wiking.Session):
         wiking.module.SessionLog.log(req, now_, row['session_id'].value(), uid, user.login())
         import wiking.cms.texts
         state = user.state()
-        state = Users.AccountState.NEW
         if state == Users.AccountState.DISABLED:
             msg = wiking.module.Texts.text(wiking.cms.texts.disabled)
             req.message(msg, req.WARNING)
