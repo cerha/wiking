@@ -7,7 +7,7 @@ Version 2.1.0 (2016-10-07):
 
    - Automatically added site map to all CMS based sites.
 
-   - Completely rewritten the navigation ovierview documentation to descripbe
+   - Completely rewritten the navigation overview documentation to describe
      the latest user interface state and simplified the accessibility statement.
 
    - Improved user/group membership management.
