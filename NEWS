@@ -1,3 +1,61 @@
+Version 2.1.0 (2016-10-07):
+
+ * User visible changes:
+
+   - Worked around an iOS 10 issue which prevents media playback when
+     authentication is required.
+
+   - Automatically added site map to all CMS based sites.
+
+   - Completely rewritten the navigation ovierview documentation to descripbe
+     the latest user interface state and simplified the accessibility statement.
+
+   - Improved user/group membership management.
+
+   - Improved CMS system texts management.
+
+   - Improved contrast and readability of the default page styles.
+
+   - New configuration options to customize visibility of top bar controls for
+     anonymous users ('show_login_control' and 'always_show_admin_control').
+
+   - Minor improvements in CMS page listing.
+
+ * User visible fixes:
+
+   - Fixed popup menu invocation on touch devices.
+
+   - Fixed response after login to a blocked account or account with unfinished
+     registration.
+
+   - Fixed handling update form Cancel button in special situations.
+
+   - Fixed structured text manual link in CMS.
+
+   - Fixed CMS login history view to include all invalid login attempts.
+
+   - Fixed several formal accessibility violations spotted by the aXe tool.
+
+   - Fixed ASYNC request handling in side forms.
+
+   - Fixed traceback on login name change.
+
+ * Under the hood:
+
+   - Added support for formatted req.message() messages.
+
+   - Improvements of Travis CI integration script.
+
+   - The default viewport setting now supports responsive design.
+
+   - Fixed CSRF protection for non-default ports.
+
+   - Use title column display for document title.
+
+   - Added support for sorting specification in REST API list.
+
+   - Added support for overriding max and default limit in REST API list.
+
 Version 2.0.0 (2016-04-12):
 
  Changes have not been tracked in detail for this version so refer to git logs
