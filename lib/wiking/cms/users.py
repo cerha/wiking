@@ -1243,6 +1243,7 @@ class Users(UserManagementModule, CachingPytisModule):
                     state = self.AccountState.ENABLED
                 else:
                     state = self.AccountState.UNAPPROVED
+                record = self._record(req, row)
                 record.update(state=state, regcode=None)
                 self._send_admin_approval_mail(req, record)
                 req.message(_("Registration completed successfuly."), type=req.SUCCESS)
