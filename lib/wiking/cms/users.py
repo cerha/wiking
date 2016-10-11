@@ -778,15 +778,14 @@ class Users(UserManagementModule, CachingPytisModule):
 
         """
         NEW = 'new'
-        """New users who are registered but haven't confirmed their registration yet."""
+        """New users who are registered but haven't confirmed the activation code yet."""
         UNAPPROVED = 'unapproved'
-        """New users who are registered, have confirmed their registration,
+        """New users who are registered, have confirmed the activation code,
            but haven't been approved by the user administrator yet."""
-        DISABLED = 'disabled'
-        """Users blocked from access to the application, such as deleted
-           users, refused registration requests etc."""
         ENABLED = 'enabled'
         """Users with full access to the application."""
+        DISABLED = 'disabled'
+        """Users explicitly blocked from access to the application by administrator."""
 
         _STATES = {NEW: _("New account"),
                    UNAPPROVED: _("Unapproved account"),
