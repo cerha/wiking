@@ -1622,8 +1622,8 @@ class Users(UserManagementModule, CachingPytisModule):
         @param subject, text, kwargs: Just forwarded to L{wiking.send_mail} call.
 
         @note: The mail is sent only to active users, i.e. users with the state
-          C{user}.  There is no way to send bulk e-mail to inactive (i.e. new,
-          disabled) users using this method.
+          L{Users.AccountState.ENABLED}.  There is no way to send bulk e-mail
+          to inactive (i.e. new, disabled) users using this method.
 
         @rtype: tuple of two items (int, list)
         @return: The first value is the number of successfully sent messages
@@ -1634,6 +1634,8 @@ class Users(UserManagementModule, CachingPytisModule):
         assert (role is None or isinstance(role, wiking.Role) or
                 (isinstance(role, (tuple, list)) and
                  all([isinstance(r, wiking.Role) for r in role]))), role
+        # TODO: Shall we use find_users() instead of different implementation
+        # of the same thing here?
         if role is not None:
             if not isinstance(role, (tuple, list)):
                 role = (role,)
@@ -1642,7 +1644,7 @@ class Users(UserManagementModule, CachingPytisModule):
                 user_ids |= set(wiking.module.RoleMembers.user_ids(r))
             user_ids |= set(include_uids)
             user_ids -= set(exclude_uids)
-        user_rows = self._data.get_rows()
+        user_rows = self._data.get_rows(state=Users.AccountState.ENABLED)
         n = 0
         errors = []
         for row in user_rows:
