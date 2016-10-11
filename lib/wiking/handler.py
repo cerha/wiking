@@ -270,10 +270,12 @@ class Handler(object):
                 # Very basic CSRF prevention
                 if req.param('submit') and req.header('Referer'):
                     referer = urlparse.urlparse(req.header('Referer'))
-                    if ((referer.scheme + '://' + referer.netloc != req.server_uri() or
-                         urllib.unquote(referer.path) != urlparse.urlparse(req.uri()).path)):
-                        # Inform the user to help debugging a posiibly surprising situation...
-                        req.message(_("Request rejected due to CSRF protection."), req.ERROR)
+                    referer_uri = (referer.scheme + '://' + referer.netloc +
+                                   urllib.unquote(referer.path))
+                    request_uri = req.server_uri() + urlparse.urlparse(req.uri()).path
+                    if referer_uri != request_uri:
+                        wiking.debug("Request rejected due to CSRF protection:",
+                                     referer_uri, request_uri)
                         raise wiking.Redirect(req.server_uri(current=True))
                 # Regular processing starts here.
                 try:
