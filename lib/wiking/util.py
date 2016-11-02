@@ -1532,7 +1532,7 @@ class CookieAuthenticationProvider(AuthenticationProvider):
         # cookie just should not expire sooner than the session to make the
         # verification work.
         if ((wiking.cfg.persistent_sessions or
-             re.search(r' OS 10_\d+_\d+ like Mac OS X', req.header('User-Agent')))):
+             re.search(r' OS 10_\d+_\d+ like Mac OS X', req.header('User-Agent', '')))):
             # The User-Agent check above is used to detect iOS 10.x devices and
             # force cookie expiration set in this case to work around
             # AppleCoreMedia bug (or missfeature?) which causes media files
