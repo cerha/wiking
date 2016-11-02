@@ -194,6 +194,7 @@ class Redirect(RequestError):
             'Request.make_uri()' apply.
 
         """
+        assert isinstance(uri, basestring)
         super(Redirect, self).__init__()
         self._uri = uri
         self._args = args + tuple(kwargs.items())
