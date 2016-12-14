@@ -48,7 +48,10 @@ class WsgiRequest(wiking.Request):
         self._start_response = start_response
         self._uri = None
         self._params = {}
-        self._raw_params = cgi.FieldStorage(fp=environ['wsgi.input'], environ=environ)
+        if self.method() == 'OPTIONS':
+            self._raw_params = {}
+        else:
+            self._raw_params = cgi.FieldStorage(fp=environ['wsgi.input'], environ=environ)
         self._unset_params = []
         self._response_headers_storage = []
         self._response_headers = wsgiref.headers.Headers(self._response_headers_storage)
