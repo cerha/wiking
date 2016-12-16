@@ -2322,6 +2322,17 @@ class APIProvider(object):
     def _api_content_serializer(self, req, record, cid):
         return None # TODO: export?
 
+    def _api_serializers(self, columns):
+        try:
+            serializers = self._api_serializers_
+        except AttributeError:
+            # Inspect column types in advance as it is cheaper than calling
+            # isinstance for all exported rows and columns.
+            serializers = dict([(f.id(), self._api_serializer(f.id()))
+                                for f in self._view.fields()])
+            self._api_serializers_ = serializers
+        return [(cid, serializers[cid]) for cid in columns if serializers[cid]]
+
     def _api_columns(self, req):
         """Return a list of columns present in '_api_list()' response.
 
@@ -2344,15 +2355,7 @@ class APIProvider(object):
         return self._sorting
 
     def _api_list(self, req):
-        try:
-            serializers = self._api_serializers
-        except AttributeError:
-            # Inspect column types in advance as it is cheaper than calling
-            # isinstance for all exported rows and columns.
-            serializers = dict([(f.id(), self._api_serializer(f.id()))
-                                for f in self._view.fields()])
-            self._api_serializers = serializers
-        columns = [(cid, serializers[cid]) for cid in self._api_columns(req) if serializers[cid]]
+        serializers = self._api_serializers(self._api_columns(req))
         try:
             plimit = req.param('limit')
             if plimit is None:
@@ -2368,7 +2371,7 @@ class APIProvider(object):
             raise wiking.BadRequest()
         records = self._records(req, condition=self._api_list_condition(req),
                                 sorting=self._api_list_sorting(req), limit=limit, offset=offset)
-        rows = [dict([(cid, serializer(req, record, cid)) for cid, serializer in columns])
+        rows = [dict([(cid, serializer(req, record, cid)) for cid, serializer in serializers])
                 for record in records]
         data = dict(rows=rows, total=len(records))
         return wiking.Response(json.dumps(data), content_type='application/json')
