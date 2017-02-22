@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2006-2016 Brailcom, o.p.s.
+# Copyright (C) 2006-2017 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -336,18 +336,18 @@ class Application(wiking.Module):
         (hiding the controls at the right edge).
 
         The default implementation returns a list with just one element -- the
-        'wiking.HtmlRenderer' instance displaying the site title and subtitle
-        as returned by the methods 'site_title()' and 'site_subtitle()'.
+        'lcg.HtmlContent' instance displaying the site title and subtitle as
+        returned by the methods 'site_title()' and 'site_subtitle()'.
 
         """
-        def site_title(renderer, context, title, subtitle):
+        def site_title(context, element, title, subtitle):
             g = context.generator()
             content = g.strong(title, cls='title')
             if subtitle:
                 content += (g.strong(g.noescape(' &ndash; '), cls='separator') +
                             g.strong(subtitle, cls='subtitle'))
             return g.div(g.a(content, href='/'), id='site-title')
-        return [wiking.HtmlRenderer(site_title, self.site_title(req), self.site_subtitle(req))]
+        return [lcg.HtmlContent(site_title, self.site_title(req), self.site_subtitle(req))]
 
     def top_controls(self, req):
         """Return the controls displayed on the right side of the top bar.

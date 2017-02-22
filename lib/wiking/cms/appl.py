@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2006-2016 Brailcom, o.p.s.
+# Copyright (C) 2006-2017 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -359,14 +359,14 @@ class Application(wiking.Application):
 
     def right_panels_bottom_content(self, req):
         if req.check_roles(Roles.CONTENT_ADMIN):
-            def content(renderer, context):
+            def content(context, element):
                 g = context.generator()
                 return g.form((g.button(g.span('', cls='icon plus-icon') +
                                         g.span(_("New Panel"), cls='label'), type='submit'),
                                g.hidden('action', 'insert'),
                                g.hidden('_manage_cms_panels', '1')),
                               action='/', method='GET')
-            return wiking.HtmlRenderer(content)
+            return lcg.HtmlContent(content)
         else:
             return None
 

@@ -1,4 +1,4 @@
-# Copyright (C) 2006-2016 Brailcom, o.p.s.
+# Copyright (C) 2006-2017 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -1989,7 +1989,7 @@ class Message(lcg.Container):
 
     def __init__(self, content, formatted=False, kind=INFO, **kwargs):
         assert kind in (self.INFO, self.SUCCESS, self.WARNING, self.ERROR)
-        icon = HtmlRenderer(lambda renderer, context: self._export_icon(context))
+        icon = lcg.HtmlContent(lambda context, element: self._export_icon(context))
         if formatted and isinstance(content, lcg.Localizable):
             # Parsing must be done after localization, but lcg.coerce()
             # does parsing first.  Maybe lcg.coerce() should be changed
@@ -2033,41 +2033,6 @@ class HtmlTraceback(lcg.Content):
             import traceback
             return g.pre("".join(traceback.format_exception(*self._einfo)))
 
-
-class HtmlRenderer(lcg.Content):
-    """LCG content class for wrapping a direct HTML renderer function.
-
-    This is a simple convenience wrapper for situations where HTML content is
-    rendered directly by a Python function passed to the constructor.  The
-    result can be placed within an LCG content hierarchy and the passed
-    renderer function will be called on export with at least two arguments
-    (element, context), where 'element' is the 'HtmlRenderer' instance and
-    'context' is a 'wiking.Exporter.Context' instance.  Also any additional
-    arguments (including keyword arguments) passed to the constructor are
-    passed on.
-
-    Use with caution.  Defining specific content classes for more generic
-    content elements is encouraged over using this class.  This class should
-    only be used for simple cases where defining a class makes too much
-    unnecessary noise...
-
-    """
-    def __init__(self, renderer, *args, **kwargs):
-        """Arguments:
-
-        renderer -- the rendering function (see class docstring for details).
-        *args, **kwargs -- all remaining arguments are passed along to
-          'renderer' when called on export.
-
-        """
-        assert isinstance(renderer, collections.Callable)
-        self._renderer = renderer
-        self._renderer_args = args
-        self._renderer_kwargs = kwargs
-        super(HtmlRenderer, self).__init__()
-
-    def export(self, context):
-        return self._renderer(self, context, *self._renderer_args, **self._renderer_kwargs)
 
 class IFrame(lcg.Content):
     """HTML specific IFRAME component."""

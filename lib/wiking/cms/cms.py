@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2006-2016 Brailcom, o.p.s.
+# Copyright (C) 2006-2017 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -2552,7 +2552,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter, PDFExpo
     def _publication_export_form(self, req, record):
         if not self._check_page_access(req, record):
             return lcg.Content()
-        def script(element, context, form):
+        def script(context, element, form):
             g = context.generator()
             context.resource('wiking-cms.%s.po' % context.lang())
             context.resource('wiking-cms.js')
@@ -2577,8 +2577,8 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter, PDFExpo
                         # presentation of a document an the "log" here is a sequence
                         # of messages recorded during the export.
                         _("Export Progress Log"),
-                        (lambda r: wiking.HtmlRenderer(
-                            lambda e, c: c.generator().div('', cls='export-progress-log')),),
+                        (lambda r: lcg.HtmlContent(
+                            lambda c, e: c.generator().div('', cls='export-progress-log')),),
                     ),
                 ),
             ),
@@ -2591,11 +2591,11 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter, PDFExpo
         )
         return lcg.CollapsiblePane(
             _("Current Version Testing Export"),
-            (form, wiking.HtmlRenderer(script, form))
+            (form, lcg.HtmlContent(script, form))
         )
 
     def _page_content(self, req, record, preview=False):
-        def cover_image(element, context):
+        def cover_image(context, element):
             if record['cover_image'].value():
                 g = context.generator()
                 filename_x = record.cb_value('cover_image', 'filename')
@@ -2613,7 +2613,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter, PDFExpo
             else:
                 return ''
         return ([self.Navigation('top'),
-                 wiking.HtmlRenderer(cover_image),
+                 lcg.HtmlContent(cover_image),
                  self._publication_info(req, record)] +
                 self._inner_page_content(req, record, preview=preview) +
                 [lcg.Section(_("Table of Contents"), lcg.NodeIndex(), in_toc=False),
@@ -3023,11 +3023,11 @@ class PublicationExports(ContentManagementModule):
         elif action == 'view':
             return (self.Spec.layout,
                     FieldSet(_("Export Progress Log"),
-                             (lambda r: wiking.HtmlRenderer(self._render_export_messages, r),)))
+                             (lambda r: lcg.HtmlContent(self._render_export_messages, r),)))
         else:
             return super(PublicationExports, self)._layout(req, action, record=record)
 
-    def _render_export_messages(self, element, context, record):
+    def _render_export_messages(self, context, element, record):
         # Note: This code partially duplicates the Javascript code in
         # wiking.cms.PublicationExportForm.on_test_result().  At least we
         # need to keep the html structure consistent because of the styles.
@@ -3051,12 +3051,12 @@ class PublicationExports(ContentManagementModule):
         )
 
     def _insert_form_content(self, req, form, record):
-        def script(element, context):
+        def script(context, element):
             g = context.generator()
             context.resource('wiking-cms.%s.po' % context.lang())
             context.resource('wiking-cms.js')
             return g.script(g.js_call('new wiking.cms.PublicationExportForm', form.form_id()))
-        return [form, wiking.HtmlRenderer(script)]
+        return [form, lcg.HtmlContent(script)]
 
     def _file_path(self, req, record):
         fname = record['export_id'].export() + '.' + record['format'].export()
@@ -3150,7 +3150,7 @@ class PublicationExports(ContentManagementModule):
             raise wiking.AuthorizationError(_("PDF download not yet supported."))
 
     def exported_versions_list(self, req):
-        def export(self, context, rows):
+        def export(context, element, rows):
             g = context.generator()
             req = context.req()
             formats = dict(PublicationExports.Formats.enumeration)
@@ -3172,7 +3172,7 @@ class PublicationExports(ContentManagementModule):
             rows = self._data.get_rows(page_id=req.publication_record['page_id'].value(),
                                        public=True, sorting=(('timestamp', pd.DESCENDANT),))
             if rows:
-                return wiking.HtmlRenderer(export, rows)
+                return lcg.HtmlContent(export, rows)
         return lcg.Content()
 
 
@@ -4236,11 +4236,11 @@ class Newsletters(EmbeddableCMSModule):
             layout = ('title', 'lang', 'description', 'image', 'sender', 'address',
                       'read_role_id', 'write_role_id')
         else:
-            def image(element, context):
+            def image(context, element):
                 g = context.generator()
                 uri = req.make_uri(self._current_record_uri(req, record), action='image')
                 return g.img(src=uri)
-            layout = (lambda r: lcg.Container((wiking.HtmlRenderer(image),
+            layout = (lambda r: lcg.Container((lcg.HtmlContent(image),
                                                lcg.p(r['description'].export()))),)
         return layout
 
@@ -4415,8 +4415,8 @@ class NewsletterEditions(CMSModule):
                 return _("Unpublished edition from %s",
                          lcg.LocalizableDateTime(created.strftime('%Y-%m-%d %H:%M'), utc=True))
         layout = (
-            lambda r: wiking.HtmlRenderer(
-                lambda element, context:
+            lambda r: lcg.HtmlContent(
+                lambda context, element:
                 context.generator().img(src='%s/../..?action=image' % context.req().uri()),
             ),
         )
@@ -4661,10 +4661,10 @@ class NewsletterPosts(CMSModule):
         columns = ('title',)
         sorting = (('ord', ASC),)
         def list_layout(self):
-            def clearing(element, context):
+            def clearing(context, element):
                 g = context.generator()
                 return g.div('')
-            def image(element, context, record):
+            def image(context, element, record):
                 if record['image_width'].value() is None: # Test width, big values are excluded...
                     return ''
                 g = context.generator()
@@ -4678,9 +4678,9 @@ class NewsletterPosts(CMSModule):
                              style=style,
                              alt='')
             return pp.ListLayout('title',
-                                 content=(lambda r: wiking.HtmlRenderer(image, r),
+                                 content=(lambda r: lcg.HtmlContent(image, r),
                                           'content',
-                                          lambda r: wiking.HtmlRenderer(clearing),
+                                          lambda r: lcg.HtmlContent(clearing),
                                           ))
 
     _ROW_ACTIONS = True
@@ -4741,7 +4741,7 @@ class Discussions(ContentManagementModule, EmbeddableCMSModule):
         layout = ('text',)
         def list_layout(self):
             import textwrap
-            def reply_info(element, context, record):
+            def reply_info(context, element, record):
                 if record.req().check_roles(Roles.USER):
                     g = context.generator()
                     text = textwrap.fill(record['text'].value(), 60, replace_whitespace=False)
@@ -4755,7 +4755,7 @@ class Discussions(ContentManagementModule, EmbeddableCMSModule):
                 else:
                     return ''
             return pp.ListLayout(lcg.TranslatableText("%(timestamp)s, %(author)s:"),
-                                 content=('text', lambda r: wiking.HtmlRenderer(reply_info, r)),
+                                 content=('text', lambda r: lcg.HtmlContent(reply_info, r)),
                                  anchor='comment-%s')
 
     def _link_provider(self, req, uri, record, cid, **kwargs):
@@ -4802,7 +4802,7 @@ class Discussions(ContentManagementModule, EmbeddableCMSModule):
     def _list_form_content(self, req, form, uri=None):
         content = super(Discussions, self)._list_form_content(req, form, uri=uri)
         if uri is not None:
-            def render(element, context):
+            def render(context, element):
                 # Add JavaScript initialization below the list.
                 context.resource('discussion.css')
                 if req.check_roles(Roles.USER):
@@ -4812,7 +4812,7 @@ class Discussions(ContentManagementModule, EmbeddableCMSModule):
                     return g.script(g.js_call('new Discussion', form.form_id(), uri, 'text'))
                 else:
                     return ''
-            content.append(wiking.HtmlRenderer(render))
+            content.append(lcg.HtmlContent(render))
             if req.check_roles(Roles.USER):
                 # Embed insertion form directly below the message list.
                 content.append(self._form(pw.EditForm, req, action='insert', handler=uri,
