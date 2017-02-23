@@ -4,6 +4,7 @@ div.discussion-list .pytis-form.list-view h3 {
     font-weight: normal;
     font-size: 1em;
     background-color: $color.frame-bg;
+    border: solid $color.frame-border 0;
     border-width: 1px 0;
     position: relative;
 }
@@ -25,11 +26,12 @@ div.discussion-list .pytis-form.list-view div.list-item .actions button {
 }
 div.discussion-list .pytis-form.list-view div.list-item .actions button::-moz-focus-inner { 
     border: 0;
-    padding: 0px;
+    padding: 0;
 }
 div.discussion-list .pytis-form.list-view div.list-item .actions button span {
-    line-height: 1.1em;
-    padding: 1px;
+    height: auto;
+    display: inline-block;
+    vertical-align: middle;
 }
 
 div.discussion-list div.list-item div.attachment-list {
@@ -56,20 +58,20 @@ div.discussion-list .pytis-form.edit-form {
     white-space: nowrap;
 }
 div.discussion-list .pytis-form.edit-form div.group,
-div.discussion-list .pytis-form.edit-form div.submit { 
+div.discussion-list .pytis-form.edit-form div.submit-buttons {
     margin: 0;
     padding: 0;
     background: none;
     border: none;
 }
-div.discussion-list .pytis-form.edit-form div.submit { 
+div.discussion-list .pytis-form.edit-form div.submit-buttons {
     padding: 0;
     text-align: right;
 }
-div.discussion-list .pytis-form.edit-form div.submit input { 
+div.discussion-list .pytis-form.edit-form div.submit-buttons input {
     margin: 0;
 }
-div.discussion-list .pytis-form.edit-form div.submit button {
+div.discussion-list .pytis-form.edit-form div.submit-buttons button {
     line-height: 1.2em;
     margin: 2px 0;
 }
