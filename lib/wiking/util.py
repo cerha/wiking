@@ -1987,7 +1987,7 @@ class Message(lcg.Container):
     ERROR = 'error'
     """Message 'kind' constant for error messages."""
 
-    def __init__(self, content, formatted=False, kind=INFO, **kwargs):
+    def __init__(self, content, formatted=False, kind=INFO, name=None, **kwargs):
         assert kind in (self.INFO, self.SUCCESS, self.WARNING, self.ERROR)
         icon = lcg.HtmlContent(lambda context, element: self._export_icon(context))
         if formatted and isinstance(content, lcg.Localizable):
@@ -2001,8 +2001,9 @@ class Message(lcg.Container):
             content = FormattedString(content)
         else:
             content = lcg.coerce(content, formatted=formatted)
-        super(Message, self).__init__((icon, lcg.Container(content, id='content')),
-                                      id='message %s' % kind, **kwargs)
+        super(Message, self).__init__((icon, lcg.Container(content, name='content')),
+                                      name=' '.join(('message', kind) + ((name,) if name else ())),
+                                      **kwargs)
         self._kind = kind
 
     def _export_icon(self, context):
