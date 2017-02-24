@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2005-2016 Brailcom, o.p.s.
+# Copyright (C) 2005-2017 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -1009,10 +1009,6 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         """
         return None
 
-    def _filter_sets(self, req):
-        """DEPRECATED: Use query_fields in specification instead."""
-        return None
-
     def _action_args(self, req):
         """Resolve request path and/or parameters into action method arguments.
 
@@ -1759,7 +1755,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                               columns=[c for c in self._columns(req)
                                        if c != binding.binding_column()],
                               arguments=self._binding_arguments(binding, record),
-                              profiles=self._profiles(req), filter_sets=self._filter_sets(req),
+                              profiles=self._profiles(req),
                               actions=self._form_actions_argument(req),
                               **form_kwargs)
             if form.is_ajax_request(req) and req.param('form_name') == self.name():
@@ -1864,7 +1860,6 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                           condition=condition,
                           arguments=self._arguments(req),
                           profiles=self._profiles(req),
-                          filter_sets=self._filter_sets(req),
                           actions=self._form_actions_argument(req),
                           )
         if form.is_ajax_request(req):
