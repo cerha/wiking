@@ -1,4 +1,4 @@
-# Copyright (C) 2005-2016 Brailcom, o.p.s.
+# Copyright (C) 2005-2017 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -65,10 +65,6 @@ class Module(object):
         self._resolved_name = name
         # log(OPR, 'New module instance: %s[%x]' % (name, lcg.positive_id(self)))
         super(Module, self).__init__()
-
-    def _module(self, name, **kwargs):
-        """Deprecated: Use 'wiking.module()' instead."""
-        return wiking.cfg.resolver.wiking_module(name)
 
 
 class RequestHandler(object):
