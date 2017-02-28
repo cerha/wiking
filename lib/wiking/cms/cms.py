@@ -49,7 +49,7 @@ import json
 import pytis.data
 import pytis.util
 from pytis.util import OPERATIONAL, Attribute, Structure, format_byte_size, log, find
-from pytis.presentation import computer, CodebookSpec, Field, FieldSet, ColumnLayout, Action
+from pytis.presentation import Action, CodebookSpec, Field, FieldSet, HGroup, computer
 
 CHOICE = pp.SelectionType.CHOICE
 ALPHANUMERIC = pp.TextFilter.ALPHANUMERIC
@@ -2167,7 +2167,7 @@ class BrailleExporter(wiking.Module):
         )
     BRAILLE_EXPORT_OPTIONS_FIELDSET = FieldSet(
         _("Braille Export Options"),
-        (ColumnLayout(
+        (HGroup(
             ('printer', 'page_width', 'page_height',),
             FieldSet(_("Margins"), ('inner_margin', 'outer_margin', 'top_margin', 'bottom_margin')),
         ),),
@@ -3227,12 +3227,15 @@ class PageHistory(ContentManagementModule):
 
     def _layout(self, req, action, record=None):
         if action == 'view':
-            return (('comment',),
-                    ColumnLayout(FieldSet(_("Change Summary"),
-                                          ('inserted_lines', 'changed_lines', 'deleted_lines')),
-                                 FieldSet(_("Colors"), ('diff_add', 'diff_chg', 'diff_sub')),
-                                 ),
-                    self._diff)
+            return (
+                ('comment',),
+                HGroup(
+                    FieldSet(_("Change Summary"),
+                             ('inserted_lines', 'changed_lines', 'deleted_lines')),
+                    FieldSet(_("Colors"), ('diff_add', 'diff_chg', 'diff_sub')),
+                ),
+                self._diff,
+            )
         else:
             return super(PageHistory, self)._layout(req, action, record=record)
 
