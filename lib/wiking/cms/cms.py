@@ -29,7 +29,7 @@ import pytis.presentation as pp
 import pytis.web as pw
 import wiking
 import wiking.dbdefs
-from wiking import Binding, FieldSet, Forbidden, MenuItem, NotFound, PanelItem, \
+from wiking import Binding, Forbidden, MenuItem, NotFound, PanelItem, \
     Redirect, Response, Role, Specification, make_uri
 import wiking.cms
 
@@ -49,7 +49,7 @@ import json
 import pytis.data
 import pytis.util
 from pytis.util import OPERATIONAL, Attribute, Structure, format_byte_size, log, find
-from pytis.presentation import computer, CodebookSpec, Field, ColumnLayout, Action
+from pytis.presentation import computer, CodebookSpec, Field, FieldSet, ColumnLayout, Action
 
 CHOICE = pp.SelectionType.CHOICE
 ALPHANUMERIC = pp.TextFilter.ALPHANUMERIC
