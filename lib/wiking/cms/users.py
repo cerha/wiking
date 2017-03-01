@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2006-2016 Brailcom, o.p.s.
+# Copyright (C) 2006-2017 Brailcom, o.p.s.
 #
 # COPYRIGHT NOTICE
 #
@@ -34,19 +34,25 @@ import random
 import socket
 import string
 
+import lcg
 import pytis.data as pd
 import pytis.presentation as pp
 import pytis.web as pw
 import pytis.util
 import wiking
-import lcg
-
-from pytis.presentation import Action, CodebookSpec, Field, FieldSet, computer
-from wiking import Module, ActionHandler, PytisModule, CachingPytisModule, \
-    Document, ConfirmationDialog, send_mail, log, OPR
-from wiking.cms import EmbeddableCMSModule, UserManagementModule, Role, Roles, \
-    enum, now, ASC, DESC, NEVER, ONCE
 import wiking.dbdefs
+
+from pytis.presentation import (
+    Action, Binding, CodebookSpec, Field, FieldSet, computer,
+)
+from wiking import (
+    Module, ActionHandler, PytisModule, CachingPytisModule,
+    Document, ConfirmationDialog, send_mail, log, OPR,
+)
+from wiking.cms import (
+    EmbeddableCMSModule, UserManagementModule, Role, Roles,
+    enum, now, ASC, DESC, NEVER, ONCE
+)
 
 _ = lcg.TranslatableTextFactory('wiking-cms')
 
@@ -698,13 +704,14 @@ class Users(UserManagementModule, CachingPytisModule):
             return (self._check_email, self._check_old_password, self._check_new_password)
 
         def bindings(self):
-            return (wiking.Binding('roles', _("User's Groups"), 'UserRoles', 'uid',
-                                   form=pw.ItemizedView),
-                    wiking.Binding('login-history', _("Login History"), 'SessionLog', 'uid',
-                                   enabled=lambda r: r.req().check_roles(Roles.USER_ADMIN)),
-                    wiking.Binding('crypto', _("Crypto Keys"), 'CryptoKeys', 'uid',
-                                   enabled=self._crypto_user),
-                    )
+            return (
+                wiking.Binding('roles', _("User's Groups"), 'UserRoles', 'uid',
+                               form=pw.ItemizedView),
+                Binding('login-history', _("Login History"), 'SessionLog', 'uid',
+                        enabled=lambda r: r.req().check_roles(Roles.USER_ADMIN)),
+                Binding('crypto', _("Crypto Keys"), 'CryptoKeys', 'uid',
+                        enabled=self._crypto_user),
+            )
         columns = ('fullname', 'nickname', 'email', 'state', 'since')
         sorting = (('surname', ASC), ('firstname', ASC))
         layout = () # Force specific layout definition for each action.

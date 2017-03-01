@@ -29,8 +29,6 @@ import pytis.presentation as pp
 import pytis.web as pw
 import wiking
 import wiking.dbdefs
-from wiking import Binding, Forbidden, MenuItem, NotFound, PanelItem, \
-    Redirect, Response, Role, Specification, make_uri
 import wiking.cms
 
 import collections
@@ -49,7 +47,13 @@ import json
 import pytis.data
 import pytis.util
 from pytis.util import OPERATIONAL, Attribute, Structure, format_byte_size, log, find
-from pytis.presentation import Action, CodebookSpec, Field, FieldSet, HGroup, computer
+from pytis.presentation import (
+    Action, Binding, CodebookSpec, Field, FieldSet, HGroup, computer,
+)
+from wiking import (
+    Forbidden, MenuItem, NotFound, PanelItem,
+    Redirect, Response, Role, Specification, make_uri,
+)
 
 CHOICE = pp.SelectionType.CHOICE
 ALPHANUMERIC = pp.TextFilter.ALPHANUMERIC
@@ -4196,8 +4200,8 @@ class Newsletters(EmbeddableCMSModule):
         layout = () # Defined dynamically in _layout().
         columns = ('title', 'lang', 'read_role_id', 'write_role_id')
         bindings = (
-            Binding('editions', _("Editions"), 'NewsletterEditions', 'newsletter_id',
-                    form=pw.ItemizedView),
+            wiking.Binding('editions', _("Editions"), 'NewsletterEditions', 'newsletter_id',
+                           form=pw.ItemizedView),
             Binding('subscribers', _("Subscribers"), 'NewsletterSubscription', 'newsletter_id',
                     enabled=lambda r: r.req().newsletter_write_access),
         )
