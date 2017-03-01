@@ -1324,16 +1324,10 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         'enabled' attribute of the binding specification.
 
         """
-        if isinstance(binding, wiking.Binding):
-            enabled = binding.enabled()
-            if enabled is None:
-                return True
-            elif isinstance(enabled, collections.Callable):
-                return enabled(record)
-            else:
-                return bool(enabled)
-        else:
-            return True
+        enabled = binding.enabled()
+        if isinstance(enabled, collections.Callable):
+            enabled = enabled(record)
+        return bool(enabled)
 
     def _binding_visible(self, req, record, binding):
         """Return True if the binding is displayed as a side form.
