@@ -674,7 +674,7 @@ body.maximized #bottom-bar {
 #menu ul.main-menu-items {
     margin: 0;
     padding: 0;
-    height: 20px;
+    overflow: auto; /* Avoids floated elements outside container (clearfix). */
 }
 #menu li.main-menu-item {
     display: inline-block;
