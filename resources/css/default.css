@@ -674,7 +674,13 @@ body.maximized #bottom-bar {
 #menu ul.main-menu-items {
     margin: 0;
     padding: 0;
-    overflow: auto; /* Avoids floated elements outside container (clearfix). */
+}
+#menu ul.main-menu-items:after { /* Avoid floated elements outside container (clearfix). */
+    clear: both;
+    content: "";
+    display: block;
+    height: 0;
+    visibility: hidden;
 }
 #menu li.main-menu-item {
     display: inline-block;
