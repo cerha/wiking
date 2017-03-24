@@ -170,47 +170,6 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
     def _safe_css_id(self, id):
         return self._UNSAFE_CHARS.sub('-', id)
 
-    def _body_attr(self, context):
-        attr = super(Exporter, self)._body_attr(context)
-        cls = ['page-id-' + self._safe_css_id(context.node().id().strip('/'))]
-        cls.extend(['parent-page-id-' + self._safe_css_id(node.id().strip('/'))
-                    for node in context.node().path()[1:-1]])
-        cls.extend(('lang-%s' % context.lang(),
-                    context.layout() + '-layout'))
-        req = context.req()
-        if req.maximized():
-            cls.append('maximized')
-        else:
-            cls.append('non-maximized')
-        if context.application.preview_mode(req):
-            cls.append('preview-mode')
-        else:
-            cls.append('production-mode')
-        if context.panels():
-            cls.append('with-panels')
-        return dict(attr,
-                    onload=context.generator().js_call('new wiking.Handler'),
-                    cls=' '.join(cls))
-
-    def _body_content(self, context):
-        if context.layout() == self.Layout.FRAME:
-            messages = self._messages(context)
-            return (messages and self._generator.div(messages, id='messages') or '',
-                    self._content(context))
-        else:
-            return super(Exporter, self)._body_content(context)
-
-    def _meta(self, context):
-        import wiking
-        result = [('generator', 'Wiking %s, LCG %s, Pytis %s' %
-                   (wiking.__version__, lcg.__version__, pytis.__version__))]
-        if wiking.cfg.viewport:
-            result.append(('viewport', wiking.cfg.viewport))
-        return result
-
-    def _page_attr(self, context):
-        return dict(cls='with-submenu') if context.has_submenu else {}
-
     def _uri_node(self, context, node, lang=None):
         uri = node.id()
         if not uri.startswith('/'):
@@ -233,6 +192,14 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             uri += '?preview_theme=%s' % theme_id
         return uri
 
+    def _meta(self, context):
+        import wiking
+        result = [('generator', 'Wiking %s, LCG %s, Pytis %s' %
+                   (wiking.__version__, lcg.__version__, pytis.__version__))]
+        if wiking.cfg.viewport:
+            result.append(('viewport', wiking.cfg.viewport))
+        return result
+
     def _head(self, context):
         g = self._generator
         tags = super(Exporter, self)._head(context) + \
@@ -250,6 +217,39 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             ('description', context.application.site_subtitle(req)),
             ('image', server_uri + wiking.cfg.site_image if wiking.cfg.site_image else None),
         ) if val is not None]
+
+    def _body_content(self, context):
+        if context.layout() == self.Layout.FRAME:
+            messages = self._messages(context)
+            return (messages and self._generator.div(messages, id='messages') or '',
+                    self._content(context))
+        else:
+            return super(Exporter, self)._body_content(context)
+
+    def _body_attr(self, context):
+        attr = super(Exporter, self)._body_attr(context)
+        cls = ['page-id-' + self._safe_css_id(context.node().id().strip('/'))]
+        cls.extend(['parent-page-id-' + self._safe_css_id(node.id().strip('/'))
+                    for node in context.node().path()[1:-1]])
+        cls.extend(('lang-%s' % context.lang(),
+                    context.layout() + '-layout'))
+        req = context.req()
+        if req.maximized():
+            cls.append('maximized')
+        else:
+            cls.append('non-maximized')
+        if context.application.preview_mode(req):
+            cls.append('preview-mode')
+        else:
+            cls.append('production-mode')
+        if context.panels():
+            cls.append('with-panels')
+        return dict(attr,
+                    onload=context.generator().js_call('new wiking.Handler'),
+                    cls=' '.join(cls))
+
+    def _page_attr(self, context):
+        return dict(cls='with-submenu') if context.has_submenu else {}
 
     def _site_title(self, context):
         g = self._generator
@@ -332,6 +332,31 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             content = lcg.concat(content, bottom_content.export(context))
         return g.div(content, cls='menu-panel')
 
+    def _messages(self, context):
+        messages = context.req().messages()
+        if messages:
+            return [wiking.Message(message, kind=kind, formatted=formatted).export(context)
+                    for message, kind, formatted in messages]
+        else:
+            return None
+
+    def _heading(self, context):
+        g = self._generator
+        if context.req().maximized():
+            label = _("Exit the maximized mode.")
+            href = '?maximize=0'
+            cls = 'unmaximize-icon'
+        else:
+            label = _("Maximize the main content to the full size of the browser window.")
+            href = '?maximize=1'
+            cls = 'maximize-icon'
+        return (
+            g.a('', href=href, title=label, aria_label=label, cls=cls,
+                id='maximized-mode-button', role='button'),
+            g.h(g.a(context.node().heading().export(context), tabindex=0,
+                    name='main-heading', id='main-heading'), 1),
+        )
+
     def _panels(self, context):
         if not context.panels():
             return None
@@ -367,31 +392,6 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         if extra_content:
             result.append(g.div(extra_content.export(context), cls='panels-bottom-content'))
         return result
-
-    def _messages(self, context):
-        messages = context.req().messages()
-        if messages:
-            return [wiking.Message(message, kind=kind, formatted=formatted).export(context)
-                    for message, kind, formatted in messages]
-        else:
-            return None
-
-    def _heading(self, context):
-        g = self._generator
-        if context.req().maximized():
-            label = _("Exit the maximized mode.")
-            href = '?maximize=0'
-            cls = 'unmaximize-icon'
-        else:
-            label = _("Maximize the main content to the full size of the browser window.")
-            href = '?maximize=1'
-            cls = 'maximize-icon'
-        return (
-            g.a('', href=href, title=label, aria_label=label, cls=cls,
-                id='maximized-mode-button', role='button'),
-            g.h(g.a(context.node().heading().export(context), tabindex=0,
-                    name='main-heading', id='main-heading'), 1),
-        )
 
     def _last_change(self, context):
         # Currently unused, left here just to have the translation.
