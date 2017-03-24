@@ -1,4 +1,4 @@
-# Copyright (C) 2006-2016 Brailcom, o.p.s.
+# Copyright (C) 2006-2017 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -140,8 +140,8 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
     def _safe_css_id(self, id):
         return self._UNSAFE_CHARS.sub('-', id)
 
-    def _body_attr(self, context, **kwargs):
-        onload = context.generator().js_call('new wiking.Handler')
+    def _body_attr(self, context):
+        attr = super(Exporter, self)._body_attr(context)
         cls = ['page-id-' + self._safe_css_id(context.node().id().strip('/'))]
         cls.extend(['parent-page-id-' + self._safe_css_id(node.id().strip('/'))
                     for node in context.node().path()[1:-1]])
@@ -158,7 +158,9 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             cls.append('production-mode')
         if context.panels():
             cls.append('with-panels')
-        return super(Exporter, self)._body_attr(context, onload=onload, cls=' '.join(cls), **kwargs)
+        return dict(attr,
+                    onload=context.generator().js_call('new wiking.Handler'),
+                    cls=' '.join(cls))
 
     def _body_content(self, context):
         if context.layout() == self.Layout.FRAME:
