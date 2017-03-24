@@ -22,9 +22,13 @@ import pytis
 import wiking
 
 _ = lcg.TranslatableTextFactory('wiking')
+Part = lcg.HtmlExporter.Part
 
 class MinimalExporter(lcg.HtmlExporter):
-    _BODY_PARTS = ('main', 'bottom_bar')
+    _PAGE_STRUCTURE = (
+        Part('main'),
+        Part('bottom-bar'),
+    )
 
     def _head(self, context):
         g = context.generator()
@@ -114,27 +118,53 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
 
         """
 
-    _BODY_PARTS = ('wrap',)
-    _WRAP_PARTS = ('top', 'middle', 'bottom')
-    _MIDDLE_PARTS = ('page',)
-    _PAGE_PARTS = ('links', 'breadcrumbs', 'menu', 'submenu', 'main', 'panels', 'page_clearing')
-    _BOTTOM_PARTS = ('bottom_bar', 'footer')
-    _PART_TITLE = {
-        'top': _("Page heading"),
-        'menu': _("Main navigation"),
-        'main': _("Main content"),
-        'bottom': _("Page footer"),
-        'language_selection': _("Language selection"),
-    }
-    _PART_LABELLEDBY = {
-        'main': 'main-heading',
-    }
-    _LANDMARKS = {
-        'top': 'banner',
-        'menu': 'navigation',
-        'main': 'main',
-        'bottom': 'contentinfo',
-    }
+    _PAGE_STRUCTURE = (
+        Part('wrap', content=(
+            Part('wrap-layer1', content=(
+                Part('top', aria_label=_("Page heading"), role='banner', content=(
+                    Part('top-layer1', content=(
+                        Part('top-layer2', content=(
+                            Part('top-layer3', content=(
+                                Part('top-content', role='banner'),
+                                Part('top-controls'),
+                                Part('top-clearing', content=()),
+                            )),
+                        )),
+                    )),
+                )),
+                Part('middle', content=(
+                    Part('middle-layer1', content=(
+                        Part('page', content=(
+                            Part('links'),
+                            Part('breadcrumbs'),
+                            Part('menu',
+                                 aria_label=_("Main navigation"),
+                                 accesskey="3",
+                                 role='navigation'),
+                            Part('submenu', role='navigation'),
+                            Part('main',
+                                 aria_label=_("Main content"),
+                                 aria_labelledby='main-heading',
+                                 role='main',
+                                 content=(
+                                     Part('heading'),
+                                     Part('messages'),
+                                     Part('content'),
+                                     Part('clearing', content=()),
+                                 ),
+                            ),
+                            Part('panels'),
+                            Part('page-clearing', content=())
+                        )),
+                    )),
+                )),
+                Part('bottom', aria_label=_("Page footer"), role='contentinfo', content=(
+                    Part('bottom-bar'),
+                    Part('footer'),
+                )),
+            )),
+        )),
+    )
     _UNSAFE_CHARS = re.compile(r"[^a-zA-Z0-9_-]")
 
     def _safe_css_id(self, id):
@@ -164,7 +194,8 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
 
     def _body_content(self, context):
         if context.layout() == self.Layout.FRAME:
-            return (self._messages(context),
+            messages = self._messages(context)
+            return (messages and self._generator.div(messages, id='messages') or '',
                     self._content(context))
         else:
             return super(Exporter, self)._body_content(context)
@@ -177,39 +208,8 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             result.append(('viewport', wiking.cfg.viewport))
         return result
 
-    def _wrap(self, context):
-        g = self._generator
-        return g.div(self._parts(context, self._WRAP_PARTS), id='wrap-layer1')
-
-    def _middle(self, context):
-        g = self._generator
-        return g.div(self._parts(context, self._MIDDLE_PARTS), id='middle-layer1')
-
-    def _bottom(self, context):
-        return self._parts(context, self._BOTTOM_PARTS)
-
-    def _page(self, context):
-        return self._parts(context, self._PAGE_PARTS)
-
     def _page_attr(self, context):
         return dict(cls='with-submenu') if context.has_submenu else {}
-
-    def _part(self, name, context):
-        content = getattr(self, '_' + name)(context)
-        if content is not None:
-            if hasattr(self, '_' + name + '_attr'):
-                attr = getattr(self, '_' + name + '_attr')(context)
-            else:
-                attr = {}
-            if name in self._PART_TITLE:
-                attr['aria_label'] = self._PART_TITLE[name]
-            if name in self._PART_LABELLEDBY:
-                attr['aria_labelledby'] = self._PART_LABELLEDBY[name]
-            if name in self._LANDMARKS:
-                attr['role'] = self._LANDMARKS[name]
-            return self._generator.div(content, id=name.replace('_', '-'), **attr)
-        else:
-            return None
 
     def _hidden(self, *text):
         return self._generator.span(text, cls="hidden")
@@ -267,19 +267,6 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
     def _title(self, context):
         return context.node().title() + ' - ' + context.application.site_title(context.req())
 
-    def _top(self, context):
-        g = self._generator
-        return g.div(
-            g.div(
-                g.div([g.div(content, id=id_) for id_, content in
-                       (('top-content', self._top_content(context)),
-                        ('top-controls', self._top_controls(context)),
-                        ('top-clearing', ''))
-                       if content is not None],
-                      id='top-layer3'),
-                id='top-layer2'),
-            id='top-layer1')
-
     def _top_content(self, context):
         content = context.application.top_content(context.req())
         if content:
@@ -329,9 +316,6 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             g.h(_("Main navigation"), 3),
             g.div(g.ul(*items, cls='main-menu-items'), id='main-menu'),
         )
-
-    def _menu_attr(self, context):
-        return dict(accesskey="3")
 
     def _submenu(self, context):
         if not context.has_submenu:
@@ -390,14 +374,12 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
     def _messages(self, context):
         messages = context.req().messages()
         if messages:
-            g = self._generator
-            return g.div([wiking.Message(message, kind=kind, formatted=formatted).export(context)
-                          for message, kind, formatted in messages],
-                         id='messages')
+            return [wiking.Message(message, kind=kind, formatted=formatted).export(context)
+                    for message, kind, formatted in messages]
         else:
-            return ''
+            return None
 
-    def _main(self, context):
+    def _heading(self, context):
         g = self._generator
         if context.req().maximized():
             label = _("Exit the maximized mode.")
@@ -407,18 +389,12 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             label = _("Maximize the main content to the full size of the browser window.")
             href = '?maximize=1'
             cls = 'maximize-icon'
-        return (g.hr(cls='hidden'),
-                g.div((
-                    g.a('', href=href, title=label, aria_label=label, cls=cls,
-                        id='maximized-mode-button', role='button'),
-                    g.h(g.a(context.node().heading().export(context), tabindex=0,
-                            name='main-heading', id='main-heading'), 1),
-                    self._messages(context),
-                    super(Exporter, self)._content(context)), id='content'),
-                g.div('', id='clearing'))
-
-    def _page_clearing(self, context):
-        return ''
+        return (
+            g.a('', href=href, title=label, aria_label=label, cls=cls,
+                id='maximized-mode-button', role='button'),
+            g.h(g.a(context.node().heading().export(context), tabindex=0,
+                    name='main-heading', id='main-heading'), 1),
+        )
 
     def _last_change(self, context):
         # Currently unused, left here just to have the translation.

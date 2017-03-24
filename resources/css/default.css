@@ -633,6 +633,10 @@ body.non-maximized #page {
     margin-bottom: 0.3em;
 }
 
+#heading {
+    position: relative;
+}
+
 #maximized-mode-button {
     position: absolute;
     top: 4px;
