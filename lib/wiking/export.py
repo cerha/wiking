@@ -211,9 +211,6 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
     def _page_attr(self, context):
         return dict(cls='with-submenu') if context.has_submenu else {}
 
-    def _hidden(self, *text):
-        return self._generator.span(text, cls="hidden")
-
     def _uri_node(self, context, node, lang=None):
         uri = node.id()
         if not uri.startswith('/'):
@@ -416,7 +413,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                     result.append(g.div(content.export(context), cls="left"))
             if right:
                 if left:
-                    result.append(self._hidden(" | "))
+                    result.append(g.span(" | ", cls="hidden"))
                 content = lcg.coerce(right)
                 result.append(g.span(content.export(context)))
             return result
