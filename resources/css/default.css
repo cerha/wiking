@@ -653,6 +653,7 @@ body.maximized #middle {
 body.maximized #main {
     border-left: 0;
     border-right: 0;
+    border-radius: 0;
 }
 body.maximized #bottom {
     padding: 0;
@@ -665,11 +666,12 @@ body.maximized #bottom-bar {
 /* Horizontal menu bar */
 
 #menu {
-    border-bottom: 1px solid $color.top-border;
-    padding-left: 3px;
     /* The rules below fix MSIE 8 dropdown menu z-index */
     position: relative;
     z-index: 2;
+}
+#main-menu {
+    margin: 0 4px;
 }
 #menu h3 {
     display: none;
@@ -765,6 +767,7 @@ body.non-maximized #page.with-submenu #main {
 #submenu .menu-panel  {
     position: relative;
     border: 1px solid $color.top-border;
+    border-radius: 5px;
     margin: 10px 10px 0 8px;
 }
 #submenu h3 {
@@ -773,6 +776,7 @@ body.non-maximized #page.with-submenu #main {
     padding: 2px 4px;
     background-color: $color.heading-bg;
     border-bottom: 1px solid $color.top-border;
+    border-radius: 5px 5px 0 0;
 }
 #submenu button.toggle-menu-expansion {
     position: absolute;
@@ -816,6 +820,7 @@ body.maximized #panels .panel {
     margin-left: 8px;
     color: $color.foreground;
     border: 1px solid $color.top-border;
+    border-radius: 5px;
     background-color: $color.background;
 }
 #panels .panels-bottom-content {
@@ -828,6 +833,7 @@ body.maximized #panels .panel {
     position: relative;
     background-color: $color.heading-bg;
     border-bottom: 1px solid $color.top-border;
+    border-radius: 5px 5px 0 0;
 }
 #panels .panel .panel-content {
     padding: 2px 4px;
@@ -845,9 +851,9 @@ body.maximized #panels .panel {
     color: $color.foreground;
     background-color: $color.background;
     border: 1px solid $color.top-border;
+    border-radius: 5px;
     padding: 10px 11px;
     margin-bottom: 8px;
-    border-top: 0px; /* The top border is part of the menu bar. */
 }
 #main h1 {
     margin-top: 0;
@@ -938,6 +944,9 @@ body.non-maximized #middle {
 body.non-maximized #main {
     border-left: 0;
     border-right: 0;
+}
+#main {
+    border-radius: 0;
 }
 
 body.non-maximized #panels {
