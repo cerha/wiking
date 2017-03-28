@@ -301,7 +301,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                 else:
                     dropdown = ''
                     arrow = ''
-                items.append(g.li((g.a(node.title() + arrow,
+                items.append(g.li((g.a((node.title(), arrow),
                                        href=self._uri_node(context, node),
                                        title=node.descr(),
                                        cls=('navigation-link' +
