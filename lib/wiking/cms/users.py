@@ -1415,7 +1415,7 @@ class Users(UserManagementModule, CachingPytisModule):
                     g.strong(g.label(_("Enter your login name or e-mail address") + ':',
                                      ids.query)),
                     g.div((
-                        g.field(name='query', value=req.param('query'), id=ids.query,
+                        g.input(name='query', value=req.param('query'), id=ids.query,
                                 tabindex=0, size=60),
                         g.noescape('&nbsp;'),
                         # Translators: Button name. Computer terminology. Use an appropriate
@@ -1784,7 +1784,7 @@ class ActivationForm(lcg.Content):
                 g.hidden('action', 'confirm'),
                 g.hidden('uid', self._uid),
                 g.label(_("Enter the activation code:"), field_id),
-                g.field(name='regcode', value=req.param('regcode'), id=field_id),
+                g.input(name='regcode', value=req.param('regcode'), id=field_id),
                 g.button(g.span(_("Submit")), type='submit'),
             ),
             action=req.module_uri('Registration'),

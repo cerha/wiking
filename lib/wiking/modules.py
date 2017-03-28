@@ -549,17 +549,15 @@ class Search(Module, ActionHandler):
             lcg.Content.__init__(self)
             self._uri = req.uri()
 
-        def _contents(self, generator):
-            return (generator.label(self._SEARCH_FIELD_LABEL, 'input'), ' ',
-                    generator.field(name='input', id='input', tabindex=0, size=20),
-                    generator.br(),
-                    generator.submit(self._SEARCH_BUTTON_LABEL, cls='submit'),)
-
         def export(self, exporter):
-            generator = exporter.generator()
-            contents = self._contents(generator)
-            contents = contents + (generator.hidden(name='action', value='search'),)
-            return generator.form(contents, method='POST', action=self._uri)
+            g = exporter.generator()
+            return g.form(method='POST', action=self._uri, contents=(
+                g.label(self._SEARCH_FIELD_LABEL, 'input'), ' ',
+                g.input(name='input', id='input', tabindex=0, size=20),
+                g.br(),
+                g.submit(self._SEARCH_BUTTON_LABEL, cls='submit'),
+                g.hidden(name='action', value='search'),
+            ))
 
     class Result:
         def __init__(self, uri, title, sample=None):

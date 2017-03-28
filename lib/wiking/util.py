@@ -1923,7 +1923,7 @@ class DecryptionDialog(lcg.Content):
         message = _("Decryption password for '%s'", self._decryption_name)
         content = (
             g.label(message + ':', '__decryption_password') + g.br(),
-            g.field(name='__decryption_password', id='__decryption_password', password=True,
+            g.input(name='__decryption_password', id='__decryption_password', password=True,
                     size=18, maxlength=32),
             g.br(),
             # Translators: Web form button.
