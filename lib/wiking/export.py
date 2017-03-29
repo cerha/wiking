@@ -46,7 +46,7 @@ class MinimalExporter(lcg.HtmlExporter):
 
     def _main(self, context):
         g = context.generator()
-        return (g.h(context.node().title(), 1),
+        return (g.h1(context.node().title()),
                 super(MinimalExporter, self)._content(context))
 
     def _bottom_bar(self, context):
@@ -310,7 +310,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                                    dropdown),
                                   cls='main-menu-item'))
         return (
-            g.h(_("Main navigation"), 3),
+            g.h3(_("Main navigation")),
             g.div(g.ul(*items, cls='main-menu-items'), id='main-menu'),
         )
 
@@ -326,7 +326,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         application = context.application
         title = application.menu_panel_title(req)
         if title:
-            content = lcg.concat(g.h(title, 3, role='presentation', aria_hidden='true'), content)
+            content = lcg.concat(g.h3(title, role='presentation', aria_hidden='true'), content)
         bottom_content = application.menu_panel_bottom_content(req)
         if bottom_content:
             content = lcg.concat(content, bottom_content.export(context))
@@ -353,8 +353,8 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         return (
             g.a('', href=href, title=label, aria_label=label, cls=cls,
                 id='maximized-mode-button', role='button'),
-            g.h(g.a(context.node().heading().export(context), tabindex=0,
-                    name='main-heading', id='main-heading'), 1),
+            g.h1(g.a(context.node().heading().export(context), tabindex=0,
+                    name='main-heading', id='main-heading')),
         )
 
     def _panels(self, context):
@@ -383,7 +383,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             content = panel.content()
             # Add a fake container to force the heading level start at 4.
             lcg.Container(lcg.Section('', lcg.Section('', content)))
-            result.append(g.div((g.h(title, 3),
+            result.append(g.div((g.h3(title),
                                  g.div(content.export(context), cls='panel-content')),
                                 id='panel-' + self._safe_css_id(panel.id()), cls='panel',
                                 role='complementary',

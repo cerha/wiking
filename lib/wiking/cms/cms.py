@@ -3160,7 +3160,7 @@ class PublicationExports(ContentManagementModule):
             formats = dict(PublicationExports.Formats.enumeration)
             base_uri = req.uri() + '/exports/'
             return g.div((
-                g.h(_("Available Download Versions"), 2),
+                g.h2(_("Available Download Versions")),
                 g.ul(*[g.li(g.a(_("%(format)s version %(version)s",
                                   format=formats[row['format'].value()],
                                   version=row['version'].value()),
