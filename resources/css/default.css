@@ -200,7 +200,7 @@ button {
     background-color: #fafafa;
     border: 1px solid #ccc;
     border-radius: 4px;
-    padding: 2px 6px;
+    padding: 4px 8px;
     white-space: nowrap;
     -webkit-appearance: button;
 }
@@ -694,13 +694,13 @@ body.maximized #bottom-bar {
     white-space: nowrap;
     margin-right: 3px;
     position: relative;
-    height: 20px;
+    height: 25px;
 }
 #menu a.navigation-link {
     display: inline-block;
     border: solid $color.top-border 1px;
     font-size: 15px;
-    padding: 1px 8px 2px 8px;
+    padding: 4px 9px;
     background-color: $color.inactive-folder;
     text-decoration: none;
     position: relative;
@@ -737,7 +737,7 @@ body.non-maximized #menu a.navigation-link.current .dropdown-arrow {
 
 #menu .menu-dropdown {
     position: absolute;
-    top: 20px;
+    top: 24px;
     left: 0px;
     border: 1px solid $color.top-border;
     z-index: 2;
@@ -773,14 +773,14 @@ body.non-maximized #page.with-submenu #main {
 #submenu h3 {
     margin: 0;
     font-size: 1.1em;
-    padding: 2px 4px;
+    padding: 4px 6px;
     background-color: $color.heading-bg;
     border-bottom: 1px solid $color.top-border;
     border-radius: 5px 5px 0 0;
 }
 #submenu button.toggle-menu-expansion {
     position: absolute;
-    top: 4px;
+    top: 7px;
     right: 4px;
 }
 * html #submenu button.toggle-menu-expansion { right: 10px; } /* MSIE hack */
@@ -802,7 +802,7 @@ body.non-maximized.with-panels #footer {
 }
 body.non-maximized #panels {
     position: absolute;
-    top: 20px;
+    top: 25px;
     right: 0px;
     z-index: 1;
     float: right;
@@ -827,7 +827,7 @@ body.maximized #panels .panel {
     margin: 0 0 8px 8px;
 }
 #panels .panel h3 {
-    padding: 2px 4px;
+    padding: 4px 6px;
     margin: 0;
     font-size: 1.1em;
     position: relative;
@@ -836,7 +836,7 @@ body.maximized #panels .panel {
     border-radius: 5px 5px 0 0;
 }
 #panels .panel .panel-content {
-    padding: 2px 4px;
+    padding: 4px 6px;
 }
 #panels .panel-content ul, #panels .panel-content ol {
     padding-left: 1.5em;
@@ -884,7 +884,7 @@ body.maximized #panels .panel {
     border: solid $color.top-border;
     border-width: 1px 0px;
     background-color: $color.heading-bg;
-    padding: 1px 2px;
+    padding: 2px 3px;
     margin-bottom: 12px;
 }
 #bottom-bar span.left { float: left; }

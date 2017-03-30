@@ -22,7 +22,7 @@ div.discussion-list .pytis-form.list-view div.list-item .actions {
     margin-top: 0.2em;
 }
 div.discussion-list .pytis-form.list-view div.list-item .actions button {
-    padding: 2px;
+    padding: 3px 8px;
 }
 div.discussion-list .pytis-form.list-view div.list-item .actions button::-moz-focus-inner { 
     border: 0;
