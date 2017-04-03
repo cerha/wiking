@@ -19,10 +19,6 @@ div.discussion-list .pytis-form.list-view div.list-item .actions {
 div.discussion-list .pytis-form.list-view div.list-item .actions button {
     padding: 3px 8px;
 }
-div.discussion-list .pytis-form.list-view div.list-item .actions button::-moz-focus-inner { 
-    border: 0;
-    padding: 0;
-}
 
 div.discussion-list div.list-item div.attachment-list {
     margin-top: 0.3em;
@@ -58,11 +54,7 @@ div.discussion-list .pytis-form.edit-form div.submit-buttons {
     padding: 0;
     text-align: right;
 }
-div.discussion-list .pytis-form.edit-form div.submit-buttons input {
-    margin: 0;
-}
 div.discussion-list .pytis-form.edit-form div.submit-buttons button {
-    line-height: 1.2em;
-    margin: 2px 0;
+    margin: 0 0 0 5px;
 }
 div.discussion-list .pytis-form.edit-form div.footer { display: none; }

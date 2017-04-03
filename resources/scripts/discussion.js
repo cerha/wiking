@@ -1,6 +1,6 @@
 /* -*- coding: utf-8 -*-
  *
- * Copyright (C) 2012-2015 Brailcom, o.p.s.
+ * Copyright (C) 2012-2017 Brailcom, o.p.s.
  * Author: Tomas Cerha
  *
  * This program is free software; you can redistribute it and/or modify
@@ -10,7 +10,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -70,8 +70,9 @@ var Discussion = Class.create({
                 actions = new Element('div', {'class': 'actions'});
                 item.insert(actions);
             }
-            var button = new Element('button', {'class': 'reply'}).update(
-                new Element('span').update(wiking._("Reply")));
+            var button = new Element('button', {'class': 'reply'});
+            button.insert(new Element('span', {'class': 'icon reply-icon'}));
+            button.insert(new Element('span', {'class': 'label'}).update(wiking._("Reply")));
             button.observe('click', function (event) {
                 this.on_reply(item, comment_id, quoted);
             }.bind(this));
@@ -88,11 +89,10 @@ var Discussion = Class.create({
                                         'style': 'display: none',
                                         'class': 'pytis-form edit-form'});
         var field_id = 'wiking-discussion-reply-' + comment_id;
-        var label = new Element('span', {'class': 'field-label id-'+this.field});
-        label.insert(new Element('label', {'for': field_id}).update(wiking._('Your Reply')));
-        label.insert(new Element('sup', {'class': 'not-null'}).update('*'));
-        label.insert(':');
-        form.insert(new Element('div').update(label));
+        form.insert(new Element('div').insert(
+            new Element('label', {'for': field_id,
+                                  'class': 'field-label id-'+this.field}).update(
+                                      wiking._('Your Reply') + ':')));
         form.insert(new Element('textarea', {'class': 'fullsize',
                                              'cols': '80',
                                              'rows': '8',
@@ -102,10 +102,10 @@ var Discussion = Class.create({
         if (this.attachment_field !== null) {
             form.setAttribute('enctype', 'multipart/form-data');
             var attachment_field_id = field_id + 'attachment';
-            var alabel = new Element('label', {'for': attachment_field_id});
-            alabel.update(wiking._('Attachment'));
             var adiv = new Element('div');
-            adiv.insert(new Element('span', {'class': 'field-label id-'+this.attachment_field}).update(alabel));
+            adiv.insert(new Element('span', {'class': 'field-label id-' + this.attachment_field})
+                        .update(new Element('label', {'for': attachment_field_id})
+                                .update(wiking._('Attachment'))));
             adiv.insert(':&nbsp;');
             adiv.insert(new Element('input', {'type': 'file',
                                               'size': '50',
@@ -115,20 +115,22 @@ var Discussion = Class.create({
         }
         form.insert(new Element('input', {'type': 'hidden', 'name': 'action', 'value': 'reply'}));
         var buttons = [
-            [wiking._("Submit"), {'type': 'submit', 'value': '1'},
+            [wiking._("Submit"), 'ok-icon', {'type': 'submit', 'value': '1'},
              function (event) { return; }],
-            [wiking._("Quote"), {'onclick': 'return false;'},
+            [wiking._("Quote"), 'quote-icon', {'onclick': 'return false;'},
              function (event) { this.on_quote(form[this.field], quoted); }],
-            [wiking._("Cancel"), {'onclick': 'return false;'},
+            [wiking._("Cancel"), 'remove-icon', {'onclick': 'return false;'},
              function (event) { this.on_cancel(form); }]];
-        var div = new Element('div', {'class': 'submit'});
+        var div = new Element('div', {'class': 'submit-buttons'});
         form.insert(div);
         buttons.each(function (x) {
-            var button = new Element('button', x[1]).update(x[0]);
-            button.observe('click', x[2].bind(this));
+            var button = new Element('button', x[2]);
+            button.insert(new Element('span', {'class': 'icon ' + x[1]}));
+            button.insert(new Element('span', {'class': 'label'}).update(x[0]));
+            button.observe('click', x[3].bind(this));
             div.insert(button);
         }.bind(this));
-        item.insert(form);
+        item.insert({after: form});
         $$('.actions button.reply').each(function(button) {
             button.disable();
         });
