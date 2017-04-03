@@ -34,7 +34,7 @@
 
 /*jshint browser: true */
 /*jshint es3: true */
-/*jshint -W097 */ // allow direct "use strict"
+/*eslint no-unused-vars: 0 */
 /*global Class */
 /*global Element */
 /*global Effect */
@@ -47,140 +47,140 @@
 var Discussion = Class.create({
 
     initialize: function (form_id, uri, field, attachment_field) {
-	this.form = $(form_id);
-	this.uri = uri;
-	this.field = field;
-	if (attachment_field === undefined) {
-	    attachment_field = null;
-	}
-	this.attachment_field = attachment_field;
-	if (this.form.instance) {
-	    this.form.instance.on_load(this.add_reply_buttons.bind(this));
-	}
+        this.form = $(form_id);
+        this.uri = uri;
+        this.field = field;
+        if (attachment_field === undefined) {
+            attachment_field = null;
+        }
+        this.attachment_field = attachment_field;
+        if (this.form.instance) {
+            this.form.instance.on_load(this.add_reply_buttons.bind(this));
+        }
     },
 
     add_reply_buttons: function () {
-	// Dynamically add reply buttons to a
-	this.form.select('.discussion-reply').each(function (div) {
-	    var comment_id = div.down('span.id').innerHTML;
-	    var quoted = decodeURIComponent(div.down('span.quoted').innerHTML);
-	    var item = div.up('.list-item');
-	    var actions = item.down('.actions');
-	    if (actions === null) {
-	        actions = new Element('div', {'class': 'actions'});
-	        item.insert(actions);
-	    }
+        // Dynamically add reply buttons to a
+        this.form.select('.discussion-reply').each(function (div) {
+            var comment_id = div.down('span.id').innerHTML;
+            var quoted = decodeURIComponent(div.down('span.quoted').innerHTML);
+            var item = div.up('.list-item');
+            var actions = item.down('.actions');
+            if (actions === null) {
+                actions = new Element('div', {'class': 'actions'});
+                item.insert(actions);
+            }
             var button = new Element('button', {'class': 'reply'}).update(
-		new Element('span').update(wiking._("Reply")));
-	    button.observe('click', function (event) {
-	        this.on_reply(item, comment_id, quoted);
-	    }.bind(this));
-	    actions.insert({'top': button});
-	}.bind(this));
+                new Element('span').update(wiking._("Reply")));
+            button.observe('click', function (event) {
+                this.on_reply(item, comment_id, quoted);
+            }.bind(this));
+            actions.insert({'top': button});
+        }.bind(this));
     },
 
     on_reply: function (item, comment_id, quoted) {
-	if (item.down('form.edit-form')) {
-	    return;
-	}
+        if (item.down('form.edit-form')) {
+            return;
+        }
         var form = new Element('form', {'action': this.uri+'/'+comment_id,
-					'method': 'POST',
-     					'style': 'display: none',
-					'class': 'pytis-form edit-form'});
-	var field_id = 'wiking-discussion-reply-' + comment_id;
-	var label = new Element('span', {'class': 'field-label id-'+this.field});
-	label.insert(new Element('label', {'for': field_id}).update(wiking._('Your Reply')));
-	label.insert(new Element('sup', {'class': 'not-null'}).update('*'));
-	label.insert(':');
-	form.insert(new Element('div').update(label));
+                                        'method': 'POST',
+                                        'style': 'display: none',
+                                        'class': 'pytis-form edit-form'});
+        var field_id = 'wiking-discussion-reply-' + comment_id;
+        var label = new Element('span', {'class': 'field-label id-'+this.field});
+        label.insert(new Element('label', {'for': field_id}).update(wiking._('Your Reply')));
+        label.insert(new Element('sup', {'class': 'not-null'}).update('*'));
+        label.insert(':');
+        form.insert(new Element('div').update(label));
         form.insert(new Element('textarea', {'class': 'fullsize',
-     					     'cols': '80',
-     					     'rows': '8',
-     					     'name': this.field,
-					     'id': field_id,
-     					     'aria-required': 'true'}));
-	if (this.attachment_field !== null) {
-	    form.setAttribute('enctype', 'multipart/form-data');
-	    var attachment_field_id = field_id + 'attachment';
-	    var alabel = new Element('label', {'for': attachment_field_id});
-	    alabel.update(wiking._('Attachment'));
-	    var adiv = new Element('div');
-	    adiv.insert(new Element('span', {'class': 'field-label id-'+this.attachment_field}).update(alabel));
-	    adiv.insert(':&nbsp;');
-	    adiv.insert(new Element('input', {'type': 'file',
-     					      'size': '50',
-     					      'name': this.attachment_field,
-					      'id': attachment_field_id}));
-	    form.insert(adiv);
-	}
-     	form.insert(new Element('input', {'type': 'hidden', 'name': 'action', 'value': 'reply'}));
-	var buttons = [
-	    [wiking._("Submit"), {'type': 'submit', 'value': '1'},
-	     function (event) { return; }],
-	    [wiking._("Quote"), {'onclick': 'return false;'},
-	     function (event) { this.on_quote(form[this.field], quoted); }],
-	    [wiking._("Cancel"), {'onclick': 'return false;'},
-	     function (event) { this.on_cancel(form); }]];
-	var div = new Element('div', {'class': 'submit'});
-	form.insert(div);
+                                             'cols': '80',
+                                             'rows': '8',
+                                             'name': this.field,
+                                             'id': field_id,
+                                             'aria-required': 'true'}));
+        if (this.attachment_field !== null) {
+            form.setAttribute('enctype', 'multipart/form-data');
+            var attachment_field_id = field_id + 'attachment';
+            var alabel = new Element('label', {'for': attachment_field_id});
+            alabel.update(wiking._('Attachment'));
+            var adiv = new Element('div');
+            adiv.insert(new Element('span', {'class': 'field-label id-'+this.attachment_field}).update(alabel));
+            adiv.insert(':&nbsp;');
+            adiv.insert(new Element('input', {'type': 'file',
+                                              'size': '50',
+                                              'name': this.attachment_field,
+                                              'id': attachment_field_id}));
+            form.insert(adiv);
+        }
+        form.insert(new Element('input', {'type': 'hidden', 'name': 'action', 'value': 'reply'}));
+        var buttons = [
+            [wiking._("Submit"), {'type': 'submit', 'value': '1'},
+             function (event) { return; }],
+            [wiking._("Quote"), {'onclick': 'return false;'},
+             function (event) { this.on_quote(form[this.field], quoted); }],
+            [wiking._("Cancel"), {'onclick': 'return false;'},
+             function (event) { this.on_cancel(form); }]];
+        var div = new Element('div', {'class': 'submit'});
+        form.insert(div);
         buttons.each(function (x) {
             var button = new Element('button', x[1]).update(x[0]);
-	    button.observe('click', x[2].bind(this));
+            button.observe('click', x[2].bind(this));
             div.insert(button);
-	}.bind(this));
-	item.insert(form);
-	$$('.actions button.reply').each(function(button) {
-	    button.disable();
-	});
-	this.slide_down(form);
-	var field = form[this.field];
-	setTimeout(function () { field.focus(); }, 250);
+        }.bind(this));
+        item.insert(form);
+        $$('.actions button.reply').each(function(button) {
+            button.disable();
+        });
+        this.slide_down(form);
+        var field = form[this.field];
+        setTimeout(function () { field.focus(); }, 250);
     },
 
     on_cancel: function (form) {
-	this.slide_up(form, true);
-	if (Effect !== undefined) {
-	    setTimeout(function () { form.remove(); }, 200);
-	} else {
-	    form.remove();
-	}
-	$$('.actions button.reply').each(function(button) {
-	    button.enable();
-	});
+        this.slide_up(form, true);
+        if (Effect !== undefined) {
+            setTimeout(function () { form.remove(); }, 200);
+        } else {
+            form.remove();
+        }
+        $$('.actions button.reply').each(function(button) {
+            button.enable();
+        });
     },
 
     on_quote: function (field, quoted) {
-	if (field.value) {
-     	    if (field.value.substr(field.value.length-1) !== '\n') {
-     		field.value += '\n';
-	    }
-     	    field.value += quoted;
+        if (field.value) {
+            if (field.value.substr(field.value.length-1) !== '\n') {
+                field.value += '\n';
+            }
+            field.value += quoted;
         } else {
-     	    field.value = quoted;
+            field.value = quoted;
         }
         field.focus();
     },
 
     slide_up: function (element, duration) {
-	if (Effect !== undefined) {
-	    if (duration === undefined) {
-		duration = 0.2;
-	    }
-	    new Effect.SlideUp(element, {duration: duration});
-	} else {
-	    element.hide();
-	}
+        if (Effect !== undefined) {
+            if (duration === undefined) {
+                duration = 0.2;
+            }
+            new Effect.SlideUp(element, {duration: duration});
+        } else {
+            element.hide();
+        }
     },
 
     slide_down: function (element, duration) {
-	if (Effect !== undefined) {
-	    if (duration === undefined) {
-		duration = 0.2;
-	    }
-	    new Effect.SlideDown(element, {duration: duration});
-	} else {
-	    element.show();
-	}
+        if (Effect !== undefined) {
+            if (duration === undefined) {
+                duration = 0.2;
+            }
+            new Effect.SlideDown(element, {duration: duration});
+        } else {
+            element.show();
+        }
     }
 
 });
