@@ -249,7 +249,7 @@ button .icon {
 .arrow-up-icon, .plus-icon, .ellipsis-icon, .users-icon, .new-user-icon, .attachment-icon,
 .feed-icon, .thumb-up-icon, .thumb-down-icon, .view-icon, .edit-icon, .create-icon,
 .circle-in-icon, .circle-out-icon, .circle-down-icon, .circle-up-icon, .circle-in-down-icon,
-.circle-in-up-icon, .reply-icon, .quote-icon, .tag-icon,
+.circle-in-up-icon, .reply-icon, .quote-icon, .tag-icon, .disable-icon, .mail-icon,
 .pytis-form button.submit .default-submit-icon,
 .pytis-form button.cancel .icon,
 .pytis-form button.reset .icon,
@@ -319,6 +319,8 @@ button .icon {
 .circle-in-down-icon  { background-position: -65px -68px; width: 14px; }
 .circle-in-up-icon    { background-position: -81px -68px; width: 14px; }
 .tag-icon             { background-position: -96px -68px; }
+.disable-icon         { background-position: -112px -68px; }
+.mail-icon            { background-position: -128px -68px; }
 
 /* Wiking CMS specific styles */
 
