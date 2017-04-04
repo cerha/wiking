@@ -103,10 +103,9 @@ var Discussion = Class.create({
             form.setAttribute('enctype', 'multipart/form-data');
             var attachment_field_id = field_id + 'attachment';
             var adiv = new Element('div');
-            adiv.insert(new Element('span', {'class': 'field-label id-' + this.attachment_field})
-                        .update(new Element('label', {'for': attachment_field_id})
-                                .update(wiking._('Attachment'))));
-            adiv.insert(':&nbsp;');
+            adiv.insert(new Element('label', {'for': attachment_field_id,
+                                              'class': 'field-label id-' + this.attachment_field})
+                        .update(wiking._('Attachment') + ':'));
             adiv.insert(new Element('input', {'type': 'file',
                                               'size': '50',
                                               'name': this.attachment_field,
