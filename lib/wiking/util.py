@@ -590,7 +590,7 @@ class Theme(object):
         Color('top-fg', inherit='foreground'),
         Color('top-bg', inherit='background'),
         Color('top-border', inherit='border'),
-        Color('inactive-folder'),
+        Color('inactive-folder', inherit='heading-bg'),
         Color('meta-fg', inherit='foreground'),
         Color('meta-bg', inherit='background'),
     )
@@ -613,9 +613,8 @@ class Theme(object):
                  'table-cell': '#f8fafb',
                  'table-cell2': '#f1f3f2',
                  'top-bg': '#efebe7',
-                 'top-border': '#b4c4d4',
+                 'top-border': '#b8c8d8',
                  'highlight-bg': '#ffd0c0',
-                 'inactive-folder': '#e4e5eb',
                  }
 
     def __init__(self, colors=None):

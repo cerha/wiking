@@ -512,13 +512,16 @@ h1 a { outline: none; }
 
 #top {
     background-color: $color.background;
-    padding: 6px;
     white-space: nowrap;
     /* The rules below fix MSIE 8 popup menu z-index */
     position: relative;
     z-index: 3;
+    padding: 0 6px;
 }
 
+#top-content, #top-controls {
+    padding: 6px 0;
+}    
 #top-content {
     float: left;
 }
