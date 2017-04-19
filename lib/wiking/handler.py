@@ -1,4 +1,4 @@
-# Copyright (C) 2006-2017 Brailcom, o.p.s.
+# Copyright (C) 2006-2016 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -164,14 +164,13 @@ class Handler(object):
                     variants = item.variants()
                 globals_ = document.globals()
             else:
-                title = item.title()
                 variants = item.variants()
                 heading = None
                 content = None
                 globals_ = None
             if variants is None:
                 variants = all_variants
-            node = lcg.ContentNode(item_uri, title=title, heading=heading,
+            node = lcg.ContentNode(item_uri, title=item.title(), heading=heading,
                                    descr=item.descr(), content=content,
                                    variants=[lcg.Variant(v) for v in variants],
                                    active=item.active(), foldable=item.foldable(),
