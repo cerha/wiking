@@ -726,17 +726,13 @@ body.maximized #bottom-bar {
 }
 #menu a.navigation-link .dropdown-arrow {
     display: inline-block;
-    position: absolute;
-    right: 0px;
-    bottom: 0px;
-    width: 14px;
-    height: 14px;
-    background: url(lcg-icons.png) 0 0 no-repeat;
+    width: 10px;
+    height: 10px;
+    background: url(lcg-icons.png) -25px -30px no-repeat;
     position: relative;
     bottom: -2px;
     left: 1px;
-    margin-left: 3px;
-    text-indent: -9999px;
+    margin-left: 2px;
     overflow: hidden;
 }
 body.non-maximized #menu a.navigation-link.current .dropdown-arrow {
