@@ -1,4 +1,4 @@
-# Copyright (C) 2006-2016 Brailcom, o.p.s.
+# Copyright (C) 2006-2017 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -270,12 +270,10 @@ class Handler(object):
                 # Very basic CSRF prevention
                 if req.param('submit') and req.header('Referer'):
                     referer = urlparse.urlparse(req.header('Referer'))
-                    referer_uri = (referer.scheme + '://' + referer.netloc +
-                                   urllib.unquote(referer.path))
-                    request_uri = req.server_uri() + urlparse.urlparse(req.uri()).path
-                    if referer_uri != request_uri:
+                    referer_uri = referer.scheme + '://' + referer.netloc
+                    if referer_uri != req.server_uri():
                         wiking.debug("Request rejected due to CSRF protection:",
-                                     referer_uri, request_uri)
+                                     referer_uri, req.server_uri())
                         raise wiking.Redirect(req.server_uri(current=True))
                 # Regular processing starts here.
                 try:
