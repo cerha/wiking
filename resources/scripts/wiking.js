@@ -135,7 +135,7 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
         };
     },
 
-    _cmd_menu: function (element) {
+    _cmd_menu: function (event, element) {
         // Move focus to the menu (the current menu item).
         var submenu = $('submenu');
         if (submenu && submenu.getStyle('display') !== 'none') {
@@ -148,7 +148,7 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
         }
     },
 
-    _cmd_top_controls: function (element) {
+    _cmd_top_controls: function (event, element) {
         // Move focus to the top bar.
         var controls = $('top-controls');
         if (controls) {
@@ -159,7 +159,7 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
         }
     },
 
-    _cmd_notebook: function (element) {
+    _cmd_notebook: function (event, element) {
         // Move focus to the first Notebook widget on the page.
         var nb = document.body.down('div.notebook-widget');
         if (nb) {
@@ -299,7 +299,7 @@ wiking.MainMenu = Class.create(lcg.Menu, {
         }
     },
 
-    _cmd_submenu: function (item) {
+    _cmd_submenu: function (event, item) {
         var submenu = item._wiking_submenu;
         var dropdown = item._wiking_dropdown;
         var menu_element;
@@ -316,7 +316,7 @@ wiking.MainMenu = Class.create(lcg.Menu, {
         }
     },
 
-    _cmd_activate: function (item) {
+    _cmd_activate: function (event, item) {
         var dropdown = item._wiking_dropdown;
         var submenu = item._wiking_submenu;
         if (dropdown && !dropdown.visible() &&
@@ -327,7 +327,7 @@ wiking.MainMenu = Class.create(lcg.Menu, {
         }
     },
 
-    _cmd_quit: function (item) {
+    _cmd_quit: function (event, item) {
         this._set_focus($('main-heading'));
     }
 
