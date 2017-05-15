@@ -262,6 +262,8 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
     "If true, BrowseForm rows can be expanded (see '_expand_row()' method)."
     _ASYNC_ROW_EXPANSION = False
     "If true, (and _ROW_EXPANSION is True) rows are expanded asynchronously (on demand)."
+    _INLINE_EDITABLE = False
+    "If true, rows are editable inline."
 
     _SUBMIT_BUTTONS = {}
     "Dictionary of form buttons keyed by action name (see '_submit_buttons()' method)."
@@ -1416,6 +1418,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
             expand_row=((lambda *args: self._expand_row(req, *args))
                         if self._ROW_EXPANSION else None),
             async_row_expansion=self._ASYNC_ROW_EXPANSION,
+            inline_editable=self._INLINE_EDITABLE,
             on_update_row=lambda record: self._do_update(req, record),
         )
 
