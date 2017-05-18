@@ -1167,10 +1167,6 @@ body .pytis-form .field-label.disabled {
 body .pytis-form .group span.color-display {
     border-color: $color.border;
 }
-body .pytis-form.show-form .group textarea,
-body .pytis-form.list-view .group textarea {
-    background-color: $color.frame-bg;
-}
 body .pytis-form.edit-form div.help {
     color: $color.help;
 }
