@@ -2086,23 +2086,11 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                 form.set_error(*error)
             else:
                 return self._redirect_after_update(req, record)
-        content = self._update_form_content(req, form, record)
-        return self._document(req, content, record,
+        return self._document(req, self._update_form_content(req, form, record), record,
                               subtitle=self._action_subtitle(req, action, record=record))
 
-    def _delete_confirmation_actions(self, req, record, action):
-        # TODO: Do we really need that?  Isn't 'javascript: history.back()' better?
-        # Maybe we want a pw.DeleteForm for that...
-        if req.param('__invoked_from') in ('ListView', 'ItemizedView'):
-            back = 'list'
-        else:
-            back = 'view'
-        return (Action(action, self._DELETE_LABEL, icon='remove-icon', submit=1),
-                # Translators: Back button label. Standard computer terminology.
-                Action(back, _("Back"), icon='arrow-up-icon',),)
-
     def action_delete(self, req, record, action='delete'):
-        if req.param('submit'):
+        if req.param('submit') and not req.param('_cancel'):
             try:
                 transaction = self._delete_transaction(req, record)
                 self._in_transaction(transaction, self._delete, req, record, transaction)
@@ -2110,10 +2098,18 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                 req.message(self._error_message(*self._analyze_exception(e)), req.ERROR)
             else:
                 return self._redirect_after_delete(req, record)
-        form = self._form(pw.ShowForm, req, record=record,
+        form = self._form(pw.DeletionForm, req, record=record, action=action,
                           layout=self._layout(req, action, record),
-                          actions=self._delete_confirmation_actions(req, record, action))
-        req.message(self._delete_prompt(req, record))
+                          prompt=wiking.Message(self._delete_prompt(req, record)),
+                          show_cancel_button=True)
+        if form.is_ajax_request(req):
+            return wiking.ajax_response(req, form)
+        if req.param('_cancel'):
+            if req.param('__invoked_from') in ('ListView', 'ItemizedView'):
+                raise Redirect(self._current_base_uri(req, record),
+                               form_name=self.name(), search=record[self._key].export())
+            else:
+                raise Redirect(req.uri())
         return self._document(req, self._delete_form_content(req, form, record), record,
                               subtitle=self._action_subtitle(req, action, record))
 

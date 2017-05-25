@@ -965,14 +965,9 @@ class Panels(SiteSpecificContentModule, wiking.CachingPytisModule):
 
     def _hidden_fields(self, req, action, record=None):
         hidden_fields = super(Panels, self)._hidden_fields(req, action, record=record)
-        hidden_fields.append(('_manage_cms_panels', '1'))
+        hidden_fields.extend((('_manage_cms_panels', '1'),
+                             ('panel_id', record['panel_id'].export())))
         return hidden_fields
-
-    def _delete_confirmation_actions(self, req, record, action):
-        return (Action('delete', self._DELETE_LABEL, icon='remove-icon',
-                       kwargs=dict(_manage_cms_panels='1',
-                                   panel_id=record['panel_id'].export(),
-                                   submit=1)),)
 
     def _load_value(self, key, transaction=None):
         lang, preview_mode = key
