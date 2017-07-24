@@ -2190,6 +2190,8 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         the final redirection URI.
 
         """
+        if req.param('__invoked_from') in ('ListView', 'ItemizedView'):
+            kwargs.update(form_name=self.name(), search=record[self._key].export())
         return self._current_base_uri(req, record), kwargs
 
     def _redirect_after_update_uri(self, req, record, **kwargs):
