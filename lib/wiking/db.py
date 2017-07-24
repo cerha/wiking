@@ -2002,17 +2002,28 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
 
     # ===== Action handlers which modify the database =====
 
-    def action_insert(self, req, prefill=None, action='insert'):
-        # 'prefill' is passed eg. on copying an existing record.  It is only
-        # used to initialize form fields and is ignored on form submission (the
-        # submitted form should pass those values through request arguments).
-        # TODO: Redirect handler to HTTPS if wiking.cfg.force_https_login is true?
-        # The primary motivation is to protect registration form data.  The
-        # same would apply for action_edit.
-        if req.param('submit'):
-            prefill = self._prefill(req)
-        else:
-            prefill = dict(self._prefill(req), **(prefill or {}))
+    def action_insert(self, req, action='insert', _prefill=None):
+        # The argument '_prefill' is just a hack used in wiking.cms.Users.action_reinsert()
+        # and should not be used anywhere else.
+        prefill = self._prefill(req)
+        if req.param('copy') and not req.param('submit'):
+            # Prefill form values from given copied record.
+            # Exclude Password and Binary values, key column, computed
+            # columns depending on key column and fields with 'nocopy'.
+            # See action_copy() below...
+            key = self._key
+            row = self._get_row_by_key(req, req.param('copy'))
+            layout = self._layout_instance(self._layout(req, action))
+            for fid in layout.order():
+                if ((fid != key and fid in row.keys() and
+                     not isinstance(self._type[fid], (pd.Password, pd.Binary)))):
+                    field = self._view.field(fid)
+                    if not field.nocopy():
+                        computer = field.computer()
+                        if not computer or key not in computer.depends():
+                            prefill[fid] = row[fid].value()
+        if _prefill and not req.param('submit'):
+            prefill.update(_prefill)
         form = self._form(pw.EditForm, req, new=True, action=action,
                           layout=self._layout(req, action),
                           prefill=prefill,
@@ -2040,26 +2051,10 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         content = self._insert_form_content(req, form, form.row())
         return self._document(req, content, subtitle=self._action_subtitle(req, action))
 
-    def action_copy(self, req, record, action='insert'):
-        # Copy values of the existing record as prefill values for the new
-        # record.  Exclude Password and Binary values, key column, computed
-        # columns depending on key column and fields with 'nocopy'.
-        key = self._key
-        base_uri = self._current_base_uri(req, record)
-        if req.uri() != base_uri:
-            # Invoke the same action for the same record but without the
-            # referer in the uri.
-            raise Redirect(base_uri, action='copy', **{key: record[key].export()})
-        prefill = {}
-        layout = self._layout_instance(self._layout(req, action))
-        for fid in layout.order():
-            if not isinstance(self._type[fid], (pd.Password, pd.Binary)):
-                field = self._view.field(fid)
-                if fid != key and not field.nocopy():
-                    computer = field.computer()
-                    if not computer or key not in computer.depends():
-                        prefill[fid] = record[fid].value()
-        return self.action_insert(req, prefill=prefill, action=action)
+    def action_copy(self, req, record):
+        raise Redirect(self._current_base_uri(req, record),
+                       action='insert', copy=record[self._key].export(),
+                       **{p: req.param(p) for p in req.params() if p != 'action'})
 
     def action_update(self, req, record, action='update'):
         form = self._form(pw.EditForm, req, record=record, action=action,

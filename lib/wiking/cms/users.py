@@ -1443,7 +1443,7 @@ class Users(UserManagementModule, CachingPytisModule):
             prefill = dict([(key, row[key].value(),) for key in row.keys()])
         else:
             prefill = None
-        return self.action_insert(req, prefill=prefill)
+        return self.action_insert(req, _prefill=prefill)
 
     def _special_roles(self, row):
         """Return the list of predefined special roles for given user row.
@@ -1737,10 +1737,10 @@ class Registration(Module, ActionHandler):
         else:
             raise wiking.AuthenticationError()
 
-    def action_insert(self, req, prefill=None, action='insert'):
+    def action_insert(self, req, **kwargs):
         if not wiking.cms.cfg.allow_registration:
             raise wiking.Forbidden()
-        return wiking.module.Users.action_insert(req, prefill=prefill, action=action)
+        return wiking.module.Users.action_insert(req, **kwargs)
 
     def action_reinsert(self, req):
         if not wiking.cms.cfg.allow_registration:
