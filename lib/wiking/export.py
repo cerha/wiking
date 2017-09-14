@@ -119,48 +119,45 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         """
 
     _PAGE_STRUCTURE = (
-        Part('wrap', content=(
-            Part('wrap-layer1', content=(
+        Part('root', content=(
+            Part('root-wrap', content=(
                 Part('top', aria_label=_("Page heading"), role='banner', content=(
-                    Part('top-layer1', content=(
-                        Part('top-layer2', content=(
-                            Part('top-layer3', content=(
-                                Part('top-content', role='banner'),
-                                Part('top-controls'),
-                                Part('top-clearing', content=()),
-                            )),
+                    Part('top-wrap', content=(
+                        Part('top-bar', content=(
+                            Part('top-content', role='banner'),
+                            Part('top-controls'),
+                            Part('top-clearing', content=()),
                         )),
+                        Part('menu',
+                             aria_label=_("Main navigation"),
+                             accesskey="3",
+                             role='navigation'),
                     )),
                 )),
-                Part('middle', content=(
-                    Part('middle-layer1', content=(
-                        Part('page', content=(
-                            Part('links'),
-                            Part('breadcrumbs'),
-                            Part('menu',
-                                 aria_label=_("Main navigation"),
-                                 accesskey="3",
-                                 role='navigation'),
-                            Part('submenu', role='navigation'),
-                            Part('main',
-                                 aria_label=_("Main content"),
-                                 aria_labelledby='main-heading',
-                                 role='main',
-                                 content=(
-                                     Part('heading'),
-                                     Part('messages'),
-                                     Part('content'),
-                                     Part('clearing', content=()),
-                                 ),
-                            ),
-                            Part('panels'),
-                            Part('page-clearing', content=())
-                        )),
+                Part('main', content=(
+                    Part('main-wrap', content=(
+                        Part('links'),
+                        Part('breadcrumbs'),
+                        Part('submenu', role='navigation'),
+                        Part('page',
+                             aria_label=_("Main content"),
+                             aria_labelledby='main-heading',
+                             role='main',
+                             content=(
+                                 Part('heading'),
+                                 Part('messages'),
+                                 Part('content'),
+                                 Part('clearing', content=()),
+                             )),
+                        Part('panels'),
+                        Part('main-clearing', content=())
                     )),
                 )),
-                Part('bottom', aria_label=_("Page footer"), role='contentinfo', content=(
-                    Part('bottom-bar'),
-                    Part('footer'),
+                Part('bottom', content=(
+                    Part('bottom-wrap', content=(
+                        Part('bottom-bar'),
+                        Part('footer', aria_label=_("Page footer"), role='contentinfo'),
+                    )),
                 )),
             )),
         )),
@@ -244,12 +241,11 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             cls.append('production-mode')
         if context.panels():
             cls.append('with-panels')
+        if context.has_submenu:
+            cls.append('with-submenu')
         return dict(attr,
                     onload=context.generator().js_call('new wiking.Handler'),
                     cls=' '.join(cls))
-
-    def _page_attr(self, context):
-        return dict(cls='with-submenu') if context.has_submenu else {}
 
     def _site_title(self, context):
         g = self._generator
@@ -309,10 +305,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                                             (' with-dropdown' if dropdown else ''))),
                                    dropdown),
                                   cls='main-menu-item'))
-        return (
-            g.h3(_("Main navigation")),
-            g.div(g.ul(*items, cls='main-menu-items'), id='main-menu'),
-        )
+        return g.div(g.ul(items, cls='main-menu-items'), id='main-menu')
 
     def _submenu(self, context):
         if not context.has_submenu:

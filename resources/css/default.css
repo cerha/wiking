@@ -461,14 +461,12 @@ span.diff_sub, span.field.id-diff_sub { background-color: #ffaaaa; }
 .cms-text-empty-value {
     color: #666;
 }
-/* Screen layout */
-@media screen {
 
 body {
     font-family: arial, helvetica, sans-serif;
     color: $color.top-fg;
     background-color: $color.top-bg;
-    font-size: 13px;
+    font-size: 14px;
     padding: 0;
     margin: 0;
     -webkit-text-size-adjust: none;
@@ -495,9 +493,9 @@ h2 {
     border: solid $color.heading-line 0px;
     border-bottom-width: 1px;
 }
-h1 { font-size: 1.5em; }
-h2 { font-size: 1.5em; }
-h3 { font-size: 1.4em; }
+h1 { font-size: 1.4em; }
+h2 { font-size: 1.4em; }
+h3 { font-size: 1.3em; }
 h4 { font-size: 1.2em; }
 h5,h6,h7,h8,h9 { font-size: 1.1em; }
 
@@ -507,23 +505,20 @@ a:link:hover, a:visited:hover { color: $color.link-hover; }
 
 h1 a { outline: none; }
 
-#wrap {
-}
-
-#top {
-    background-color: $color.background;
+#top-bar {
     white-space: nowrap;
+    padding: 0 12px;
+}
+#top {    
     /* The rules below fix MSIE 8 popup menu z-index */
     position: relative;
-    z-index: 3;
-    padding: 0 6px;
 }
-
 #top-content, #top-controls {
     padding: 6px 0;
 }    
 #top-content {
     float: left;
+    color: #444;
 }
 #site-title {
     padding: 2px 0;
@@ -532,7 +527,7 @@ h1 a { outline: none; }
 }
 #site-title a {
     text-decoration : none;
-    color: $color.foreground;
+    color: #444;
 }
 #top-content .top-text {
     float: right;
@@ -584,7 +579,7 @@ h1 a { outline: none; }
     color: $color.foreground;
 }
 .login-control li.user-profile .user-label {
-    font-size: 0.8em;
+    font-size: 12px;
     color: $color.help;
 }
 .login-control li.user-profile .icon {
@@ -609,22 +604,15 @@ h1 a { outline: none; }
     clear: both;
 }
 
-#middle {
-    background: url(shadow.png) 0 -3px repeat-x;
-    padding: 4px 8px;
+#root-wrap {
+    background-color: $color.background;
+    min-height: 100vh;
 }
-body.non-maximized #top-layer1,
-body.non-maximized #middle-layer1,
-body.non-maximized #bottom {
+body.non-maximized #root-wrap {
     max-width: 1160px;
     margin-left: auto;
     margin-right: auto;
-}
-body.non-maximized #page {
-    /* Force the page div to fit its content.
-     * Avoid inner content exceeding to the right side (across panels) when too wide. */
-    float: left;
-    min-width: 100%;
+    box-shadow: 0 0 4px 2px rgba(128, 128, 128, 0.6);
 }
 
 #links {
@@ -641,45 +629,12 @@ body.non-maximized #page {
     margin-bottom: 0.3em;
 }
 
-#heading {
-    position: relative;
-}
-
-#maximized-mode-button {
-    position: absolute;
-    top: 4px;
-    right: 4px;
-    margin: 0;
-}
-body.maximized #submenu {
-    display: none;
-}
-body.maximized #middle {
-    padding-left: 0;
-    padding-right: 0;
-}
-body.maximized #main {
-    border-left: 0;
-    border-right: 0;
-    border-radius: 0;
-}
-body.maximized #bottom {
-    padding: 0;
-}
-body.maximized #bottom-bar {
-    padding: 1px 4px;
-}
-
-
 /* Horizontal menu bar */
 
 #menu {
     /* The rules below fix MSIE 8 dropdown menu z-index */
     position: relative;
     z-index: 2;
-}
-#main-menu {
-    margin: 0 4px;
 }
 #menu h3 {
     display: none;
@@ -700,29 +655,28 @@ body.maximized #bottom-bar {
     display: inline-block;
     float: left; /* MSIE 8 hack */
     white-space: nowrap;
-    margin-right: 3px;
     position: relative;
-    height: 25px;
 }
 #menu a.navigation-link {
     display: inline-block;
-    border: solid $color.top-border 1px;
-    font-size: 15px;
-    padding: 3px 9px 5px 9px;
-    background-color: $color.inactive-folder;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 4px 12px;
     text-decoration: none;
-    position: relative;
-    border-radius: 4px 4px 0 0;
-    height: 16px;
+    border-bottom: 5px solid #fff;
+    color: #444;
 }
-#menu a.navigation-link.expanded {
+#menu a.navigation-link:hover {
+    border-bottom-color: $color.heading-bg;
+}
+#menu a.navigation-link.expanded,
+#menu a.navigation-link.current.expanded {
     z-index: 3;
     background-color: $color.background;
-    border-bottom: solid $color.background 1px;
+    border-bottom-color: #fff;
 }
 #menu a.navigation-link.current {
-    background-color: $color.background;
-    border-bottom: solid $color.background 1px;
+    border-bottom-color: #626262;
 }
 #menu a.navigation-link .dropdown-arrow {
     display: inline-block;
@@ -735,17 +689,13 @@ body.maximized #bottom-bar {
     margin-left: 2px;
     overflow: hidden;
 }
-body.non-maximized #menu a.navigation-link.current .dropdown-arrow {
-    display: none;
-}
 
 #menu .menu-dropdown {
     position: absolute;
-    top: 24px;
+    top: 20px;
     left: 0px;
-    border: 1px solid $color.top-border;
     z-index: 2;
-    font-size: 1.1em;
+    font-size: 16px;
     padding: 4px 4px 4px 2px;
     background-color: $color.background;
     box-shadow: 1px 1px 12px rgba(0, 0, 0, 0.6);
@@ -756,27 +706,48 @@ body.non-maximized #menu a.navigation-link.current .dropdown-arrow {
     padding-right: 2px;
 }
 
-/* Hierarchical submenu */
-
-body.non-maximized #page.with-submenu #main {
-    padding-left: 160px;
+#main, #bottom {
+    padding: 0 12px;
+}
+#main {
+    padding-top: 10px;
+    background-image: linear-gradient(180deg, #bbb, #fff 4px);
 }
 
+/* Hierarchical submenu */
+
+@media only screen and (min-width: 768px) {
+    body.non-maximized.with-submenu #page,
+    body.non-maximized.with-submenu #bottom-bar,
+    body.non-maximized.with-submenu #footer,
+    body.non-maximized.with-submenu #panels {
+        margin-left: 160px;
+    }
+    body.non-maximized #menu a.navigation-link.current .dropdown-arrow {
+        display: none;
+    }
+    body.non-maximized #submenu {
+        display: block;
+    }
+}
 #submenu {
     position: relative;
+    padding-right: 14px;
     z-index: 1;
     float: left;
     width: 160px;
+    display: none;
+    box-sizing: border-box;
 }
 #submenu .menu-panel  {
     position: relative;
     border: 1px solid $color.top-border;
     border-radius: 5px;
-    margin: 10px 10px 0 8px;
+    background-color: $color.background;
 }
 #submenu h3 {
     margin: 0;
-    font-size: 1.1em;
+    font-size: 15px;
     padding: 4px 6px;
     background-color: $color.heading-bg;
     border-bottom: 1px solid $color.top-border;
@@ -795,71 +766,86 @@ body.non-maximized #page.with-submenu #main {
 }*/
 
 /* Panels */
-body.with-panels #page {
-    position: relative;
-}
-body.non-maximized.with-panels #main,
-body.non-maximized.with-panels #menu,
-body.non-maximized.with-panels #bottom-bar,
-body.non-maximized.with-panels #footer {
-    margin-right: 220px;
-}
-body.non-maximized #panels {
-    position: absolute;
-    top: 25px;
-    right: 0px;
-    z-index: 1;
-    float: right;
-    width: 220px;
-}
-body.maximized #panels .panel {
-    width: 212px;
-    display: inline-block;
-    vertical-align: top;
-}
 
-
+@media only screen and (min-width: 992px) { 
+    body.non-maximized.with-panels #page,
+    body.non-maximized.with-panels #bottom-bar,
+    body.non-maximized.with-panels #footer {
+        margin-right: 220px;
+    }
+    body.with-panels #main-wrap {
+        position: relative;
+    }
+    body.non-maximized #panels {
+        position: absolute;
+        top: 0;
+        right: 0;
+        z-index: 1;
+        float: right;
+        width: 220px;
+        box-sizing: border-box;
+        padding-left: 14px;
+    }
+    body.non-maximized.with-submenu #panels {
+        margin: 0;
+    }        
+}
 #panels .panel {
-    margin-bottom: 8px;
-    margin-left: 8px;
+    display: inline-block;
+    width: 208px; /* Set abs width to keep it unchanged when moved under content. */
+    box-sizing: border-box;
+    vertical-align: top;
+    margin: 0 10px 10px 0;
     color: $color.foreground;
     border: 1px solid $color.top-border;
     border-radius: 5px;
-    background-color: $color.background;
-}
-#panels .panels-bottom-content {
-    margin: 0 0 8px 8px;
 }
 #panels .panel h3 {
     padding: 4px 6px;
     margin: 0;
-    font-size: 1.1em;
+    font-size: 15px;
     position: relative;
     background-color: $color.heading-bg;
     border-bottom: 1px solid $color.top-border;
     border-radius: 5px 5px 0 0;
 }
-#panels .panel .panel-content {
+#panels .panel-content {
     padding: 4px 6px;
 }
 #panels .panel-content ul, #panels .panel-content ol {
     padding-left: 1.5em;
     margin: 0;
 }
-#panels .panel-content form { margin: 5px 0; }
+#panels .panel-content form {
+    margin: 5px 0;
+}
+#panels .panels-bottom-content {
+    margin-bottom: 16px;
+}
 
 /* The actual page content */
 
-#main {
+#page {
     position: relative;
     color: $color.foreground;
     background-color: $color.background;
-    border: 1px solid $color.top-border;
-    border-radius: 5px;
-    padding: 10px 11px;
-    margin-bottom: 8px;
+    margin-bottom: 16px;
 }
-#main h1 {
+#heading {
+    position: relative;
+}
+#maximized-mode-button {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    margin: 0;
+}
+@media only screen and (max-width: 767px) { 
+    #maximized-mode-button {
+        display: none;
+    }
+}
+#heading h1 {
     margin-top: 0;
     margin-bottom: 12px;
     padding-right: 24px; /* Space for the maximize/minimize button. */
@@ -869,22 +855,20 @@ body.maximized #panels .panel {
 }
 #clearing {
     height: 0;
-    font-size: 0;
     clear: left;
 }
-#page-clearing {
+#main-clearing {
     height: 0;
-    font-size: 0;
+    clear: both;
 }
 
 /* Bottom part of the page */
 #bottom {
     clear: both;
-    padding: 0 8px;
 }
 #bottom-bar {
     text-align: right;
-    font-size: 0.9em;
+    font-size: 12px;
     border: solid $color.top-border;
     border-width: 1px 0px;
     background-color: $color.heading-bg;
@@ -896,15 +880,10 @@ body.maximized #panels .panel {
 #bottom-bar a { text-decoration: none; }
 #bottom-bar hr { display: none; }
 
-#last-change {
-    text-align: right;
-    font-size: 0.75em;
-}
-
 #footer {
-    font-size: 0.9em;
+    font-size: 12px;
     text-align: center;
-    margin: 12px 0;
+    padding-bottom: 40px;
 }
 #footer p { margin: 1px 0; }
 #footer img { margin: 5px; }
@@ -930,67 +909,18 @@ form.login-form label {
     font-weight: bold;
 }
 
-} /* End of @media screen. */
-
 /* Tablet screen layout */
 @media only screen and (max-width: 991px) { 
 
-body.non-maximized.with-panels #main,
-body.non-maximized.with-panels #menu,
-body.non-maximized.with-panels #bottom-bar,
-body.non-maximized.with-panels #footer {
-    margin-right: 0px;
-}
-body.non-maximized #middle {
-    padding-left: 0;
-    padding-right: 0;
-}
-body.non-maximized #main {
-    border-left: 0;
-    border-right: 0;
-}
-#main {
-    border-radius: 0;
-}
-
-body.non-maximized #panels {
-    position: static;
-    float: none;
-    width: auto;
-}
-body.non-maximized #panels .panel {
-    width: 212px;
-    display: inline-block;
-    vertical-align: top;
-}
-body.non-maximized #bottom {
-    padding: 0;
-}
-body.non-maximized #bottom-bar {
-    padding: 1px 4px;
-}
-#top-controls .ctrl-label {
-    display: none;
-}
+    #top-controls .ctrl-label {
+        display: none;
+    }
 
 } /* End of tablet screen layout */
 
 /* Bigger mobile phone screen layout */
 @media only screen and (max-width: 767px) { 
 
-#submenu {
-    display: none;
-}
-body.non-maximized div#page.with-submenu #main {
-    /* div#page is needed for MSIE to increase specificity. */
-    padding-left: 10px;
-}
-body.non-maximized #menu a.navigation-link.current .dropdown-arrow {
-    display: inline-block;
-}
-#maximized-mode-button {
-    display: none;
-}
 #site-title .separator, #site-title .subtitle { display: none; }
 
 .list-form-controls button.prev-page .label,
@@ -1068,6 +998,8 @@ body .notebook-widget ul.notebook-switcher {
 }
 body .notebook-widget li.notebook-tab a {
     border-color: $color.top-border;
+    background-color: $color.inactive-folder;
+    color: $color.foreground;
 }
 @media print {
     body .notebook-widget ul.notebook-switcher {
