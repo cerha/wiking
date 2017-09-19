@@ -338,13 +338,13 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         if context.req().maximized():
             label = _("Exit the maximized mode.")
             href = '?maximize=0'
-            cls = 'unmaximize-icon'
+            icon = 'unmaximize-icon'
         else:
             label = _("Maximize the main content to the full size of the browser window.")
             href = '?maximize=1'
-            cls = 'maximize-icon'
+            icon = 'maximize-icon'
         return (
-            g.a('', href=href, title=label, aria_label=label, cls=cls,
+            g.a(g.span('', cls=icon), href=href, title=label, aria_label=label,
                 id='maximized-mode-button', role='button'),
             g.h1(g.a(context.node().heading().export(context), tabindex=0,
                     name='main-heading', id='main-heading')),
