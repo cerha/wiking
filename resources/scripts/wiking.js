@@ -1,6 +1,6 @@
 /* -*- coding: utf-8 -*-
  *
- * Copyright (C) 2008-2013, 2015, 2016 Brailcom, o.p.s.
+ * Copyright (C) 2008-2017 Brailcom, o.p.s.
  * Author: Tomas Cerha
  *
  * This program is free software; you can redistribute it and/or modify
@@ -48,12 +48,6 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
     initialize: function ($super) {
         // Constructor (called on page load).
         $super();
-        var menu = $('main-menu');
-        if (menu) {
-            this._main_menu = new wiking.MainMenu(menu);
-        } else {
-            this._main_menu = undefined;
-        }
 
         // Set up global key handler.
         document.observe('keydown', this._on_key_down.bind(this));
@@ -170,100 +164,158 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
 
 });
 
-wiking.MainMenu = Class.create(lcg.Menu, {
+wiking.MainMenu = Class.create(lcg.FoldableTree, {
+    /* The Wiking main menu behaves as a horizontal menu bar on wide screens
+     * and degrades to a vertical foldable tree on narrow screens.  The
+     * parent class behavior applies in vertical mode, while different rules
+     * apply in horizontal mode for the top level menu items (the submenus
+     * appear as dropdowns with separate foldable trees inside them).
+     */
 
     _MANAGE_TABINDEX: false,
 
-    _define_keymap: function () {
-        // Arrow keys are duplicated with Ctrl-Shift- to get them accessible to VoiceOver
-        // users as VO doesn't pass single arrow keypresses to the application.
-        return {
-            'Left': this._cmd_prev,
-            'Ctrl-Shift-Left': this._cmd_prev,
-            'Right': this._cmd_next,
-            'Ctrl-Shift-Right': this._cmd_next,
-            'Enter': this._cmd_activate,
-            'Space': this._cmd_activate,
-            'Down': this._cmd_submenu,
-            'Ctrl-Shift-Down': this._cmd_submenu,
-            'Escape': this._cmd_quit
-        };
-    },
-
-    _init_items: function ($super, ul, parent) {
-        // By setting the role to 'menubar', the menubar becomes an "item"
-        // in the surrounding 'navigation' element.  This disturbs VoiceOver
-        // presentation and requires the user to go through two elements
-        // (first "navigation, one item" and second "menubar n items")
-        // where the first is redundant and misleading.  When the role is
-        // left unset, the menu items become items of the 'navigation'.
-        // Their number is announced correctly and they can be navigated
-        // easily.
-        ul.setAttribute('role', 'presentation');
-        // Initialize dropdown menu management.
-        this._active_dropdown = null;
-        return $super(ul, parent);
+    initialize: function ($super, element_id, toggle_button_tooltip) {
+        this._menu_button = $('menu-button').down('a');
+        $super(element_id, toggle_button_tooltip);
+        this._menu_button.on('click', this._on_toggle_main_menu.bind(this));
+        this._menu_button.setAttribute('role', 'button');
+        this._menu_button.setAttribute('aria-expanded', 'false');
+        this.element.addClassName('collapsed');
+        this.element.setAttribute('role', 'presentation');
     },
 
     _init_item: function ($super, item, prev, parent) {
         $super(item, prev, parent);
-        var dropdown = item.up('li').down('.menu-dropdown');
-        var submenu = (item.hasClassName('current') ? $('submenu') : undefined);
-        if (dropdown) {
-            // The condition below should be actually re-evaluated on every page width
-            // change (because the submenu is hidden/shown dynamically by responsive CSS),
-            // but in practice screen reader users hardly ever resize their browser
-            // window...
-            if (submenu && submenu.getStyle('display') !== 'none') {
-                item.setAttribute('aria-owns', 'submenu');
-            } else {
-                // Setting aria-haspopup has a strange effect in VO, it starts
-                // to read the item as "local navigation link", which seems confusing.
-                //item.setAttribute('aria-haspopup', 'true');
-                item.setAttribute('aria-expanded', 'false');
-                item.setAttribute('aria-controls',
-                                  dropdown.down('.foldable-tree-widget').getAttribute('id'));
-            }
+        var li = item.up('li');
+        if (li.parentNode.hasClassName('level-1')) {
+            // The attribute 'aria-selected' is not allowed on a pure link element
+            // (see _init_items() for a reason why we are using pure links), so we
+            // unset 'aria-selected' to be standards compliant (the attribute is
+            // allowed only for certain ARIA roles).  The question is how to announce
+            // the current main menu item to the screen reader user.
+            item.removeAttribute('role');
+            item.removeAttribute('aria-selected');
         }
-        // The attribute 'aria-selected' is not allowed on a pure link element
-        // (see _init_items() for a reason why we are using pure links), so we
-        // unset 'aria-selected' to be standards compliant (the attribute is
-        // allowed only for certain ARIA roles).  The question is how to announce
-        // the current main menu item to the screen reader user.
-        item.removeAttribute('aria-selected');
-        this._bind_tree_menu_parent(submenu, item);
-        this._bind_tree_menu_parent(dropdown, item);
-        item._wiking_submenu = submenu;
-        item._wiking_dropdown = dropdown;
     },
 
-    _bind_tree_menu_parent: function (element, item) {
-        if (element) {
-            var tree_menu = lcg.widget_instance(element.down('.foldable-tree-widget'));
-            tree_menu.items.each(function(tree_menu_item) {
-                tree_menu_item._lcg_menu_parent = item;
+    _init_items: function ($super, ul, parent) {
+        var items = $super(ul, parent);
+        if (ul.hasClassName('level-1')) {
+            // By setting the role to 'menubar', the menubar becomes an "item"
+            // in the surrounding 'navigation' element.  This disturbs VoiceOver
+            // presentation and requires the user to go through two elements
+            // (first "navigation, one item" and second "menubar n items")
+            // where the first is redundant and misleading.  When the role is
+            // left unset, the menu items become items of the 'navigation'.
+            // Their number is announced correctly and they can be navigated
+            // easily.
+            ul.setAttribute('role', 'presentation');
+        } else if (ul.hasClassName('level-2')) {
+            ul.setAttribute('role', 'tree');
+            ul.setAttribute('aria-hidden', 'true');
+        }
+        return items;
+    },
+
+    _on_toggle_main_menu: function(event) {
+        var menu = this.element;
+        if (!menu.hasClassName('expanded')) {
+            menu.setStyle({display: 'none'});
+            menu.addClassName('expanded');
+            menu.slideDown({
+                duration: 0.3,
+                afterFinish: function () {
+                    this._menu_button.setAttribute('aria-expanded', 'true');
+                }.bind(this)
+            });
+        } else {
+            menu.slideUp({
+                duration: 0.3,
+                afterFinish: function () {
+                    menu.removeClassName('expanded');
+                    menu.removeAttribute('style');
+                    this._menu_button.setAttribute('aria-expanded', 'false');
+                }.bind(this)
             });
         }
     },
 
-    _toggle_dropdown: function (dropdown) {
-        if (this._active_dropdown && this._active_dropdown !== dropdown) {
-            this._toggle_dropdown(this._active_dropdown);
+    _horizontal: function (item) {
+        /* Return true if given item is a top level item and the menu is currently
+         * in the horizontal menu bar mode (see class documentation for details). */
+        return (item.up('ul').hasClassName('level-1') &&
+                this._menu_button.parentNode.getStyle('display') === 'none');
+    },
+
+    _on_item_click: function ($super, event, item) {
+        if (this._horizontal(item)) {
+            this._cmd_activate(event, item);
+            event.stop();
+        } else {
+            $super(event, item);
         }
-        var item = dropdown.up('li').down('.navigation-link');
-        if (!dropdown.visible()) {
-            this._active_dropdown = dropdown;
-            // Reset the style to the initial state (when clicking too fast, the effects
-            // may overlap and leave a messy final style).
-            dropdown.setAttribute('style', 'display: none;');
+    },
+
+    _cmd_expand: function ($super, event, item) {
+        var li = item.up('li');
+        if (this._horizontal(item) && li.hasClassName('foldable') && li.hasClassName('in-path')) {
+            var submenu = $('submenu');
+            if (submenu && submenu.getStyle('display') !== 'none') {
+                item.setAttribute('aria-owns', 'submenu');
+                var tree_menu = lcg.widget_instance(submenu.down('.foldable-tree-widget'));
+                tree_menu.items.each(function(x) {
+                    x._lcg_menu_parent = item;
+                });
+                this._set_focus(tree_menu.items[0]);
+                return;
+            }
+        }
+        $super(event, item);
+    },
+
+    _cmd_activate: function ($super, event, item) {
+        var dropdown = item.up('li').down('ul');
+        var submenu = item._wiking_submenu;
+        if (this._horizontal(item) &&
+            dropdown && dropdown.getStyle('display') === 'none' &&
+            (!submenu || submenu.getStyle('display') === 'none')) {
+            this._expand_item(item);
+        } else {
+            $super(event, item);
+        }
+    },
+
+    _expand_item: function ($super, item, recourse) {
+        if (this._horizontal(item)) {
+            this.items.each(function(x) {
+                if (x.up('li').hasClassName('expanded')) {
+                    this._collapse_item(x);
+                }
+            }.bind(this));
+            var li = item.up('li');
+            var dropdown = li.down('ul');
             // Setting min-width solves two problems.  A. the dropdown looks visually
             // odd when not wider than the item.  B. the dropdown width flickers when
             // hovering over its widest item.
-            dropdown.setStyle({minWidth: Math.max(item.getWidth(), dropdown.getWidth()) + 'px',
-                               boxSizing: 'border-box'});
-            item.addClassName('expanded');
+            // Also resetting the style here prevents messy final state when
+            // clicking too fast so that the slideDown effects overlap.
+            dropdown.setStyle({
+                minWidth: Math.max(item.getWidth(), dropdown.getWidth()) + 'px',
+                boxSizing: 'border-box',
+                display: 'none'
+            });
+            li.removeClassName('collapsed');
+            li.addClassName('expanded');
+            /* The current item has the class 'expanded' to work well in vertical mode
+               (on narrow screen), but it must be hidden even in the expanded state by
+               the CSS when in horizontal mode (on a wide screen) because the submenu
+               is a drop-down there.  The class
+               'script-expanded' works around this.
+             */
+            li.addClassName('script-expanded');
+            dropdown.setAttribute('aria-hidden', 'false');
             item.setAttribute('aria-expanded', 'true');
-            new Effect.SlideDown(dropdown, {duration: 0.2});
+            dropdown.slideDown({duration: 0.2});
             this._on_touchstart = function (event) { this._touch_moved = false; }.bind(this);
             this._on_touchmove = function (event) { this._touch_moved = true; }.bind(this);
             this._on_touchend = function (event) {
@@ -273,7 +325,7 @@ wiking.MainMenu = Class.create(lcg.Menu, {
             }.bind(this);
             this._on_click = function (event) {
                 if (dropdown && event.findElement('.menu-dropdown') !== dropdown) {
-                    this._toggle_dropdown(dropdown);
+                    this._collapse_item(item);
                     if (!event.stopped) {
                         event.stop();
                     }
@@ -283,49 +335,25 @@ wiking.MainMenu = Class.create(lcg.Menu, {
             $(document).observe('touchstart', this._on_touchstart);
             $(document).observe('touchmove', this._on_touchmove);
             $(document).observe('touchend', this._on_touchend);
-        } else {
+            return true;
+        }
+        return $super(item, recourse);
+    },
+        
+    _collapse_item: function ($super, item) {
+        if (item.up('ul').hasClassName('level-1')) {
             $(document).stopObserving('click', this._on_click);
             $(document).stopObserving('touchstart', this._on_touchstart);
             $(document).stopObserving('touchmove', this._on_touchmove);
             $(document).stopObserving('touchend', this._on_touchend);
-            this._active_dropdown = null;
-            new Effect.SlideUp(dropdown, {
-                duration: 0.2,
-                afterFinish: function () {
-                    item.removeClassName('expanded');
-                    item.setAttribute('aria-expanded', 'false');
-                }
-            });
         }
-    },
+        $super(item);
+        item.up('li').removeClassName('script-expanded');
+    }
 
-    _cmd_submenu: function (event, item) {
-        var submenu = item._wiking_submenu;
-        var dropdown = item._wiking_dropdown;
-        var menu_element;
-        if (submenu && submenu.getStyle('display') !== 'none') {
-            menu_element = submenu;
-        } else if (dropdown && dropdown.visible()) {
-            menu_element = dropdown;
-        } else if (dropdown) {
-            this._toggle_dropdown(dropdown);
-        }
-        if (menu_element) {
-            var tree_menu = lcg.widget_instance(menu_element.down('.foldable-tree-widget'));
-            this._set_focus(tree_menu.items[0]);
-        }
-    },
+});
 
-    _cmd_activate: function (event, item) {
-        var dropdown = item._wiking_dropdown;
-        var submenu = item._wiking_submenu;
-        if (dropdown && !dropdown.visible() &&
-            (!submenu || submenu.getStyle('display') === 'none')) {
-            this._toggle_dropdown(dropdown);
-        } else {
-            self.location = item.getAttribute('href');
-        }
-    },
+wiking.MainMenuOrig = Class.create(lcg.Menu, {
 
     _cmd_quit: function (event, item) {
         this._set_focus($('main-heading'));

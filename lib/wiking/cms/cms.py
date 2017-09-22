@@ -1845,7 +1845,8 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                             title=lcg.SelfTranslatableText(identifier, translations=titles),
                             descr=lcg.SelfTranslatableText('', translations=descriptions),
                             hidden=not self._visible_in_menu(req, row),
-                            foldable=bool(row['foldable'].value()),
+                            foldable=(True if submenu and row['parent'].value() is None
+                                      else bool(row['foldable'].value())),
                             variants=variants,
                             submenu=submenu)
         rows = self._get_value((None, preview_mode), loader=self._load_page_rows)

@@ -50,7 +50,7 @@ img { position: relative; } /* MSIE float workaround */
 hr {
     height: 1px;
     background-color: $color.border;
-    border: 0px;
+    border: 0;
 }
 hr.new-page {
     height: 4px;
@@ -275,7 +275,7 @@ button .icon {
 .success-icon         { background-position: -140px 0; width: 20px; height: 20px; }
 .error-icon           { background-position: -160px 0; width: 20px; height: 20px; }
 .warning-icon         { background-position: -157px -20px; width: 23px; height: 20px; }
-.menu-icon            { background-position: -158px -42px; width: 23px; height: 24px; }
+.menu-icon            { background-position: -158px -41px; width: 23px; height: 25px; }
 .key-larger-icon      { background-position: -160px -66px; width: 18px; height: 18px; }
 .user-icon            { background-position: -0 -20px; }
 .gear-icon            { background-position: -16px -20px; }
@@ -614,6 +614,13 @@ body.non-maximized #root-wrap {
     margin-right: auto;
     box-shadow: 0 0 4px 2px rgba(128, 128, 128, 0.6);
 }
+#main, #bottom {
+    padding: 0 12px;
+}
+#main {
+    padding-top: 10px;
+    background-image: linear-gradient(180deg, #bbb, #fff 4px);
+}
 
 #links {
     display: none;
@@ -629,55 +636,67 @@ body.non-maximized #root-wrap {
     margin-bottom: 0.3em;
 }
 
-/* Horizontal menu bar */
+#menu {
+    font-size: 16px;
+}
+#menu .icon {
+    margin-top: 5px;
+}
 
+/* Style top level menu items as a horizontal menu bar (wide screens only). */
+@media only screen and (min-width: 601px) {
+
+#menu-button {
+    display: none;
+}
 #menu {
     /* The rules below fix MSIE 8 dropdown menu z-index */
     position: relative;
     z-index: 2;
 }
-#menu h3 {
-    display: none;
-}
-
-#menu ul.main-menu-items {
+#menu ul.level-1 {
     margin: 0;
     padding: 0;
 }
-#menu ul.main-menu-items:after { /* Avoid floated elements outside container (clearfix). */
+#menu ul.level-1:after { /* Avoid floated elements outside container (clearfix). */
     clear: both;
     content: "";
     display: block;
     height: 0;
     visibility: hidden;
 }
-#menu li.main-menu-item {
+#menu ul.level-1 > li {
     display: inline-block;
     float: left; /* MSIE 8 hack */
     white-space: nowrap;
     position: relative;
+    width: auto;
+    line-height: inherit;
 }
-#menu a.navigation-link {
+#menu ul.level-1 > li > a {
     display: inline-block;
-    font-size: 16px;
     font-weight: bold;
     padding: 4px 12px;
     text-decoration: none;
     border-bottom: 5px solid #fff;
     color: #444;
 }
-#menu a.navigation-link:hover {
+#menu ul.level-1 > li > a:hover {
     border-bottom-color: $color.heading-bg;
 }
-#menu a.navigation-link.expanded,
-#menu a.navigation-link.current.expanded {
-    z-index: 3;
-    border-bottom-color: #fff;
-}
-#menu a.navigation-link.current {
+#menu ul.level-1 > li.in-path > a {
     border-bottom-color: #626262;
 }
-#menu a.navigation-link .dropdown-arrow {
+#menu ul.level-1 > li > a .label {
+    background-color: transparent;
+    padding: 0;
+    margin: 0;
+}
+#menu ul.level-1 > li > a .icon {
+    display: none;
+}
+#menu ul.level-1 > li.foldable > a .label:after {
+    content: "";
     display: inline-block;
     width: 10px;
     height: 10px;
@@ -689,29 +708,24 @@ body.non-maximized #root-wrap {
     overflow: hidden;
 }
 
-#menu .menu-dropdown {
+#menu ul.level-2 {
+    display: none;
     position: absolute;
-    top: 32px;
-    left: 0px;
-    z-index: 2; /* TODO: This doesn't work. Why? */
-    font-size: 16px;
-    padding: 4px 4px 4px 2px;
+    top: 27px;
+    left: 0;
+    z-index: 2;
+    padding: 6px;
     background-color: $color.background;
     box-shadow: 1px 1px 12px rgba(0, 0, 0, 0.6);
     -moz-box-shadow: 1px 1px 12px rgba(0, 0, 0, 0.6);
     -webkit-box-shadow: rgba(0, 0, 0, 0.6) 1px 1px 12px;
 }
-#menu .menu-dropdown li {
-    padding-right: 2px;
+#menu li.script-expanded ul.level-2 {
+    display: block;
 }
 
-#main, #bottom {
-    padding: 0 12px;
-}
-#main {
-    padding-top: 10px;
-    background-image: linear-gradient(180deg, #bbb, #fff 4px);
-}
+} /* End of menu bar styles for wide screens (min-width: 601px). */
+
 
 /* Hierarchical submenu */
 
@@ -722,11 +736,11 @@ body.non-maximized #root-wrap {
     body.non-maximized.with-submenu #panels {
         margin-left: 160px;
     }
-    body.non-maximized #menu a.navigation-link.current .dropdown-arrow {
-        display: none;
-    }
     body.non-maximized #submenu {
         display: block;
+    }
+    body.non-maximized #menu ul.level-1 > li.foldable.in-path > a .label:after {
+        display: none;
     }
 }
 #submenu {
@@ -918,30 +932,49 @@ form.login-form label {
 } /* End of tablet screen layout */
 
 /* Bigger mobile phone screen layout */
-@media only screen and (max-width: 767px) { 
-
-#site-title .separator, #site-title .subtitle { display: none; }
-
-.list-form-controls button.prev-page .label,
-.list-form-controls button.next-page .label,
-.list-form-controls button.cancel-search .label,
-.list-form-controls button.search .label {
-    width: 0px;
-    overflow: hidden;
-}
-
+@media only screen and (max-width: 767px) {
+    
+    #site-title .separator, #site-title .subtitle { display: none; }
+    
+    .list-form-controls button.prev-page .label,
+    .list-form-controls button.next-page .label,
+    .list-form-controls button.cancel-search .label,
+    .list-form-controls button.search .label {
+        width: 0px;
+        overflow: hidden;
+    }
+    
 } /* End of bigger mobile phone screen layout */
 
 /* Smaller mobile phone screen layout */
 @media only screen and (max-width: 600px) {
 
-.language-selection .language-name { display: none; }
-.language-selection .language-abbr { display: inline; }
-.login-control .displayed-user-name { display: none; }
-.login-control .popup-menu-ctrl-widget { background: none; }
-.login-control .login-button { display: none }
-#top-controls .login-control .invoke-menu.labeled { padding-left: 0; }
-
+    #menu-button {
+        display: inline-block;
+        float: left;
+        position: relative;
+        left: -6px;
+        padding: 0;
+    }
+    #menu-button a {
+        display: inline-block;
+        padding: 4px;
+    }
+    #menu .foldable-tree-widget {
+        display: none;
+        position: relative;
+    }
+    #menu .foldable-tree-widget.expanded {
+        display: block;
+    }
+    
+    .language-selection .language-name { display: none; }
+    .language-selection .language-abbr { display: inline; }
+    .login-control .displayed-user-name { display: none; }
+    .login-control .popup-menu-ctrl-widget { background: none; }
+    .login-control .login-button { display: none }
+    #top-controls .login-control .invoke-menu.labeled { padding-left: 0; }
+    
 } /* End of smaller mobile phone screen layout */
 
 /* Print specific styles */
