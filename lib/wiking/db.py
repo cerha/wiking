@@ -1415,7 +1415,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
             cell_editable=lambda *args: self._cell_editable(req, *args),
             expand_row=((lambda *args: self._expand_row(req, *args))
                         if self._ROW_EXPANSION else None),
-            async_row_expansion = self._ASYNC_ROW_EXPANSION,
+            async_row_expansion=self._ASYNC_ROW_EXPANSION,
             on_update_row=lambda record: self._do_update(req, record),
         )
 
