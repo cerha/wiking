@@ -466,7 +466,7 @@ body {
     font-family: arial, helvetica, sans-serif;
     color: $color.top-fg;
     background-color: $color.top-bg;
-    font-size: 14px;
+    font-size: 16px;
     padding: 0;
     margin: 0;
     -webkit-text-size-adjust: none;
@@ -493,11 +493,11 @@ h2 {
     border: solid $color.heading-line 0px;
     border-bottom-width: 1px;
 }
-h1 { font-size: 1.4em; }
-h2 { font-size: 1.4em; }
-h3 { font-size: 1.3em; }
-h4 { font-size: 1.2em; }
-h5,h6,h7,h8,h9 { font-size: 1.1em; }
+h1 { font-size: 2em; }
+h2 { font-size: 1.8em; }
+h3 { font-size: 1.6em; }
+h4 { font-size: 1.4em; }
+h5,h6,h7,h8,h9 { font-size: 1.2em; }
 
 a:link    { color: $color.link; }
 a:visited { color: $color.link-visited; }
@@ -522,7 +522,7 @@ h1 a { outline: none; }
 }
 #site-title {
     padding: 2px 0;
-    font-size: 1.1em;
+    font-size: 1.2em;
     float: left;
 }
 #site-title a {
@@ -637,7 +637,7 @@ body.non-maximized #root-wrap {
 }
 
 #menu {
-    font-size: 16px;
+    font-size: 1.2em;
 }
 #menu .icon {
     margin-top: 5px;
@@ -760,7 +760,7 @@ body.non-maximized #root-wrap {
 }
 #submenu h3 {
     margin: 0;
-    font-size: 15px;
+    font-size: 1.2em;
     padding: 4px 6px;
     background-color: $color.heading-bg;
     border-bottom: 1px solid $color.top-border;
@@ -816,7 +816,7 @@ body.non-maximized #root-wrap {
 #panels .panel h3 {
     padding: 4px 6px;
     margin: 0;
-    font-size: 15px;
+    font-size: 1.2em;
     position: relative;
     background-color: $color.heading-bg;
     border-bottom: 1px solid $color.top-border;
@@ -878,10 +878,10 @@ body.non-maximized #root-wrap {
 /* Bottom part of the page */
 #bottom {
     clear: both;
+    font-size: 0.8em;
 }
 #bottom-bar {
     text-align: right;
-    font-size: 12px;
     border: solid $color.top-border;
     border-width: 1px 0px;
     background-color: $color.heading-bg;
@@ -894,7 +894,6 @@ body.non-maximized #root-wrap {
 #bottom-bar hr { display: none; }
 
 #footer {
-    font-size: 12px;
     text-align: center;
     padding-bottom: 40px;
 }
@@ -1044,9 +1043,6 @@ body .notebook-widget li.notebook-tab a {
 body .notebook-widget li.notebook-tab a.current {
     background-color: $color.background;
     border-bottom-color: $color.background;
-}
-body .popup-menu-widget {
-    font-size: 14px;
 }
 body .dropdown-selection-widget .dropdown-selection {
     background-color: $color.background;
