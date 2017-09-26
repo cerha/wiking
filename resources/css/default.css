@@ -200,7 +200,7 @@ button {
     background-color: #fafafa;
     border: 1px solid #ccc;
     border-radius: 4px;
-    padding: 4px 8px;
+    padding: 4px 10px;
     white-space: nowrap;
     -webkit-appearance: button;
 }
@@ -220,7 +220,6 @@ button[disabled] span {
 }
 button .label {
     display: inline-block;
-    height: 16px;
     vertical-align: middle;
 }
 button .icon {
@@ -485,9 +484,9 @@ h1, h2, h3 {
 }
 h1 {
     background-color: $color.heading-bg;
-    padding: 1pt;
+    padding: 1px;
     border: solid $color.border;
-    border-width: 1px 0px;
+    border-width: 1px 0;
 }
 h2 {
     border: solid $color.heading-line 0px;
@@ -507,21 +506,19 @@ h1 a { outline: none; }
 
 #top-bar {
     white-space: nowrap;
-    padding: 0 12px;
 }
 #top {    
     /* The rules below fix MSIE 8 popup menu z-index */
     position: relative;
 }
 #top-content, #top-controls {
-    padding: 6px 0;
+    padding: 8px 0;
 }    
 #top-content {
     float: left;
     color: #444;
 }
 #site-title {
-    padding: 2px 0;
     font-size: 1.2em;
     float: left;
 }
@@ -614,11 +611,11 @@ body.non-maximized #root-wrap {
     margin-right: auto;
     box-shadow: 0 0 4px 2px rgba(128, 128, 128, 0.6);
 }
-#main, #bottom {
-    padding: 0 12px;
+#top, #main, #bottom {
+    padding: 0 18px;
 }
 #main {
-    padding-top: 10px;
+    padding-top: 18px;
     background-image: linear-gradient(180deg, #bbb, #fff 4px);
 }
 
@@ -640,7 +637,7 @@ body.non-maximized #root-wrap {
     font-size: 1.2em;
 }
 #menu .icon {
-    margin-top: 5px;
+    margin-top: 0.4em;
 }
 
 /* Style top level menu items as a horizontal menu bar (wide screens only). */
@@ -655,7 +652,7 @@ body.non-maximized #root-wrap {
     z-index: 2;
 }
 #menu ul.level-1 {
-    margin: 0;
+    margin: 0 -18px;
     padding: 0;
 }
 #menu ul.level-1:after { /* Avoid floated elements outside container (clearfix). */
@@ -674,9 +671,8 @@ body.non-maximized #root-wrap {
     line-height: inherit;
 }
 #menu ul.level-1 > li > a {
-    display: inline-block;
     font-weight: bold;
-    padding: 4px 12px;
+    padding: 0.2em 18px;
     text-decoration: none;
     border-bottom: 5px solid #fff;
     color: #444;
@@ -745,7 +741,7 @@ body.non-maximized #root-wrap {
 }
 #submenu {
     position: relative;
-    padding-right: 14px;
+    padding-right: 18px;
     z-index: 1;
     float: left;
     width: 160px;
@@ -797,7 +793,7 @@ body.non-maximized #root-wrap {
         float: right;
         width: 220px;
         box-sizing: border-box;
-        padding-left: 14px;
+        padding-left: 18px;
     }
     body.non-maximized.with-submenu #panels {
         margin: 0;
@@ -805,10 +801,10 @@ body.non-maximized #root-wrap {
 }
 #panels .panel {
     display: inline-block;
-    width: 208px; /* Set abs width to keep it unchanged when moved under content. */
+    width: 202px; /* Set abs width to keep it unchanged when moved under content. */
     box-sizing: border-box;
     vertical-align: top;
-    margin: 0 10px 10px 0;
+    margin: 0 18px 18px 0;
     color: $color.foreground;
     border: 1px solid $color.top-border;
     border-radius: 5px;
