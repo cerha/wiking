@@ -732,7 +732,7 @@ body.non-maximized #root-wrap {
     body.non-maximized.with-submenu #bottom-bar,
     body.non-maximized.with-submenu #footer,
     body.non-maximized.with-submenu #panels {
-        margin-left: 160px;
+        margin-left: 220px;
     }
     body.non-maximized #submenu {
         display: block;
@@ -746,7 +746,7 @@ body.non-maximized #root-wrap {
     padding-right: 18px;
     z-index: 1;
     float: left;
-    width: 160px;
+    width: 220px;
     display: none;
     box-sizing: border-box;
 }
