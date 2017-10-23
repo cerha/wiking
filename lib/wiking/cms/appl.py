@@ -383,7 +383,12 @@ class Application(wiking.Application):
         return content
 
     def top_controls(self, req):
-        return [wiking.LoginControl(), AdminControl(), wiking.LanguageSelection()]
+        return [
+            wiking.LoginControl(),
+            AdminControl(),
+            wiking.LanguageSelection(),
+            wiking.MaximizedModeControl(),
+        ]
 
     def bottom_bar_right_content(self, req):
         return (super(Application, self).bottom_bar_right_content(req), ', ',

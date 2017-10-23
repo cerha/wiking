@@ -1823,6 +1823,28 @@ class LanguageSelection(TopBarControl):
         return super(LanguageSelection, self).export(context)
 
 
+class MaximizedModeControl(TopBarControl):
+    """Maximized mode control.
+
+    Turns on/off the "maximized mode".  The Maximized mode makes the main
+    content to span to the full width, reducing the side bars (tree menu on the
+    left and panels on the right side).
+
+    """
+
+    def _content(self, context):
+        g = context.generator()
+        if context.req().maximized():
+            label = _("Exit the maximized mode.")
+            href = '?maximize=0'
+            icon = 'unmaximize-icon'
+        else:
+            label = _("Maximize the main content to the full size of the browser window.")
+            href = '?maximize=1'
+            icon = 'maximize-icon'
+        return g.a(g.span('', cls=icon), href=href, title=label, aria_label=label, role='button')
+
+
 class PanelItem(lcg.Content):
 
     def __init__(self, fields):

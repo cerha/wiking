@@ -372,7 +372,7 @@ class Application(wiking.Module):
         'wiking.LoginControl' and 'wiking.LanguageSelection'.
 
         """
-        return [wiking.LoginControl(), wiking.LanguageSelection()]
+        return [wiking.LoginControl(), wiking.LanguageSelection(), wiking.MaximizedModeControl()]
 
     def menu(self, req):
         """Return the main navigation menu hierarchy.

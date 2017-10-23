@@ -563,14 +563,22 @@ h1 a { outline: none; }
     padding-left: 6px;
 }
 
-.login-control .login-button {
+.login-control .login-button,
+.maximized-mode-control {
     display: inline-block;
     color: $color.foreground;
-    padding: 3px 5px;
     text-decoration: none;
     border-radius: 3px;
     margin-right: 4px;
     background-color: #ddd;
+}
+.maximized-mode-control {
+    position: relative;
+    top: -1px;
+    padding: 2px;
+}
+.login-control .login-button {
+    padding: 3px 5px;
 }
 .login-control .login-button:hover {
     color: $color.foreground;
@@ -843,14 +851,8 @@ body.non-maximized #root-wrap {
 #heading {
     position: relative;
 }
-#maximized-mode-button {
-    position: absolute;
-    top: 4px;
-    right: 4px;
-    margin: 0;
-}
 @media only screen and (max-width: 767px) { 
-    #maximized-mode-button {
+    #top-controls .maximized-mode-control {
         display: none;
     }
 }
@@ -1008,7 +1010,7 @@ form.list-form-controls .paging-controls {
     display: none;
 }
 
-#maximized-mode-button {
+#top-controls .maximized-mode-control {
     display: none;
 }
 

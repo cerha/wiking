@@ -327,20 +327,8 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
 
     def _heading(self, context):
         g = self._generator
-        if context.req().maximized():
-            label = _("Exit the maximized mode.")
-            href = '?maximize=0'
-            icon = 'unmaximize-icon'
-        else:
-            label = _("Maximize the main content to the full size of the browser window.")
-            href = '?maximize=1'
-            icon = 'maximize-icon'
-        return (
-            g.a(g.span('', cls=icon), href=href, title=label, aria_label=label,
-                id='maximized-mode-button', role='button'),
-            g.h1(g.a(context.node().heading().export(context), tabindex=0,
-                    name='main-heading', id='main-heading')),
-        )
+        return g.h1(g.a(context.node().heading().export(context), tabindex=0,
+                        name='main-heading', id='main-heading'))
 
     def _panels(self, context):
         if not context.panels():
