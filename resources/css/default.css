@@ -709,14 +709,14 @@ body.non-maximized #root-wrap {
 #menu ul.level-2 {
     display: none;
     position: absolute;
-    top: 27px;
+    top: 30px;
     left: 0;
     z-index: 2;
     padding: 6px;
     background-color: $color.background;
     box-shadow: 1px 1px 12px rgba(0, 0, 0, 0.6);
     -moz-box-shadow: 1px 1px 12px rgba(0, 0, 0, 0.6);
-    -webkit-box-shadow: rgba(0, 0, 0, 0.6) 1px 1px 12px;
+    -webkit-box-shadow: 1px 1px 12px rgba(0, 0, 0, 0.6);
 }
 #menu li.script-expanded ul.level-2 {
     display: block;
