@@ -274,15 +274,17 @@ wiking.MainMenu = Class.create(lcg.FoldableTree, {
     },
 
     _cmd_activate: function ($super, event, item) {
-        var dropdown = item.up('li').down('ul');
-        var submenu = item._wiking_submenu;
-        if (this._horizontal(item) &&
-            dropdown && dropdown.getStyle('display') === 'none' &&
-            (!submenu || submenu.getStyle('display') === 'none')) {
-            this._expand_item(item);
-        } else {
-            $super(event, item);
+        var li = item.up('li');
+        if (this._horizontal(item) && li.hasClassName('foldable')) {
+            var submenu = li.hasClassName('in-path') ? $('submenu') : undefined;
+            var dropdown = li.down('ul');
+            if (dropdown && dropdown.getStyle('display') === 'none' &&
+                !submenu || submenu.getStyle('display') === 'none') {
+                this._expand_item(item);
+                return;
+            }
         }
+        $super(event, item);
     },
 
     _expand_item: function ($super, item, recourse) {
@@ -324,7 +326,8 @@ wiking.MainMenu = Class.create(lcg.FoldableTree, {
                 }
             }.bind(this);
             this._on_click = function (event) {
-                if (dropdown && event.findElement('.menu-dropdown') !== dropdown) {
+                if (event.findElement('ul.level-2') !== dropdown
+                    && event.findElement('ul.level-1 > li') !== li) {
                     this._collapse_item(item);
                     if (!event.stopped) {
                         event.stop();
