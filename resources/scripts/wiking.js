@@ -317,7 +317,8 @@ wiking.MainMenu = Class.create(lcg.FoldableTree, {
             li.addClassName('script-expanded');
             dropdown.setAttribute('aria-hidden', 'false');
             item.setAttribute('aria-expanded', 'true');
-            dropdown.slideDown({duration: 0.2});
+            // The first menu item slides strangely. Short slide duration makes it less appearant.
+            dropdown.slideDown({duration: 0.1});
             this._on_touchstart = function (event) { this._touch_moved = false; }.bind(this);
             this._on_touchmove = function (event) { this._touch_moved = true; }.bind(this);
             this._on_touchend = function (event) {
