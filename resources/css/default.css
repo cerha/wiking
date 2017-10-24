@@ -942,14 +942,14 @@ form.login-form label {
 
     #menu-button {
         display: inline-block;
-        float: left;
-        position: relative;
-        left: -6px;
-        padding: 0;
+        float: right;
     }
     #menu-button a {
         display: inline-block;
-        padding: 4px;
+        padding: 9px 10px;
+        margin-right: -11px;
+        margin-left: 4px;
+        cursor: pointer;
     }
     #menu .foldable-tree-widget {
         display: none;
