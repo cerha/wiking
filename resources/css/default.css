@@ -637,9 +637,13 @@ body.non-maximized #root-wrap {
 
 #menu {
     font-size: 1.2em;
+    font-weight: bold;
 }
 #menu .icon {
     margin-top: 0.4em;
+}
+#menu a {
+    color: #222;
 }
 
 /* Style top level menu items as a horizontal menu bar (wide screens only). */
@@ -673,17 +677,21 @@ body.non-maximized #root-wrap {
     line-height: inherit;
 }
 #menu ul.level-1 > li > a {
-    font-weight: bold;
     padding: 0.2em 18px;
     text-decoration: none;
     border-bottom: 5px solid #fff;
-    color: #222;
 }
 #menu ul.level-1 > li > a:hover {
     border-bottom-color: $color.heading-bg;
 }
 #menu ul.level-1 > li.in-path > a {
     border-bottom-color: #626262;
+}
+#menu ul.level-1 > li.script-expanded > a {
+    z-index: 3;
+    position: relative;
+    background-image: linear-gradient(#eee, #fff);
+    border-bottom: none;
 }
 #menu ul.level-1 > li > a .label {
     background-color: transparent;

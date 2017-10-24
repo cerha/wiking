@@ -302,7 +302,7 @@ wiking.MainMenu = Class.create(lcg.FoldableTree, {
             // Also resetting the style here prevents messy final state when
             // clicking too fast so that the slideDown effects overlap.
             dropdown.setStyle({
-                minWidth: Math.max(item.getWidth(), dropdown.getWidth()) + 'px',
+                minWidth: Math.max(item.getWidth(), dropdown.getWidth() + 10) + 'px',
                 boxSizing: 'border-box',
                 display: 'none'
             });
