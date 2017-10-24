@@ -692,6 +692,7 @@ body.non-maximized #root-wrap {
     position: relative;
     background-image: linear-gradient(#eee, #fff);
     border-bottom: none;
+    border-radius: 5px 5px 0 0;
 }
 #menu ul.level-1 > li > a .label {
     background-color: transparent;
