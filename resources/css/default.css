@@ -907,8 +907,8 @@ form.login-form {
     margin-bottom: 14px;
 }
 form.login-form input {
-    margin-bottom: 12px;
-    border: 1px solid $color.border;
+    margin: 2px 0 12px 0;
+    padding: 3px;
 }
 form.login-form ul {
     margin-top: 14px;
