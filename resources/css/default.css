@@ -618,7 +618,7 @@ body.non-maximized #root-wrap {
 }
 #main {
     padding-top: 18px;
-    background-image: linear-gradient(180deg, #bbb, #fff 4px);
+    background-image: linear-gradient(180deg, #bbb, $color.background 4px);
 }
 
 #links {
@@ -679,7 +679,7 @@ body.non-maximized #root-wrap {
 #menu ul.level-1 > li > a {
     padding: 0.2em 18px;
     text-decoration: none;
-    border-bottom: 5px solid #fff;
+    border-bottom: 5px solid $color.background;
 }
 #menu ul.level-1 > li > a:hover {
     border-bottom-color: $color.heading-bg;
@@ -690,7 +690,7 @@ body.non-maximized #root-wrap {
 #menu ul.level-1 > li.script-expanded > a {
     z-index: 3;
     position: relative;
-    background-image: linear-gradient(#eee, #fff);
+    background-image: linear-gradient(#eee, $color.background);
     border-bottom: none;
     border-radius: 5px 5px 0 0;
 }
