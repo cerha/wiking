@@ -223,22 +223,7 @@ button .label {
     vertical-align: middle;
 }
 button .icon {
-    margin-right: 2px;
-}
-.pytis-form .list-form-controls button {
-    padding: 1px 5px;
-}
-.pytis-form .submit-buttons button {
-    padding: 4px 12px;
-}
-.pytis-form .submit-buttons button .icon {
-    margin-right: 5px;
-}
-.pytis-form .actions button .icon {
     margin-right: 4px;
-}
-.login-form button {
-    padding: 4px 10px;
 }
 /* Wiking icons sprite */
 .user-larger-icon, .gear-larger-icon, .gear-larger-red-icon, .maximize-icon, .unmaximize-icon,
@@ -471,9 +456,18 @@ body {
     margin: 0;
     -webkit-text-size-adjust: none;
 }
-button, input, select {
+button, input, select, textarea {
     /* Avoid dual application of 0.8em defined above in some elements */
     font-size: 1em;
+    border: 1px solid $color.border;
+    border-radius: 3px;
+}
+input, textarea {
+    padding: 3px;
+}
+select {
+    padding: 2px;
+    height: 1.75em; /* hack to force WebKit to fit the expected size */
 }
 p {
     margin: 0.4em 0;
