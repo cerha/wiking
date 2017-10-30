@@ -563,7 +563,9 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                 )
 
     def _default_actions_last(self, req, record):
-        return (Action('copy', self._COPY_LABEL, descr=self._COPY_DESCR),
+        return (Action('copy', self._COPY_LABEL,
+                       icon='copy-icon',
+                       descr=self._COPY_DESCR),
                 Action('delete', self._DELETE_LABEL,
                        icon='remove-icon',
                        descr=self._DELETE_DESCR,
