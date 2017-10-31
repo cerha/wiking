@@ -7,6 +7,7 @@ div.discussion-list .pytis-form.list-view h3 {
     border: solid $color.frame-border 0;
     border-width: 1px 0;
     position: relative;
+    padding: 1px 0;
 }
 div.discussion-list .pytis-form.list-view div.list-item.group-start { 
     padding-top: 0;
