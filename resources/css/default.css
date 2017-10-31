@@ -682,11 +682,12 @@ body.non-maximized #root-wrap {
 #menu ul.level-1 > li.in-path > a {
     border-bottom-color: #626262;
 }
+#menu ul.level-1 > li.script-expanded > a:hover,
 #menu ul.level-1 > li.script-expanded > a {
     z-index: 3;
     position: relative;
     background-image: linear-gradient(#eee, $color.background);
-    border-bottom: none;
+    border-bottom-color: $color.background;
     border-radius: 5px 5px 0 0;
 }
 #menu ul.level-1 > li > a .label {
@@ -713,7 +714,7 @@ body.non-maximized #root-wrap {
 #menu ul.level-2 {
     display: none;
     position: absolute;
-    top: 30px;
+    top: 34px;
     left: 0;
     z-index: 2;
     padding: 6px;
@@ -721,6 +722,7 @@ body.non-maximized #root-wrap {
     box-shadow: 1px 1px 12px rgba(0, 0, 0, 0.6);
     -moz-box-shadow: 1px 1px 12px rgba(0, 0, 0, 0.6);
     -webkit-box-shadow: 1px 1px 12px rgba(0, 0, 0, 0.6);
+    border-radius: 0 3px 3px 3px;
 }
 #menu li.script-expanded ul.level-2 {
     display: block;
