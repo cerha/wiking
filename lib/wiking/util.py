@@ -612,7 +612,7 @@ class Theme(object):
                  'message-border': '#aea',
                  'table-cell': '#f8fafb',
                  'table-cell2': '#f1f3f2',
-                 'top-bg': '#c4c5c4;',
+                 'top-bg': '#e4e5e4;',
                  'top-border': '#ccdcec',
                  'highlight-bg': '#ffd0c0',
                  'inactive-folder': '#e0e0e0',
