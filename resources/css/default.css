@@ -178,6 +178,10 @@ figcaption {
     min-width: 16em;
 }
 
+.embedded-video-player {
+    margin: 10px 0;
+}
+
 div.table-of-contents { 
     border: solid $color.frame-border;
     border-width: 1px 0;
