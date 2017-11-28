@@ -180,6 +180,7 @@ figcaption {
 
 .embedded-video-player {
     margin: 1.6em 0 .8em 0;
+    text-align: center;
 }
 
 div.table-of-contents { 
