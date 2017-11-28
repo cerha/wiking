@@ -333,6 +333,15 @@ select {
 .mail-icon            { background-position: -128px -68px; }
 .copy-icon            { background-position: -144px -68px; }
 
+body .collapsible-section-widget .collapsible-section-heading .icon {
+    width: 16px;
+    height: 16px;
+    background: url(wiking-icons.png) -16px -36px no-repeat;
+}
+body .collapsible-section-widget.expanded > div > div > div > .collapsible-section-heading .icon {
+    background-position: -48px -36px;
+}
+
 /* Wiking CMS specific styles */
 
 .cms-page-actions {
