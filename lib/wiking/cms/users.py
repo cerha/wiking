@@ -728,7 +728,7 @@ class Users(UserManagementModule, CachingPytisModule):
                 # Translators: Name for a group of users which did not confirm their registration
                 # yet by replying to an email with an activation code.
                 pp.Profile('new',
-                           _("Unfinished registration requests (activation code not confirmed)"),
+                           _("Unfinished registrations (activation code not confirmed)"),
                            filter=pd.EQ('state', pd.sval(Users.AccountState.NEW))),
                 # Translators: Name for a group of users whose accounts were blocked.
                 pp.Profile('disabled', _("Disabled users"),
