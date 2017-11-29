@@ -138,13 +138,16 @@ table.lcg-table caption {
 }
 
 img.lcg-image { 
-    margin: .5em .8em;
+    max-width: 100%;
+    height: auto !important;
+    box-sizing: border-box;
+    padding: .5em .8em;
 }
 img.lcg-image.left-aligned { 
-    margin: .25em 1em .25em 0;
+    padding: .25em 1em .25em 0;
 }
 img.lcg-image.right-aligned { 
-    margin: .25em 0 .25em 1em;
+    padding: .25em 0 .25em 1em;
 }
 
 figure {
