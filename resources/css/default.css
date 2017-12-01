@@ -181,19 +181,21 @@ figcaption {
     min-width: 16em;
 }
 
-.embedded-video-player {
+.external-video {
+    margin: 1.6em auto .8em auto;
+}
+.external-video .wrapper {
     /* Responsive iframe according to:
      * https://www.smashingmagazine.com/2014/02/making-embedded-content-work-in-responsive-design/
      * https://alistapart.com/article/creating-intrinsic-ratios-for-video/
      */ 
     position: relative;
-    margin: 1.6em 0 .8em 0;
     text-align: center;
-    padding-bottom: 75%;
+    padding-bottom: 75%; /* Actually overridden by the real aspect ratio in the HTML style attr. */
     height: 0;
     overflow: hidden;
 }
-.embedded-video-player iframe {
+.external-video iframe {
     position: absolute;
     top:0;
     left: 0;
