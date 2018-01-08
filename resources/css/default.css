@@ -993,8 +993,15 @@ form.login-form label {
     .list-form-controls button.next-page .label,
     .list-form-controls button.cancel-search .label,
     .list-form-controls button.search .label {
-        width: 0px;
+        width: 0;
         overflow: hidden;
+    }
+    .list-form-controls button.prev-page .icon,
+    .list-form-controls button.next-page .icon,
+    .list-form-controls button.cancel-search .icon,
+    .list-form-controls button.search .icon {
+        margin-right: 0;
+        margin-left: 0;
     }
     
 } /* End of bigger mobile phone screen layout */
