@@ -39,8 +39,7 @@ různých situacích může obsahovat i další ovládací prvky specifické pro
 aplikaci, nebo dostupúné pro určitou skupinu uživatelů. Obvykle však obsahuje
 především:
 
-* [#sec-login-indicator] pokud je uživatel přihlášen nebo
-  [#sec-login-control] pokud přihlášen není,
+* [#sec-login-control],
 * [#sec-language-selection] pokud je stránka vícejazyčná.
 
 Uživatelé odečítačů obrazovky se do horní lišty dostanou nejsnáze skokem na
