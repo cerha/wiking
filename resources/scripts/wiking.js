@@ -113,6 +113,18 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
             }.bind(this));
         }.bind(this));
 
+        // Bind submenu with the main menu so that Arrow-up on a top
+        // level sumenu item navigates to the current main menu item.
+        var submenu = $('submenu');
+        if (submenu) {
+            var tree_menu = lcg.widget_instance(submenu.down('.foldable-tree-widget'));
+            $$('#menu ul.level-1 > li.in-path > a').each(function(item) {
+                tree_menu.items.each(function(x) {
+                    x._lcg_menu_parent = item;
+                });
+            });
+        }
+
         wiking.handler = this;
     },
 
@@ -195,6 +207,9 @@ wiking.MainMenu = Class.create(lcg.FoldableTree, {
             // the current main menu item to the screen reader user.
             item.removeAttribute('role');
             item.removeAttribute('aria-selected');
+            item.setAttribute('aria-expanded', 'false');
+            li.removeClassName('expanded');
+            li.addClassName('collapsed');
         }
     },
 
@@ -256,30 +271,13 @@ wiking.MainMenu = Class.create(lcg.FoldableTree, {
         }
     },
 
-    _cmd_expand: function ($super, event, item) {
-        var li = item.up('li');
-        if (this._horizontal(item) && li.hasClassName('foldable') && li.hasClassName('in-path')) {
-            var submenu = $('submenu');
-            if (submenu && submenu.getStyle('display') !== 'none') {
-                item.setAttribute('aria-owns', 'submenu');
-                var tree_menu = lcg.widget_instance(submenu.down('.foldable-tree-widget'));
-                tree_menu.items.each(function(x) {
-                    x._lcg_menu_parent = item;
-                });
-                this._set_focus(tree_menu.items[0]);
-                return;
-            }
-        }
-        $super(event, item);
-    },
-
     _cmd_activate: function ($super, event, item) {
         var li = item.up('li');
         if (this._horizontal(item) && li.hasClassName('foldable')) {
             var submenu = li.hasClassName('in-path') ? $('submenu') : undefined;
             var dropdown = li.down('ul');
-            if (dropdown && dropdown.getStyle('display') === 'none' &&
-                !submenu || submenu.getStyle('display') === 'none') {
+            if (dropdown && dropdown.getStyle('display') === 'none' && !submenu ||
+                submenu.getStyle('display') === 'none') {
                 this._expand_item(item);
                 return;
             }
@@ -288,13 +286,13 @@ wiking.MainMenu = Class.create(lcg.FoldableTree, {
     },
 
     _expand_item: function ($super, item, recourse) {
-        if (this._horizontal(item)) {
+        var li = item.up('li');
+        if (this._horizontal(item) && !li.hasClassName('expanded')) {
             this.items.each(function(x) {
                 if (x.up('li').hasClassName('expanded')) {
                     this._collapse_item(x);
                 }
             }.bind(this));
-            var li = item.up('li');
             var dropdown = li.down('ul');
             // Setting min-width solves two problems.  A. the dropdown looks visually
             // odd when not wider than the item.  B. the dropdown width flickers when
