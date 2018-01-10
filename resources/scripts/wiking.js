@@ -241,6 +241,7 @@ wiking.MainMenu = Class.create(lcg.FoldableTree, {
                 duration: 0.3,
                 afterFinish: function () {
                     this._menu_button.setAttribute('aria-expanded', 'true');
+                    this._set_focus(lcg.widget_instance(menu).items[0]);
                 }.bind(this)
             });
         } else {
