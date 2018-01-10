@@ -643,7 +643,7 @@ class Config(SettingsManagementModule, wiking.CachingPytisModule):
                     descr += ' ' + _("The default setting is %s.", transform_default(default))
                 self._cfg_option = option
                 self._default_value = default
-                Field.__init__(self, name, label, descr=descr, **kwargs)
+                Field.__init__(self, name, label, descr=descr, compact=True, **kwargs)
             def cfg_option(self):
                 return self._cfg_option
             def default_value(self):
