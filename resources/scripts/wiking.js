@@ -207,9 +207,11 @@ wiking.MainMenu = Class.create(lcg.FoldableTree, {
             // the current main menu item to the screen reader user.
             item.removeAttribute('role');
             item.removeAttribute('aria-selected');
-            item.setAttribute('aria-expanded', 'false');
-            li.removeClassName('expanded');
-            li.addClassName('collapsed');
+            if (li.hasClassName('foldable')) {
+                item.setAttribute('aria-expanded', 'false');
+                li.removeClassName('expanded');
+                li.addClassName('collapsed');
+            }
         }
     },
 
