@@ -1,4 +1,4 @@
-# Copyright (C) 2006-2017 Brailcom, o.p.s.
+# Copyright (C) 2006-2018 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -259,7 +259,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
 
     def _menu_button(self, context):
         g = self._generator
-        return g.a(g.span('', cls='menu-icon'), aria_label=_("Menu"))
+        return g.a(g.span('', cls='menu-icon', tabindex=0), aria_label=_("Menu"))
 
     def _site_title(self, context):
         g = self._generator
