@@ -156,10 +156,8 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                                  Part('heading'),
                                  Part('messages'),
                                  Part('content'),
-                                 Part('clearing', content=()),
                              )),
                         Part('panels'),
-                        Part('main-clearing', content=())
                     )),
                 )),
                 Part('bottom', content=(

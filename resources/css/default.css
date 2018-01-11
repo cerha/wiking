@@ -777,25 +777,21 @@ body.non-maximized #root-wrap {
 /* Hierarchical submenu */
 
 @media only screen and (min-width: 768px) {
-    body.non-maximized.with-submenu #page,
-    body.non-maximized.with-submenu #panels {
-        margin-left: 220px;
-    }
     body.non-maximized #submenu {
-        display: block;
+        display: table-cell;
     }
     body.non-maximized #menu ul.level-1 > li.foldable.in-path > a .label:after {
         display: none;
     }
 }
 #submenu {
+    display: none;
     position: relative;
-    padding-right: 18px;
     z-index: 1;
     float: left;
     width: 220px;
-    display: none;
     box-sizing: border-box;
+    padding-right: 18px;
 }
 #submenu .menu-panel  {
     position: relative;
@@ -826,11 +822,6 @@ body.non-maximized #root-wrap {
 /* Panels */
 
 @media only screen and (min-width: 992px) { 
-    body.non-maximized.with-panels #page {
-        display: table-cell;
-        vertical-align: top;
-        width: 100%;
-    }
     body.non-maximized #panels {
         display: table-cell;
         vertical-align: top;
@@ -876,6 +867,9 @@ body.non-maximized #root-wrap {
 /* The actual page content */
 
 #page {
+    display: table-cell;
+    vertical-align: top;
+    width: 100%;
     position: relative;
     color: $color.foreground;
     background-color: $color.background;
@@ -896,14 +890,6 @@ body.non-maximized #root-wrap {
 }
 #content {
     position: relative; /* fix MSIE background painting */
-}
-#clearing {
-    height: 0;
-    clear: left;
-}
-#main-clearing {
-    height: 0;
-    clear: both;
 }
 
 /* Bottom part of the page */
