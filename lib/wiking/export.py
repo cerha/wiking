@@ -389,7 +389,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         g = self._generator
         content = context.application.footer_content(context.req())
         if content:
-            return g.hr() + lcg.coerce(content).export(context)
+            return lcg.coerce(content).export(context)
         else:
             return None
 
