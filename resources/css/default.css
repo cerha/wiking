@@ -813,8 +813,8 @@ body.non-maximized #root-wrap {
 }
 #submenu button.toggle-menu-expansion {
     position: absolute;
-    top: 7px;
-    right: 4px;
+    top: .6em;
+    right: .4em;
 }
 * html #submenu button.toggle-menu-expansion { right: 10px; } /* MSIE hack */
 
