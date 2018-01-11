@@ -136,7 +136,6 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                             Part('menu-button'),
                             Part('top-content'),
                             Part('top-controls'),
-                            Part('top-clearing', content=()),
                         )),
                         Part('menu',
                              aria_label=_("Main navigation"),

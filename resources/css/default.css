@@ -548,6 +548,11 @@ h1 a { outline: none; }
 #top-bar {
     white-space: nowrap;
 }
+#top-bar:after {
+  content: "";
+  display: table;
+  clear: both;
+}
 #top {    
     /* The rules below fix MSIE 8 popup menu z-index */
     position: relative;
@@ -649,11 +654,6 @@ h1 a { outline: none; }
 .language-selection {
 }
 .language-selection .language-abbr { display: none; }
-
-#top-clearing {
-    height: 0;
-    clear: both;
-}
 
 #root-wrap {
     background-color: $color.background;
