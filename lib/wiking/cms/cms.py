@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2006-2017 Brailcom, o.p.s.
+# Copyright (C) 2006-2018 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -182,7 +182,8 @@ class WikingManagementInterface(wiking.Module, wiking.RequestHandler):
 
     def menu(self, req):
         variants = wiking.module.Application.languages()
-        return [MenuItem('/_wmi/' + section, title, descr=descr, variants=variants,
+        return [MenuItem('/_wmi/' + section, title, descr=descr,
+                         foldable=True, variants=variants,
                          submenu=[MenuItem('/_wmi/' + section + '/' + m.name(),
                                            m.title(),
                                            descr=m.descr(),

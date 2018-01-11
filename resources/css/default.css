@@ -672,20 +672,6 @@ body.non-maximized #root-wrap {
     background-image: linear-gradient(180deg, #bbb, $color.background 4px);
 }
 
-#links {
-    display: none;
-}
-
-#breadcrumbs {
-    display: none;
-    /* The rest is a prototype for the case that breadcrumbs are displayed */
-    background-color: $color.frame-bg;
-    border: solid $color.frame-border 1px;
-    border-width: 1px 0;
-    padding: 1px 0;
-    margin-bottom: 0.3em;
-}
-
 #menu {
     font-size: 1.2em;
     font-weight: bold;
@@ -1068,7 +1054,7 @@ h5 { font-size: 1.1em; }
 h6 { font-size: 1.1em; }
 h7 { font-size: 1.1em; }
 
-#top, #links, #breadcrumbs, #menu, #submenu, #panels, #bottom, 
+#top, #menu, #submenu, #panels, #bottom,
 form.list-form-controls .paging-controls {
     display: none;
 }
