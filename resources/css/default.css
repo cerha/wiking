@@ -629,12 +629,13 @@ h1 a { outline: none; }
     color: $color.foreground;
 }
 .login-control li.user-profile .user-label {
-    font-size: 12px;
+    font-size: .8em;
     color: $color.help;
+    line-height: 1.2em;
 }
 .login-control li.user-profile .icon {
     float: left;
-    margin-top: 6px;
+    margin-top: 1em;
 }
 
 .admin-control {
