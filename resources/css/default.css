@@ -788,8 +788,8 @@ body.non-maximized #root-wrap {
     display: none;
     position: relative;
     z-index: 1;
-    float: left;
     width: 220px;
+    min-width: 220px;
     box-sizing: border-box;
     padding-right: 18px;
 }
