@@ -778,8 +778,6 @@ body.non-maximized #root-wrap {
 
 @media only screen and (min-width: 768px) {
     body.non-maximized.with-submenu #page,
-    body.non-maximized.with-submenu #bottom-bar,
-    body.non-maximized.with-submenu #footer,
     body.non-maximized.with-submenu #panels {
         margin-left: 220px;
     }
@@ -828,27 +826,21 @@ body.non-maximized #root-wrap {
 /* Panels */
 
 @media only screen and (min-width: 992px) { 
-    body.non-maximized.with-panels #page,
-    body.non-maximized.with-panels #bottom-bar,
-    body.non-maximized.with-panels #footer {
-        margin-right: 220px;
-    }
-    body.with-panels #main-wrap {
-        position: relative;
+    body.non-maximized.with-panels #page {
+        display: table-cell;
+        vertical-align: top;
     }
     body.non-maximized #panels {
-        position: absolute;
-        top: 0;
-        right: 0;
+        display: table-cell;
+        vertical-align: top;
         z-index: 1;
-        float: right;
         width: 220px;
         box-sizing: border-box;
         padding-left: 18px;
     }
-    body.non-maximized.with-submenu #panels {
-        margin: 0;
-    }        
+    body.non-maximized #panels .panel {
+        margin-right: 0;
+    }
 }
 #panels .panel {
     display: inline-block;
@@ -878,9 +870,6 @@ body.non-maximized #root-wrap {
 }
 #panels .panel-content form {
     margin: 5px 0;
-}
-#panels .panels-bottom-content {
-    margin-bottom: 16px;
 }
 
 /* The actual page content */
@@ -918,27 +907,24 @@ body.non-maximized #root-wrap {
 
 /* Bottom part of the page */
 #bottom {
+    margin-top: 2em;
     clear: both;
-    font-size: 0.8em;
+    font-size: .9em;
+    border-top: solid 4px $color.top-border;
 }
 #bottom-bar {
     text-align: right;
-    border: solid $color.top-border;
-    border-width: 1px 0px;
-    background-color: $color.heading-bg;
-    padding: 2px 3px;
-    margin-bottom: 12px;
+    margin-bottom: .8em;
 }
 #bottom-bar span.left { float: left; }
 #bottom-bar div.left { text-align: left; }
-#bottom-bar a { text-decoration: none; }
 #bottom-bar hr { display: none; }
 
 #footer {
     text-align: center;
     padding-bottom: 40px;
 }
-#footer p { margin: 1px 0; }
+#footer p { margin: .1em 0 .5em 0; }
 #footer img { margin: 5px; }
 #footer hr { display: none; }
 
