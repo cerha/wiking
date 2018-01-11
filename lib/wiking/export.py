@@ -146,8 +146,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                 )),
                 Part('main', content=(
                     Part('main-wrap', content=(
-                        Part('links'),
-                        Part('breadcrumbs'),
+                        #Part('breadcrumbs'),
                         Part('submenu', role='navigation'),
                         Part('page',
                              aria_label=_("Main content"),
@@ -283,13 +282,6 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
 
     def _top_controls(self, context):
         return lcg.coerce(context.application.top_controls(context.req())).export(context)
-
-    def _links(self, context):
-        g = self._generator
-        links = [g.a(_("Main content"), href='#main-heading', accesskey="2")]
-        for panel in context.panels():
-            links.append(g.a(panel.accessible_title(), href='#panel-%s-anchor ' % panel.id()))
-        return _("Jump in page") + ": " + lcg.concat(links, separator=' | ')
 
     def _breadcrumbs(self, context):
         links = [lcg.link(n).export(context) for n in context.node().path()[1:]]
