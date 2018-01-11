@@ -829,6 +829,7 @@ body.non-maximized #root-wrap {
     body.non-maximized.with-panels #page {
         display: table-cell;
         vertical-align: top;
+        width: 100%;
     }
     body.non-maximized #panels {
         display: table-cell;
