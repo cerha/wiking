@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2006-2017 Brailcom, o.p.s.
+# Copyright (C) 2006-2018 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -390,9 +390,8 @@ class Application(wiking.Application):
             wiking.MaximizedModeControl(),
         ]
 
-    def bottom_bar_right_content(self, req):
-        return (super(Application, self).bottom_bar_right_content(req), ', ',
-                lcg.Link('/_sitemap', wiking.module.SiteMap.title()))
+    def bottom_bar_left_content(self, req):
+        return lcg.Link('/_sitemap', wiking.module.SiteMap.title())
 
     def footer_content(self, req):
         text = self._text_content(req, wiking.cms.texts.footer)
