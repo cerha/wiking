@@ -898,6 +898,7 @@ body.non-maximized #root-wrap {
     clear: both;
     font-size: .9em;
     border-top: solid 4px $color.top-border;
+    padding-top: 0.1em;
 }
 #bottom-bar {
     text-align: right;
