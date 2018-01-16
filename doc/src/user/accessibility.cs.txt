@@ -2,20 +2,18 @@
 
 = Prohlášení o zpřístupnění =
 
-Tyto stránky jsou založeny na systému [http://www.freebsoft.org/wiking Wiking]
-pro vývoj webových aplikací.  Systém Wiking byl vyvinut tak, aby umožňil
-rovnocenný přístup všem uživatelům, včetně lidí s postižením či specifickými
-potřebami.  Velký důraz byl také kladen na neutralitu k použitému software,
-hardware a uživatelským nastavením.  Výsledné stránky by tedy měly být
-použitelné bez ohledu na použitý prohlížeč, typ a velikost písma, rozlišení
-obrazovky, zpřístupňující technologie atd.
+Tento systém byl vyvinut tak, aby umožňil rovnocenný přístup všem uživatelům,
+včetně lidí s postižením či specifickými potřebami.  Velký důraz byl kladen na
+neutralitu k použitému software, hardware a uživatelským nastavením.  Výsledek
+by tedy měl být dobře použitelný se všemi běžnými typy zařízení, velikostí
+obrazovky, operačních systémů, prohlížečů, preferovaných velikostí písma,
+zpřístupňujících technologií atd.
 
-Systém byl vyvinut s ohledem na formální standardy pro zpřístupnění, jako např.
->>[http://www.w3.org/TR/WCAG20/ Web Content Accessibility Guidelines 2.0]<<
-nebo [https://www.section508.gov Sekce 508], stejně jako na skutečnou zkušenost
+Byly zohledněny formální standardy pro zpřístupnění, jako např.
+>>[http://www.w3.org/TR/WCAG20/ Web Content Accessibility Guidelines 2.0]<< nebo
+[https://www.section508.gov Sekce 508], stejně jako praktická zkušenost
 koncového uživatele.  Zpřístupnění a použitelnost byly testovány s různými
 kombinacemi zpřístupňujících technologií, zejména odečítačů obrazovky.
 
 Informace o navigačních možnostech, včetně popisu vlastností podporujících
-zpřístupnění, naleznete v kapitole [navigation Navigace] uživatelské příručky
-systému Wiking.
+zpřístupnění, naleznete v kapitole [navigation Navigace] uživatelské příručky.

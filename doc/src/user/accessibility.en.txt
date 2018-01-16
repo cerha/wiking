@@ -2,14 +2,13 @@
 
 == Accessibility Statement ==
 
-This site is built using the [http://www.freebsoft.org/wiking Wiking] web
-application development framework.  One of the major aims of this system is
-providing equal access to all users, including people with handicaps and/or
-special needs.  Wiking also tries to be neutral to user's software, hardware
-and settings.  Thus the resulting pages should be usable with any browser, font
-type or size, screen resolution, assistive technologies etc.
+This system was developed with the goal to provide equal access to all users,
+including people with handicaps and/or special needs.  Neutrality to user's
+software, hardware and settings was also carefully pursued.  Thus the result
+should be well usable with all common types of devices, screen sizes, operating
+systems, browsers, font types and sizes, assistive technologies etc.
 
-The system was developed considering formal accessibility standards, such as
+The development considered formal accessibility standards, such as
 [http://www.w3.org/TR/WCAG20/ Web Content Accessibility Guidelines 2.0] or
 [https://www.section508.gov Section 508] as well as real end user experience.
 Accessibility and usability was tested with different combinations of assistive
