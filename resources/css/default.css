@@ -677,9 +677,6 @@ body.non-maximized #root-wrap {
     font-size: 1.2em;
     font-weight: bold;
 }
-#menu .icon {
-    margin-top: 0.4em;
-}
 #menu a {
     color: #222;
 }
@@ -714,44 +711,53 @@ body.non-maximized #root-wrap {
     width: auto;
     line-height: inherit;
 }
-#menu ul.level-1 > li > a {
+#menu ul.level-1 > li > .item {
     padding: 0.2em 18px;
     text-decoration: none;
     border-bottom: 5px solid $color.background;
+    margin: 0;
 }
-#menu ul.level-1 > li > a:hover {
+#menu ul.level-1 > li > .item:hover {
     border-bottom-color: $color.heading-bg;
 }
-#menu ul.level-1 > li.in-path > a {
+#menu ul.level-1 > li.in-path > .item {
     border-bottom-color: #626262;
 }
-#menu ul.level-1 > li.script-expanded > a:hover,
-#menu ul.level-1 > li.script-expanded > a {
+#menu ul.level-1 > li.foldable > .item {
+    padding-right: 24px;
+}
+#menu ul.level-1 > li.script-expanded > .item:hover,
+#menu ul.level-1 > li.script-expanded > .item {
     z-index: 3;
     position: relative;
     background-image: linear-gradient(#eee, $color.background);
     border-bottom-color: $color.background;
     border-radius: 5px 5px 0 0;
 }
-#menu ul.level-1 > li > a .label {
+#menu ul.level-1 > li > .item .label {
     background-color: transparent;
     padding: 0;
     margin: 0;
 }
-#menu ul.level-1 > li > a .icon {
+#menu ul.level-1 > li > .item .icon {
     display: none;
 }
-#menu ul.level-1 > li.foldable > a .label:after {
-    content: "";
-    display: inline-block;
+#menu ul.level-1 > li > .expander {
+    opacity: 1;
+    border: 0;
+    width: 20px;
+    height: 1.5em;
+    z-index: 3;
+    background-color: transparent;
+}
+#menu ul.level-1 > li > .expander .icon {
+    background-position: -25px -30px;
     width: 10px;
     height: 10px;
-    background: url(lcg-icons.png) -25px -30px no-repeat;
-    position: relative;
-    bottom: -2px;
-    left: 1px;
-    margin-left: 2px;
-    overflow: hidden;
+    margin: .7em 12px .3em 0;
+    transform: none;
+    top: 0;
+    left: 0;
 }
 
 #menu ul.level-2 {
@@ -780,8 +786,11 @@ body.non-maximized #root-wrap {
     body.non-maximized #submenu {
         display: table-cell;
     }
-    body.non-maximized #menu ul.level-1 > li.foldable.in-path > a .label:after {
-        display: none;
+    body.non-maximized #menu ul.level-1 > li.in-path > .expander {
+        opacity: 0;
+    }
+    body.non-maximized #menu ul.level-1 > li.foldable.in-path > .item {
+        padding-right: 18px;
     }
 }
 #submenu {
@@ -806,6 +815,19 @@ body.non-maximized #root-wrap {
     background-color: $color.heading-bg;
     border-bottom: 1px solid $color.top-border;
     border-radius: 5px 5px 0 0;
+}
+#submenu .foldable-tree-widget {
+    line-height: 1.25em;
+}
+#submenu .foldable-tree-widget .expander {
+    width: 1.6em;
+    height: 1.6em;
+}
+#submenu .foldable-tree-widget .item .label {
+    padding: .15em 1px;
+}
+#submenu .foldable-tree-widget .item .icon {
+    top: .35em;
 }
 #submenu button.toggle-menu-expansion {
     position: absolute;
@@ -1043,7 +1065,7 @@ form.list-form-controls .paging-controls {
 /* Override default LCG widget colors by Wiking color theme colors */
 /* Original selectors must be duplicated here and prefixed by 'body' to get more specificity. */
 
-body .foldable-tree-widget a.current .label {
+body .foldable-tree-widget .current .label {
     background-color: $color.heading-bg
 }
 body .notebook-widget ul.notebook-switcher {
