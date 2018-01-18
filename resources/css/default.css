@@ -843,6 +843,7 @@ body.non-maximized #root-wrap {
     color: $color.foreground;
     border: 1px solid $color.top-border;
     border-radius: 5px;
+    background-color: $color.background;
 }
 #panels .panel h3 {
     padding: 4px 6px;
