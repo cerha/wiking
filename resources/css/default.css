@@ -271,6 +271,14 @@ input {
     line-height: 1.5em;
     padding: 0.25em;
 }
+.checkbox-group input[type=checkbox], input[type=radio] {
+    height: 1em;
+    margin-right: .1em;
+}
+input[type=checkbox] + .help {
+    margin-top: -.4em;
+}
+
 textarea {
     padding: 4px;
     line-height: 1.2em;
