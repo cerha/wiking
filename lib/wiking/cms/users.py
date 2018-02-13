@@ -595,25 +595,29 @@ class Users(UserManagementModule, CachingPytisModule):
                 # Translators: Name of a user to display on a website if he doesn't want the
                 # default "Name Surname". Registration form field.
                 Field('nickname', _("Displayed name"),
-                      descr=_("Leave blank if you want to be referred by your full name or enter "
-                              "an alternate name, such as nickname or monogram.")),
+                      descr=_("Leave blank if you want to be referred by your full name "
+                              "or enter an alternate name, such as nickname or monogram."),
+                      visible=self._field_visible('nickname')),
                 Field('gender', _("Gender"), not_null=False,
                       enumerator=enum(self._module.Gender.states()),
                       display=self._gender_display, prefer_display=True,
-                      selection_type=pp.SelectionType.RADIO),
+                      selection_type=pp.SelectionType.RADIO,
+                      visible=self._field_visible('gender')),
                 # Translators: E-mail address. Registration form field.
                 Field('email', _("E-mail"), width=36, type=pd.Email(not_null=True)),
                 # Translators: Telephone number. Registration form field.
-                Field('phone', _("Phone")),
+                Field('phone', _("Phone"), visible=self._field_visible('phone')),
                 # Translators: Post address. Registration form field.
-                Field('address', _("Address"), width=20, height=3),
+                Field('address', _("Address"), width=20, height=3,
+                      visible=self._field_visible('address')),
                 # Translators: Do not translate (means Uniform Resource Identifier).
-                Field('uri', _("URI"), width=36),
+                Field('uri', _("URI"), width=36, visible=self._field_visible('uri')),
                 # Translators: Generic note for further information. Registration form field.
                 Field('note', _("Note"), width=60, height=6, compact=True,
                       descr=_("Optional message for the administrator.  If you summarize briefly "
                               "why you register, what role you expect in the system or whom you "
-                              "have talked to, this may help in processing your request.")),
+                              "have talked to, this may help in processing your request."),
+                      visible=self._field_visible('note')),
                 # Translators: Label of a checkbox to confirm usage conditions or a
                 # similar kind of agreement specific for given website.
                 Field('confirm', _("I agree"), type=pd.Boolean,
@@ -644,6 +648,9 @@ class Users(UserManagementModule, CachingPytisModule):
                 return email
             else:
                 return record['login'].value()
+
+        def _field_visible(self, field):
+            return computer(lambda r: field in wiking.cms.cfg.registration_fields)
 
         def _default_state(self, record, autogenerate_password):
             req = record.req()
@@ -956,7 +963,7 @@ class Users(UserManagementModule, CachingPytisModule):
                     else:
                         account_state.append(regconfirm)
                 # Translators: Personal data -- first name, surname, nickname ...
-                layout = [FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname',)),
+                layout = [FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname', 'gender')),
                           FieldSet(_("Contact information"), ('email', 'phone', 'address', 'uri')),
                           FieldSet(_("Others"), ('note',)),
                           FieldSet(_("Account state"), account_state),
@@ -971,7 +978,7 @@ class Users(UserManagementModule, CachingPytisModule):
                         login_information += ('autogenerate_password',)
                     login_information += ('initial_password',)
                 layout = [
-                    FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname',)),
+                    FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname', 'gender')),
                     FieldSet(_("Contact information"),
                              ((not wiking.cms.cfg.login_is_email) and ('email',) or ()) +
                              ('phone', 'address', 'uri')),
@@ -983,7 +990,7 @@ class Users(UserManagementModule, CachingPytisModule):
                     layout.append(FieldSet(_("Confirmation"), (regconfirm, 'confirm',)))
                 return tuple(layout)
             elif action == 'update':
-                layout = [FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname',)),
+                layout = [FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname', 'gender')),
                           # Translators: Contact information -- email, phone, address...
                           FieldSet(_("Contact information"), ('email', 'phone', 'address', 'uri')),
                           # Translators: Others is a label for a group of unspecified form fields

@@ -165,3 +165,11 @@ class CMSConfiguration(cfg):
                 "for an existing database and there is no support for conversion.  You "
                 "must decide before site creation.")
         _DEFAULT = 'plain'
+
+    class _Option_registration_fields(cfg.Option):
+        _DESCR = "Optional fields displayed in the registration form."
+        _DOC = ("The form includes only the mandatory fields by default.  The optional "
+                "fields may be added to the form by including their identifiers in this "
+                "sequence.  The identifiers of the available optional fields are: "
+                "'nickname', 'gender', 'phone', 'address', 'uri' and 'note'")
+        _DEFAULT = ()
