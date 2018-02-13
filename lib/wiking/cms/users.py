@@ -47,7 +47,7 @@ import wiking
 import wiking.dbdefs
 
 from pytis.presentation import (
-    Action, Binding, CodebookSpec, Field, FieldSet, computer,
+    Action, Binding, CodebookSpec, Enumeration, Field, FieldSet, computer,
 )
 from wiking import (
     Module, ActionHandler, PytisModule, CachingPytisModule, Document,
@@ -523,6 +523,33 @@ class Users(UserManagementModule, CachingPytisModule):
     you change his roles.
 
     """
+    class AccountState(Enumeration):
+        """The available user account states are defined by the public constants."""
+
+        NEW = 'new'
+        """New users who are registered but haven't confirmed the activation code yet."""
+        UNAPPROVED = 'unapproved'
+        """New users who are registered, have confirmed the activation code,
+           but haven't been approved by the user administrator yet."""
+        ENABLED = 'enabled'
+        """Users with full access to the application."""
+        DISABLED = 'disabled'
+        """Users explicitly blocked from access to the application by administrator."""
+
+        enumeration = (
+            (NEW, _("New account")),
+            (UNAPPROVED, _("Unapproved account")),
+            (DISABLED, _("Account disabled")),
+            (ENABLED, _("Active account")),
+        )
+
+    class Gender(Enumeration):
+        enumeration = ((wiking.User.MALE, _("Male")),
+                       (wiking.User.FEMALE, _("Female")))
+        prefer_display = True
+        selection_type = pp.SelectionType.RADIO
+
+
     class Spec(wiking.Specification):
         title = _("User Management")
         help = _("Manage registered users and their privileges.")
@@ -598,10 +625,7 @@ class Users(UserManagementModule, CachingPytisModule):
                       descr=_("Leave blank if you want to be referred by your full name "
                               "or enter an alternate name, such as nickname or monogram."),
                       visible=self._field_visible('nickname')),
-                Field('gender', _("Gender"), not_null=False,
-                      enumerator=enum(self._module.Gender.states()),
-                      display=self._gender_display, prefer_display=True,
-                      selection_type=pp.SelectionType.RADIO,
+                Field('gender', _("Gender"), not_null=False, enumerator=Users.Gender,
                       visible=self._field_visible('gender')),
                 # Translators: E-mail address. Registration form field.
                 Field('email', _("E-mail"), width=36, type=pd.Email(not_null=True)),
@@ -629,9 +653,7 @@ class Users(UserManagementModule, CachingPytisModule):
                 # Translators: The state of the user account (e.g. Enabled vs Disabled).  Column
                 # heading and field label.
                 Field('state', _("State"), computer=computer(self._default_state),
-                      enumerator=enum(self._module.AccountState.states()),
-                      display=self._module.AccountState.label, prefer_display=True,
-                      style=self._state_style),
+                      enumerator=Users.AccountState, style=self._state_style),
                 Field('lang', computer=computer(self._lang)),
                 Field('regexpire', default=self._registration_expiry),
                 Field('regcode', default=self._generate_registration_code),
@@ -659,12 +681,9 @@ class Users(UserManagementModule, CachingPytisModule):
             # the process a little safer because if the email is wrong,
             # the user will not be able to find out his password.
             if autogenerate_password and req.check_roles(Roles.USER_ADMIN):
-                return self._module.AccountState.ENABLED
+                return Users.AccountState.ENABLED
             else:
-                return self._module.AccountState.NEW
-
-        def _gender_display(self, gender):
-            return self._module.Gender.label(gender)
+                return Users.AccountState.NEW
 
         def _state_style(self, record):
             if record['state'].value() in (Users.AccountState.NEW, Users.AccountState.UNAPPROVED):
@@ -809,48 +828,6 @@ class Users(UserManagementModule, CachingPytisModule):
                 return True
             else:
                 return False
-
-    class AccountState(object):
-        """Available user accout states enumeration.
-
-        A state is assigned to every user account.  The available account
-        state codes are defined by this class's public constants.
-
-        """
-        NEW = 'new'
-        """New users who are registered but haven't confirmed the activation code yet."""
-        UNAPPROVED = 'unapproved'
-        """New users who are registered, have confirmed the activation code,
-           but haven't been approved by the user administrator yet."""
-        ENABLED = 'enabled'
-        """Users with full access to the application."""
-        DISABLED = 'disabled'
-        """Users explicitly blocked from access to the application by administrator."""
-
-        _STATES = {NEW: _("New account"),
-                   UNAPPROVED: _("Unapproved account"),
-                   DISABLED: _("Account disabled"),
-                   ENABLED: _("Active account")}
-
-        @classmethod
-        def states(cls):
-            return list(cls._STATES.keys())
-
-        @classmethod
-        def label(cls, gender):
-            return cls._STATES[gender]
-
-    class Gender(object):
-        _GENDERS = {wiking.User.MALE: _("Male"),
-                    wiking.User.FEMALE: _("Female")}
-
-        @classmethod
-        def states(cls):
-            return list(cls._GENDERS.keys())
-
-        @classmethod
-        def label(cls, state):
-            return cls._GENDERS[state]
 
     class User(wiking.User):
         """CMS specific User class."""
