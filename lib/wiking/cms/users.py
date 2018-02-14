@@ -940,7 +940,7 @@ class Users(UserManagementModule, CachingPytisModule):
                 # Translators: Contact information -- email, phone, address...
                 FieldSet(_("Contact information"),
                          (('email',) if (not wiking.cms.cfg.login_is_email or
-                                         not action != 'insert') else ()) +
+                                         action != 'insert') else ()) +
                          ('phone', 'address', 'uri')),
             ]
             if action == 'insert':
