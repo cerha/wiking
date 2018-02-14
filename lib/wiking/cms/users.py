@@ -962,9 +962,10 @@ class Users(UserManagementModule, CachingPytisModule):
             if regconfirm:
                 # Translators: Confirmation of website terms&conditions. Form label.
                 layout.append(FieldSet(_("Confirmation"), (regconfirm, 'confirm')))
-            # Translators: Others is a label for a group of unspecified form fields
-            # (as in Personal data, Contact information, Others).
-            layout.append(FieldSet(_("Others"), ('note',))),
+            if action == 'insert' or action == 'view' and record['note'].value():
+                # Translators: Others is a label for a group of unspecified form fields
+                # (as in Personal data, Contact information, Others).
+                layout.append(FieldSet(_("Others"), ('note',))),
             pdminfo = cms_text(wiking.cms.texts.personal_data_management)
             if pdminfo:
                 layout.append(FieldSet(_("Personal Data Management"), (pdminfo,)))
