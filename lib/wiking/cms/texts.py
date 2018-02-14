@@ -85,9 +85,9 @@ regconfirm = Text(
 
 personal_data_management = Text(
     'cms.personal_data_management',
-    _("Information about site specific personal data management policy.  If not empty, "
-      "this information will be displayed in the registration form and user profile."),
-    None)
+    _("Information about personal data management policy (displayed in the registration "
+      "form and user profile)."),
+    _("The personal data management policy for this site has not been determined yet."))
 
 registration_note_descr = Text(
     'cms.registration_note_descr',

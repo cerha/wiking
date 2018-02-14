@@ -964,9 +964,7 @@ class Users(UserManagementModule, CachingPytisModule):
                 # Translators: Others is a label for a group of unspecified form fields
                 # (as in Personal data, Contact information, Others).
                 layout.append(FieldSet(_("Others"), ('note',))),
-            pdminfo = cms_text(wiking.cms.texts.personal_data_management)
-            if pdminfo:
-                layout.append(FieldSet(_("Personal Data Management"), (pdminfo,)))
+            layout.append(wiking.Message(cms_text(wiking.cms.texts.personal_data_management)))
             return layout
         elif action in ('passwd', 'reset_password') and record is not None:
             layout = ['new_password']
