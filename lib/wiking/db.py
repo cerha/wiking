@@ -278,8 +278,6 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
 
     _SUBMIT_BUTTONS = {}
     "Dictionary of form buttons keyed by action name (see '_submit_buttons()' method)."
-    _LAYOUT = {}
-    "Dictionary of form layouts keyed by action name (see '_layout()' method)."
 
     class Record(pp.PresentedRow):
         """An abstraction of one record within the module's data object.
@@ -906,7 +904,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         This method may be overriden to change form layout dynamically based on
         the combination of record, action and current request properties.  You
         may, for example, determine the layout according to field values or the
-        currently logged in user.
+        currently logged in user's permissions.
 
         Arguments:
           req -- current request
@@ -915,21 +913,16 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
           record -- the current record instance or None (for actions which
             don't work on an existing record, such as 'insert')
 
-        The returned value may be a 'pytis.presentation.GroupSpec' instance, a
-        sequence of field identifiers or 'pytis.presentation.GroupSpec'
-        instances or 'None' to use the default layout defined by specification.
+        The returned value may be a 'pytis.presentation.GroupSpec' instance or
+        a sequence of field identifiers, nested 'pytis.presentation.GroupSpec'
+        instances and other items acceptable by 'pytis.presentation.GroupSpec'
+        constructor.
 
-        If you ever need to call this method (you most often just define it),
-        you may need the method '_layout_instance()' to convert the returned
-        value into a 'pytis.presentation.GroupSpec' instance.
-
-        The default implementation returns one of (statical) layouts defined in
-        '_LAYOUTS' (dictionary keyed by action name) or None if no specific
-        layout is defined for given action (to use the default layout from
-        specification).
+        The default implementation returns the statical layout defined in from
+        specification.
 
         """
-        return self._LAYOUT.get(action)
+        return self._view.layout().group()
 
     def _hidden_fields(self, req, action, record=None):
         """Return the hidden form fields for given action and record.

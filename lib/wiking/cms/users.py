@@ -408,9 +408,6 @@ class ApplicationRoles(UserManagementModule, CachingPytisModule):
                     wiking.Binding('members', _("Members"), 'RoleMembers',
                                    'role_id', form=pw.ItemizedView,
                                    enabled=lambda r: not r['auto'].value()))
-    _LAYOUT = {'view': (('role_id', 'xname', 'system'),
-                        lambda r: wiking.Message(r['role_info'].value())),
-               }
     _TITLE_COLUMN = 'xname'
 
     def _authorized(self, req, action, **kwargs):
@@ -418,6 +415,13 @@ class ApplicationRoles(UserManagementModule, CachingPytisModule):
             return req.check_roles(Roles.USER)
         else:
             return super(ApplicationRoles, self)._authorized(req, action, **kwargs)
+
+    def _layout(self, req, action, **kwargs):
+        if 'action' == 'view':
+            return (('role_id', 'xname', 'system'),
+                    lambda r: wiking.Message(r['role_info'].value()))
+        else:
+            return super(ApplicationRoles, self)._layout(req, action, **kwargs)
 
     def _update_enabled(self, req, record):
         return not record['system'].value()
@@ -931,52 +935,51 @@ class Users(UserManagementModule, CachingPytisModule):
                 return wiking.module.Texts.parsed_text(req, cms_text, lang=req.preferred_language())
             else:
                 return None
-        if action not in self._LAYOUT: # Allow overriding this layout in derived classes.
-            if action in ('insert', 'view', 'update'):
-                layout = [
-                    # Translators: Personal data -- first name, surname, nickname ...
-                    FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname', 'gender')),
-                    # Translators: Contact information -- email, phone, address...
-                    FieldSet(_("Contact information"),
-                             (('email',) if (not wiking.cms.cfg.login_is_email or
-                                             not action != 'insert') else ()) +
-                             ('phone', 'address', 'uri')),
-                ]
-                if action == 'insert':
-                    login_field = wiking.cms.cfg.login_is_email and 'email' or 'login'
-                    login_information = (login_field,)
-                    if req.param('action') != 'reinsert':
-                        if req.check_roles(Roles.USER_ADMIN):
-                            login_information += ('autogenerate_password',)
-                        login_information += ('initial_password',)
-                    layout.append(FieldSet(_("Login information"), login_information))
-                elif action == 'view':
-                    layout.extend((
-                        FieldSet(_("Account state"), ('state', 'last_password_change')),
-                        lambda r: self._state_info(req, r),
-                    ))
-                regconfirm = cms_text(wiking.cms.texts.regconfirm)
-                if regconfirm:
-                    # Translators: Confirmation of website terms&conditions. Form label.
-                    layout.append(FieldSet(_("Confirmation"), (regconfirm, 'confirm')))
-                # Translators: Others is a label for a group of unspecified form fields
-                # (as in Personal data, Contact information, Others).
-                layout.append(FieldSet(_("Others"), ('note',))),
-                pdminfo = cms_text(wiking.cms.texts.personal_data_management)
-                if pdminfo:
-                    layout.append(FieldSet(_("Personal Data Management"), (pdminfo,)))
-                return layout
-            elif action in ('passwd', 'reset_password') and record is not None:
-                layout = ['new_password']
-                if action == 'passwd' and req.user().uid() == record['uid'].value():
-                    # Don't require old password for admin, unless he is changing his own password.
-                    layout.insert(0, 'old_password')
-                if not wiking.cms.cfg.login_is_email:
-                    # Add read-only login to make sure the user knows which password is edited.  It
-                    # also helps the browser password helper to recognize which password is changed
-                    # (if the user has multiple accounts).
-                    layout.insert(0, 'login')  # Don't include email, since it is editable.
-                return layout
+        if action in ('insert', 'view', 'update'):
+            layout = [
+                # Translators: Personal data -- first name, surname, nickname ...
+                FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname', 'gender')),
+                # Translators: Contact information -- email, phone, address...
+                FieldSet(_("Contact information"),
+                         (('email',) if (not wiking.cms.cfg.login_is_email or
+                                         not action != 'insert') else ()) +
+                         ('phone', 'address', 'uri')),
+            ]
+            if action == 'insert':
+                login_field = wiking.cms.cfg.login_is_email and 'email' or 'login'
+                login_information = (login_field,)
+                if req.param('action') != 'reinsert':
+                    if req.check_roles(Roles.USER_ADMIN):
+                        login_information += ('autogenerate_password',)
+                    login_information += ('initial_password',)
+                layout.append(FieldSet(_("Login information"), login_information))
+            elif action == 'view':
+                layout.extend((
+                    FieldSet(_("Account state"), ('state', 'last_password_change')),
+                    lambda r: self._state_info(req, r),
+                ))
+            regconfirm = cms_text(wiking.cms.texts.regconfirm)
+            if regconfirm:
+                # Translators: Confirmation of website terms&conditions. Form label.
+                layout.append(FieldSet(_("Confirmation"), (regconfirm, 'confirm')))
+            # Translators: Others is a label for a group of unspecified form fields
+            # (as in Personal data, Contact information, Others).
+            layout.append(FieldSet(_("Others"), ('note',))),
+            pdminfo = cms_text(wiking.cms.texts.personal_data_management)
+            if pdminfo:
+                layout.append(FieldSet(_("Personal Data Management"), (pdminfo,)))
+            return layout
+        elif action in ('passwd', 'reset_password') and record is not None:
+            layout = ['new_password']
+            if action == 'passwd' and req.user().uid() == record['uid'].value():
+                # Don't require old password for admin, unless he is changing his own password.
+                layout.insert(0, 'old_password')
+            if not wiking.cms.cfg.login_is_email:
+                # Add read-only login to make sure the user knows which password is edited.  It
+                # also helps the browser password helper to recognize which password is changed
+                # (if the user has multiple accounts).
+                layout.insert(0, 'login') # Don't include email, since it is editable.
+            return layout
         return super(Users, self)._layout(req, action, record=record)
 
     def _default_actions_last(self, req, record):

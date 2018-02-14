@@ -5799,7 +5799,6 @@ class EmailSpool(MailManagementModule):
         layout = ('role_id', 'sender_address', 'subject', 'content', 'date', 'state',)
 
     _TITLE_TEMPLATE = _('%(subject)s')
-    _LAYOUT = {'insert': ('role_id', 'sender_address', 'subject', 'content',)}
     # Translators: Button label meaning save this email text for later repeated usage
     _COPY_LABEL = _("Use as a Template")
     # Translators: Description of button for creating a template of an email
@@ -5812,3 +5811,9 @@ class EmailSpool(MailManagementModule):
             return req.check_roles(*self._ADMIN_ROLES)
         else:
             return super(EmailSpool, self)._authorized(req, action, **kwargs)
+
+    def _layout(self, req, action, **kwargs):
+        if 'action' == 'insert':
+            return ('role_id', 'sender_address', 'subject', 'content',)
+        else:
+            return super(EmailSpool, self)._layout(req, action, **kwargs)

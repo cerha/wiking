@@ -210,7 +210,10 @@ class Certificates(wiking.cms.CMSModule):
     RIGHTS_update = (wiking.cms.Roles.ADMIN,)
     RIGHTS_delete = (wiking.cms.Roles.ADMIN,)
 
-    _LAYOUT = {'insert': ('file',)}
+    def _layout(self, req, action, record=None):
+        if 'action' == 'insert':
+            return ('file',)
+        return super(Certificates, self)._layout(req, action, record=record)
 
 
 class CACertificates(Certificates):
@@ -231,8 +234,6 @@ class CACertificates(Certificates):
             x509 = record['x509'].value()
             if x509.check_ca() != 1:
                 return ('file', _("This is not a CA certificate."))
-
-    _LAYOUT = {'insert': ('file',)}
 
 
 class UserCertificates(Certificates):
