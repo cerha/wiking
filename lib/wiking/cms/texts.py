@@ -89,6 +89,15 @@ personal_data_management = Text(
       "this information will be displayed in the registration form and user profile."),
     None)
 
+registration_note_descr = Text(
+    'cms.registration_note_descr',
+    _("Description of the field \"Note\" in the registration form (server reload required "
+      "on change)."),
+    _("Optional message for the administrator. If you wish to communicate something "
+      "to the administrator processing your registration, you can do so here. This "
+      "is not normally necessary."),
+    text_format=TextFormat.PLAIN)
+
 footer = Text(
     'cms.footer',
     _("Text displayed at the very bottom of every page"),

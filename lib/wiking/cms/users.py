@@ -642,9 +642,7 @@ class Users(UserManagementModule, CachingPytisModule):
                 Field('uri', _("URI"), width=36, visible=self._field_visible('uri')),
                 # Translators: Generic note for further information. Registration form field.
                 Field('note', _("Note"), width=60, height=6, compact=True,
-                      descr=_("Optional message for the administrator.  If you summarize briefly "
-                              "why you register, what role you expect in the system or whom you "
-                              "have talked to, this may help in processing your request."),
+                      descr=wiking.module.Texts.text(wiking.cms.texts.registration_note_descr),
                       visible=self._field_visible('note')),
                 # Translators: Label of a checkbox to confirm usage conditions or a
                 # similar kind of agreement specific for given website.
