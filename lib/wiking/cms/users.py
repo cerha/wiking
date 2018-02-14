@@ -645,6 +645,7 @@ class Users(UserManagementModule, CachingPytisModule):
                 # Translators: Label of a checkbox to confirm usage conditions or a
                 # similar kind of agreement specific for given website.
                 Field('confirm', _("I agree"), type=pd.Boolean,
+                      editable=computer(lambda r, confirm: not confirm),
                       descr=_("Please check if (and only if) you have read the conditions above "
                               "and you agree with them.")),
                 # Translators: Since when the user is registered. Table column heading
@@ -956,12 +957,8 @@ class Users(UserManagementModule, CachingPytisModule):
                     ))
                 regconfirm = cms_text(wiking.cms.texts.regconfirm)
                 if regconfirm:
-                    if action == 'insert' or not record['confirm'].value():
-                        regconfirm_fields = (regconfirm, 'confirm')
-                    else:
-                        regconfirm_fields = (cms_text(wiking.cms.texts.regconfirm_confirmed),)
                     # Translators: Confirmation of website terms&conditions. Form label.
-                    layout.append(FieldSet(_("Confirmation"), regconfirm_fields))
+                    layout.append(FieldSet(_("Confirmation"), (regconfirm, 'confirm')))
                 # Translators: Others is a label for a group of unspecified form fields
                 # (as in Personal data, Contact information, Others).
                 layout.append(FieldSet(_("Others"), ('note',))),

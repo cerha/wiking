@@ -83,11 +83,6 @@ regconfirm = Text(
       "is required)"),
     None)
 
-regconfirm_confirmed = Text(
-    'cms.regconfirm_confirmed',
-    _("Information displayed to users who have already confirmed the site specific conditions"),
-    _("You have agreed to the site conditions."))
-
 personal_data_management = Text(
     'cms.personal_data_management',
     _("Information about site specific personal data management policy.  If not empty, "
