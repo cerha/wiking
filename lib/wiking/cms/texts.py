@@ -88,6 +88,12 @@ regconfirm_confirmed = Text(
     _("Information displayed to users who have already confirmed the site specific conditions"),
     _("You have agreed to the site conditions."))
 
+personal_data_management = Text(
+    'cms.personal_data_management',
+    _("Information about site specific personal data management policy.  If not empty, "
+      "this information will be displayed in the registration form and user profile."),
+    None)
+
 footer = Text(
     'cms.footer',
     _("Text displayed at the very bottom of every page"),

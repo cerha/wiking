@@ -930,56 +930,44 @@ class Users(UserManagementModule, CachingPytisModule):
                 return wiking.module.Texts.parsed_text(req, cms_text, lang=req.preferred_language())
             else:
                 return None
-        if action not in self._LAYOUT:  # Allow overriding this layout in derived classes.
-            if action == 'view':
-                account_state = ['state', 'last_password_change']
-                regconfirm = cms_text(wiking.cms.texts.regconfirm)
-                if regconfirm:
-                    if record['confirm'].value():
-                        account_state.append(cms_text(wiking.cms.texts.regconfirm_confirmed))
-                    else:
-                        account_state.append(regconfirm)
-                # Translators: Personal data -- first name, surname, nickname ...
-                layout = [FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname', 'gender')),
-                          FieldSet(_("Contact information"), ('email', 'phone', 'address', 'uri')),
-                          FieldSet(_("Others"), ('note',)),
-                          FieldSet(_("Account state"), account_state),
-                          lambda r: self._state_info(req, r),
-                          ]
-                return layout
-            if action == 'insert':
-                login_field = wiking.cms.cfg.login_is_email and 'email' or 'login'
-                login_information = (login_field,)
-                if req.param('action') != 'reinsert':
-                    if req.check_roles(Roles.USER_ADMIN):
-                        login_information += ('autogenerate_password',)
-                    login_information += ('initial_password',)
+        if action not in self._LAYOUT: # Allow overriding this layout in derived classes.
+            if action in ('insert', 'view', 'update'):
                 layout = [
+                    # Translators: Personal data -- first name, surname, nickname ...
                     FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname', 'gender')),
+                    # Translators: Contact information -- email, phone, address...
                     FieldSet(_("Contact information"),
-                             ((not wiking.cms.cfg.login_is_email) and ('email',) or ()) +
+                             (('email',) if (not wiking.cms.cfg.login_is_email or
+                                             not action != 'insert') else ()) +
                              ('phone', 'address', 'uri')),
-                    FieldSet(_("Login information"), login_information),
-                    FieldSet(_("Others"), ('note',))]
+                ]
+                if action == 'insert':
+                    login_field = wiking.cms.cfg.login_is_email and 'email' or 'login'
+                    login_information = (login_field,)
+                    if req.param('action') != 'reinsert':
+                        if req.check_roles(Roles.USER_ADMIN):
+                            login_information += ('autogenerate_password',)
+                        login_information += ('initial_password',)
+                    layout.append(FieldSet(_("Login information"), login_information))
+                elif action == 'view':
+                    layout.extend((
+                        FieldSet(_("Account state"), ('state', 'last_password_change')),
+                        lambda r: self._state_info(req, r),
+                    ))
                 regconfirm = cms_text(wiking.cms.texts.regconfirm)
                 if regconfirm:
-                    # Translators: Confirmation of website terms&conditions. Form label.
-                    layout.append(FieldSet(_("Confirmation"), (regconfirm, 'confirm',)))
-                return tuple(layout)
-            elif action == 'update':
-                layout = [FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname', 'gender')),
-                          # Translators: Contact information -- email, phone, address...
-                          FieldSet(_("Contact information"), ('email', 'phone', 'address', 'uri')),
-                          # Translators: Others is a label for a group of unspecified form fields
-                          # (as in Personal data, Contact information, Others).
-                          FieldSet(_("Others"), ('note',))]
-                regconfirm = cms_text(wiking.cms.texts.regconfirm)
-                if regconfirm:
-                    if not record['confirm'].value():
+                    if action == 'insert' or not record['confirm'].value():
                         regconfirm_fields = (regconfirm, 'confirm')
                     else:
                         regconfirm_fields = (cms_text(wiking.cms.texts.regconfirm_confirmed),)
+                    # Translators: Confirmation of website terms&conditions. Form label.
                     layout.append(FieldSet(_("Confirmation"), regconfirm_fields))
+                # Translators: Others is a label for a group of unspecified form fields
+                # (as in Personal data, Contact information, Others).
+                layout.append(FieldSet(_("Others"), ('note',))),
+                pdminfo = cms_text(wiking.cms.texts.personal_data_management)
+                if pdminfo:
+                    layout.append(FieldSet(_("Personal Data Management"), (pdminfo,)))
                 return layout
             elif action in ('passwd', 'reset_password') and record is not None:
                 layout = ['new_password']
