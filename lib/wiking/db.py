@@ -885,7 +885,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
 
     def _expand_row_layout(self, req, record):
         """Return layout of ShowForm displayed by default '_expand_row()' implementation."""
-        return self._layout(req, 'view', record)
+        return self._layout(req, 'view', record=record)
 
     def _expand_row_view_form_content(self, req, form, record):
         """As '_view_form_content()', but specific for row expansion (see '_expand_row()')."""
@@ -1738,9 +1738,9 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                                      **{enumerator.value_column(): record[binding_column].value()})
             my_record = self._record(req, row)
             content = self._form(form_cls, req, record=my_record, binding_uri=binding_uri,
-                                 layout=self._layout(req, 'view', my_record),
+                                 layout=self._layout(req, 'view', record=my_record),
                                  actions=(),
-                                 # self._form_actions_argument(req),  # TODO: doesn't work
+                                 # self._form_actions_argument(req), #TODO: doesn't work
                                  **form_kwargs)
             # This would add another level of binding subforms.  They don't
             # seem to work now and we most likely don't want them.  content =
@@ -2007,7 +2007,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
 
     def action_view(self, req, record):
         form = self._form(pw.ShowForm, req, record=record,
-                          layout=self._layout(req, 'view', record),
+                          layout=self._layout(req, 'view', record=record),
                           actions=self._form_actions_argument(req),
                           )
         content = self._view_form_content(req, form, record)
@@ -2071,7 +2071,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
 
     def action_update(self, req, record, action='update'):
         form = self._form(pw.EditForm, req, record=record, action=action,
-                          layout=self._layout(req, action, record),
+                          layout=self._layout(req, action, record=record),
                           submit_buttons=self._submit_buttons(req, action, record),
                           show_cancel_button=True)
         if form.is_ajax_request(req):
@@ -2107,7 +2107,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
             else:
                 return self._redirect_after_delete(req, record)
         form = self._form(pw.DeletionForm, req, record=record, action=action,
-                          layout=self._layout(req, action, record),
+                          layout=self._layout(req, action, record=record),
                           prompt=wiking.Message(self._delete_prompt(req, record)),
                           show_cancel_button=True)
         if form.is_ajax_request(req):

@@ -1290,7 +1290,8 @@ class Users(UserManagementModule, CachingPytisModule):
             if record['regexpire'].value() <= now():
                 req.message(_("The registration expired on %(date)s.",
                               date=pw.localizable_export(record['regexpire'])), req.WARNING)
-            form = self._form(pw.ShowForm, req, record, layout=self._layout(req, 'view', record),
+            form = self._form(pw.ShowForm, req, record,
+                              layout=self._layout(req, 'view', record=record),
                               actions=(Action('enable', _("Continue"), submit=1),
                                        # Translators: Button label to get to a previous state.
                                        Action('view', _("Back"))))
