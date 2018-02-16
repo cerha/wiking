@@ -85,7 +85,7 @@ regconfirm = Text(
 
 personal_data_management = Text(
     'cms.personal_data_management',
-    _("Information about personal data management policy (displayed in the registration "
+    _("Information about personal data management (displayed in the registration "
       "form and user profile)."),
     _("Personal data which you are submitting in this form and which arise from your "
       "usage of this application are processed by its operator >>insert name and contact<< "
