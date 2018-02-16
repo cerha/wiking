@@ -87,7 +87,12 @@ personal_data_management = Text(
     'cms.personal_data_management',
     _("Information about personal data management policy (displayed in the registration "
       "form and user profile)."),
-    _("The personal data management policy for this site has not been determined yet."))
+    _("Personal data which you are submitting in this form and which arise from your "
+      "usage of this application are processed by its operator >>insert name and contact<< "
+      "who also shares them for specifically delimited purposes with >>insert<<. "
+      "You have a possibility to adjust your personal data at any time as well as "
+      "to cancel your account and have your data deleted.  See >>insert link<< for "
+      "more details."))
 
 registration_note_descr = Text(
     'cms.registration_note_descr',
