@@ -1056,9 +1056,24 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
             del req.unresolved_path[0]
             return row
         elif req.has_param(self._key) and req.param('action') != 'insert':
-            return self._get_row_by_key(req, req.param(self._key))
-        else:
-            return None
+            row = self._get_row_by_key(req, req.param(self._key))
+            base_uri = self._current_base_uri(req, self._record(req, row))
+            if req.uri() == base_uri and not req.has_param('action'):
+                # It might be better to do this redirection generally,
+                # but we don't want to break the previous behavior (no
+                # redirection was done) so we are careful to redirect
+                # only in the intended cases (such as /users?uid=12).
+                # We rely on the fact, that reference by key is rarely
+                # used without explicit action (it is most often present
+                # in form submission where action is always present).
+                record = self._record(req, row)
+                if ((self._referer == self._key or
+                     # Prevent leaking referer values when referer != key
+                     # because authorization has not yet been checked here.
+                     self._authorized(req, action='view', record=record))):
+                    raise Redirect(self._current_record_uri(req, record))
+            return row
+        return None
 
     def _get_row_by_key(self, req, value):
         if isinstance(value, tuple):
