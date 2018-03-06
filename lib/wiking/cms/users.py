@@ -588,13 +588,8 @@ class Users(UserManagementModule, CachingPytisModule):
                       descr=_("A valid login name can only contain letters, digits, underscores, "
                               "dashes, at signs and dots and must start with a letter.")),
                 # UI Fields for new user insertion (by admin or by registration).
-                Field('autogenerate_password', _("Generate Password"), width=16, virtual=True,
-                      type=pd.Boolean(), default=False, editable=pp.Editable.ALWAYS,
-                      descr=_("If checked, the password will be generated automatically and "
-                              "sent to the user's e-mail address.")),
                 Field('initial_password', _("Password"), virtual=True, width=16, type=pwdtype,
-                      editable=computer(lambda r, autogenerate_password: not autogenerate_password),
-                      computer=computer(self._initial_password),
+                      visible=computer(lambda r: r.req().param('action') != 'reinsert'),
                       descr=_("Please, write the password into each of the two fields to eliminate "
                               "typos.")),
                 # UI Fields for password change.
@@ -655,8 +650,8 @@ class Users(UserManagementModule, CachingPytisModule):
                 Field('since', _("Registered since"), default=now),
                 # Translators: The state of the user account (e.g. Enabled vs Disabled).  Column
                 # heading and field label.
-                Field('state', _("State"), computer=computer(self._default_state),
-                      enumerator=Users.AccountState, style=self._state_style),
+                Field('state', _("State"), enumerator=Users.AccountState,
+                      default=Users.AccountState.NEW, style=self._state_style),
                 Field('lang', computer=computer(self._lang)),
                 Field('regexpire', default=self._registration_expiry),
                 Field('regcode', default=self._generate_registration_code),
@@ -677,17 +672,6 @@ class Users(UserManagementModule, CachingPytisModule):
         def _field_visible(self, field):
             return computer(lambda r: field in wiking.cms.cfg.registration_fields)
 
-        def _default_state(self, record, autogenerate_password):
-            req = record.req()
-            # Note: autogenerate_password is important here to detect
-            # re-registration in _redirect_after_insert.  Also it makes
-            # the process a little safer because if the email is wrong,
-            # the user will not be able to find out his password.
-            if autogenerate_password and req.check_roles(Roles.USER_ADMIN):
-                return Users.AccountState.ENABLED
-            else:
-                return Users.AccountState.NEW
-
         def _state_style(self, record):
             if record['state'].value() in (Users.AccountState.NEW, Users.AccountState.UNAPPROVED):
                 return pp.Style(foreground='#a20')
@@ -699,12 +683,6 @@ class Users(UserManagementModule, CachingPytisModule):
                 return now()
             else:
                 return record['last_password_change'].value()
-
-        def _initial_password(self, record, autogenerate_password):
-            if record.new() and autogenerate_password:
-                return wiking.module.Users.generate_password()
-            else:
-                return record['initial_password'].value()
 
         def _password(self, record, initial_password, new_password):
             if initial_password is not None:
@@ -934,23 +912,20 @@ class Users(UserManagementModule, CachingPytisModule):
             else:
                 return None
         if action in ('insert', 'view', 'update'):
+            login_is_email = wiking.cms.cfg.login_is_email
             layout = [
                 # Translators: Personal data -- first name, surname, nickname ...
                 FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname', 'gender')),
                 # Translators: Contact information -- email, phone, address...
                 FieldSet(_("Contact information"),
-                         (('email',) if (not wiking.cms.cfg.login_is_email or
-                                         action != 'insert') else ()) +
+                         (('email',) if (not login_is_email or action != 'insert') else ()) +
                          ('phone', 'address', 'uri')),
             ]
             if action == 'insert':
-                login_field = wiking.cms.cfg.login_is_email and 'email' or 'login'
-                login_information = (login_field,)
-                if req.param('action') != 'reinsert':
-                    if req.check_roles(Roles.USER_ADMIN):
-                        login_information += ('autogenerate_password',)
-                    login_information += ('initial_password',)
-                layout.append(FieldSet(_("Login information"), login_information))
+                layout.append(
+                    FieldSet(_("Login information"),
+                             (login_is_email and 'email' or 'login', 'initial_password'))
+                )
             elif action == 'view':
                 layout.extend((
                     FieldSet(_("Account state"), ('state', 'last_password_change')),
@@ -1048,75 +1023,52 @@ class Users(UserManagementModule, CachingPytisModule):
             raise
         row = self._data.get_row(login=record['login'].value(), transaction=transaction)
         # Don't send e-mails after re-registration (the account is already confirmed).
-        if ((row['state'].value() == Users.AccountState.NEW
-             or record['autogenerate_password'].value())):
+        if row['state'].value() == Users.AccountState.NEW:
             err = self._send_registration_email(req, record)
             if err:
                 # This is a critical error (the user is not able to use the
-                # account the without information from the mail), so we rather
+                # account without the information from the mail), so we rather
                 # rollback the insertion by raising an error.
                 raise wiking.DBException(_("Failed sending e-mail:") + ' ' + err)
-            if record['autogenerate_password'].value():
-                # When the password is autogenerated, we must send the notification
-                # to administrators here because it is the last step already.
-                self._send_admin_approval_mail(req, record)
         return result
 
     def _redirect_after_insert(self, req, record):
         row = self._data.get_row(login=record['login'].value())
-        # TODO: maybe detect re-registration as:
-        # if req.user() is not None and req.user().uid() == record['uid'].value():
-        if ((row['state'].value() != Users.AccountState.NEW and
-             not record['autogenerate_password'].value())):
-            # Detect re-registration: The user is already confirmed in the
-            # Wiking CMS user table, no need to confirm again for the
-            # application user table.
+        if row['state'].value() != Users.AccountState.NEW:
+            # This is a re-registration: The user is already confirmed in the
+            # Wiking CMS user table.  No need to confirm again.
             req.message(_("Registration completed. You can log in now."), req.SUCCESS)
             raise wiking.Redirect(req.module_uri('Registration'))
         else:
             req.message(_("The account has been created."), req.SUCCESS)
             if req.user() is not None:
-                # The registration was performed by admin.
-                if record['autogenerate_password'].value():
-                    message = _("The generated password was sent to %s.", record['email'].value())
-                else:
-                    message = _("The activation code was sent to %s.", record['email'].value())
-                req.message(message)
+                # The registration was done by admin.
+                # Translators: '%(email)s' is replaced by a real e-mail addres.
+                req.message(_("The activation code has been sent to %(email)s.",
+                              email=record['email'].value()))
                 raise wiking.Redirect(self._current_record_uri(req, record))
             else:
-                # Translators: Follows an email addres, e.g. ``... was sent to
-                # joe@brailcom.org''
-                if record['autogenerate_password'].value():
-                    message = _("The generated password was sent to %s.", record['email'].value())
-                else:
-                    message = _("To finish your registration, please confirm the activation "
-                                "code that was sent to %s.",
-                                record['email'].value())
-                return Document(_("Registration completed"), content=lcg.p((message)))
+                req.message(_("To finish your registration, please confirm the "
+                              "activation code that was just sent to %(email)s.",
+                              email=record['email'].value()))
+                raise wiking.Redirect('/')
 
     def _send_registration_email(self, req, record):
-        base_uri = req.server_uri() + (req.module_uri('Registration') or '/_wmi/' + self.name())
-        if record['autogenerate_password'].value():
-            text = _("Your account at %(server_hostname)s was created.\n\n"
-                     "Your password is: %(password)s\n\n"
-                     "It is recommended to change the password as soon as possible.\n"
-                     "Note that the password is case sensitive.  Use the link below\n"
-                     "to log in:\n\n"
-                     "%(uri)s\n\n",
-                     server_hostname=wiking.cfg.server_hostname,
-                     uri=req.make_uri(base_uri, command='login', login=record['login'].value()),
-                     password=record['initial_password'].value())
-        else:
-            text = _("To finish your registration at %(server_hostname)s, "
-                     "click on the following link:\n\n"
-                     "%(uri)s\n\n",
-                     server_hostname=wiking.cfg.server_hostname,
-                     uri=req.make_uri(base_uri, action='confirm', uid=record['uid'].value(),
-                                      regcode=record['regcode'].value()),
-                     code=record['regcode'].value())
+        text = (
+            # Translators: %(server_hostname)s is replaced by server's name,
+            # such as www.yourdomain.com.
+            _("Your account at %(server_hostname)s has been created.",
+              server_hostname=wiking.cfg.server_hostname),
+            '',
+            _("Follow the link below to finish your registration:"),
+            req.make_uri(req.server_uri() + req.module_uri('Registration'),
+                         action='confirm', uid=record['uid'].value(),
+                         regcode=record['regcode'].value()),
+        )
         return send_mail(record['email'].value(),
-                         _("Your registration at %s", wiking.cfg.server_hostname),
-                         text, export=True, lang=record['lang'].value())
+                         _("Your registration at %(server_hostname)s",
+                           server_hostname=wiking.cfg.server_hostname),
+                         '\n'.join(text), lang=record['lang'].value())
 
     def _send_admin_approval_mail(self, req, record):
         base_uri = req.module_uri(self.name()) or '/_wmi/' + self.name()
@@ -1135,9 +1087,7 @@ class Users(UserManagementModule, CachingPytisModule):
                      admin_name=req.user().name(),
                      server_hostname=wiking.cfg.server_hostname
                      ) + '\n\n'
-        if record['autogenerate_password'].value():
-            text += _("The account was enabled with an automatically generated password.") + "\n"
-        elif wiking.cms.cfg.autoapprove_new_users:
+        if wiking.cms.cfg.autoapprove_new_users:
             text += _("The account was approved automatically according to server setup.") + "\n"
         else:
             uri = req.server_uri() + base_uri + '/' + record['login'].value()
