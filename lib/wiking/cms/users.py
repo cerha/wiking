@@ -1218,7 +1218,7 @@ class Users(UserManagementModule, CachingPytisModule):
                 req.message(_("The account was enabled."), req.SUCCESS)
                 email = record['email'].value()
                 text = _("Your account at %(uri)s has been enabled. "
-                         "Please log in with username '%(login)s' and your password.",
+                         "Please log in with username %(login)s and your password.",
                          uri=req.server_uri(), login=record['login'].value()) + "\n"
                 err = send_mail(email, _("Your account has been enabled."),
                                 text, lang=record['lang'].value())
