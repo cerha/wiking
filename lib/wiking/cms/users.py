@@ -1037,19 +1037,25 @@ class Users(UserManagementModule, CachingPytisModule):
             # Wiking CMS user table.  No need to confirm again.
             req.message(_("Registration completed. You can log in now."), req.SUCCESS)
             raise wiking.Redirect(req.module_uri('Registration'))
-        else:
+        elif req.user() is not None:
+            # The registration was done by admin.
             req.message(_("The account has been created."), req.SUCCESS)
-            if req.user() is not None:
-                # The registration was done by admin.
-                # Translators: '%(email)s' is replaced by a real e-mail addres.
-                req.message(_("The activation code has been sent to %(email)s.",
-                              email=record['email'].value()))
-                raise wiking.Redirect(self._current_record_uri(req, record))
-            else:
-                req.message(_("To finish your registration, please confirm the "
-                              "activation code that was just sent to %(email)s.",
-                              email=record['email'].value()))
-                raise wiking.Redirect('/')
+            # Translators: '%(email)s' is replaced by a real e-mail addres.
+            req.message(_("The activation code has been sent to %(email)s.",
+                          email=record['email'].value()))
+            raise wiking.Redirect(self._current_record_uri(req, record))
+        else:
+            # Handled in action_insert() below.
+            req.message(_("To finish your registration, please confirm the "
+                          "activation code that was just sent to %(email)s.",
+                          email=record['email'].value()))
+            raise wiking.Redirect(req.uri(), action='insert', success='yes')
+
+    def action_insert(self, req, **kwargs):
+        if req.param('success') == 'yes':
+            # Handle redirection in _redirect_after_insert() above (to honour Post/Redirect/Get).
+            return Document(_("Account created"), content=())
+        return super(Users, self).action_insert(req, **kwargs)
 
     def _send_registration_email(self, req, record):
         text = (
