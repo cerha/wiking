@@ -1095,8 +1095,6 @@ class Users(UserManagementModule, CachingPytisModule):
         sent, errors = self.send_mail(Roles.USER_ADMIN, subject, text)
         for err in errors:
             log(OPR, "Failed sending e-mail notification:", err)
-        if sent:
-            req.message(_("E-mail notification has been sent to server administrators."))
 
     def _redirect_after_update(self, req, record):
         if record.field_changed('login'):
@@ -1193,7 +1191,11 @@ class Users(UserManagementModule, CachingPytisModule):
                 record = self._record(req, row)
                 record.update(state=state, regcode=None)
                 self._send_admin_approval_mail(req, record)
-                req.message(_("Registration completed successfuly."), type=req.SUCCESS)
+                req.message(_("Activation code confirmed successfuly."), type=req.SUCCESS)
+                if wiking.cms.cfg.autoapprove_new_users:
+                    req.message(_("Your account is now active."))
+                else:
+                    req.message(_("Your account now awaits administrator's approval."))
                 # Redirect - don't display the response here to avoid multiple submissions...
                 return self._redirect_after_confirm(req, record)
             else:
