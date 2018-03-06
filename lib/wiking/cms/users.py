@@ -1074,7 +1074,7 @@ class Users(UserManagementModule, CachingPytisModule):
         return send_mail(record['email'].value(),
                          _("Your registration at %(server_hostname)s",
                            server_hostname=wiking.cfg.server_hostname),
-                         '\n'.join(text), lang=record['lang'].value())
+                         lcg.concat(text, separator='\n'), lang=record['lang'].value())
 
     def _send_admin_approval_mail(self, req, record):
         subject = _("New user account at %(server_hostname)s",
@@ -1089,7 +1089,7 @@ class Users(UserManagementModule, CachingPytisModule):
             _("Please approve the account:"),
             req.make_uri(req.server_uri() + req.module_uri('Users'), uid=record['uid'].value()),
         )
-        sent, errors = self.send_mail(Roles.USER_ADMIN, subject, '\n'.join(text))
+        sent, errors = self.send_mail(Roles.USER_ADMIN, subject, lcg.concat(text, separator='\n'))
         for err in errors:
             log(OPR, "Failed sending e-mail notification:", err)
 
