@@ -590,8 +590,7 @@ class Users(UserManagementModule, CachingPytisModule):
                 # UI Fields for new user insertion (by admin or by registration).
                 Field('initial_password', _("Password"), virtual=True, width=16, type=pwdtype,
                       visible=computer(lambda r: r.req().param('action') != 'reinsert'),
-                      descr=_("Please, write the password into each of the two fields to eliminate "
-                              "typos.")),
+                      descr=_("Write the same password into both fields.")),
                 # UI Fields for password change.
                 Field('old_password', _(u"Old password"), virtual=True, width=16,
                       type=pd.Password(verify=False, not_null=True),
@@ -599,8 +598,7 @@ class Users(UserManagementModule, CachingPytisModule):
                               "password.")),
                 # The only difference between initial_password and new_password is in label.
                 Field('new_password', _("New password"), virtual=True, width=16, type=pwdtype,
-                      descr=_("Please, write the password into each of the two fields to eliminate "
-                              "typos.")),
+                      descr=_("Write the same password into both fields.")),
                 # The actual DB password field (never present in the UI)
                 Field('password', type=pd.Password(not_null=True),
                       computer=computer(self._password)),
