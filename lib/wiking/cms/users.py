@@ -1183,10 +1183,8 @@ class Users(UserManagementModule, CachingPytisModule):
         regcode = req.param('regcode')
         if regcode:
             row = self._data.get_row(uid=uid)
-            if row is None:
+            if row is None or row['state'].value() != Users.AccountState.NEW:
                 raise wiking.BadRequest()
-            if row['state'].value() != Users.AccountState.NEW:
-                raise wiking.BadRequest(_("User account already activated."))
             if row['regcode'].value() == regcode:
                 if wiking.cms.cfg.autoapprove_new_users:
                     state = self.AccountState.ENABLED
