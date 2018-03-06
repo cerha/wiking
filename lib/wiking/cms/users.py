@@ -1075,30 +1075,19 @@ class Users(UserManagementModule, CachingPytisModule):
                          '\n'.join(text), lang=record['lang'].value())
 
     def _send_admin_approval_mail(self, req, record):
-        base_uri = req.module_uri(self.name()) or '/_wmi/' + self.name()
-        subject = _("New user account:") + ' ' + record['fullname'].value()
-        if req.user() is None or req.user().uid() == record['uid'].value():
-            # The user may be already logged to the inactive account when he
-            # clicks the e-mail link.
-            text = _("New user %(fullname)s registered at %(server_hostname)s.",
-                     fullname=record['fullname'].value(),
-                     server_hostname=wiking.cfg.server_hostname
-                     ) + '\n\n'
-        else:
-            text = _("New account for %(fullname)s was created by %(admin_name)s "
-                     "at %(server_hostname)s.",
-                     fullname=record['fullname'].value(),
-                     admin_name=req.user().name(),
-                     server_hostname=wiking.cfg.server_hostname
-                     ) + '\n\n'
-        if wiking.cms.cfg.autoapprove_new_users:
-            text += _("The account was approved automatically according to server setup.") + "\n"
-        else:
-            uri = req.server_uri() + base_uri + '/' + record['login'].value()
-            text += _("Please approve the account:") + '\n' + uri + '\n'
-        if record['note'].value():
-            text += '\n' + _("Note:") + '\n\n' + record['note'].value().strip() + "\n"
-        sent, errors = self.send_mail(Roles.USER_ADMIN, subject, text)
+        subject = _("New user account at %(server_hostname)s",
+                    server_hostname=wiking.cfg.server_hostname)
+        text = (
+            _("New user registered at %(server_hostname)s has just confirmed the activation code.",
+              fullname=record['fullname'].value(),
+              server_hostname=wiking.cfg.server_hostname),
+            '',
+            _("The account has been approved automatically according to server setup.") + "\n"
+            if wiking.cms.cfg.autoapprove_new_users else
+            _("Please approve the account:"),
+            req.make_uri(req.server_uri() + req.module_uri('Users'), uid=record['uid'].value()),
+        )
+        sent, errors = self.send_mail(Roles.USER_ADMIN, subject, '\n'.join(text))
         for err in errors:
             log(OPR, "Failed sending e-mail notification:", err)
 
