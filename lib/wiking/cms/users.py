@@ -1242,7 +1242,7 @@ class Users(UserManagementModule, CachingPytisModule):
                                        Action('view', _("Back"), icon='arrow-left-icon')))
             req.message(_("The registration code was not confirmed by the user!"), req.WARNING)
             req.message(_("Please enable the account only if you are sure that "
-                          "the e-mail address belongs to given user."))
+                          "the e-mail address belongs to given user."), req.WARNING)
             return self._document(req, (form), record)
         else:
             self._change_state(req, record, self.AccountState.ENABLED)
