@@ -772,7 +772,7 @@ class Users(UserManagementModule, CachingPytisModule):
             Action('passwd', _("Change password"), icon='key-icon',
                    descr=_("Change user's password")),
             # Translators: Button label.  Used to approve user's account by the administrator.
-            Action('enable', _("Approve"),
+            Action('enable', _("Approve"), icon='ok-icon',
                    descr=_("Aprove this account"),
                    # Note: We use "Approve" just for consistency of the
                    # terminology in the user interface.  Technically it is the
@@ -791,9 +791,11 @@ class Users(UserManagementModule, CachingPytisModule):
                    enabled=lambda r: r['state'].value() == Users.AccountState.ENABLED,
                    visible=lambda r: r['state'].value() not in (Users.AccountState.NEW,
                                                                 Users.AccountState.UNAPPROVED)),
-            Action('regreminder', _("Resend activation code"), descr=_("Re-send registration mail"),
+            Action('regreminder', _("Resend activation code"), icon='mail-icon',
+                   descr=_("Re-send registration mail"),
                    visible=lambda r: r['state'].value() == Users.AccountState.NEW),
-            Action('delete', _("Delete"), descr=_("Remove the account completely"),
+            Action('delete', _("Delete"), icon='remove-icon',
+                   descr=_("Remove the account completely"),
                    visible=lambda r: r['state'].value() in (Users.AccountState.NEW,
                                                             Users.AccountState.UNAPPROVED)),
         )
@@ -1235,9 +1237,9 @@ class Users(UserManagementModule, CachingPytisModule):
                               date=pw.localizable_export(record['regexpire'])), req.WARNING)
             form = self._form(pw.ShowForm, req, record,
                               layout=self._layout(req, 'view', record=record),
-                              actions=(Action('enable', _("Continue"), submit=1),
+                              actions=(Action('enable', _("Continue"), submit=1, icon='ok-icon'),
                                        # Translators: Button label to get to a previous state.
-                                       Action('view', _("Back"))))
+                                       Action('view', _("Back"), icon='arrow-left-icon')))
             req.message(_("The registration code was not confirmed by the user!"), req.WARNING)
             req.message(_("Please enable the account only if you are sure that "
                           "the e-mail address belongs to given user."))
