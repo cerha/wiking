@@ -232,6 +232,7 @@ class Configuration(pytis.util.Configuration):
                   server_hostname -- requested server host name (virtual host),
                   uri -- URI of the request,
                   abs_uri -- Absolute URI of the request (including server URI),
+                  method -- HTTP method of the request,
                   user -- current user's login name ('User.login()') or 'anonymous' when
                     user is not logged,
                   remote_host -- IP adress of the client's host as a string,
@@ -245,7 +246,7 @@ class Configuration(pytis.util.Configuration):
                     email (see 'Application.report_error()').
 
                 """)
-        _DEFAULT = "%(error_type)s[%(ref_id)s]: %(abs_uri)s [%(user)s@%(remote_host)s]"
+        _DEFAULT = "%(error_type)s[%(ref_id)s]: %(method)s %(abs_uri)s [%(user)s@%(remote_host)s]"
 
     class _Option_bug_report_address(pc.StringOption):
         _DESCR = "E-mail address where bug reports will be sent"
