@@ -241,9 +241,11 @@ class Configuration(pytis.util.Configuration):
                     header,
                   server_software -- server software identification (current versions of
                     Wiking, LCG and Pytis)
+                  ref_id -- Reference identifier for pairing the log entry with bug report
+                    email (see 'Application.report_error()').
 
                 """)
-        _DEFAULT = "%(error_type)s: %(abs_uri)s [%(user)s@%(remote_host)s] %(user_agent)s"
+        _DEFAULT = "%(error_type)s[%(ref_id)s]: %(abs_uri)s [%(user)s@%(remote_host)s]"
 
     class _Option_bug_report_address(pc.StringOption):
         _DESCR = "E-mail address where bug reports will be sent"

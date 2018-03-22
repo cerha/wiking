@@ -658,6 +658,7 @@ class Application(wiking.Module):
             ("HTTP referer", info['referer']),
             ('Server software', info['server_software']),
             ('HTTP method', info['method']),
+            ('Reference ID', info['ref_id']),
             ("Request parameters", "\n" + "\n".join(map(format_param, req.params()))),
         )
         text = "\n\n".join((
@@ -690,9 +691,9 @@ class Application(wiking.Module):
         address.
 
         Personal information, such as user's login, IP address or User Agent
-        are intentionally not included in the e-mail but are logged
-        ('log_format' contains them by default) and may be paired with the
-        e-mailed traceback if necessary.
+        are intentionally not included in the e-mail but may be logged (if
+        'log_format' contains them) and paired with the e-mailed traceback
+        using the 'ref_id' value.
 
         For 'InternalServerError' a brief traceback (without the details from
         cgitb) is also written to the error log.  This allows jumping right to
@@ -714,6 +715,7 @@ class Application(wiking.Module):
                 server_software=('Wiking %s, LCG %s, Pytis %s' %
                                  (wiking.__version__, lcg.__version__, pytis.__version__)),
                 error_type=error.__class__.__name__,
+                ref_id=wiking.generate_random_string(10),
             )
             log(OPR, wiking.cfg.log_format % info)
             if isinstance(error, wiking.InternalServerError):
