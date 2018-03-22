@@ -539,8 +539,8 @@ class InternalServerError(RequestError):
                                           "%s if you need assistance.",
                                           wiking.cfg.webmaster_address)), formatted=True))
         elif not self._html_traceback:
-            return (lcg.p(_("Traceback formatting using cgitb failed: %s", self._cgitb_exception)),
-                    lcg.p(_("Plain text traceback follows:")),
+            return (lcg.p("Traceback formatting using cgitb failed: %s", self._cgitb_exception),
+                    lcg.p("Plain text traceback follows:"),
                     lcg.pre(self.traceback()))
         else:
             return lcg.HtmlContent(self._html_traceback)
