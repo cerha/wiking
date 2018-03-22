@@ -243,7 +243,7 @@ class Configuration(pytis.util.Configuration):
                     Wiking, LCG and Pytis)
 
                 """)
-        _DEFAULT = "%(error_type)s: %(abs_uri)s [%(user)s@%(remote_host)s]"
+        _DEFAULT = "%(error_type)s: %(abs_uri)s [%(user)s@%(remote_host)s] %(user_agent)s"
 
     class _Option_bug_report_address(pc.StringOption):
         _DESCR = "E-mail address where bug reports will be sent"

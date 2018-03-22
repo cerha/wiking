@@ -30,6 +30,10 @@ import os
 import re
 import sys
 import time
+import cgitb
+import urllib
+import itertools
+import traceback
 from xml.sax import saxutils
 
 import pytis.data as pd
@@ -96,9 +100,8 @@ class RequestError(Exception):
 
     def __init__(self, message=None):
         self._message = message
-        import inspect
-        # Ignore the first frame as we are only interested where the constructor was called.
-        self._stack = tuple(inspect.stack()[1:])
+        self._traceback = ''.join(["Traceback (most recent call last):\n"] +
+                                  traceback.format_stack()[:-1])
         super(RequestError, self).__init__()
 
     def _messages(self, req):
@@ -164,15 +167,15 @@ class RequestError(Exception):
             message=req.localize(lcg.concat(self._messages(req), separator=' ') or None),
         )
 
-    def stack(self):
-        """Return the Python call stack state saved in the constructor.
+    def traceback(self):
+        """Return the Python call stack trace saved in the constructor.
 
-        This makes it possible to determine later where this error instance was
-        created.  The returned value is a list of tuples as returned by
-        'inspect.stack()'.
+        This makes it possible to display the stack trace later for debugging
+        purposes.  The returned value is a muliline string formatted similarly
+        as ordinary Python exception traceback.
 
         """
-        return self._stack
+        return self._traceback
 
 
 class Redirect(RequestError):
@@ -465,40 +468,83 @@ class InternalServerError(RequestError):
     _STATUS_CODE = http.client.INTERNAL_SERVER_ERROR  # 500
     _TITLE = _("Internal Server Error")
 
-    def __init__(self, einfo):
-        import traceback
-        # Don't store references to einfo here (see sys.exc_info() documentation).
-        if issubclass(einfo[0], pytis.data.DBSystemException):
-            message = _("Unable to perform a database operation.")
-        else:
-            message = ''.join(traceback.format_exception_only(*einfo[:2])).strip()
-        tb = einfo[2]
-        while tb.tb_next is not None:
-            tb = tb.tb_next
-        if wiking.cfg.debug:
-            self._html_traceback = HtmlTraceback(einfo)
-        self._exception_class = einfo[0]
-        self._filename = os.path.split(tb.tb_frame.f_code.co_filename)[-1]
-        self._lineno = tb.tb_lineno
-        super(InternalServerError, self).__init__(message=message)
+    def __init__(self):
+        cls, value, tb = sys.exc_info()
+        try:
+            self._exception_class = cls
+            self._basic_traceback = ''.join(traceback.format_exception(cls, value, tb))
+            try:
+                # cgitb returns str with undocumented encoding (seems to be latin1).
+                self._html_traceback = unicode(cgitb.html((cls, value, tb)), errors='replace')
+                self._text_traceback = unicode(cgitb.text((cls, value, tb)), errors='replace')
+            except Exception as e:
+                # cgitb sometimes fails when the introspection touches
+                # something sensitive, such as database objects.
+                self._html_traceback = None
+                self._text_traceback = None
+                self._cgitb_exception = e
+            while tb.tb_next is not None:
+                tb = tb.tb_next
+            self._filename = os.path.split(tb.tb_frame.f_code.co_filename)[-1]
+            self._lineno = tb.tb_lineno
+        finally:
+            # See sys.exc_info() documentation why we are deleting it here.
+            del tb
+        super(InternalServerError, self).__init__()
 
-    def buginfo(self):
-        """Return a short textual information about the error and its location."""
+    def traceback(self, detailed=False, format='text'):
+        """Return the traceback of the exception which caused this InternalServerError.
+
+        Arguments:
+
+          detailed -- if false (by default) a brief textual traceback is
+            returned as a mutiline string with formatting known from common
+            Python tracebacks.  If true is passed, the traceback produced by
+            'cgitb' will be returned, including relevant parameter and variable
+            values.
+
+          format -- traceback formatting; Use 'text' for plain text traceback
+            (default) or 'html' for HTML formatted traceback.  Only relevant
+            when 'detailed' is true.
+
+        Note that in this class we don't care about the constructor call stack
+        trace as in the parent class method.  For 'InternalServerError' we are
+        interested in the traceback of the exception which was active in the
+        time of the constructor call.
+
+        """
+        assert format in ('text', 'html') if detailed else ('text',)
+        if not detailed:
+            return self._basic_traceback
+        elif format == 'html':
+            return self._html_traceback or '<pre>' + self._basic_traceback + '</pre>'
+        else:
+            return self._text_traceback or self._basic_traceback
+
+    def signature(self):
+        """Return short info about the error type and its source code location."""
         return "%s at %s line %d" % (self._exception_class.__name__, self._filename, self._lineno)
 
     def content(self, req):
         # TODO: Even though the admin address is in a formatted paragraph, it
         # is not formatted as a link during internal server error export.  It
         # works well in all other cases.
-        if wiking.cfg.debug:
-            return self._html_traceback
+        if not wiking.cfg.debug:
+            return (lcg.p(_("The server was unable to complete your request "
+                            "due to a technical problem.")),
+                    lcg.p(lcg.strong(_("We appologize."))),
+                    lcg.p(_("The issue has been recorded and we are working "
+                            "towards fixing it.")),
+                    lcg.p(req.translate(_("Contact the server administrator, "
+                                          "%s if you need assistance.",
+                                          wiking.cfg.webmaster_address)), formatted=True))
+        elif not self._html_traceback:
+            return (lcg.p(_("Traceback formatting using cgitb failed: %s", self._cgitb_exception)),
+                    lcg.p(_("Plain text traceback follows:")),
+                    lcg.pre(self.traceback()))
         else:
-            return (lcg.p(_("The server was unable to complete your request.")),
-                    lcg.p(req.translate(_("Please inform the server administrator, "
-                                          "%s if the problem persists.",
-                                          wiking.cfg.webmaster_address)), formatted=True),
-                    lcg.p(_("The error message was:")),
-                    lcg.PreformattedText(self._message))
+            return lcg.HtmlContent(self._html_traceback)
+
 
 
 class ServiceUnavailable(RequestError):
@@ -2080,32 +2126,6 @@ class Message(lcg.Container):
     def _export_icon(self, context):
         g = context.generator()
         return g.span(g.span('', cls='%s-icon' % self._kind), cls='icon')
-
-
-class HtmlTraceback(lcg.Content):
-    """LCG content element displaying a Python exception traceback in HTML.
-
-    Accepts the exception information as returned by 'sys.exc_info()' as the
-    first constructor argument.
-
-    """
-
-    def __init__(self, einfo, **kwargs):
-        # Generete the traceback in constructor to avoid storing references
-        # to einfo (see sys.exc_info() documentation).
-        self._einfo = einfo
-        super(HtmlTraceback, self).__init__(**kwargs)
-
-    def export(self, context):
-        g = context.generator()
-        try:
-            # cgitb sometimes fails when the introspection touches
-            # something sensitive, such as database objects.
-            import cgitb
-            return g.noescape(cgitb.html(self._einfo))
-        except Exception:
-            import traceback
-            return g.pre("".join(traceback.format_exception(*self._einfo)))
 
 
 class IFrame(lcg.Content):

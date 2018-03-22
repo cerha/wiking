@@ -44,7 +44,6 @@ import mimetypes
 import os
 import re
 import string
-import sys
 import unicodedata
 import operator
 import json
@@ -120,16 +119,13 @@ def text2content(req, text):
                 content = lcg.Container(_parser.parse(text))
             else:
                 content = _processor.html2lcg(text)
-        except Exception as e:
-            content = [lcg.p(_("Error processing document content:"))]
-            einfo = sys.exc_info()
+        except:
+            content = [wiking.Message(_("Error processing document content."), kind='error')]
+            error = wiking.InternalServerError()
             if wiking.cfg.debug:
-                content.append(wiking.HtmlTraceback(einfo))
-            else:
-                content.append(lcg.PreformattedText("%s: %s" % (e.__class__.__name__, e)))
-            wiking.module.Application.log_traceback(req, einfo)
-            content = lcg.Container(content, name='wiking-content-processing-error')
-            wiking.module.Application.send_bug_report(req, einfo)
+                content.append(lcg.HtmlContent(error.traceback(detailed=True, format='html')))
+            content = lcg.Container(content)
+            wiking.module.Application.report_error(req, error)
     else:
         content = None
     return content
@@ -1963,9 +1959,8 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                 module = wiking.module(modname)
             except ResolverError:
                 # Allow changing the module if it no longer exists.
-                content = [lcg.Container(lcg.coerce(_("Unknown module: %s", modname)),
-                                         name='errors')]
-                wiking.module.Application.send_bug_report(req, sys.exc_info())
+                content = [wiking.Message((_("Unknown module: %s", modname)), kind='error')]
+                wiking.module.Application.report_error(req, wiking.InternalServerError())
             else:
                 content = module.embed(req)
         else:

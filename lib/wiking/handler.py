@@ -250,8 +250,7 @@ class Handler(object):
                                  status_code=http.client.SERVICE_UNAVAILABLE)
 
     def _handle_request_error(self, req, error):
-        if not isinstance(error, wiking.AuthenticationError):
-            self._application.log_error(req, error)
+        self._application.report_error(req, error)
         for header, value in error.headers(req):
             req.set_header(header, value)
         if req.is_api_request():
@@ -344,10 +343,7 @@ class Handler(object):
             # Any other unhandled exception is an Internal Server Error.  It is
             # handled in a separate try/except block to chatch also errors in
             # except blocks of the inner level.
-            einfo = sys.exc_info()
-            self._application.send_bug_report(req, einfo)
-            self._application.log_traceback(req, einfo)
-            return self._handle_request_error(req, wiking.InternalServerError(einfo))
+            return self._handle_request_error(req, wiking.InternalServerError())
 
     def handle(self, req):
         if not hasattr(self, '_first_request_served'):
