@@ -156,7 +156,7 @@ class WikingManagementInterface(wiking.Module, wiking.RequestHandler):
         # Translators: Heading and menu title.
         ('users', _("Users"),
          _("Manage user accounts, privileges and perform other user related tasks."),
-         ['Users', 'ApplicationRoles', 'SessionLog', 'EmailSpool', 'CryptoNames']),
+         ['Users', 'ApplicationRoles', 'SessionHistory', 'LoginFailures', 'EmailSpool', 'CryptoNames']),
         # Translators: Heading and menu title. Computer idiom meaning configuration of appearance
         # (colors, sizes, positions, graphical presentation...).
         ('style', _("Look & Feel"),

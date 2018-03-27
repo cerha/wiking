@@ -736,7 +736,7 @@ class Users(UserManagementModule, CachingPytisModule):
             return (
                 wiking.Binding('roles', _("User's Groups"), 'UserRoles', 'uid',
                                form=pw.ItemizedView),
-                Binding('login-history', _("Login History"), 'SessionLog', 'uid',
+                Binding('session-history', _("Login History"), 'SessionHistory', 'uid',
                         enabled=lambda r: r.req().check_roles(Roles.USER_ADMIN)),
                 Binding('crypto', _("Crypto Keys"), 'CryptoKeys', 'uid',
                         enabled=self._crypto_user),
@@ -1095,11 +1095,6 @@ class Users(UserManagementModule, CachingPytisModule):
 
     def _redirect_after_update(self, req, record):
         if record.field_changed('login'):
-            # HACK: Update login in session cookies to let the session continue after login change.
-            # See also comment in wiking.CookieAuthenticationProvider._set_session_cookies().
-            req.set_cookie(wiking.CookieAuthenticationProvider._LOGIN_COOKIE,
-                           record['login'].value(), expires=(730 * 24 * 3600),
-                           secure=wiking.CookieAuthenticationProvider._SECURE_AUTH_COOKIES)
             req.message(_("You can use %s to log in next time.", record['login'].value()))
         if req.param('action') == 'reset_password':
             req.message(_("You can log in now with the new password."), req.SUCCESS)
@@ -1578,7 +1573,7 @@ class Users(UserManagementModule, CachingPytisModule):
         @rtype: tuple of two items (int, list)
         @return: The first value is the number of successfully sent messages
         and the second value is the sequence of error messages for all
-        unsuccesfull attempts.
+        unsuccesful attempts.
 
         """
         assert (role is None or isinstance(role, wiking.Role) or
@@ -1741,107 +1736,80 @@ class ActivationForm(lcg.Content):
 class Session(PytisModule, wiking.Session):
     """Implement Wiking session management by storing session information in database."""
     class Spec(wiking.Specification):
-        table = 'cms_session'
-        fields = [Field(_id) for _id in ('session_id', 'uid', 'session_key', 'last_access')]
+        table = wiking.dbdefs.CmsSessions
 
-    def init(self, req, user, session_key):
-        def warn(text, **kwargs):
-            message = wiking.module.Texts.text(text)
-            if kwargs:
-                message = message.interpolate(lambda x: kwargs[x])
-            req.message(message, req.WARNING, formatted=True)
-        import wiking  # Don't know why, but it needs to be here...
-        # Delete all expired records first.
-        data = self._data
-        now_ = now()
-        uid = user.uid()
+    def _split_key(self, key):
+        try:
+            session_id, session_key = key.split(':')
+            return int(session_id), session_key
+        except (AttributeError, ValueError):
+            return None, None
+
+    def _is_expired(self, row):
         expiration = datetime.timedelta(hours=wiking.cfg.session_expiration)
-        data.delete_many(pd.LE('last_access', pd.Value(pd.DateTime(), now_ - expiration)))
-        row, success = data.insert(data.make_row(uid=uid, session_key=session_key,
-                                                 last_access=now_))
-        wiking.module.SessionLog.log(req, now_, row['session_id'].value(), uid, user.login())
-        import wiking.cms.texts
-        state = user.state()
-        # This check is done here to display the message only once after logging in...
-        if state == Users.AccountState.DISABLED:
-            warn(wiking.cms.texts.disabled)
-        elif state == Users.AccountState.NEW:
-            warn(wiking.cms.texts.unconfirmed,
-                 uri=req.make_uri(req.module_uri('Registration'), action='confirm', uid=uid))
-        elif state == Users.AccountState.UNAPPROVED:
-            warn(wiking.cms.texts.unapproved)
+        return row['last_access'].value() < now() - expiration
 
-    def failure(self, req, user, login):
-        wiking.module.SessionLog.log(req, now(), None, user and user.uid(), login[:64])
+    def _update_last_access(self, row):
+        self._data.update((row['session_id'],), self._data.make_row(last_access=now()))
 
-    def check(self, req, user, session_key):
-        row = self._data.get_row(uid=user.uid(), session_key=session_key)
-        if row:
-            now_ = now()
-            expiration = datetime.timedelta(hours=wiking.cfg.session_expiration)
-            if row['last_access'].value() > now_ - expiration:
-                self._data.update((row['session_id'],), self._data.make_row(last_access=now_))
-                return True
-        return False
+    def _new_session(self, uid, auth_type, session_key):
+        data = self._data
+        expiration = datetime.timedelta(hours=wiking.cfg.session_expiration)
+        # Delete all expired records first (can't do in trigger due to the configuration option).
+        data.delete_many(pd.LE('last_access', pd.Value(pd.DateTime(), now() - expiration)))
+        return data.insert(data.make_row(
+            session_key=session_key,
+            auth_type=auth_type,
+            uid=uid,
+            last_access=now())
+        )[0]
 
-    def close(self, req, user, session_key):
+    def init(self, req, user, auth_type, reuse=False):
+        if reuse:
+            row = self._data.get_row(uid=user.uid(), auth_type=auth_type)
+            if row and not self._is_expired(row):
+                self._update_last_access(row)
+                return None
+        row = self._new_session(user.uid(), auth_type, wiking.generate_random_string(64))
+        return row['session_id'].export() + ':' + row['session_key'].value()
+
+    def check(self, req, session_key):
+        session_id, session_key = self._split_key(session_key)
+        row = self._data.row(pd.ival(session_id))
+        if row and row['session_key'].value() == session_key and not self._is_expired(row):
+            self._update_last_access(row)
+            return wiking.module.Users.user(req, uid=row['uid'].value())
+        else:
+            return None
+
+    def close(self, req, session_key):
+        session_id, session_key = self._split_key(session_key)
         # This deletion will lead to end_time in cms_session_log_data being set to last_access
         # value of the deleted row.  Use delete_many() because we don't know session_id.
-        self._data.delete_many(pd.AND(pd.EQ('uid', pd.ival(user.uid())),
-                                      pd.EQ('session_key', pd.sval(session_key))))
+        self._data.delete(pd.ival(session_id))
 
 
-class SessionLog(UserManagementModule):
-
+class SessionHistory(UserManagementModule):
     class Spec(wiking.Specification):
         # Translators: Heading for an overview when and how the user has accessed the application.
         title = _("Login History")
-        help = _("History of successful login sessions and unsuccessful login attempts.")
-        table = 'cms_v_session_log'
+        help = _("History of login sessions.")
+        table = wiking.dbdefs.CmsVSessionHistory
 
-        def fields(self):
-            return (
-                Field('log_id'),
-                Field('session_id'),
-                Field('uid', _('User'), not_null=True, codebook='Users',
-                      inline_display='uid_user', inline_referer='uid_login'),
-                # Translators: Login name.
-                Field('login', _("Login")),
-                # Translators: Form field saying whether the users attempt was succesful.
-                # Values are Yes/No.
-                Field('success', _("Success")),
-                # Translators: Table column heading.
-                # Time of the start of user session, followed by a date and time.
-                Field('start_time', _("Start time")),
-                # Translators: Table column heading. The length of user session. Contains time.
-                Field('duration', _("Duration"), type=pytis.data.TimeInterval()),
-                # Translators: Table column heading.
-                # Whether the account is active. Values are yes/no.
-                Field('active', _("Active")),
-                Field('ip_address', _("IP address")),
-                # Translators: Internet name of the remote computer (computer terminology).
-                Field('hostname', _("Hostname"), virtual=True, computer=computer(self._hostname)),
-                # Translators: "User agent" is a generalized name for browser or more precisely the
-                # software which produced the HTTP request (was used to access the website).
-                Field('user_agent', _("User agent")),
-                # Translators: Meaning where the user came from. Computer terminology.
-                # Do not translate
-                # "HTTP" and if unsure, don't translate at all (it is a very technical term).
-                Field('referer', _("HTTP Referer")),
-                Field('uid_login'))
-
-        def _hostname(self, row, ip_address):
-            try:
-                return socket.gethostbyaddr(ip_address)[0]
-            except Exception:
-                return None  # _("Unknown")
+        def _customize_fields(self, fields):
+            field = fields.modify
+            field('auth_type', label=_("Authentication method"))
+            field('uid', label=_('User'), not_null=True, codebook='Users',
+                  inline_display='user', inline_referer='login')
+            # Translators: Table column heading: Date and time of the user session beginning.
+            field('start_time', label=_("Start time"))
+            # Translators: Table column heading: The length of user session. Contains time.
+            field('duration', label=_("Duration"), type=pytis.data.TimeInterval())
+            # Translators: Table column heading: Whether the user session is active (Yes/No).
+            field('active', label=_("Active"))
 
         def query_fields(self):
             return (
-                Field('kind', _("Show"), type=pd.String(), enumerator=('ok', 'failed'),
-                      display=lambda x: (_("Successful logins") if x == 'ok' else
-                                         _("Unsuccessful attempts")),
-                      null_display=_("Everything"), not_null=False),
                 Field('from', _("From"), type=pd.Date()),
                 Field('to', _("To"), type=pd.Date()),
             )
@@ -1850,33 +1818,72 @@ class SessionLog(UserManagementModule):
             conditions = []
             if query_fields['from'].value():
                 conditions.append(pd.GE('start_time', query_fields['from']))
-            d = query_fields['to'].value()
-            if d:
-                dt = datetime.datetime(d.year, d.month, d.day, 23, 59, 59, tzinfo=now().tzinfo)
+            to = query_fields['to'].value()
+            if to:
+                dt = datetime.datetime(to.year, to.month, to.day, 23, 59, 59, tzinfo=now().tzinfo)
                 conditions.append(pd.LE('start_time', pd.dtval(dt)))
-            if query_fields['kind'].value():
-                conditions.append(pd.EQ('success', pd.bval(query_fields['kind'].value() == 'ok')))
             return pd.AND(*conditions) if conditions else None
 
-        def row_style(self, row):
-            if row['success'].value():
-                return None
-            else:
-                return pp.Style(foreground='#f00')
-        layout = ('start_time', 'duration', 'active', 'success', 'uid', 'login', 'ip_address',
-                  'hostname', 'user_agent', 'referer')
-        columns = ('start_time', 'duration', 'active', 'success', 'uid', 'login', 'ip_address')
+        columns = ('start_time', 'duration', 'active', 'uid', 'auth_type')
         sorting = (('start_time', DESC),)
 
     _ASYNC_LOAD = True
 
-    def log(self, req, time, session_id, uid, login):
-        if login is not None and len(login) > 64:
-            login = login[:61] + '...'
-        ip_address = req.header('X-Forwarded-For') or req.remote_host() or '?'
-        row = self._data.make_row(session_id=session_id, uid=uid, login=login,
-                                  success=session_id is not None, start_time=time,
-                                  ip_address=ip_address,
-                                  referer=req.header('Referer'),
-                                  user_agent=req.header('User-Agent'))
+    def _authorized(self, req, action, **kwargs):
+        if action != 'list':
+            return False
+        else:
+            return super(SessionHistory, self)._authorized(req, action, **kwargs)
+
+    def _link_provider(self, req, uri, record, cid, **kwargs):
+        return None
+
+
+class LoginFailures(UserManagementModule):
+    class Spec(wiking.Specification):
+        # Translators: Heading for a listing of unsuccesful login attempts.
+        title = _("Login Failures")
+        help = _("History of unsuccessful login attempts.")
+        table = wiking.dbdefs.CmsLoginFailures
+        sorting = (('timestamp', DESC),)
+
+        def _customize_fields(self, fields):
+            field = fields.modify
+            field('timestamp', label=_("Time"))
+            field('ip_address', label=_("IP address"))
+            field('login', label=_("Login name"))
+            field('auth_type', label=_("Authentication method"))
+            # Translators: Internet name of the remote computer (computer terminology).
+            fields.append(Field('hostname', _("Hostname"), virtual=True,
+                                computer=computer(self._hostname)))
+            # Translators: "User agent" is a generalized name for browser or more precisely the
+            # software which produced the HTTP request (was used to access the website).
+            field('user_agent', label=_("User agent"))
+
+        def _hostname(self, row, ip_address):
+            try:
+                return socket.gethostbyaddr(ip_address)[0]
+            except:
+                return None # _("Unknown")
+
+        columns = ('timestamp', 'login', 'auth_type', 'ip_address', 'user_agent')
+        layout = ('timestamp', 'login', 'auth_type', 'ip_address', 'hostname', 'user_agent')
+
+    _ASYNC_LOAD = True
+
+    def failure(self, req, login, auth_type):
+        row = self._data.make_row(
+            timestamp=now(),
+            login=login,
+            auth_type=auth_type,
+            ip_address=req.header('X-Forwarded-For') or req.remote_host() or '?',
+            user_agent=req.header('User-Agent'),
+        )
         self._data.insert(row)
+
+    def _authorized(self, req, action, **kwargs):
+        # TODO: Disable view as well and display hostname in a tooltip...
+        if action not in ('list', 'view'):
+            return False
+        else:
+            return super(LoginFailures, self)._authorized(req, action, **kwargs)

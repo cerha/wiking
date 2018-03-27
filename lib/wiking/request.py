@@ -898,7 +898,7 @@ class Request(ServerInterface):
         return self._decryption_password
 
     def user(self, require=False):
-        """Return 'User' instance describing the logged-in user.
+        """Return 'wiking.User' instance for the currently logged-in user.
 
         Arguments:
 
@@ -908,20 +908,39 @@ class Request(ServerInterface):
             None.  If 'require' is false and no user is logged, None is
             silently returned.
 
-        This method actually caches the result of 'Application.authenticate()'
-        for the current request instance.  Thus any exceptions raised by this
-        method may propagate.
+        Authentication is performed on first call and the result is cached for
+        the life time of the request instance.
+
+        A 'wiking.User' instance is returned if authentication was successful
+        or None if not (user is not logged or session expired).
+
+        The authentication process makes use of the configured authentication
+        providers in the order defined by the configuration option
+        'authentication_providers'.  The first successful provider wins.
+
+        'AuthenticationError' may be raised if login credentials were passed
+        but are not valid (what that means depends on particular authentication
+        providers).
+
+        'PasswordExpirationError' may be raised if the user is correctly
+        authenticated, but 'User.password_expiration()' date is today or
+        earlier.
 
         """
         if self._user is self._UNDEFINED:
             # Set to None for the case that authentication raises an exception.
             self._user = None
-            # AuthenticationError may be raised if the credentials are invalid.
-            # PasswordExpirationError may be raised if user's password expired.
-            self._user = wiking.module.Application.authenticate(self)
+            for provider in wiking.cfg.authentication_providers:
+                user = provider.authenticate(self)
+                if user is not None:
+                    if ((user.password_expiration() is not None and
+                         user.password_expiration() <= datetime.date.today() and
+                         self.uri() != wiking.module.Application.password_change_uri(self))):
+                        raise wiking.PasswordExpirationError()
+                    else:
+                        self._user = user
+                        break
         if require and self._user is None:
-            # if session_timed_out:
-            #      raise AuthenticationError(_("Session expired. Please log in again."))
             raise wiking.AuthenticationError()
         return self._user
 

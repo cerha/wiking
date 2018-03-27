@@ -344,73 +344,66 @@ class RoleSetsTriggerAfter(sql.SQLPlFunction, sql.SQLTrigger):
     events = ('insert', 'update', 'delete',)
 
 
-class CmsSessionLog(CommonAccesRights, sql.SQLTable):
-    name = 'cms_session_log'
+class CmsSessions(CommonAccesRights, sql.SQLTable):
+    name = 'cms_sessions'
     fields = (
-        sql.PrimaryColumn('log_id', pytis.data.Serial(not_null=True)),
-        sql.Column('session_id', pytis.data.Integer(),
-                   references=sql.a(sql.r.CmsSession, ondelete='SET NULL')),
-        sql.Column('uid', pytis.data.Integer(),
-                   references=sql.a(sql.r.Users, ondelete='CASCADE'),
-                   doc="May be null for invalid logins."),
-        sql.Column('login', pytis.data.String(not_null=True),
-                   doc="Useful when uid is null (invalid login) or when login changes."),
-        sql.Column('success', pytis.data.Boolean(not_null=True)),
+        sql.PrimaryColumn('session_id', pytis.data.Serial(not_null=True)),
+        sql.Column('session_key', pytis.data.String(not_null=True)),
+        sql.Column('auth_type', pytis.data.String(not_null=True)),
+        sql.Column('uid', pytis.data.Integer(not_null=True),
+                   references=sql.a(sql.r.Users, ondelete='CASCADE')),
+        sql.Column('last_access', pytis.data.DateTime()),
+    )
+    unique = (('uid', 'session_key',),)
+
+class CmsSessionHistory(CommonAccesRights, sql.SQLTable):
+    name = 'cms_session_history'
+    fields = (
+        sql.PrimaryColumn('session_id', pytis.data.Integer(not_null=True)),
+        sql.Column('auth_type', pytis.data.String(not_null=True)),
+        sql.Column('uid', pytis.data.Integer(not_null=True),
+                   references=sql.a(sql.r.Users, ondelete='CASCADE')),
         sql.Column('start_time', pytis.data.DateTime(not_null=True)),
         sql.Column('end_time', pytis.data.DateTime()),
-        sql.Column('ip_address', pytis.data.String(not_null=True)),
-        sql.Column('user_agent', pytis.data.String()),
-        sql.Column('referer', pytis.data.String()),
     )
 
+class CmsUpdateSesionHistory(sql.SQLPlFunction, sql.SQLTrigger):
+    name = 'cms_update_session_history'
+    arguments = ()
+    events = ()
 
-class CmsSession(CommonAccesRights, sql.SQLTable):
-    name = 'cms_session'
-    fields = (sql.PrimaryColumn('session_id', pytis.data.Serial(not_null=True)),
-              sql.Column('uid', pytis.data.Integer(not_null=True),
-                         references=sql.a(sql.r.Users, ondelete='CASCADE')),
-              sql.Column('session_key', pytis.data.String(not_null=True)),
-              sql.Column('last_access', pytis.data.DateTime()),
-              )
-    unique = (('uid', 'session_key',),)
-    # def on_delete_also(self):
-    #     log = sql.t.CmsSessionLog
-    #     return (log.update().
-    #             where(log.c.session_id == sqlalchemy.literal_column('old.session_id')).
-    #             values(end_time=sqlalchemy.literal_column('old.last_access')),)
-    depends_on = (CmsSessionLog,)
+class CmsSessionsTrigger(sql.SQLTrigger):
+    name = 'cms_sessions_trigger'
+    table = CmsSessions
+    events = ('insert', 'delete',)
+    each_row = True
+    body = CmsUpdateSesionHistory
 
-
-class CmsVSessionLog(CommonAccesRights, sql.SQLView):
-    name = 'cms_v_session_log'
-
+class CmsVSessionHistory(CommonAccesRights, sql.SQLView):
+    name = 'cms_v_session_history'
     @classmethod
     def query(cls):
-        log = sql.t.CmsSessionLog.alias('l')
+        h = sql.t.CmsSessionHistory.alias('h')
         u = sql.t.Users.alias('u')
-        s = sql.t.CmsSession.alias('s')
-        return select([log.c.log_id,
-                       log.c.session_id,
-                       log.c.uid,
-                       u.c.login.label('uid_login'),  # current login of given uid
-                       u.c.user_.label('uid_user'),
-                       log.c.login,
-                       log.c.success,
-                       and_(s.c.session_id != null,
-                            func.age(s.c.last_access) < sval('1 hour')).label('active'),
-                       log.c.start_time,
-                       (coalesce(log.c.end_time, s.c.last_access) -
-                        log.c.start_time).label('duration'),
-                       log.c.ip_address,
-                       log.c.user_agent,
-                       log.c.referer,
-                       ],
-                      from_obj=[log.outerjoin(u, log.c.uid == u.c.uid).
-                                outerjoin(s, log.c.session_id == s.c.session_id)])
-    insert_order = (CmsSessionLog,)
-    no_insert_columns = ('log_id',)
+        return select(h.c + [
+            u.c.login,
+            u.c.user_.label('user'),
+            sqlalchemy.cast(h.c.end_time == null, sqlalchemy.Boolean()).label('active'),
+            (coalesce(h.c.end_time, func.now()) - h.c.start_time).label('duration'),
+        ], from_obj=[h.outerjoin(u, u.c.uid == h.c.uid)])
 
-#
+
+class CmsLoginFailures(CommonAccesRights, sql.SQLTable):
+    name = 'cms_login_failures'
+    fields = (
+        sql.PrimaryColumn('failure_id', pytis.data.Serial(not_null=True)),
+        sql.Column('timestamp', pytis.data.DateTime(not_null=True)),
+        sql.Column('login', pytis.data.String(not_null=True)),
+        sql.Column('auth_type', pytis.data.String(not_null=True)),
+        sql.Column('ip_address', pytis.data.String(not_null=True)),
+        sql.Column('user_agent', pytis.data.String()),
+    )
+
 
 
 class CmsPages(CommonAccesRights, Base_CachingTable):

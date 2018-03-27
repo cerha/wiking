@@ -294,10 +294,23 @@ class Configuration(pytis.util.Configuration):
 
     class _Option_allow_http_authentication(pc.BooleanOption):
         _DESCR = _("Allow HTTP authentication")
-        _DOC = ("Wiking supports HTTP Basic authentication scheme.  You may need to "
-                "disable it if you want to perform HTTP authentication outside Wiking "
-                "(Apache) or disable it alltogether due to its insufficient security.")
+        _DOC = ("Deprecated.  Define 'authentication_providers' instead.")
         _DEFAULT = True
+
+    class _Option_authentication_providers(pc.BooleanOption):
+        _DESCR = _("Allow HTTP authentication")
+        _DOC = ("List of 'wiking.AuthenticationProvider' instances to use for user "
+                "authentication in given order.  Wiking by default supports cookie "
+                "based authentication through 'wiking.CookieAuthenticationProvider'"
+                "and HTTP Basic authentication through "
+                "'wiking.HTTPBasicAuthenticationProvider'.  Other authentication "
+                "schemes may be implemented and added to this list.")
+        def default(self):
+            import wiking
+            providers = [wiking.CookieAuthenticationProvider()]
+            if self._configuration.allow_http_authentication:
+                providers.append(wiking.HTTPBasicAuthenticationProvider())
+            return providers
 
     class _Option_translation_path(pc.Option):
         _DESCR = "Translation search path"

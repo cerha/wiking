@@ -302,7 +302,7 @@ class Application(wiking.Application):
     def stylesheets(self, req):
         return wiking.module.StyleSheets.stylesheets(req)
 
-    def user(self, req, login):
+    def authenticate(self, req, login, password, auth_type):
         user = wiking.module.Users.user(req, login)
         if user is None and wiking.cms.cfg.allow_registration:
             # It is possible, that the user doesn't exist in the
@@ -311,23 +311,38 @@ class Application(wiking.Application):
             # application sharing the same database).  Here we test if
             # that's the case and handle the situation in the login_hook()
             # below.
-            user = wiking.module('wiking.cms.Users').user(req, login)
-            if user and user.state() == Users.AccountState.NEW:
-                user = None
-        return user
+            u = wiking.module('wiking.cms.Users').user(req, login)
+            if u and u.state() != Users.AccountState.NEW:
+                user = u
+        if user:
+            stored_password = user.data()['password'].value()
+            if wiking.cms.cfg.password_storage.check_password(password, stored_password):
+                return user
+        wiking.module.LoginFailures.failure(req, login, auth_type)
+        return None
 
     def login_hook(self, req, user):
+        import wiking.cms.texts
         if not wiking.module.Users.user(req, user.login()):
-            # See 'user()' for comments.
+            # This account needs re-registration.  See 'user()' for comments.
             regcode = wiking.module('wiking.cms.Users').regenerate_registration_code(user)
             req.message(_("User %s is already registered for another site. "
                           "Please, confirm the account for this site.", user.login()))
             raise wiking.Redirect(req.module_uri('Registration'),
                                   action='reinsert', login=user.login(), regcode=regcode)
-
-    def verify_password(self, user, password):
-        storage = wiking.cms.cfg.password_storage
-        return storage.check_password(password, user.data()['password'].value())
+        # This is done in the login hook to display the message only once after logging in...
+        state = user.state()
+        text = wiking.module.Texts.text
+        if state == Users.AccountState.DISABLED:
+            message = text(wiking.cms.texts.disabled)
+        elif state == Users.AccountState.NEW:
+            uri = req.make_uri(req.module_uri('Registration'), action='confirm', uid=user.uid())
+            message = text(wiking.cms.texts.unconfirmed).interpolate(lambda x: dict(uri=uri)[x])
+        elif state == Users.AccountState.UNAPPROVED:
+            message = text(wiking.cms.texts.unapproved)
+        else:
+            return
+        req.message(message, req.WARNING, formatted=True)
 
     def logout_hook(self, req, user):
         super(Application, self).logout_hook(req, user)

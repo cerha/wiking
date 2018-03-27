@@ -488,57 +488,62 @@ class Session(Module):
     implementations to persist session state and data.
 
     The implementations of this abstract interface must implement the methods
-    'init()', 'check()' and 'close()' to store session information between
-    requests.
+    'init()', 'check()' and 'close()' to store session information server side
+    between requests.
 
     """
 
-    def new_session_key(self, length=64):
-        """Generate a new random session key and return it as a string.
+    def init(self, req, user, auth_type, reuse=False):
+        """Begin new session for given user with given session key.
 
         Arguments:
+          req -- current request object as 'wiking.Request' instance
+          user -- successfully authenticated user as 'wiking.User' instance
+          auth_type -- Short string describing the authentication method.  Each
+            'wiking.AuthenticationProvider' subclass uses its specific string,
+            such as "Cookie" for 'wiking.CookieAuthenticationProvider' etc.
+          reuse -- If true, try to reuse the existing session for the same
+            'auth_type'.  This is a work around for authentication methods
+            which can't remember the session key client side and thus 'check()'
+            can not be used.  If a a currently active session for the same
+            'user' with the same 'auth_type' exists, it is reused without
+            checking the session key.  Such session is extended as if 'check()'
+            was called and None is returned from this method to indicate this
+            case.  This means that there can be just one active session for the
+            same user and given 'auth_type' at the same time.
 
-          length -- character length of session key string
+        The method is responsible for creation of a new session key and
+        persistently storing its association with given user to allow checking
+        validity of this session key during upcoming requests.
 
-        This method may be used to generate a new key to be passed to the 'init()' method, but the
-        caller may decide to generate the key himself.  In any case, the security of the
-        authentication method depends on the randomness of the session key, so it should be done
-        with caution.
+        The caller is responsible for passing the returned session key to the
+        client and checking its validity using 'check()' on client's next
+        request with the same session key or closing this session using
+        'close()'.
 
-        """
-        return wiking.generate_random_string(length)
-
-    def init(self, req, user, session_key):
-        """Begin new session for given user ('User' instance) with given session key.
-
-        The method is responsible for storing given session key in a persistent
-        storage to allow later checking during upcoming requests.
-
-        The caller is responsible for storing the session key within the user's
-        browser as a cookie and passing it back to the 'check()' or 'close()'
-        methods within upcoming requests.
-
-        The method 'new_session_key()' may be used to generate a new session
-        key to be passed as the 'session_key' argument.
+        Returns the new session key as a string or None if 'reuse' was true and
+        existing session has been reused.
 
         """
         return None
 
-    def check(self, req, user, session_key):
-        """Return true if session_key is valid for an active session of given user.
+    def check(self, req, session_key):
+        """Return the session user if session_key matches an active session.
+
+        Arguments:
+          req -- current request object as 'wiking.Request' instance
+          session_key -- The session key previously returned by 'init()'.
 
         Extend the session lifetime if the check is succesful.
+
+        Returns a 'wiking.User' instance or None.
 
         """
         return False
 
-    def close(self, req, user, session_key):
+    def close(self, req, session_key):
         """Remove persistent session information and clean-up after user logged out."""
         pass
-
-    def failure(self, req, user, login):
-        """Store information about unsuccessful login attempt (optional)."""
-        return None
 
 
 class Search(Module, ActionHandler):

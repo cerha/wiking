@@ -281,11 +281,11 @@ class AuthenticationError(RequestError):
     _HTTP_AUTH_MATCHER = re.compile('.*(Thunderbird|Icedove|Liferea|Pytis|unknown)/.*')
     """Regular expression matching user agents for which HTTP authentication is used automatically.
 
-    HTTP authentication is normally requested by client through the special
-    request argument '__http_auth'.  But sometimes it is more practical to
-    avoid such argument in the URL.  For example we want to publish a URL of an
-    RSS channel.  Some RSS readers do support cookie based authentication and
-    we don't want to force them to use HTTP authentication for its lack of
+    HTTP authentication may be explicitly requested by the client through a
+    special request argument '__http_auth'.  But sometimes it is more practical
+    to avoid such argument in the URL.  For example we want to publish a URL of
+    an RSS channel.  Some RSS readers do support cookie based authentication
+    and we don't want to force them to use HTTP authentication for its lack of
     logout possibility and other drawbacks.  However, other RSS readers don't
     support cookie based authentication and we don't want to publish two
     distinct URLs and explain which to choose in which case.  Thus we are a
@@ -544,7 +544,6 @@ class InternalServerError(RequestError):
                     lcg.pre(self.traceback()))
         else:
             return lcg.HtmlContent(self._html_traceback)
-
 
 
 class ServiceUnavailable(RequestError):
@@ -1463,14 +1462,15 @@ class AuthenticationProvider(object):
     interface (actualy the method 'authenticate()').
 
     An application may support multiple authentication providers which may be
-    used in a given order of precedence.  The logic and order is given by the
-    implementation of 'Application.authenticate()'.
+    used in a given order of precedence.  This order is defined by the
+    configuration option 'authentication_providers' and the logic is
+    implemented by 'wiking.Request.user()'.
 
     Particular implementations handle particular authentication protocols, but
-    may be still neutral to authentication data source and session storage
-    implementation.  The 'Application' module is responsible for providing
-    authentication data through the methods 'Application.user()' and
-    'Application.verify_password()'.  The 'Session' module is responsible
+    may be still neutral to application specific authentication and session
+    data storage implementation.  The 'Application' module is responsible for
+    login name/password verification through the method
+    'Application.authenticate()'.  The 'Session' module is responsible
     persisting session information.  See their documentation for more details.
 
     """
@@ -1517,8 +1517,7 @@ class HTTPBasicAuthenticationProvider(AuthenticationProvider):
     authorization work.
 
     """
-
-    _FIXED_SESSION_KEY = 'HTTP-Basic-Authentication-Fixed-Session-Key'
+    _AUTH_TYPE = 'HTTP-Basic'
 
     def authenticate(self, req):
         auth_header = req.header('Authorization')
@@ -1530,15 +1529,14 @@ class HTTPBasicAuthenticationProvider(AuthenticationProvider):
         except UnicodeError:
             return None
         application = wiking.module.Application
-        session = wiking.module.Session
-        user = application.user(req, login)
-        if not user or not application.verify_password(user, password):
-            session.failure(req, user, login)
+        user = application.authenticate(req, login, password, self._AUTH_TYPE)
+        if user:
+            if wiking.module.Session.init(req, user, self._AUTH_TYPE, reuse=True):
+                # Session.init() returns None if previous HTTP-Basic session is reused.
+                application.login_hook(req, user)
+            return user
+        else:
             raise AuthenticationError(_("Invalid login!"))
-        if not session.check(req, user, self._FIXED_SESSION_KEY):
-            application.login_hook(req, user)
-            session.init(req, user, self._FIXED_SESSION_KEY)
-        return user
 
 
 class CookieAuthenticationProvider(AuthenticationProvider):
@@ -1561,9 +1559,9 @@ class CookieAuthenticationProvider(AuthenticationProvider):
     'login' and 'password'.
 
     """
-    _LOGIN_COOKIE = 'wiking_login'
-    _SESSION_COOKIE = 'wiking_session_key'
-    _SECURE_AUTH_COOKIES = False
+    _SESSION_COOKIE = 'session'
+    _AUTH_TYPE = 'Cookie'
+    _IOS10_UA_MATCHER = re.compile(r' OS 10_\d+_\d+ like Mac OS X')
 
     def authenticate(self, req):
         session = wiking.module.Session
@@ -1577,42 +1575,32 @@ class CookieAuthenticationProvider(AuthenticationProvider):
             if not password:
                 raise AuthenticationError(_("Enter your password, please!"))
             req.set_param('password', None)
-            user = application.user(req, login)
-            if not user or not application.verify_password(user, password):
-                session.failure(req, user, login)
+            user = application.authenticate(req, login, password, self._AUTH_TYPE)
+            if not user:
                 raise AuthenticationError(_("Invalid login!"))
             assert isinstance(user, wiking.User)
             # Login succesfull
+            session_key = session.init(req, user, self._AUTH_TYPE)
             application.login_hook(req, user)
-            session_key = session.new_session_key()
-            self._set_session_cookies(req, login, session_key)
-            session.init(req, user, session_key)
+            self._set_session_cookie(req, session_key)
         else:
             # Is there an existing session?
-            login, session_key = (req.cookie(self._LOGIN_COOKIE),
-                                  req.cookie(self._SESSION_COOKIE))
-            if login and session_key:
-                user = application.user(req, login)
-                if user and session.check(req, user, session_key):
-                    assert isinstance(user, wiking.User)
-                    self._set_session_cookies(req, login, session_key)
-                else:
-                    # Can not raise AuthenticationError here because of 'req.user(require=False)'.
-                    # It would also eliminate other authenication providers.
-                    # raise AuthenticationError(_("Session expired. Please log in again."))
-                    user = None
+            session_key = req.cookie(self._SESSION_COOKIE)
+            if session_key:
+                user = session.check(req, session_key)
+                self._set_session_cookie(req, session_key)
             else:
                 user = None
         if req.param('command') == 'logout' and user:
-            session.close(req, user, session_key)
-            req.set_cookie(self._SESSION_COOKIE, None, secure=self._SECURE_AUTH_COOKIES)
+            session.close(req, session_key)
+            self._set_session_cookie(req, None)
             application.logout_hook(req, user)
             user = None
         elif req.param('command') == 'login' and not user:
             raise wiking.AuthenticationRedirect()
         return user
 
-    def _set_session_cookies(self, req, login, session_key):
+    def _set_session_cookie(self, req, session_key):
         # Session cookie expiration is used just to make the cookie persist
         # when the browser is closed.  Cookies which don't expire ('expires'
         # unset) are discarded when the browser is closed.  Note that the
@@ -1621,8 +1609,8 @@ class CookieAuthenticationProvider(AuthenticationProvider):
         # the session module independently on session cookie verification.  The
         # cookie just should not expire sooner than the session to make the
         # verification work.
-        if ((wiking.cfg.persistent_sessions or
-             re.search(r' OS 10_\d+_\d+ like Mac OS X', req.header('User-Agent', '')))):
+        if session_key and (wiking.cfg.persistent_sessions or
+                            self._IOS10_UA_MATCHER.search(req.header('User-Agent', ''))):
             # The User-Agent check above is used to detect iOS 10.x devices and
             # force cookie expiration set in this case to work around
             # AppleCoreMedia bug (or missfeature?) which causes media files
@@ -1644,19 +1632,10 @@ class CookieAuthenticationProvider(AuthenticationProvider):
             expires = wiking.cfg.session_expiration * 3600
         else:
             expires = None  # Cookie discarded when browser closed.
-        secure = self._SECURE_AUTH_COOKIES
-        if req.cookie(self._LOGIN_COOKIE) != login:
-            # TODO: It would be better to use UID instead of login as part of
-            # the cookie, because when login is changed during the session
-            # (typically when e-mail addresses are used as logins), this causes
-            # the session to be unnecessariy terminated.  We would, however,
-            # need to introduce another API method (user_by_uid?) or use
-            # session_key alone to check the session (thus changing the API of
-            # Session.check()).  Wiking CMS has a hack to update login cookie
-            # after login change in wiking.cms.Users._redirect_after_update()
-            # to overcome this problem.
-            req.set_cookie(self._LOGIN_COOKIE, login, expires=(730 * 24 * 3600), secure=secure)
-        req.set_cookie(self._SESSION_COOKIE, session_key, expires=expires, secure=secure)
+        req.set_cookie(self._SESSION_COOKIE, session_key, expires=expires,
+                       # Don't require HTTPS during development.
+                       secure=not wiking.cfg.debug)
+
 
 # ============================================================================
 # Classes derived from LCG components

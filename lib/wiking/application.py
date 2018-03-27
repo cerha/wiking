@@ -82,9 +82,6 @@ class Application(wiking.Module):
             uri += '-' + wiking.cfg.resources_version
             self._mapping[uri] = 'Resources'
             self._reverse_mapping['Resources'] = uri
-        self._authentication_providers = [wiking.CookieAuthenticationProvider()]
-        if wiking.cfg.allow_http_authentication:
-            self._authentication_providers.append(wiking.HTTPBasicAuthenticationProvider())
 
     def initialize(self, req):
         """Perform application specific initialization.
@@ -179,82 +176,26 @@ class Application(wiking.Module):
         identitier = self._reverse_mapping.get(modname)
         return identitier and '/' + identitier or None
 
-    def authenticate(self, req):
-        """Perform authentication and return a 'User' instance if successful.
-
-        This method is called when authentication is needed.  A 'User' instance
-        must be returned if authentication was successful or None if not (user
-        is not logged or session expired).  This method is not called for every
-        request.  It is only called when request handling checks for
-        authorization and if authorization requires knowledge of the current
-        user.
-
-
-        Applications should not call this method directly.  Use
-        'Request.user()' to get the cached result for the current request.
-        This method may be overriden by derived applications if they want to
-        modify its default implementation.
-
-        The default implementation uses the configured authentication
-        providers.  'CookieAuthenticationProvider' is tried first and if it
-        returns None, 'HTTPBasicAuthenticationProvider' is tried second if
-        'allow_http_authentication' configuration option is enabled.  Password
-        expiration date is verified if one of the providers returns a 'User'
-        instance (authentication was succesful).
-
-        'AuthenticationError' may be raised if login credentials were passed
-        but are not valid (what that means depends on particular authentication
-        providers).
-
-        'PasswordExpirationError' may be raised if the user is correctly
-        authenticated, but 'User.password_expiration()' date is today or
-        earlier.
-
-        """
-        for provider in self._authentication_providers:
-            user = provider.authenticate(req)
-            if user is not None:
-                password_expiration = user.password_expiration()
-                password_change_uri = self.password_change_uri(req)
-                if password_expiration is not None and req.uri() != password_change_uri:
-                    if password_expiration <= datetime.date.today():
-                        raise wiking.PasswordExpirationError()
-                return user
-        return None
-
-    def user(self, req, login):
-        """Return a 'User' instance for given 'login'.
-
-        This method must be implemented by derived applications to retrieve user's
-        data from authentication data source, such as database table, file,
-        LDAP server etc.  A 'User' instance corresponding to given login name
-        must be returned if it exists.  'None' is returned if no such user
-        exists.
-
-        Further password verification is performed later by the method
-        'verify_password()', so this method doesn't care whether authentication
-        is valid or not.
-
-        The default implementation returns None.
-
-        """
-        return None
-
-    def verify_password(self, user, password):
-        """Verify authentication password for given user.
+    def authenticate(self, req, login, password, auth_type):
+        """Return 'User' instance if given authentication credentials are valid.
 
         Arguments:
-          user -- 'User' instance
+          req -- current request object
+          login -- user's login name as a string
           password -- user supplied password as a string
+          auth_type -- Short string describing the authentication method.  Each
+            'wiking.AuthenticationProvider' subclass uses its specific string,
+            such as "Cookie" for 'wiking.CookieAuthenticationProvider' etc.
+            Only informational (for logging etc.).
 
-        This method must be implemented by derived applications to verify
-        user's password.  True must be returned if given password is the
-        correct login password for given user or False it it is not.
+        Returns a 'User' instance corresponding to given login name and
+        password if the password is valid for given user or None if not.
 
-        The default implementation always returns False.
+        This method must be implemented by derived applications.  The default
+        implementation always returns None.
 
         """
-        return False
+        return None
 
     def login_hook(self, req, user):
         """Hook executed after succesfull authentication.
