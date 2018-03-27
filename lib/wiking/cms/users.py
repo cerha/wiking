@@ -1836,7 +1836,10 @@ class SessionHistory(UserManagementModule):
             return super(SessionHistory, self)._authorized(req, action, **kwargs)
 
     def _link_provider(self, req, uri, record, cid, **kwargs):
-        return None
+        if cid == 'uid':
+            return super(SessionHistory, self)._link_provider(req, uri, record, cid, **kwargs)
+        else:
+            return None
 
 
 class LoginFailures(UserManagementModule):
