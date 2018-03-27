@@ -1110,9 +1110,9 @@ class Users(UserManagementModule, CachingPytisModule):
         state = record['state'].value()
         if state == Users.AccountState.NEW:
             if record['regexpire'].value() > now():
-                texts = (_("The activation code was not yet confirmed by the user. Therefore "
-                           "it is not possible to trust that given e-mail address belongs to "
-                           "the person who requested the registration."),
+                texts = (_("The activation code has not yet been confirmed by the user. "
+                           "Therefore it is not possible to trust that given e-mail "
+                           "address belongs to the person who requested the registration."),
                          # Translators: %(date)s is replaced by date and time of registration
                          # expiration.
                          _("The activation code will expire on %(date)s and the user will "
@@ -1131,7 +1131,7 @@ class Users(UserManagementModule, CachingPytisModule):
                                "maintenence script is installed correctly.  Otherwise you can "
                                "delete the account manually."),
         elif state == Users.AccountState.UNAPPROVED:
-            texts = _("The activation code was succesfully confirmed."),
+            texts = _("The activation code has been succesfully confirmed."),
             if req.check_roles(Roles.USER_ADMIN):
                 texts = (texts[0] + ' ' +
                          _("Therefore it was verified that given e-mail address "
@@ -1210,7 +1210,7 @@ class Users(UserManagementModule, CachingPytisModule):
             return False
         else:
             if state == self.AccountState.ENABLED:
-                req.message(_("The account was enabled."), req.SUCCESS)
+                req.message(_("The account has been enabled."), req.SUCCESS)
                 email = record['email'].value()
                 text = _("Your account at %(uri)s has been enabled. "
                          "Please log in with username %(login)s and your password.",
@@ -1222,7 +1222,7 @@ class Users(UserManagementModule, CachingPytisModule):
                 else:
                     req.message(_("E-mail notification has been sent to:") + ' ' + email)
             elif state == self.AccountState.DISABLED:
-                req.message(_("The account was disabled."), req.SUCCESS)
+                req.message(_("The account has been disabled."), req.SUCCESS)
             return True
 
     def action_enable(self, req, record):
@@ -1235,7 +1235,7 @@ class Users(UserManagementModule, CachingPytisModule):
                               actions=(Action('enable', _("Continue"), submit=1, icon='ok-icon'),
                                        # Translators: Button label to get to a previous state.
                                        Action('view', _("Back"), icon='arrow-left-icon')))
-            req.message(_("The registration code was not confirmed by the user!"), req.WARNING)
+            req.message(_("The registration code has not been confirmed by the user!"), req.WARNING)
             req.message(_("Please enable the account only if you are sure that "
                           "the e-mail address belongs to given user."), req.WARNING)
             return self._document(req, (form), record)
@@ -1369,7 +1369,7 @@ class Users(UserManagementModule, CachingPytisModule):
         if err:
             req.message(_("Failed sending e-mail:") + ' ' + err, req.ERROR)
         else:
-            req.message(_("The activation code was sent to %s.", record['email'].value()))
+            req.message(_("The activation code was just sent to %s.", record['email'].value()))
         raise wiking.Redirect(self._current_record_uri(req, record))
 
     def action_reinsert(self, req):
