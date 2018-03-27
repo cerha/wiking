@@ -1734,7 +1734,16 @@ class ActivationForm(lcg.Content):
 
 
 class Session(PytisModule, wiking.Session):
-    """Implement Wiking session management by storing session information in database."""
+    """Implement Wiking session management by storing session information in database.
+
+    The session key returned by 'init()' (and accepted by 'check()' and
+    'close()') consists of session id and the actual session key (the random
+    token) separated by a colon.  Thus something like "2341:c167a28ab0d3...".
+    This makes the session table row lookup faster, as we look it up by
+    session_id (indexed int primary column) and then we only verify if the key
+    in this row matches the second part.
+
+    """
     class Spec(wiking.Specification):
         table = wiking.dbdefs.CmsSessions
 
@@ -1784,8 +1793,11 @@ class Session(PytisModule, wiking.Session):
 
     def close(self, req, session_key):
         session_id, session_key = self._split_key(session_key)
-        # This deletion will lead to end_time in cms_session_log_data being set to last_access
-        # value of the deleted row.  Use delete_many() because we don't know session_id.
+        # We don't verify session_key here, because we know that
+        # 'CookieAuthenticationProvider.authenticate()' only calls
+        # 'close()' after 'check()' or 'init()', but this is not
+        # required by definition.  Thus it should be either
+        # documented somewhere or not relied upon.
         self._data.delete(pd.ival(session_id))
 
 
