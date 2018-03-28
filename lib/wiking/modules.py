@@ -484,12 +484,11 @@ class SubmenuRedirect(Module, RequestHandler):
 class Session(Module):
     """Session management module abstract interface.
 
-    The 'Session' module may be used by 'AuthenticationProvider'
-    implementations to persist session state and data.
+    The 'Session' module is used by 'AuthenticationProvider' implementations to
+    persist session state between requests on the server side.
 
     The implementations of this abstract interface must implement the methods
-    'init()', 'check()' and 'close()' to store session information server side
-    between requests.
+    'init()', 'check()' and 'close()'.
 
     """
 
