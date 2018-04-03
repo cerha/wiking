@@ -735,6 +735,7 @@ body.non-maximized #root-wrap {
     padding-right: 24px;
 }
 #menu ul.level-1 > li.script-expanded > .item:hover,
+#menu ul.level-1 > li.in-path.script-expanded > .item,
 #menu ul.level-1 > li.script-expanded > .item {
     z-index: 3;
     position: relative;
