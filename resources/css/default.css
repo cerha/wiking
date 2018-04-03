@@ -743,6 +743,18 @@ body.non-maximized #root-wrap {
     border-bottom-color: $color.background;
     border-radius: 5px 5px 0 0;
 }
+#menu ul.level-1 > li.foldable > .item:after {
+    content: "";
+    display: inline-block;
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    z-index: 3;
+    background: url(lcg-icons.png) -25px -30px no-repeat;
+    margin: .7em 12px .3em 0;
+    top: 0;
+    right: 0;
+}
 #menu ul.level-1 > li > .item .label {
     background-color: transparent;
     padding: 0;
@@ -750,23 +762,6 @@ body.non-maximized #root-wrap {
 }
 #menu ul.level-1 > li > .item .icon {
     display: none;
-}
-#menu ul.level-1 > li > .expander {
-    opacity: 1;
-    border: 0;
-    width: 20px;
-    height: 1.5em;
-    z-index: 3;
-    background-color: transparent;
-}
-#menu ul.level-1 > li > .expander .icon {
-    background-position: -25px -30px;
-    width: 10px;
-    height: 10px;
-    margin: .7em 12px .3em 0;
-    transform: none;
-    top: 0;
-    left: 0;
 }
 
 #menu ul.level-2 {
@@ -795,8 +790,8 @@ body.non-maximized #root-wrap {
     body.non-maximized #submenu {
         display: table-cell;
     }
-    body.non-maximized #menu ul.level-1 > li.in-path > .expander {
-        opacity: 0;
+    body.non-maximized #menu ul.level-1 > li.foldable.in-path > .item:after {
+        display: none;
     }
     body.non-maximized #menu ul.level-1 > li.foldable.in-path > .item {
         padding-right: 18px;
@@ -827,10 +822,6 @@ body.non-maximized #root-wrap {
 }
 #submenu .foldable-tree-widget {
     line-height: 1.25em;
-}
-#submenu .foldable-tree-widget .expander {
-    width: 1.6em;
-    height: 1.6em;
 }
 #submenu .foldable-tree-widget .item .label {
     padding: .15em 1px;
