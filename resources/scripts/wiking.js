@@ -208,9 +208,7 @@ wiking.MainMenu = Class.create(lcg.FoldableTree, {
             item.removeAttribute('role');
             item.removeAttribute('aria-selected');
             if (li.hasClassName('foldable')) {
-                item.setAttribute('aria-expanded', 'false');
-                li.removeClassName('expanded');
-                li.addClassName('collapsed');
+                this._update_item(item, false);
             }
         }
     },
@@ -316,8 +314,7 @@ wiking.MainMenu = Class.create(lcg.FoldableTree, {
                'script-expanded' works around this.
              */
             li.addClassName('script-expanded');
-            dropdown.setAttribute('aria-hidden', 'false');
-            item.setAttribute('aria-expanded', 'true');
+            this._update_item(item, true);
             // The first menu item slides strangely. Short slide duration makes it less appearant.
             dropdown.slideDown({duration: 0.1});
             this._on_touchstart = function (event) { this._touch_moved = false; }.bind(this);
