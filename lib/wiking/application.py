@@ -583,11 +583,14 @@ class Application(wiking.Module):
                     # Once the problem is handled there, this may not be necessary.
                     value = "<UnicodeDecodeError: %s>" % e
                 else:
-                    lines = value.splitlines()
-                    if len(lines) > 1:
-                        value = lines[0][:40] + '... (trimmed; total %d lines)' % len(lines)
-                    if len(value) > 40:
-                        value = value[:40] + '... (trimmed; total %d chars)' % len(value)
+                    if isinstance(value, wiking.FileUpload):
+                        value = '%s; mime_type="%s"' % (value.filename(), value.mime_type())
+                    else:
+                        lines = value.splitlines()
+                        if len(lines) > 1:
+                            value = lines[0][:40] + '... (trimmed; total %d lines)' % len(lines)
+                        if len(value) > 40:
+                            value = value[:40] + '... (trimmed; total %d chars)' % len(value)
             name = unicode(param, errors='replace')
             return "   %s = %s" % (saxutils.escape(name), saxutils.escape(value))
         def maybe_link(value):
