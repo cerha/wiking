@@ -54,7 +54,7 @@ class MinimalExporter(lcg.HtmlExporter):
     def _bottom_bar(self, context):
         g = context.generator()
         import wiking
-        return (g.hr(cls='hidden'),
+        return (g.hr(),
                 g.span(g.a("Wiking", href="http://www.freebsoft.org/wiking") + ' ' +
                        wiking.__version__))
 
@@ -376,8 +376,6 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                 else:
                     result.append(g.div(content.export(context), cls="left"))
             if right:
-                if left:
-                    result.append(g.span(" | ", cls="hidden"))
                 content = lcg.coerce(right)
                 result.append(g.span(content.export(context), cls="right"))
             return result
