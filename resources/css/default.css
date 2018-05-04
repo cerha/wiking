@@ -927,9 +927,10 @@ body.non-maximized #root-wrap {
     text-align: right;
     margin-bottom: .8em;
 }
+#bottom-bar hr { display: none; }
 #bottom-bar span.left { float: left; }
 #bottom-bar div.left { text-align: left; }
-#bottom-bar hr { display: none; }
+#bottom-bar .right { color: #777; /* Applies to the dots between links. */ }
 
 #footer {
     text-align: center;

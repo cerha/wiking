@@ -379,7 +379,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                 if left:
                     result.append(g.span(" | ", cls="hidden"))
                 content = lcg.coerce(right)
-                result.append(g.span(content.export(context)))
+                result.append(g.span(content.export(context), cls="right"))
             return result
         else:
             return None
