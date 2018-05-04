@@ -491,17 +491,13 @@ class Application(wiking.Module):
         valid URI by the application).
 
         """
-        doc = req.module_uri('Documentation')
-        if doc:
-            uri = doc + '/wiking/user/accessibility'
-
-            class A11yStatementLink(lcg.Content):
-                # A11y statement link with a hotkey (not supported by generic lcg links).
-
-                def export(self, context):
-                    g = context.generator()
-                    return g.a(_("Accessibility Statement"), href=uri, accesskey='0')
-            return A11yStatementLink()
+        doc_uri = req.module_uri('Documentation')
+        if doc_uri:
+            uri = doc_uri + '/wiking/user/accessibility'
+            return lcg.HtmlContent(lambda context, element: context.generator().a(
+                # accesskey not supported by generic lcg links.
+                _("Accessibility Statement"), href=uri, accesskey='0',
+            ))
         else:
             return None
 
