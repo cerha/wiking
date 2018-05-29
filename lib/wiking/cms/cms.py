@@ -1980,7 +1980,8 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
         storage = record.attachment_storage('_content')
         resources = storage.resources()
         # Create automatic image gallery if any attachments are marked as in gallery.
-        gallery_images = [lcg.InlineImage(r) for r in resources if r.info()['in_gallery']]
+        gallery_images = [lcg.InlineImage(r) for r in resources
+                          if isinstance(r, lcg.Image) and r.info()['in_gallery']]
         if gallery_images:
             content.append(lcg.Container(gallery_images, name='wiking-image-gallery'))
         # Create automatic attachment list if any attachments are marked as listed.
