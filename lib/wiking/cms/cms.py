@@ -248,7 +248,7 @@ class Roles(wiking.Roles):
     This is a special purpose role, you can't assign users to this role explicitly.
     """
     # Translators: Name of a special purpose user group.
-    REGISTERED = Role('registered', _("Successfuly registered user"))
+    REGISTERED = Role('registered', _("Successfully registered user"))
     """Authenticated user who has at least completed registration succesfully.
 
     Users with this role must have at least successfully confirmed the registration activation
@@ -1413,7 +1413,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                 Field('foldable', _("Foldable"), editable=computer(lambda r, menu_visibility:
                                                                    menu_visibility != 'never'),
                       descr=_("Check if you want the relevant menu item to be foldable (only makes "
-                              "sense for pages, which have subordinary items in the menu).")),
+                              "sense for pages, which have subordinate items in the menu).")),
                 Field('tree_order', type=pd.TreeOrder()),
                 Field('creator', _("Creator"), not_null=True, codebook='Users',
                       inline_referer='creator_login', inline_display='creator_name'),
@@ -1465,7 +1465,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
 
         def _status(self, record, _content, content):
             if _content == content:
-                return _("Ok")
+                return _("OK")
             else:
                 return _("Changed")
 
@@ -2408,7 +2408,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter, PDFExpo
                               "than the author(s). One name per line.")),
                 Field('original_isbn', _("Original ISBN"), width=40,
                       descr=_("ISBN identifier of the original work if the publication is "
-                              "a digitalized book or another kind of derived work.")),
+                              "a digitized book or another kind of derived work.")),
                 Field('isbn', _("ISBN"), width=40,
                       descr=_("ISBN identifier of this publication if it has one assigned.")),
                 Field('uuid', _("UUID"), width=40,
@@ -2422,7 +2422,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter, PDFExpo
                               "One name per line.")),
                 Field('adapted_for', _("Adapted for"), width=40,
                       descr=_("Name of the organization or project, for which this adaptation "
-                              "has been done.  This field is for a digitalized adaptation "
+                              "has been done.  This field is for a digitized adaptation "
                               "an analogy of the Publisher field for the original work.")),
                 Field('cover_image', _("Cover Image"), not_null=False,
                       codebook='Attachments', value_column='attachment_id',
@@ -2449,8 +2449,8 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter, PDFExpo
                               "reviewers etc.")),
                 Field('pubinfo', _("Publisher"), virtual=True, type=pd.String(),
                       computer=computer(self._pubinfo)),
-                Field('download_role_id', _("Download acces"), codebook='ApplicationRoles',
-                      not_null=False,  # Doesnt work: type=pd.String(not_null=False),
+                Field('download_role_id', _("Download access"), codebook='ApplicationRoles',
+                      not_null=False,  # Doesn't work: type=pd.String(not_null=False),
                       descr=_("Select the role allowed to download the publication for offline "
                               "use in one of the available download formats. Users with "
                               "read/write access are always allowed to download the publication "
@@ -3449,7 +3449,7 @@ class Attachments(ContentManagementModule):
                 Field('filename', _("Filename"),
                       computer=computer(lambda r, upload: upload and upload.filename() or None),
                       type=pd.RegexString(maxlen=64, not_null=True, regex=r'^[0-9a-zA-Z_\.-]*$')),
-                Field('mime_type', _("Mime-type"), width=22,
+                Field('mime_type', _("MIME type"), width=22,
                       computer=computer(lambda r, upload: upload and upload.mime_type() or None)),
                 Field('title', _("Title"), width=30, maxlen=64,
                       descr=_("The name of the attachment (e.g. the full name of the document). "
@@ -4014,7 +4014,7 @@ class Attachments(ContentManagementModule):
             elif lname.endswith(".tar") or lname.endswith(".tar.gz") or lname.endswith(".tgz"):
                 archive = TarArchive(upload.file())
             else:
-                return failure(_("Unknow archive file type: %s", filename))
+                return failure(_("Unknown archive file type: %s", filename))
         except Exception as e:
             return failure(_("Unable to read archive: %s", str(e)))
         try:
@@ -4048,11 +4048,11 @@ class Attachments(ContentManagementModule):
                         os.unlink(orig_path)
             msg = []
             if inserted_files:
-                msg.append(_.ngettext("%d attachment succesfully inserted",
-                                      "%d attachments succesfully inserted", inserted_files))
+                msg.append(_.ngettext("%d attachment successfully inserted",
+                                      "%d attachments successfully inserted", inserted_files))
             if updated_files:
-                msg.append(_.ngettext("%d attachment succesfully updated",
-                                      "%d attachments succesfully updated", updated_files))
+                msg.append(_.ngettext("%d attachment successfully updated",
+                                      "%d attachments successfully updated", updated_files))
             req.message(lcg.concat(msg, separator=', ') + '.', req.SUCCESS)
         finally:
             archive.close()
@@ -4195,7 +4195,7 @@ class Planner(_News):
     class Spec(_News.Spec):
         # Translators: Section heading and menu item
         title = _("Planner")
-        help = _("Announce future events by date in a callendar-like listing.")
+        help = _("Announce future events by date in a calendar-like listing.")
         table = 'cms_v_planner'
 
         def fields(self):
@@ -4432,10 +4432,10 @@ class NewsletterSubscription(CMSModule):
         if email:
             values['email'] = email
             values['code'] = wiking.generate_random_string(16)
-            success = _("The e-mail address %s has been subscribed succesfully.", email)
+            success = _("The e-mail address %s has been subscribed successfully.", email)
         elif action == 'subscribe' and req.user():
             values['uid'] = req.user().uid()
-            success = _("You have been subscribed succesfully.")
+            success = _("You have been subscribed successfully.")
         else:
             return self._subscription_form(req, action, newsletter_record['title'].value())
         try:
@@ -4453,11 +4453,11 @@ class NewsletterSubscription(CMSModule):
         values = dict(newsletter_id=newsletter_record['newsletter_id'].value())
         if email:
             values['email'] = email
-            success = _("The e-mail address %s has been unsubscribed succesfully.", email)
+            success = _("The e-mail address %s has been unsubscribed successfully.", email)
             failure = _("The e-mail address %s is not subscribed.", email)
         elif req.user():
             values['uid'] = req.user().uid()
-            success = _("You have been unsubscribed succesfully.")
+            success = _("You have been unsubscribed successfully.")
             failure = _("You are not subscribed.")
         else:
             return self._subscription_form(req, 'unsubscribe', newsletter_record['title'].value())

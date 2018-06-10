@@ -80,7 +80,7 @@ The page state (displayed in WMI) can have one of the following values:
      content was modified since last publication, so visitors still get the
      previous content.
 
-   * /Ok/ ... The page is published and up to date.
+   * /OK/ ... The page is published and up to date.
 
 
 == Published/unpublished pages ==
@@ -115,7 +115,7 @@ documents, sound recordings, videos etc.
 
 You can manage page attachments through the item "Attachments" in the menu of
 actions at the bottom of each page (this menu appears only when you are logged
-in and you have the privilegs for given page).  Here you can add new
+in and you have the privileges for given page).  Here you can add new
 attachments or edit the existing ones.
 
 You can supply a title and description for each attachment apart from the

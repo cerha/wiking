@@ -29,7 +29,7 @@ to switch the language to be able to manage news for a different language.
 
 == Planner == planner
 
-This module allows you to publish a callendar of planned events.  Each event
+This module allows you to publish a calendar of planned events.  Each event
 has a date when it takes place.  Optionally you can also define en end date --
 this is useful when an event takes more than one day.  Events are sorted by
 date -- the nearest at the top.  Expired events are automatically omitted, so

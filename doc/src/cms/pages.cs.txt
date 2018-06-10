@@ -85,7 +85,7 @@ nabývat jedné ze tří hodnot:
      od posledního zveřejnění změněn, takže návštěvníkům je zobrazován
      předchozí obsah.
 
-   * /Ok/ ... Stránka zveřejněna a její obsah je aktuální.
+   * /OK/ ... Stránka zveřejněna a její obsah je aktuální.
 
 
 == Zveřejnění/zneveřejnění stránky  ==

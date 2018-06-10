@@ -61,7 +61,7 @@ class CMSConfiguration(cfg):
         # Translators: Maximal size an uploaded file can have.
         _DESCR = _("Maximal upload size")
         _DOC = _("The maximal size of uploaded files in bytes.  The server "
-                 "needs to be relaoded for the changes in this option to take effect.")
+                 "needs to be reloaded for the changes in this option to take effect.")
         _DEFAULT = 3 * 1024 * 1024
 
     class _Option_password_storage(cfg.StringOption):
@@ -123,7 +123,7 @@ class CMSConfiguration(cfg):
         # texts are global variables).
         _DESCR = "Approve new users automatically"
         _DOC = _("If set, the newly registered users will be automatically approved without any "
-                 "administrator's action.  The adminstrator may still need to asign users to "
+                 "administrator's action.  The administrator may still need to assign users to "
                  "groups to grant them further privileges, but the accounts are enabled right "
                  "after the user confirms the registration code.")
         _DEFAULT = False

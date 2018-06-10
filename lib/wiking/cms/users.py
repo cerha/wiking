@@ -773,7 +773,7 @@ class Users(UserManagementModule, CachingPytisModule):
                    descr=_("Change user's password")),
             # Translators: Button label.  Used to approve user's account by the administrator.
             Action('enable', _("Approve"), icon='ok-icon',
-                   descr=_("Aprove this account"),
+                   descr=_("Approve this account"),
                    # Note: We use "Approve" just for consistency of the
                    # terminology in the user interface.  Technically it is the
                    # same as "Enable" (changes state to enabled).
@@ -792,7 +792,7 @@ class Users(UserManagementModule, CachingPytisModule):
                    visible=lambda r: r['state'].value() not in (Users.AccountState.NEW,
                                                                 Users.AccountState.UNAPPROVED)),
             Action('regreminder', _("Resend activation code"), icon='mail-icon',
-                   descr=_("Re-send registration mail"),
+                   descr=_("Resend registration mail"),
                    visible=lambda r: r['state'].value() == Users.AccountState.NEW),
             Action('delete', _("Delete"), icon='remove-icon',
                    descr=_("Remove the account completely"),
@@ -1128,10 +1128,10 @@ class Users(UserManagementModule, CachingPytisModule):
                            date=pw.localizable_export(record['regexpire'])),)
                 if req.check_roles(Roles.USER_ADMIN):
                     texts += _("The account should be deleted automatically if the server "
-                               "maintenence script is installed correctly.  Otherwise you can "
+                               "maintenance script is installed correctly.  Otherwise you can "
                                "delete the account manually."),
         elif state == Users.AccountState.UNAPPROVED:
-            texts = _("The activation code has been succesfully confirmed."),
+            texts = _("The activation code has been successfully confirmed."),
             if req.check_roles(Roles.USER_ADMIN):
                 texts = (texts[0] + ' ' +
                          _("Therefore it was verified that given e-mail address "
@@ -1183,7 +1183,7 @@ class Users(UserManagementModule, CachingPytisModule):
                 record = self._record(req, row)
                 record.update(state=state, regcode=None)
                 self._send_admin_approval_mail(req, record)
-                req.message(_("Activation code confirmed successfuly."), type=req.SUCCESS)
+                req.message(_("Activation code confirmed successfully."), type=req.SUCCESS)
                 if wiking.cms.cfg.autoapprove_new_users:
                     req.message(_("Your account is now active."))
                 else:

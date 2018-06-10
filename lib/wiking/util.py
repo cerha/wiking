@@ -363,7 +363,7 @@ class AuthorizationError(Forbidden):
 
     def _messages(self, req):
         return (self._message or
-                _("You don't have sufficient privilegs for this action."),
+                _("You don't have sufficient privileges for this action."),
                 _("If you are sure that you are logged in under the right account "
                   "and you believe that this is a problem of access rights assignment, "
                   "please contact the administrator at %s.", wiking.cfg.webmaster_address))
@@ -532,7 +532,7 @@ class InternalServerError(RequestError):
         if not wiking.cfg.debug:
             return (lcg.p(_("The server was unable to complete your request "
                             "due to a technical problem.")),
-                    lcg.p(lcg.strong(_("We appologize."))),
+                    lcg.p(lcg.strong(_("We apologize."))),
                     lcg.p(_("The issue has been recorded and we are working "
                             "towards fixing it.")),
                     lcg.p(req.translate(_("Contact the server administrator, "
