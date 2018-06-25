@@ -256,6 +256,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
     """Default value to pass to 'pytis.web.BrowseForm' 'limits' constructor argument."""
     _BROWSE_FORM_DEFAULT_LIMIT = 50
     """Default value to pass to 'pytis.web.BrowseForm' 'limit' constructor argument."""
+    _BROWSE_FORM_SHOW_SUMMARY = True
     _ALLOW_QUERY_SEARCH = None
     """Deprecated, use _ALLOW_TEXT_SEARCH."""
     _ALLOW_TEXT_SEARCH = None
@@ -1441,6 +1442,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                         if self._ROW_EXPANSION else None),
             async_row_expansion=self._ASYNC_ROW_EXPANSION,
             inline_editable=self._INLINE_EDITABLE,
+            show_summary=self._BROWSE_FORM_SHOW_SUMMARY,
             on_update_row=lambda record: self._do_update(req, record),
         )
 
