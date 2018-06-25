@@ -251,6 +251,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
     function arguments and their pytis data types.
 
     """
+    _BROWSE_FORM_CLASS = pw.ListView
     _BROWSE_FORM_LIMITS = (50, 100, 200, 500)
     """Default value to pass to 'pytis.web.BrowseForm' 'limits' constructor argument."""
     _BROWSE_FORM_DEFAULT_LIMIT = 50
@@ -1741,7 +1742,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
             form_cls = binding.form_cls()
             form_kwargs = binding.form_kwargs()
         else:
-            form_cls = binding.single() and pw.ShowForm or pw.ListView
+            form_cls = pw.ShowForm if binding.single() else self._BROWSE_FORM_CLASS
             form_kwargs = {}
         if binding.single():
             binding_column = binding.binding_column()
@@ -1877,7 +1878,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         condition = self._condition(req)
         if self._LIST_BY_LANGUAGE:
             condition = pd.AND(condition, pd.EQ('lang', pd.sval(lang)))
-        form = self._form(pw.ListView, req,
+        form = self._form(self._BROWSE_FORM_CLASS, req,
                           columns=self._columns(req),
                           condition=condition,
                           arguments=self._arguments(req),
