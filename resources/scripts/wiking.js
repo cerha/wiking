@@ -275,10 +275,8 @@ wiking.MainMenu = Class.create(lcg.FoldableTree, {
     _cmd_activate: function ($super, event, item) {
         var li = item.up('li');
         if (this._horizontal(item) && li.hasClassName('foldable')) {
-            var submenu = li.hasClassName('in-path') ? $('submenu') : undefined;
             var dropdown = li.down('ul');
-            if (dropdown && dropdown.getStyle('display') === 'none' && !submenu ||
-                submenu.getStyle('display') === 'none') {
+            if (dropdown && dropdown.getStyle('display') === 'none') {
                 this._expand_item(item);
                 return;
             }

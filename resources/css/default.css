@@ -790,12 +790,6 @@ body.non-maximized #root-wrap {
     body.non-maximized #submenu {
         display: table-cell;
     }
-    body.non-maximized #menu ul.level-1 > li.foldable.in-path > .item:after {
-        display: none;
-    }
-    body.non-maximized #menu ul.level-1 > li.foldable.in-path > .item {
-        padding-right: 18px;
-    }
 }
 #submenu {
     display: none;
