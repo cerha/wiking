@@ -135,7 +135,6 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                 Part('top', aria_label=_("Page heading"), role='banner', content=(
                     Part('top-wrap', content=(
                         Part('top-bar', content=(
-                            Part('menu-button'),
                             Part('top-content'),
                             Part('top-controls'),
                         )),
@@ -255,10 +254,6 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                     onload=context.generator().js_call('new wiking.Handler'),
                     cls=' '.join(cls))
 
-    def _menu_button(self, context):
-        g = self._generator
-        return g.a(g.span('', cls='menu-icon', tabindex=0), aria_label=_("Menu"))
-
     def _site_title(self, context):
         g = self._generator
         title = context.application.site_title(context.req())
@@ -288,7 +283,10 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         return _("You are here:") + ' ' + lcg.concat(links, separator=' / ')
 
     def _menu(self, context):
-        return self.MainMenu(context.node().root()).export(context),
+        g = self._generator
+        return (g.div(g.span('', cls='menu-icon', tabindex=0),
+                      aria_label=_("Menu"), aria_role='button', cls='menu-button'),
+                self.MainMenu(context.node().root()).export(context))
 
     def _submenu(self, context):
         if not context.has_submenu:

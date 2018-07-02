@@ -692,7 +692,7 @@ body.non-maximized #root-wrap {
 /* Style top level menu items as a horizontal menu bar (wide screens only). */
 @media only screen and (min-width: 601px) {
 
-#menu-button {
+#menu .menu-button {
     display: none;
 }
 #menu {
@@ -987,16 +987,15 @@ form.login-form label {
 /* Smaller mobile phone screen layout */
 @media only screen and (max-width: 600px) {
 
-    #menu-button {
-        display: inline-block;
-        float: right;
-    }
-    #menu-button a {
+    #menu .menu-button {
+        position: absolute;
         display: inline-block;
         padding: 9px 10px;
         margin-right: -11px;
         margin-left: 4px;
         cursor: pointer;
+        top: 0;
+        right: 20px;
     }
     #menu .foldable-tree-widget {
         display: none;
@@ -1012,6 +1011,8 @@ form.login-form label {
     .login-control .popup-menu-ctrl-widget { background: none; }
     .login-control .login-button { display: none }
     #top-controls .login-control .invoke-menu.labeled { padding-left: 0; }
+    #top-controls  { padding-right: 34px; }
+
     
 } /* End of smaller mobile phone screen layout */
 

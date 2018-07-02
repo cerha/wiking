@@ -187,8 +187,8 @@ wiking.MainMenu = Class.create(lcg.FoldableTree, {
     _MANAGE_TABINDEX: false,
 
     initialize: function ($super, element_id, toggle_button_tooltip) {
-        this._menu_button = $('menu-button').down('a');
         $super(element_id, toggle_button_tooltip);
+        this._menu_button = this.element.parentNode.down('.menu-button');
         this._menu_button.on('click', this._on_toggle_main_menu.bind(this));
         this._menu_button.setAttribute('role', 'button');
         this._menu_button.setAttribute('aria-expanded', 'false');
@@ -260,7 +260,7 @@ wiking.MainMenu = Class.create(lcg.FoldableTree, {
         /* Return true if given item is a top level item and the menu is currently
          * in the horizontal menu bar mode (see class documentation for details). */
         return (item.up('ul').hasClassName('level-1') &&
-                this._menu_button.parentNode.getStyle('display') === 'none');
+                this._menu_button.getStyle('display') === 'none');
     },
 
     _on_item_click: function ($super, event, item) {
