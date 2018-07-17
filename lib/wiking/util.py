@@ -2171,7 +2171,7 @@ class WikingDefaultDataClass(DBAPIData):
                 if row is None:
                     break
                 rows.append(row)
-                if limit is not None and len(rows) > limit:
+                if limit is not None and len(rows) >= limit:
                     break
         finally:
             try:
