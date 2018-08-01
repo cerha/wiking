@@ -1914,20 +1914,6 @@ class MaximizedModeControl(TopBarControl):
         return g.a(g.span('', cls=icon), href=href, title=label, aria_label=label, role='button')
 
 
-class PanelItem(lcg.Content):
-
-    def __init__(self, fields):
-        super(PanelItem, self).__init__()
-        self._fields = fields
-
-    def export(self, context):
-        g = context.generator()
-        items = [g.span(uri and g.a(value, href=uri) or value,
-                        cls="panel-field-" + id)
-                 for id, value, uri in self._fields]
-        return g.div(lcg.concat(items, separator=' '), cls="item")
-
-
 class LoginDialog(lcg.Content):
     """Login dialog for entering login name and password."""
 

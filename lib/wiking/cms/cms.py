@@ -55,8 +55,7 @@ from pytis.presentation import (
     Action, Binding, CodebookSpec, Field, FieldSet, HGroup, computer,
 )
 from wiking import (
-    Forbidden, MenuItem, NotFound, PanelItem,
-    Redirect, Response, Role, Specification, make_uri,
+    Forbidden, MenuItem, NotFound, Redirect, Response, Role, Specification, make_uri,
 )
 
 standard_library.install_aliases()
@@ -389,21 +388,31 @@ class CMSModule(wiking.PytisModule, wiking.RssModule):
         return self._data.get_rows(condition=self._panel_condition(req, relation),
                                    lang=lang, limit=count)
 
-    def panelize(self, req, lang, count, relation=None):
-        fields = [self._view.field(id) for id in self._PANEL_FIELDS or self._view.columns()]
-        record = self._record(req, None)
-        items = []
-        for row in self._panel_rows(req, relation, lang, count or self._PANEL_DEFAULT_COUNT):
-            record.set_row(row)
-            items.append(PanelItem([(f.id(), record[f.id()].export(),
-                                     f.id() == self._title_column and
-                                     self._record_uri(req, record)) or None
-                                    for f in fields]))
-        if items:
-            return items
+    def _export_panel_row(self, context, element, record, fields, row):
+        g = context.generator()
+        record.set_row(row)
+        return g.div([self._export_panel_field(context, record, f) for f in fields], cls='item')
+
+    def _export_panel_field(self, context, record, field):
+        g = context.generator()
+        req = context.req()
+        content = record[field.id()].export()
+        if field.text_format() != pp.TextFormat.PLAIN:
+            content = text2content(req, content).export(context)
         else:
-            # Translators: Record as in `database record'.
-            return (lcg.TextContent(_("No records.")),)
+            uri = self._record_uri(req, record)
+            if uri:
+                content = g.a(content, href=uri)
+        return g.span(content, cls="panel-field-" + field.id())
+
+    def panelize(self, req, lang, count, relation=None):
+        fields = [self._view.field(fid) for fid in self._PANEL_FIELDS or self._view.columns()]
+        record = self._record(req, None)
+        return ([lcg.HtmlContent(self._export_panel_row, record, fields, row)
+                 for row in self._panel_rows(req, relation, lang,
+                                             count or self._PANEL_DEFAULT_COUNT)]
+                # Translators: Record as in `database record'.
+                or [lcg.TextContent(_("No records."))])
 
 
 class _ManagementModule(CMSModule):
