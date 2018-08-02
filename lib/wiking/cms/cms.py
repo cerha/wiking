@@ -97,13 +97,16 @@ class ContentField(Field):
                 descr += ' '
             else:
                 descr = ''
-            descr += _("The content should be formatted as LCG structured text. "
-                       "See the %(manual)s.",
-                       manual=lcg.HtmlEscapedUnicode(
-                           lcg.format('<a target="help" href="%s">%s</a>',
-                                      '/_doc/lcg/structured-text',
-                                      _("formatting manual")),
-                           escape=False))
+            uri = wiking.cms.cfg.formatting_manual_uri
+            if uri:
+                descr += (_("The content should be formatted as LCG structured text. "
+                            "See the formatting manual:") + ' ' +
+                          lcg.HtmlEscapedUnicode(
+                              lcg.format('<a target="help" href="%(uri)s">%(label)s</a>',
+                                         # The label can not be translated inside escaped unicode.
+                                         uri=uri, label=uri),
+                              escape=False))
+
         Field.__init__(self, name, label, descr=descr, text_format=text_format, **kwargs)
 
 

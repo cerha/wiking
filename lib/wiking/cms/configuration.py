@@ -173,3 +173,14 @@ class CMSConfiguration(cfg):
                 "sequence.  The identifiers of the available optional fields are: "
                 "'nickname', 'gender', 'phone', 'address', 'uri' and 'note'")
         _DEFAULT = ()
+
+    class _Option_formatting_manual_uri(cfg.Option):
+        _DESCR = "Formatting manual URI."
+        _DOC = ("Content field descriptions contain a link to the formatting manual. "
+                "The default manual is the LCG's Structured Text Formatting Manual, "
+                "but some sites may want to link to a different manual which also "
+                "contains other information such as site specific conventions and "
+                "best practices.  Note, that the manual link is only present when "
+                "'content_editor' is set to 'plain'.  Set to None to suppress the "
+                "link altogether.")
+        _DEFAULT = '/_doc/lcg/structured-text'
