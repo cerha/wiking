@@ -2202,6 +2202,11 @@ class WikingDefaultDataClass(DBAPIData):
         self._update_cached_tables()
         return result
 
+    def insert_many(self, *args, **kwargs):
+        result = super(WikingDefaultDataClass, self).insert_many(*args, **kwargs)
+        self._update_cached_tables()
+        return result
+
     def update(self, *args, **kwargs):
         result = super(WikingDefaultDataClass, self).update(*args, **kwargs)
         self._update_cached_tables()
