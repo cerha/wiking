@@ -15,6 +15,8 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+"""Definition of the basic Wiking module classes."""
+
 import datetime
 import httplib
 import os
@@ -24,9 +26,8 @@ import codecs
 
 import lcg
 import wiking
-from wiking import AuthenticationError, Forbidden, NotFound, Redirect, User
+from wiking import AuthenticationError, Forbidden, NotFound, Redirect
 
-"""Definition of the basic Wiking module classes."""
 
 _ = lcg.TranslatableTextFactory('wiking')
 

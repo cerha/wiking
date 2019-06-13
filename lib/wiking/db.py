@@ -1738,7 +1738,8 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
             my_record = self._record(req, row)
             content = self._form(form_cls, req, record=my_record, binding_uri=binding_uri,
                                  layout=self._layout(req, 'view', my_record),
-                                 actions=(),  # self._form_actions_argument(req), #TODO: doesn't work
+                                 actions=(),
+                                 # self._form_actions_argument(req),  # TODO: doesn't work
                                  **form_kwargs)
             # This would add another level of binding subforms.  They don't
             # seem to work now and we most likely don't want them.  content =

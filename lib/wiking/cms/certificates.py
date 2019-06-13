@@ -100,30 +100,31 @@ class Certificates(wiking.cms.CMSModule):
 
         _ID_COLUMN = 'certificates_id'
 
-        def fields(self): return (
-            Field(self._ID_COLUMN, width=8, editable=NEVER),
-            Field('file', _("PEM file"), virtual=True, editable=ALWAYS,
-                  type=pd.Binary(not_null=True, maxlen=10000),
-                  descr=_("Upload a PEM file containing the certificate")),
-            Field('certificate', _("Certificate"), width=60, height=20, editable=NEVER,
-                  computer=Computer(self._certificate_computer, depends=('file',))),
-            Field('x509', _("X509 structure"), virtual=True, editable=NEVER,
-                  type=Certificates.UniType(),
-                  computer=Computer(self._x509_computer, depends=('certificate',))),
-            Field('serial_number', _("Serial number"), editable=NEVER,
-                  computer=self._make_x509_computer(self._serial_number_computer)),
-            Field('text', _("Certificate"), width=60, height=20, editable=NEVER,
-                  computer=self._make_x509_computer(self._text_computer)),
-            Field('issuer', _("Certification Authority"), width=32, editable=NEVER,
-                  computer=self._make_x509_computer(self._issuer_computer)),
-            Field('valid_from', _("Valid from"), editable=NEVER,
-                  computer=self._make_x509_computer(self._valid_from_computer)),
-            Field('valid_until', _("Valid until"), editable=NEVER,
-                  computer=self._make_x509_computer(self._valid_until_computer)),
-            Field('trusted', _("Trusted"), default=False,
-                  descr=_("When this is checked, certificates signed by "
-                          "this root certificate are considered valid.")),
-        )
+        def fields(self):
+            return (
+                Field(self._ID_COLUMN, width=8, editable=NEVER),
+                Field('file', _("PEM file"), virtual=True, editable=ALWAYS,
+                      type=pd.Binary(not_null=True, maxlen=10000),
+                      descr=_("Upload a PEM file containing the certificate")),
+                Field('certificate', _("Certificate"), width=60, height=20, editable=NEVER,
+                      computer=Computer(self._certificate_computer, depends=('file',))),
+                Field('x509', _("X509 structure"), virtual=True, editable=NEVER,
+                      type=Certificates.UniType(),
+                      computer=Computer(self._x509_computer, depends=('certificate',))),
+                Field('serial_number', _("Serial number"), editable=NEVER,
+                      computer=self._make_x509_computer(self._serial_number_computer)),
+                Field('text', _("Certificate"), width=60, height=20, editable=NEVER,
+                      computer=self._make_x509_computer(self._text_computer)),
+                Field('issuer', _("Certification Authority"), width=32, editable=NEVER,
+                      computer=self._make_x509_computer(self._issuer_computer)),
+                Field('valid_from', _("Valid from"), editable=NEVER,
+                      computer=self._make_x509_computer(self._valid_from_computer)),
+                Field('valid_until', _("Valid until"), editable=NEVER,
+                      computer=self._make_x509_computer(self._valid_until_computer)),
+                Field('trusted', _("Trusted"), default=False,
+                      descr=_("When this is checked, certificates signed by "
+                              "this root certificate are considered valid.")),
+            )
 
         columns = ('issuer', 'valid_from', 'valid_until', 'trusted',)
         sorting = (('issuer', ASC,), ('valid_until', ASC,))

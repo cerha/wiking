@@ -84,8 +84,8 @@ def mail_it(connection, sender_address, role_id, subject, content):
     query_args = ()
     if role_id:
         relation += ' join role_members using (uid)'
-        query += " and role_id=%s"
-        query_args = (role_id,)
+        condition += " and role_id=%s"
+        query_args += (role_id,)
     query = 'select email, lang from %s where %s' % (relation, condition)
     cursor = connection.cursor()
     cursor.execute(query, query_args)

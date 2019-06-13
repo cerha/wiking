@@ -19,6 +19,8 @@
 
 from __future__ import unicode_literals
 
+import os
+import glob
 import sqlalchemy
 
 import pytis.data.gensqlalchemy as sql
@@ -30,8 +32,6 @@ current_timestamp_0 = sqlalchemy.sql.functions.Function('current_timestamp', iva
 
 name_is_not_null = sql.SQLFlexibleValue('name_not_null', default=True)
 
-import os
-import glob
 upgrade_directory = os.path.abspath(os.path.join(os.path.realpath(os.path.dirname(__file__)),
                                                  '..', '..', '..', 'upgrade'))
 upgrade_files = glob.glob(os.path.join(upgrade_directory, 'upgrade.*.sql'))
@@ -384,27 +384,27 @@ class CmsVSessionLog(CommonAccesRights, sql.SQLView):
 
     @classmethod
     def query(cls):
-        l = sql.t.CmsSessionLog.alias('l')
+        log = sql.t.CmsSessionLog.alias('l')
         u = sql.t.Users.alias('u')
         s = sql.t.CmsSession.alias('s')
-        return select([l.c.log_id,
-                       l.c.session_id,
-                       l.c.uid,
+        return select([log.c.log_id,
+                       log.c.session_id,
+                       log.c.uid,
                        u.c.login.label('uid_login'),  # current login of given uid
                        u.c.user_.label('uid_user'),
-                       l.c.login,
-                       l.c.success,
+                       log.c.login,
+                       log.c.success,
                        and_(s.c.session_id != null,
                             func.age(s.c.last_access) < sval('1 hour')).label('active'),
-                       l.c.start_time,
-                       (coalesce(l.c.end_time, s.c.last_access) -
-                        l.c.start_time).label('duration'),
-                       l.c.ip_address,
-                       l.c.user_agent,
-                       l.c.referer,
+                       log.c.start_time,
+                       (coalesce(log.c.end_time, s.c.last_access) -
+                        log.c.start_time).label('duration'),
+                       log.c.ip_address,
+                       log.c.user_agent,
+                       log.c.referer,
                        ],
-                      from_obj=[l.outerjoin(u, l.c.uid == u.c.uid).
-                                outerjoin(s, l.c.session_id == s.c.session_id)])
+                      from_obj=[log.outerjoin(u, log.c.uid == u.c.uid).
+                                outerjoin(s, log.c.session_id == s.c.session_id)])
     insert_order = (CmsSessionLog,)
     no_insert_columns = ('log_id',)
 
@@ -491,12 +491,12 @@ class CmsVPages(CommonAccesRights, sql.SQLView):
     @classmethod
     def query(cls):
         p = sql.t.CmsPages.alias('p')
-        l = sql.t.CmsLanguages.alias('l')
+        lang = sql.t.CmsLanguages.alias('l')
         t = sql.t.CmsPageTexts.alias('t')
         cu = sql.t.Users.alias('cu')
         ou = sql.t.Users.alias('ou')
-        return select([(stype(p.c.page_id) + sval('.') + l.c.lang).label('page_key'),
-                       p.c.site, p.c.kind, l.c.lang,
+        return select([(stype(p.c.page_id) + sval('.') + lang.c.lang).label('page_key'),
+                       p.c.site, p.c.kind, lang.c.lang,
                        p.c.page_id, p.c.identifier, p.c.parent, p.c.modname,
                        p.c.menu_visibility, p.c.foldable, p.c.ord, p.c.tree_order,
                        p.c.owner, p.c.read_role_id, p.c.write_role_id,
@@ -513,9 +513,9 @@ class CmsVPages(CommonAccesRights, sql.SQLView):
                        ou.c.user_.label('owner_name'),
                        ],
                       from_obj=[p.
-                                join(l, ival(1) == 1).  # cross join
+                                join(lang, ival(1) == 1).  # cross join
                                 outerjoin(t, and_(t.c.page_id == p.c.page_id,
-                                                  t.c.lang == l.c.lang)).
+                                                  t.c.lang == lang.c.lang)).
                                 outerjoin(cu, cu.c.uid == t.c.creator).
                                 outerjoin(ou, ou.c.uid == p.c.owner)
                                 ],
@@ -704,19 +704,19 @@ class CmsVPageAttachments(CommonAccesRights, sql.SQLView):
     @classmethod
     def query(cls):
         a = sql.t.CmsPageAttachments.alias('a')
-        l = sql.t.CmsLanguages.alias('l')
+        lang = sql.t.CmsLanguages.alias('l')
         t = sql.t.CmsPageAttachmentTexts.alias('t')
-        return select([(stype(a.c.attachment_id) + sval('.') + l.c.lang).label('attachment_key'),
-                       l.c.lang,
+        return select([(stype(a.c.attachment_id) + sval('.') + lang.c.lang).label('attachment_key'),
+                       lang.c.lang,
                        a.c.attachment_id, a.c.page_id, t.c.title, t.c.description,
                        a.c.filename, a.c.mime_type, a.c.bytesize,
                        a.c.image,
                        a.c.thumbnail, a.c.thumbnail_size, a.c.thumbnail_width, a.c.thumbnail_height,
                        a.c.in_gallery, a.c.listed, a.c.author, a.c.location, a.c.width, a.c.height,
                        a.c.created, a.c.last_modified],
-                      from_obj=[a.join(l, ival(1) == 1).  # cross join
+                      from_obj=[a.join(lang, ival(1) == 1).  # cross join
                                 outerjoin(t, and_(a.c.attachment_id == t.c.attachment_id,
-                                                  l.c.lang == t.c.lang))]
+                                                  lang.c.lang == t.c.lang))]
                       )
 
     def on_insert(self):
@@ -1393,13 +1393,13 @@ class CmsVEmails(CommonAccesRights, sql.SQLView):
     @classmethod
     def query(cls):
         el = sql.c.CmsEmailLabels
-        l = sql.c.CmsLanguages
+        lang = sql.c.CmsLanguages
         e = sql.c.CmsEmails
-        return select([(el.label + sval(':') + l.lang).label('text_id'),
-                       el.label, l.lang, e.description, e.subject, e.cc, e.content],
+        return select([(el.label + sval(':') + lang.lang).label('text_id'),
+                       el.label, lang.lang, e.description, e.subject, e.cc, e.content],
                       from_obj=[sql.t.CmsEmailLabels,
                                 sql.t.CmsLanguages.outerjoin(sql.t.CmsEmails)],
-                      whereclause=and_(el.label == e.label, l.lang == e.lang))
+                      whereclause=and_(el.label == e.label, lang.lang == e.lang))
 
     def on_insert(self):
         return ("""(

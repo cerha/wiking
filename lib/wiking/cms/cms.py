@@ -64,9 +64,12 @@ ALWAYS = pp.Editable.ALWAYS
 ASC = pd.ASCENDENT
 DESC = pd.DESCENDANT
 now = pytis.data.DateTime.datetime
-enum = lambda seq: pd.FixedEnumerator(seq)
 
 _ = lcg.TranslatableTextFactory('wiking-cms')
+
+
+def enum(seq):
+    return pd.FixedEnumerator(seq)
 
 
 class ContentField(Field):
@@ -649,9 +652,11 @@ class Config(SettingsManagementModule, wiking.CachingPytisModule):
                         descr = option.documentation()
                     if transform_default is None:
                         if isinstance(option, wiking.cfg.BooleanOption):
-                            transform_default = lambda x: x and _("checked") or _("unchecked")
+                            def transform_default(x):
+                                return x and _("checked") or _("unchecked")
                         else:
-                            transform_default = lambda x: x is None and _("empty value") or repr(x)
+                            def transform_default(x):
+                                return x is None and _("empty value") or repr(x)
                     descr += ' ' + _("The default setting is %s.", transform_default(default))
                 self._cfg_option = option
                 self._default_value = default
@@ -1367,8 +1372,8 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                 Field('modname', _("Module"), display=_modtitle, prefer_display=True,
                       not_null=False,
                       enumerator=enum([_m.name() for _m in wiking.cfg.resolver.available_modules()
-                                       if issubclass(_m, Embeddable)
-                                       and _m not in (EmbeddableCMSModule, CMSExtension)]),
+                                       if (issubclass(_m, Embeddable) and
+                                           _m not in (EmbeddableCMSModule, CMSExtension))]),
                       descr=_("Select the extension module to embed into the page.  Leave blank "
                               "for an ordinary text page.")),
                 # Translators: "Parent item" has the meaning of hierarchical position.  More precise
@@ -1546,7 +1551,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
     _LIST_LABEL = _("List all pages")
     _INSERT_MSG = _("New page was successfully created.")
     _UPDATE_MSG = _("The page was successfully updated.")
-    _SEPARATOR = re.compile('^====+\s*$', re.MULTILINE)
+    _SEPARATOR = re.compile(r'^====+\s*$', re.MULTILINE)
     _HONOUR_SPEC_TITLE = True
     _ROW_ACTIONS = True
 
@@ -3026,7 +3031,7 @@ class PublicationExports(ContentManagementModule):
                 Field('page_key', codebook='Publications'),
                 Field('format', _("Format"), enumerator=PublicationExports.Formats),
                 Field('version', _("Version"),
-                      type=pd.RegexString(maxlen=64, regex='^[0-9a-zA-Z\.\-]+$'),
+                      type=pd.RegexString(maxlen=64, regex=r'^[0-9a-zA-Z\.\-]+$'),
                       descr=_("Version number and optional variant identifiers.  The whole string "
                               "is used as a part of the output file name, so it should only "
                               "contain digits, letters, dashes and periods.  Version number may "
@@ -3436,7 +3441,7 @@ class Attachments(ContentManagementModule):
                       filename=lambda r: r['filename'].value()),
                 Field('filename', _("Filename"),
                       computer=computer(lambda r, upload: upload and upload.filename() or None),
-                      type=pd.RegexString(maxlen=64, not_null=True, regex='^[0-9a-zA-Z_\.-]*$')),
+                      type=pd.RegexString(maxlen=64, not_null=True, regex=r'^[0-9a-zA-Z_\.-]*$')),
                 Field('mime_type', _("Mime-type"), width=22,
                       computer=computer(lambda r, upload: upload and upload.mime_type() or None)),
                 Field('title', _("Title"), width=30, maxlen=64,
@@ -3667,9 +3672,9 @@ class Attachments(ContentManagementModule):
     _LIST_BY_LANGUAGE = True
     _SEQUENCE_FIELDS = (('attachment_id', 'cms_page_attachments_attachment_id_seq'),)
     _EXCEPTION_MATCHERS = (
-        ('duplicate key (value )?violates unique constraint "cms_page_attachments_filename_key"',
+        (r'duplicate key (value )?violates unique constraint "cms_page_attachments_filename_key"',
          ('upload', _("Attachment of the same file name already exists for this page."))),
-        ('value too long for type character varying\(64\)',
+        (r'value too long for type character varying\(64\)',
          ('upload', _("Attachment file name exceeds the maximal length 64 characters."))),
     )
     _ROW_ACTIONS = True
@@ -4588,13 +4593,17 @@ class NewsletterEditions(CMSModule):
             align = match.group('align').lower()
             image_templates[align] = match.group(2)
             return '%%(image_%s)s' % align
+
         post_template = self._IMAGE_TEMPLATE_MATCHER.sub(subst, post_template)
         if 'left' not in image_templates or 'right' not in image_templates:
             req.message(_("%s: Image template sections not found!",
                           template_resource.src_file()), req.ERROR)
             raise wiking.Redirect(req.uri())
         server_uri = req.server_uri()
-        abs_uri = lambda uri: server_uri + uri
+
+        def abs_uri(uri):
+            return server_uri + uri
+
         newsletter_uri = abs_uri(self._binding_parent_uri(req))
         edition_uri = abs_uri(self._current_record_uri(req, record))
         colors = dict([(k, newsletter_row[k].export())
@@ -4621,7 +4630,10 @@ class NewsletterEditions(CMSModule):
             return post_template % values
         posts = [post(r, post_template, image_templates, edition_uri)
                  for r in wiking.module.NewsletterPosts.posts(record['edition_id'].value())]
-        translate = lambda x: req.translate(x, lang=lang)
+
+        def translate(x):
+            return req.translate(x, lang=lang)
+
         try:
             return template % dict(
                 title=newsletter_row['title'].export(),
@@ -4685,7 +4697,7 @@ class NewsletterEditions(CMSModule):
         html = self._newsletter_html(req, record)
         n, errors = 0, 0
         #  Preserve % signs in HTML template (only keyword substitutions are meant to be used).
-        html = re.sub('%(?!\([a-z]+\)s)', '%%', html)
+        html = re.sub(r'%(?!\([a-z]+\)s)', '%%', html)
         text = self._newsletter_text(html)
         for email, code in addresses:
             subst = dict([(k, urllib.quote(v)) for k, v in (('email', email),
@@ -5086,12 +5098,12 @@ class StyleSheets(SiteSpecificContentModule, StyleManagementModule,
         help = _("Manage available Cascading Style Sheets.")
 
         def _customize_fields(self, fields):
-            field = lambda f, label, **kwargs: fields.modify(f, label=label, **kwargs)
+            field = fields.modify
             field('filename', label=_("File Name"), width=16)
-            field('description', _("Description"), width=50)
-            field('active', _("Active"), default=True)
+            field('description', label=_("Description"), width=50)
+            field('active', label=_("Active"), default=True)
             # Translators: Scope of applicability of a stylesheet on different website parts.
-            field('scope', _("Scope"), enumerator=StyleSheets.Scopes,
+            field('scope', label=_("Scope"), enumerator=StyleSheets.Scopes,
                   selection_type=pp.SelectionType.RADIO,
                   # Translators: Global scope (applies to all parts of the website).
                   null_display=_("Global"), not_null=False,
@@ -5102,11 +5114,11 @@ class StyleSheets(SiteSpecificContentModule, StyleManagementModule,
                           'The "Management interface" is the area for CMS administration, '
                           '"Website" means the regular pages outside the management interface '
                           'and "Global" means both.'))
-            field('ord', _("Order"), width=5,
+            field('ord', label=_("Order"), width=5,
                   # Translators: Precedence meaning position in a sequence of importance or
                   # priority.
                   descr=_("Number denoting the style sheet precedence."))
-            field('content', _("Content"), height=20, width=80)
+            field('content', label=_("Content"), height=20, width=80)
 
         layout = ('filename', 'active', 'scope', 'ord', 'description', 'content')
         columns = ('filename', 'active', 'scope', 'ord', 'description')

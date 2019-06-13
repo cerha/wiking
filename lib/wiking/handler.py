@@ -19,7 +19,6 @@ import os
 import string
 import sys
 import traceback
-import urllib
 import urlparse
 import json
 
@@ -414,6 +413,7 @@ class Handler(object):
                     callback = None
                 wiking.WikingDefaultDataClass.close_idle_connections()
                 wiking.WikingDefaultDataClass.rollback_connections(callback=callback)
+
 
 try:
     # Only for backwards compatibility with older Apache/mod_python

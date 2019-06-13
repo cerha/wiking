@@ -35,6 +35,7 @@ import pytis.util
 import pytis.web
 import lcg
 import wiking
+from pytis.data.dbapi import DBAPIData
 
 DBG = pytis.util.DEBUG
 EVT = pytis.util.EVENT
@@ -2117,9 +2118,6 @@ class IFrame(lcg.Content):
 # Classes derived from Pytis components
 # ============================================================================
 
-from pytis.data.dbapi import DBAPIData
-
-
 class WikingDefaultDataClass(DBAPIData):
     """Default data class used by wiking modules connected to pytis data objects.
 
@@ -2508,9 +2506,11 @@ class InputForm(pytis.web.EditForm):
                     # in Specification.__init__ work.  It actually makes sure that the
                     # condition len(argument_names(value)) == 0 returns the same results
                     # for 'value' and for 'function'.
-                    value = lambda self, x, *args, **kwargs: function(x, *args, **kwargs)
+                    def value(self, x, *args, **kwargs):
+                        return function(x, *args, **kwargs)
                 else:
-                    value = lambda self, *args, **kwargs: function(*args, **kwargs)
+                    def value(self, *args, **kwargs):
+                        return function(*args, **kwargs)
             setattr(Spec, key, value)
         specification = Spec(wiking.cfg.resolver)
         view_spec = specification.view_spec()
@@ -2787,7 +2787,7 @@ def send_mail(addr, subject, text, sender=None, sender_name=None, html=None,
         'wiking.cfg.special_cc_exclude_roles'.
 
     """
-    assert isinstance(addr, (basestring, tuple, list,)), ('type error', addr,)
+    assert isinstance(addr, (basestring, tuple, list)), ('type error', addr,)
     assert isinstance(subject, basestring), ('type error', subject,)
     assert isinstance(text, basestring), ('type error', text,)
     assert sender is None or isinstance(sender, basestring), ('type error', sender,)
@@ -2795,15 +2795,15 @@ def send_mail(addr, subject, text, sender=None, sender_name=None, html=None,
     assert html is None or isinstance(html, basestring), ('type error', html,)
     assert isinstance(export, bool), ('type error', bool,)
     assert lang is None or isinstance(lang, basestring), ('type error', lang,)
-    assert isinstance(cc, (tuple, list,)), ('type error', cc,)
+    assert isinstance(cc, (tuple, list)), ('type error', cc,)
     assert smtp_server is None or isinstance(smtp_server, basestring), ('type error', smtp_server,)
     assert smtp_port is None or isinstance(smtp_port, int), ('type error', smtp_port,)
     assert uid is None or isinstance(uid, int), uid
     if __debug__:
         for a in attachments:
             assert isinstance(a, MailAttachment), ('type error', attachments, a,)
-    if isinstance(addr, (tuple, list,)):
-        addr = string.join(addr, ', ')
+    if isinstance(addr, (tuple, list)):
+        addr = ', '.join(addr)
     from email.mime.multipart import MIMEMultipart
     from email.header import Header
     if attachments:
@@ -3000,6 +3000,7 @@ def cmp_versions(v1, v2):
             return c
     return 0
 
+
 _ABS_URI_MATCHER = re.compile(r'^((https?|ftp)://[^/]+)(.*)$')
 
 
@@ -3021,6 +3022,7 @@ def make_uri(base, *args, **kwargs):
     if query:
         uri += '?' + query
     return uri
+
 
 _WKDAY = ('Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun',)
 _MONTH = ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',)
@@ -3108,7 +3110,7 @@ def pdf_document(content, lang):
 
     """
     assert isinstance(content, (list, tuple)), content
-    assert all([isinstance(c, (lcg.Content, lcg.ContentNode,)) for c in content])
+    assert all([isinstance(c, (lcg.Content, lcg.ContentNode)) for c in content])
     exporter = lcg.pdf.PDFExporter()
     children = []
     for i in range(len(content)):

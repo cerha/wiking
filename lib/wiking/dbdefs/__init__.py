@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import sqlalchemy
+from __future__ import absolute_import
 
-from wiking_db import *
-from wiking_cms import *
+from .wiking_db import *  # noqa: F401,F403
+from .wiking_cms import *  # noqa: F401,F403

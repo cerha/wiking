@@ -17,7 +17,6 @@
 
 
 import Cookie
-import datetime
 import httplib
 import re
 import string
@@ -444,7 +443,7 @@ class Request(ServerInterface):
             self._cookies[name] = value
         c = Cookie.SimpleCookie()
         c[name] = value or ''
-        #c[name]['domain'] = self._req.connection.local_host
+        # c[name]['domain'] = self._req.connection.local_host
         c[name]['path'] = '/'
         if expires is not None:
             c[name]['expires'] = expires

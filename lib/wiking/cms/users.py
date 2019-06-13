@@ -46,8 +46,8 @@ from pytis.presentation import (
     Action, Binding, CodebookSpec, Field, FieldSet, computer,
 )
 from wiking import (
-    Module, ActionHandler, PytisModule, CachingPytisModule,
-    Document, ConfirmationDialog, send_mail, log, OPR,
+    Module, ActionHandler, PytisModule, CachingPytisModule, Document,
+    send_mail, log, OPR,
 )
 from wiking.cms import (
     EmbeddableCMSModule, UserManagementModule, Role, Roles,
@@ -546,7 +546,7 @@ class Users(UserManagementModule, CachingPytisModule):
                 Field('login', _("Login name"), width=36, editable=ONCE,
                       type=(pd.Email(not_null=True) if wiking.cms.cfg.login_is_email else
                             pd.RegexString(maxlen=64, not_null=True,
-                                           regex='^[a-zA-Z][0-9a-zA-Z_\.-]*$')),
+                                           regex=r'^[a-zA-Z][0-9a-zA-Z_\.-]*$')),
                       computer=computer(self._login),
                       descr=_("A valid login name can only contain letters, digits, underscores, "
                               "dashes, at signs and dots and must start with a letter.")),

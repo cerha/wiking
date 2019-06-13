@@ -21,11 +21,9 @@
 The CMS application is defined as an implementation of Wiking Application Interface.
 
 """
-
 import lcg
 import wiking
-from wiking.cms import CMSExtension, CMSExtensionModule, Roles, Users, \
-    text2content
+from wiking.cms import CMSExtension, CMSExtensionModule, Roles, Users, text2content
 
 _ = lcg.TranslatableTextFactory('wiking-cms')
 
@@ -338,7 +336,7 @@ class Application(wiking.Application):
 
     def contained_roles(self, role):
         role_sets = wiking.module.RoleSets
-        if isinstance(role, (list, tuple, set,)):  # role is actually role ids
+        if isinstance(role, (list, tuple, set)):  # role is actually role ids
             role_ids = role_sets.included_role_ids_by_role_ids(role, instances=True)
         else:
             role_ids = role_sets.included_role_ids(role, instances=True)

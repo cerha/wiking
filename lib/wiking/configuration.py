@@ -58,10 +58,10 @@ class Configuration(pytis.util.Configuration):
 
     The global configuration file is searched in the following locations:
 
-      * \/etc/wiking/config.py
-      * \/etc/wiking.py
-      * \/usr/local/etc/wiking/config.py
-      * \/usr/local/etc/wiking.py
+      * /etc/wiking/config.py
+      * /etc/wiking.py
+      * /usr/local/etc/wiking/config.py
+      * /usr/local/etc/wiking.py
 
     First of the named files which exists is used.
 

@@ -15,11 +15,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-import sys
-import re
-import os
 import wiking
-from wiking import debug, log, OPR
 
 import mod_python
 import mod_python.util
@@ -54,7 +50,7 @@ class ModPythonRequest(wiking.Request):
         try:
             fields = mod_python.util.FieldStorage(self._req)
         except IOError as e:
-            raise ClosedConnection(str(e))
+            raise wiking.ClosedConnection(str(e))
         return dict([(k, init_value(fields[k])) for k in fields.keys()])
 
     def uri(self):
@@ -165,9 +161,10 @@ class ModPythonHandler(object):
         for chunk in handler.handle(req):
             try:
                 request.write(chunk)
-            except IOError as e:
+            except IOError:
                 break
         return mod_python.apache.OK
+
 
 handler = ModPythonHandler()
 """The callable object expected to exist by mod_python (entry point)."""

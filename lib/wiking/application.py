@@ -106,7 +106,7 @@ class Application(wiking.Module):
         'RequestHandler.handle()'.
 
         The default implementation uses static mapping of request paths (URI)
-        to wiking modules defined by the class constant '\_MAPPING' to
+        to wiking modules defined by the class constant '_MAPPING' to
         determine which module is responsible for processing the request and
         passes the request along to an instance of this module.  'NotFound' is
         raised if the mapping doesn't define an item for the current request
@@ -159,7 +159,7 @@ class Application(wiking.Module):
         'wiking.cms.Application.module_uri()' for applications built on Wiking
         CMS) for more details.
 
-        The default implementation performs a reverse lookup in the '\_MAPPING'
+        The default implementation performs a reverse lookup in the '_MAPPING'
         dictionary.  None is returned when there is no mapping item for the
         module, or when there is more than one item for the same module (which
         is also legal).
@@ -717,7 +717,7 @@ class Application(wiking.Module):
         )
 
         def escape(text):
-            if isinstance(text, (tuple, list,)):
+            if isinstance(text, (tuple, list)):
                 return [escape(t) for t in text]
             else:
                 return re.sub(r'[^\x01-\x7F]', '?', text)

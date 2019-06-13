@@ -32,7 +32,8 @@ class _TestBase(unittest.TestCase):
         def __init__(self, transform=None):
             self._visited = dict()
             if transform is None:
-                transform = lambda url: None
+                def transform(url):
+                    return None
             self._transform = transform
 
         def __call__(self, url):
