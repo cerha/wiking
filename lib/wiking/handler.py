@@ -16,7 +16,6 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 import os
-import string
 import sys
 import traceback
 import urlparse
@@ -408,7 +407,7 @@ class Handler(object):
                         stack = connection.connection_info('transaction_start_stack')
                         if stack is not None:
                             wiking.debug("Unclosed transaction started at:\n%s\n" %
-                                         (string.join(traceback.format_stack(stack), ''),))
+                                         (''.join(traceback.format_stack(stack)),))
                 else:
                     callback = None
                 wiking.WikingDefaultDataClass.close_idle_connections()

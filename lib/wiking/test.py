@@ -4,7 +4,6 @@ import copy
 import os
 import random
 import re
-import string
 import sys
 import time
 import unittest
@@ -336,7 +335,7 @@ class BrowserTest(_TestBase):
         if attributes:
             equations = ['attribute::%s="%s"' % (k, v.replace('"', '\\"'),)
                          for k, v in attributes.items()]
-            xpath += '[%s]' % (string.join(equations, ' and '),)
+            xpath += '[%s]' % (' and '.join(equations),)
         return browser.find_by_xpath(xpath)
 
     def _find_all_links(self, browser):

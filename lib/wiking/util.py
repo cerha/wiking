@@ -22,7 +22,6 @@ import httplib
 import mimetypes
 import os
 import re
-import string
 import sys
 import time
 import urllib
@@ -2832,7 +2831,7 @@ def send_mail(addr, subject, text, sender=None, sender_name=None, html=None,
     msg['From'] = sender
     msg['To'] = addr
     if cc:
-        msg['Cc'] = Header(string.join(cc, ', '), 'utf-8')
+        msg['Cc'] = Header(', '.join(cc), 'utf-8')
     translated_subject = localizer.localize(subject)
     try:
         encoded_subject = translated_subject.encode('ascii')
