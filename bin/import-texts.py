@@ -22,7 +22,6 @@
 # It requires two command line arguments:
 #   DATABASE -- name of the database to connect to
 #   DIRECTORY -- directory containing text files
-# DIRECTORY is typically `sql/texts/' subdirectory of a Wiking extension and
 # it must contain files named `NAMESPACE.LABEL.LANGUAGECODE.txt'.  For each such
 # file the contents of the file, that must be a structured text, is imported
 # into the database.  NAMESPACE, LABEL and LANGUAGECODE attributes of the
