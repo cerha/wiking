@@ -2345,7 +2345,7 @@ class CmsPageExcerpts(EmbeddableCMSModule, BrailleExporter):
                                resource_provider=resource_provider)
         try:
             data, messages = self._export_braille(req, node)
-        except lcg.BrailleError, e:
+        except lcg.BrailleError as e:
             req.message(e.message(), req.ERROR)
             raise Redirect(self._current_record_uri(req, record))
         else:

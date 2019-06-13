@@ -103,7 +103,7 @@ def run():
             attachment = file(path)
             try:
                 image = PIL.Image.open(attachment)
-            except IOError, e:
+            except IOError as e:
                 continue
             sys.stderr.write("Resizing %s (%dx%d): " %
                              (row['filename'].value(), image.size[0], image.size[1]))

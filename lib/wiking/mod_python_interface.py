@@ -53,7 +53,7 @@ class ModPythonRequest(wiking.Request):
                 return unicode(value, encoding)
         try:
             fields = mod_python.util.FieldStorage(self._req)
-        except IOError, e:
+        except IOError as e:
             raise ClosedConnection(str(e))
         return dict([(k, init_value(fields[k])) for k in fields.keys()])
 
