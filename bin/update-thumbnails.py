@@ -126,7 +126,7 @@ def run():
                           thumbnail_height=real_thumbnail_size[1],
                           image=resized_image_value)
             r = pd.Row([(key, pd.Value(row[key].type(), value)) for key, value in values.items()])
-            #data.update(row['attachment_id'], r, transaction=transaction)
+            data.update(row['attachment_id'], r, transaction=transaction)
     except Exception:
         try:
             transaction.rollback()
