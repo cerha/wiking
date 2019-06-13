@@ -3156,7 +3156,7 @@ class PublicationExports(ContentManagementModule):
         path = self._file_path(req, record)
         directory = os.path.split(path)[0]
         if not os.path.exists(directory):
-            os.makedirs(directory, 0700)
+            os.makedirs(directory, 0o700)
         log(OPERATIONAL, "Saving file:", (path, format_byte_size(bytesize)))
         f = open(path, 'wb')
         try:
@@ -3760,7 +3760,7 @@ class Attachments(ContentManagementModule):
         path = record['file_path'].value()
         directory = os.path.split(path)[0]
         if not os.path.exists(directory):
-            os.makedirs(directory, 0700)
+            os.makedirs(directory, 0o700)
         value = record['upload'].value()
         if value is not None:
             log(OPERATIONAL, "Saving file:", (path, format_byte_size(len(value))))
