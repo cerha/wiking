@@ -34,7 +34,8 @@ from crypto import *
 
 import texts
 
-_globals = dict([(k,v) for k,v in globals().items() if not k.startswith('_')])
-import appl, cms
+_globals = dict([(k, v) for k, v in globals().items() if not k.startswith('_')])
+import appl
+import cms
 for _file in (appl, cms):
     _file.__dict__.update(_globals)

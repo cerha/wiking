@@ -26,6 +26,7 @@ import pytis.web as pw
 
 _ = lcg.TranslatableTextFactory('wiking-cms')
 
+
 class CryptoNames(CMSExtensionModule):
     """Management of encryption passwords.
 
@@ -38,6 +39,7 @@ class CryptoNames(CMSExtensionModule):
     class Spec(wiking.Specification):
         table = 'cms_crypto_names'
         title = _("Crypto Areas")
+
         def fields(self):
             return (
                 Field('name', _("Name")),
@@ -54,6 +56,7 @@ class CryptoNames(CMSExtensionModule):
             return req.check_roles(Roles.CRYPTO_ADMIN)
         else:
             return False
+
 
 class CryptoKeys(CMSExtensionModule):
     """Management of keys and users.
@@ -78,10 +81,12 @@ class CryptoKeys(CMSExtensionModule):
     class Spec(wiking.Specification):
         table = 'cms_crypto_keys'
         title = _("Users and Encryption Keys")
+
         def fields(self):
             return (
                 Field('key_id', _("Id"), editable=Editable.NEVER),
-                Field('name', _("Name"), not_null=True, codebook='CryptoNames', editable=Editable.NEVER),
+                Field('name', _("Name"), not_null=True,
+                      codebook='CryptoNames', editable=Editable.NEVER),
                 Field('uid', _("User"), not_null=True, codebook='Users', editable=Editable.ONCE),
                 Field('new_uid', _("New user"), not_null=True, codebook='Users', type=pd.Integer, virtual=True,
                       runtime_filter=computer(self._new_uid_filter)),
@@ -94,6 +99,7 @@ class CryptoKeys(CMSExtensionModule):
                       type=pd.Password, virtual=True),
                 Field('delete', virtual=True, computer=computer(lambda row: _("Remove"))),
             )
+
         def _new_uid_filter(self, row, name):
             assigned_users = wiking.module(self._resolver).assigned_users(row['name'])
             return pd.AND(*[pd.NE('uid', u) for u in assigned_users])

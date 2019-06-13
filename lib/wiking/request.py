@@ -32,8 +32,10 @@ from wiking import log, OPR, format_http_date, parse_http_date, Message
 
 _ = lcg.TranslatableTextFactory('wiking')
 
+
 class ClosedConnection(Exception):
     """Exception raised when the client closes the connection during communication."""
+
 
 class FileUpload(pytis.web.FileUpload):
     """Generic representation of uploaded file.
@@ -43,13 +45,17 @@ class FileUpload(pytis.web.FileUpload):
     compatible with cgi.FieldStorage class.
 
     """
+
     def __init__(self, field, encoding):
         self._field = field
         self._filename = re.split(r'[\\/:]', unicode(field.filename, encoding))[-1]
+
     def file(self):
         return self._field.file
+
     def filename(self):
         return self._filename
+
     def mime_type(self):
         return self._field.type
 
@@ -227,6 +233,7 @@ class Request(ServerInterface):
         inspected through the method 'forwards()'.
 
         """
+
         def __init__(self, module, resolved_path, unresolved_path, **kwargs):
             """Arguments:
 
@@ -378,9 +385,11 @@ class Request(ServerInterface):
 
         """
         class Item(object):
+
             def __init__(self, value, params):
                 self.value = value
                 self.params = params
+
             def __cmp__(self, other):
                 return cmp(self.params.get('q', 1.0), other.params.get('q', 1.0))
         items = []
@@ -906,7 +915,7 @@ class Request(ServerInterface):
             # PasswordExpirationError may be raised if user's password expired.
             self._user = wiking.module.Application.authenticate(self)
         if require and self._user is None:
-            #if session_timed_out:
+            # if session_timed_out:
             #      raise AuthenticationError(_("Session expired. Please log in again."))
             raise wiking.AuthenticationError()
         return self._user
@@ -1205,6 +1214,7 @@ class Role(object):
     Predefined application roles are defined by L{Roles} class.
 
     """
+
     def __init__(self, role_id, name):
         """
         @type role_id: string
@@ -1244,6 +1254,7 @@ class Role(object):
         @return: Human readable name of the role.
         """
         return self._name
+
 
 class Roles(object):
     """Set of available user roles.

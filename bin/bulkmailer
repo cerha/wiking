@@ -40,19 +40,23 @@ import wiking
 
 _ = lcg.TranslatableTextFactory('wiking-cms')
 
+
 def open_database(database):
     connection = dbapi.connect(database=database)
     return connection
+
 
 def pid_dead(pid):
     my_name = sys.argv[0]
     command = ['/usr/bin/pgrep', '-f', '-x', my_name]
     output = subprocess.Popen(command, stdout=subprocess.PIPE).communicate()[0]
     return pid not in output.split()
-    
+
+
 def check_obsolete_pids(connection):
     cursor = connection.cursor()
-    cursor.execute("select distinct pid from cms_email_spool where pid is not null and finished='F'")
+    cursor.execute(
+        "select distinct pid from cms_email_spool where pid is not null and finished='F'")
     pids = []
     while True:
         row = cursor.fetchone()
@@ -67,9 +71,12 @@ def check_obsolete_pids(connection):
             else:
                 connection.rollback()
 
+
 def mark_spool(connection, pid):
-    connection.cursor().execute("update cms_email_spool set pid=%s where pid is NULL and finished='F'", (pid,))
+    connection.cursor().execute("update cms_email_spool set pid=%s "
+                                "where pid is NULL and finished='F'", (pid,))
     connection.commit()
+
 
 def mail_it(connection, sender_address, role_id, subject, content):
     relation = 'users'
@@ -92,7 +99,7 @@ def mail_it(connection, sender_address, role_id, subject, content):
         try:
             wiking.send_mail(email, subject, content, lang=language, sender=sender_address)
             number_sent += 1
-        except:
+        except Exception:
             failures.append((email, language,))
     report = _("%s e-mails sent\n", number_sent)
     if failures:
@@ -101,10 +108,12 @@ def mail_it(connection, sender_address, role_id, subject, content):
             report += '%s\n' % (email,)
     subject = _("Bulk mail report: %s", subject)
     wiking.send_mail(sender_address, subject, report, sender=sender_address)
-    
+
+
 def mail(connection, pid):
     cursor = connection.cursor()
-    cursor.execute("select id, sender_address, role_id, subject, content from cms_email_spool where pid=%s", (pid,))
+    cursor.execute("select id, sender_address, role_id, subject, content "
+                   "from cms_email_spool where pid=%s", (pid,))
     emails = []
     while True:
         row = cursor.fetchone()
@@ -114,8 +123,10 @@ def mail(connection, pid):
     connection.commit()
     for email in emails:
         mail_it(connection, *email[1:])
-        connection.cursor().execute("update cms_email_spool set pid=NULL, finished='T' where id=%s", (email[0],))
+        connection.cursor().execute("update cms_email_spool set pid=NULL, finished='T' "
+                                    "where id=%s", (email[0],))
         connection.commit()
+
 
 def run(argv):
     database = argv[1]
@@ -124,6 +135,7 @@ def run(argv):
     pid = os.getpid()
     mark_spool(connection, pid)
     mail(connection, pid)
+
 
 if __name__ == '__main__':
     run(sys.argv)

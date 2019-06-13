@@ -24,6 +24,7 @@ import wiking
 _ = lcg.TranslatableTextFactory('wiking')
 Part = lcg.HtmlExporter.Part
 
+
 class MinimalExporter(lcg.HtmlExporter):
     _PAGE_STRUCTURE = (
         Part('main'),
@@ -60,6 +61,7 @@ class MinimalExporter(lcg.HtmlExporter):
 class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
 
     class Context(lcg.HtmlExporter.Context):
+
         def _init_kwargs(self, req=None, layout='default', **kwargs):
             super(Exporter.Context, self)._init_kwargs(timezone=req.timezone(), **kwargs)
             assert layout in pytis.util.public_attr_values(self._exporter.Layout), layout
@@ -83,7 +85,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             for filename in scripts + tuple(wiking.cfg.extra_scripts):
                 self.resource(filename)
             if self.lang() != 'en':
-                self.resource('wiking.%s.po' % self.lang()) # Translations for Javascript
+                self.resource('wiking.%s.po' % self.lang())  # Translations for Javascript
 
         def req(self):
             """Return the current request as a 'wiking.Request' instance.
@@ -126,7 +128,6 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         def _css_class_name(self, context):
             return 'foldable-tree-widget'
 
-
     _PAGE_STRUCTURE = (
         Part('root', content=(
             Part('root-wrap', content=(
@@ -145,7 +146,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                 )),
                 Part('main', content=(
                     Part('main-wrap', content=(
-                        #Part('breadcrumbs'),
+                        # Part('breadcrumbs'),
                         Part('submenu', role='navigation'),
                         Part('page',
                              aria_label=_("Main content"),

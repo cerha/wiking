@@ -38,7 +38,7 @@ class Handler(object):
     document into HTML and sending it to the client).
 
     """
-    _instance = None # Used for profiling only.
+    _instance = None  # Used for profiling only.
 
     def __init__(self, req):
         """Initialize the global wiking handler instance.
@@ -367,6 +367,7 @@ class Handler(object):
             import tempfile
             self._profile_req = req
             queries = []
+
             def query_callback(query, start_time, end_time):
                 queries.append((end_time - start_time, query,))
             wiking.WikingDefaultDataClass.set_query_callback(query_callback)

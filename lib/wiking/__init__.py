@@ -17,13 +17,21 @@
 
 __version__ = '2.1.0'
 
-import sys, os, time, string, re, copy, urllib, imp
+import sys
+import os
+import time
+import string
+import re
+import copy
+import urllib
+import imp
 
 # TODO: this can be removed once it is solved in Pytis...
 imp.reload(sys)
 sys.setdefaultencoding('utf-8')
 
-import pytis, pytis.util
+import pytis
+import pytis.util
 import pytis.data as pd
 import pytis.presentation as pp
 import pytis.web as pw
@@ -44,8 +52,14 @@ from configuration import *
 cfg = Configuration()
 
 # We don't want to overwrite module's __doc__ and other private identifiers...
-_globals = dict([(k,v) for k,v in globals().items() if not k.startswith('_')])
-import util, modules, db, application, export, request, handler
+_globals = dict([(k, v) for k, v in globals().items() if not k.startswith('_')])
+import util
+import modules
+import db
+import application
+import export
+import request
+import handler
 for _file in (util, modules, db, application, export, handler):
     _file.__dict__.update(_globals)
 del _globals, k, v, _file

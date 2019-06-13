@@ -30,6 +30,7 @@ from wiking import AuthenticationError, Forbidden, NotFound, Redirect, User
 
 _ = lcg.TranslatableTextFactory('wiking')
 
+
 class Module(object):
     """Abstract base class defining the basic Wiking module."""
     _TITLE = None
@@ -560,14 +561,18 @@ class Search(Module, ActionHandler):
             ))
 
     class Result:
+
         def __init__(self, uri, title, sample=None):
             self._title = title
             self._sample = sample
             self._uri = uri
+
         def uri(self):
             return self._uri
+
         def title(self):
             return self._title
+
         def sample(self):
             return self._sample
 

@@ -19,15 +19,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-## This script serves for importing texts into database (the `_text' table).
-## It requires two command line arguments:
-##   DATABASE -- name of the database to connect to
-##   DIRECTORY -- directory containing text files
-## DIRECTORY is typically `sql/texts/' subdirectory of a Wiking extension and
-## it must contain files named `NAMESPACE.LABEL.LANGUAGECODE.txt'.  For each such
-## file the contents of the file, that must be a structured text, is imported
-## into the database.  NAMESPACE, LABEL and LANGUAGECODE attributes of the
-## stored text are defined by the file name.
+# This script serves for importing texts into database (the `_text' table).
+# It requires two command line arguments:
+# DATABASE -- name of the database to connect to
+# DIRECTORY -- directory containing text files
+# DIRECTORY is typically `sql/texts/' subdirectory of a Wiking extension and
+# it must contain files named `NAMESPACE.LABEL.LANGUAGECODE.txt'.  For each such
+# file the contents of the file, that must be a structured text, is imported
+# into the database.  NAMESPACE, LABEL and LANGUAGECODE attributes of the
+# stored text are defined by the file name.
 
 
 import codecs
@@ -35,19 +35,22 @@ import os
 import re
 import sys
 
-import pytis.data, config
+import pytis.data
+import config
 config.log_exclude = [pytis.util.ACTION, pytis.util.EVENT, pytis.util.DEBUG]
+
 
 def usage():
     print 'usage: %s DATABASE DIRECTORY' % (sys.argv[0],)
     sys.exit(1)
 
+
 def data_object(table, columns, connection):
-    bindings = [pytis.data.DBColumnBinding(column, table, column)
-                for column in columns]
+    bindings = [pytis.data.DBColumnBinding(column, table, column) for column in columns]
     factory = pytis.data.DataFactory(pytis.data.DBDataDefault, bindings, bindings[0])
     return factory.create(dbconnection_spec=connection)
-    
+
+
 def import_texts(database, directory):
     connection = pytis.data.DBConnection(database=database)
     data = data_object('texts', ('text_id', 'label', 'lang', 'content'), connection)
@@ -66,7 +69,7 @@ def import_texts(database, directory):
             else:
                 print "updating label `%s' ..." % label,
             content = codecs.open(os.path.join(directory, filename), 'r', 'utf-8').read()
-            text_id = label+'@'+lang
+            text_id = label + '@' + lang
             row_data = [(c.id(), c.type().validate(v)[0],)
                         for c, v in zip(data.columns(), [text_id, label, lang, content])]
             row = pytis.data.Row(row_data)
@@ -77,7 +80,8 @@ def import_texts(database, directory):
                 print "FAILED:", error
         else:
             print "ignored (file name doesn't match the required pattern)"
-    
+
+
 def run():
     if len(sys.argv) != 3:
         usage()
@@ -87,4 +91,3 @@ def run():
 
 if __name__ == '__main__':
     run()
-

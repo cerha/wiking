@@ -42,7 +42,7 @@ ASC = pd.ASCENDENT
 DESC = pd.DESCENDANT
 
 # Strings for this domain will not be translated until this module is unused.
-_ = lcg.TranslatableTextFactory('wiking-cms-certificates') 
+_ = lcg.TranslatableTextFactory('wiking-cms-certificates')
 
 
 def _certificate_mail_info(record):
@@ -59,8 +59,7 @@ def _certificate_mail_info(record):
     attachment = "openssl.cnf"
     user_name = '%s %s' % (record['firstname'].value(), record['surname'].value(),)
     user_email = record['email'].value()
-    attachment_stream = cStringIO.StringIO(str (
-                '''[ req ]
+    attachment_stream = cStringIO.StringIO(str('''[ req ]
 distinguished_name  = req_distinguished_name
 attributes          = req_attributes
 x509_extensions     = v3_ca
@@ -100,7 +99,7 @@ class Certificates(CMSModule):
             self._ca_x509 = None
 
         _ID_COLUMN = 'certificates_id'
-        
+
         def fields(self): return (
             Field(self._ID_COLUMN, width=8, editable=NEVER),
             Field('file', _("PEM file"), virtual=True, editable=ALWAYS,
@@ -108,7 +107,8 @@ class Certificates(CMSModule):
                   descr=_("Upload a PEM file containing the certificate")),
             Field('certificate', _("Certificate"), width=60, height=20, editable=NEVER,
                   computer=Computer(self._certificate_computer, depends=('file',))),
-            Field('x509', _("X509 structure"), virtual=True, editable=NEVER, type=Certificates.UniType(),
+            Field('x509', _("X509 structure"), virtual=True, editable=NEVER,
+                  type=Certificates.UniType(),
                   computer=Computer(self._x509_computer, depends=('certificate',))),
             Field('serial_number', _("Serial number"), editable=NEVER,
                   computer=self._make_x509_computer(self._serial_number_computer)),
@@ -121,27 +121,31 @@ class Certificates(CMSModule):
             Field('valid_until', _("Valid until"), editable=NEVER,
                   computer=self._make_x509_computer(self._valid_until_computer)),
             Field('trusted', _("Trusted"), default=False,
-                  descr=_("When this is checked, certificates signed by this root certificate are considered valid.")),
-            )
-        
+                  descr=_("When this is checked, certificates signed by "
+                          "this root certificate are considered valid.")),
+        )
+
         columns = ('issuer', 'valid_from', 'valid_until', 'trusted',)
         sorting = (('issuer', ASC,), ('valid_until', ASC,))
         layout = ('trusted', 'issuer', 'valid_from', 'valid_until', 'text',)
 
         def _certificate_computation(self, buffer):
             return str(buffer)
+
         def _certificate_computer(self, record):
             file_value = record['file'].value()
-            if file_value is None: # new record form
+            if file_value is None:  # new record form
                 return None
             certificate = self._certificate_computation(file_value.buffer())
             return certificate
+
         def _x509_computer(self, record):
             import gnutls.crypto
             if self._ca_x509 is None:
-                self._ca_x509 = gnutls.crypto.X509Certificate(open(wiking.cfg.ca_certificate_file).read())
+                self._ca_x509 = gnutls.crypto.X509Certificate(
+                    open(wiking.cfg.ca_certificate_file).read())
             certificate = record['certificate'].value()
-            if certificate is None: # new record form
+            if certificate is None:  # new record form
                 return None
             try:
                 x509 = gnutls.crypto.X509Certificate(certificate)
@@ -150,6 +154,7 @@ class Certificates(CMSModule):
             if not x509.has_issuer(x509) and not x509.has_issuer(self._ca_x509):
                 x509 = None
             return x509
+
         def _make_x509_computer(self, function):
             def func(record):
                 x509 = record['x509'].value()
@@ -157,50 +162,57 @@ class Certificates(CMSModule):
                     return None
                 return function(x509)
             return Computer(func, depends=('x509',))
+
         def _serial_number_computer(self, x509):
             number = int(x509.serial_number)
-            if not isinstance(number, int): # it may be long
+            if not isinstance(number, int):  # it may be long
                 raise Exception(_("Unprocessable serial number"))
             return number
+
         def _issuer_computer(self, x509):
             return unicode(x509.issuer)
+
         def _valid_from_computer(self, x509):
             return self._convert_x509_timestamp(x509.activation_time)
+
         def _valid_until_computer(self, x509):
             return self._convert_x509_timestamp(x509.expiration_time)
+
         def _text_computer(self, x509):
             return ('Subject: %s\nIssuer: %s\nSerial number: %s\nVersion: %s\nValid from: %s\nValid until: %s\n' %
                     (x509.subject, x509.issuer, x509.serial_number, x509.version, time.ctime(x509.activation_time), time.ctime(x509.expiration_time),))
+
         def _convert_x509_timestamp(self, timestamp):
             time_tuple = time.gmtime(timestamp)
             dt = datetime.datetime(*time_tuple[:6])
             return dt
-            
+
         def check(self, record):
             x509 = record['x509'].value()
             if x509 is None:
                 return ('file', _("The certificate is not valid"),)
-                
+
     RIGHTS_view = (Roles.ADMIN,)
     RIGHTS_list = (Roles.ADMIN,)
-    RIGHTS_rss  = (Roles.ADMIN,)
+    RIGHTS_rss = (Roles.ADMIN,)
     RIGHTS_insert = (Roles.ADMIN,)
     RIGHTS_update = (Roles.ADMIN,)
     RIGHTS_delete = (Roles.ADMIN,)
-        
+
     _LAYOUT = {'insert': ('file',)}
+
 
 class CACertificates(Certificates):
     """Management of root certificates."""
-    
+
     class Spec(Certificates.Spec):
-        
+
         _ID_COLUMN = 'cacertificates_id'
 
         table = 'cacertificates'
         title = _("CA Certificates")
         help = _("Manage trusted root certificates.")
-        
+
         def check(self, record):
             error = Certificates.Spec.check(self, record)
             if error is not None:
@@ -208,19 +220,19 @@ class CACertificates(Certificates):
             x509 = record['x509'].value()
             if x509.check_ca() != 1:
                 return ('file', _("This is not a CA certificate."))
-        
+
     _LAYOUT = {'insert': ('file',)}
 
-    
+
 class UserCertificates(Certificates):
     """Management of user certificates, especially for the purpose of authentication."""
 
     class Spec(Certificates.Spec):
-        
+
         title = _("User Certificates")
         help = _("Manage user and other kinds of certificates.")
         table = 'certificates'
-        
+
         _PURPOSE_AUTHENTICATION = 1
 
         def fields(self):
@@ -241,11 +253,13 @@ class UserCertificates(Certificates):
 
         def _subject_computer(self, x509):
             return x509.subject
+
         def _common_name_computer(self, record):
             subject = record['subject'].value()
             if subject is None:
                 return ''
             return subject.common_name
+
         def _email_computer(self, record):
             subject = record['subject'].value()
             if subject is None:
@@ -269,7 +283,8 @@ class UserCertificates(Certificates):
         """
         data = self._data
         uid_value = pd.Value(data.find_column('uid').type(), uid)
-        purpose_value = pd.Value(data.find_column('purpose').type(), self.Spec._PURPOSE_AUTHENTICATION)
+        purpose_value = pd.Value(data.find_column('purpose').type(),
+                                 self.Spec._PURPOSE_AUTHENTICATION)
         try:
             self._data.select(pd.AND(pd.EQ('uid', uid_value), pd.EQ('purpose', purpose_value)))
             row = self._data.fetchone()
@@ -293,7 +308,7 @@ class UserCertificates(Certificates):
           req -- 'Request' instance to provide for construction of the user object
           certificate -- PEM encoded certificate verified against the site's CA
             certificate, a string
-        
+
         """
         import gnutls.crypto
         x509 = gnutls.crypto.X509Certificate(certificate)
@@ -305,6 +320,7 @@ class UserCertificates(Certificates):
             user = None
         return user
 
+
 class CertificateRequest(UserCertificates):
 
     class Spec(UserCertificates.Spec):
@@ -313,9 +329,11 @@ class CertificateRequest(UserCertificates):
         # failure.
         # Comment by TC: This is not a good practice.  Specification shouldnt care about DB
         # connection.  The code that needs it should be defined at the module level.
+
         def _set_dbconnection(self, dbconnection):
-            self._serial_number_counter = pd.DBCounterDefault('certificate_serial_number', dbconnection)
-            
+            self._serial_number_counter = pd.DBCounterDefault(
+                'certificate_serial_number', dbconnection)
+
         def fields(self):
             overridden = (Field('file', descr=_("Upload a PEM file containing the certificate request")),
                           Field('purpose', default=self._PURPOSE_AUTHENTICATION))
@@ -343,14 +361,15 @@ class CertificateRequest(UserCertificates):
                                                '--template', template_file,),
                                               stdout=stdout, stderr=stdout)
                 if return_code != 0:
-                    raise Exception(_("Certificate request could not be processed"), open(log_file).read())
+                    raise Exception(_("Certificate request could not be processed"),
+                                    open(log_file).read())
                 certificate = open(certificate_file).read()
             finally:
                 for file_name in os.listdir(working_dir):
                     os.remove(os.path.join(working_dir, file_name))
                 os.rmdir(working_dir)
             return certificate
-    
+
     def _spec(self, resolver):
         spec = super(CertificateRequest, self)._spec(resolver)
         spec._set_dbconnection(self._dbconnection)
@@ -369,25 +388,24 @@ class CertificateRequest(UserCertificates):
 
 
 # Related configuration options:
-    #class _Option_certificate_expiration_days(pc.NumericOption, pc.HiddenOption):
+    # class _Option_certificate_expiration_days(pc.NumericOption, pc.HiddenOption):
     #    _DESCR = "Number of days to make signed certificates valid."
     #    _DOC = ("User authentication certificates signed by our local certificate authority "
     #            "will be made valid for that number of days.")
     #    _DEFAULT = 5*365
-    # 
-    #class _Option_ca_certificate_file(pc.StringOption, pc.HiddenOption):
+    #
+    # class _Option_ca_certificate_file(pc.StringOption, pc.HiddenOption):
     #    _DESCR = "Name of the file containing the local certification authority certificate."
     #    _DOC = ("This certificate is used to sign users' certificates used for authentication to the application.")
     #    _DEFAULT = '/etc/wiking/ca-cert.pem'
-    # 
-    #class _Option_ca_key_file(pc.StringOption, pc.HiddenOption):
+    #
+    # class _Option_ca_key_file(pc.StringOption, pc.HiddenOption):
     #    _DESCR = "Name of the file containing the key corresponding to the local certification authority certificate."
     #    _DOC = ("This is the secret certificate private key.")
     #    _DEFAULT = '/etc/wiking/ca-key.pem'
-    # 
-    #class _Option_certificate_authentication(pc.BooleanOption, pc.HiddenOption):
+    #
+    # class _Option_certificate_authentication(pc.BooleanOption, pc.HiddenOption):
     #    _DESCR = "Whether certificate authentication is enabled."
     #    def default(self):
     #        ca_certificate_file = self._configuration.ca_certificate_file
     #        return ca_certificate_file and os.path.exists(ca_certificate_file)
-    

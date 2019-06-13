@@ -56,10 +56,12 @@ class DBException(pd.DBException):
     application code.
 
     """
+
     def __init__(self, message, column=None):
         self._message = message
         self._column = column
         super(DBException, self).__init__(message, None)
+
     def column(self):
         return self._column
 
@@ -279,6 +281,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         Warning: Instances of this class should not persist across multiple requests!
 
         """
+
         def __init__(self, req, module, *args, **kwargs):
             self._req = req
             self._module = module
@@ -353,7 +356,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         if name not in ('_data', '_key', '_table', '_sorting', '_referer', '_links', '_type'):
             try:
                 return super(PytisModule, self).__getattr__(name)
-            except AttributeError: # can be thrown in absence of __getattr__ itself!
+            except AttributeError:  # can be thrown in absence of __getattr__ itself!
                 raise AttributeError(name)
         self._delayed_init()
         return getattr(self, name)
@@ -511,7 +514,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
             if self._HONOUR_SPEC_TITLE:
                 title = self._view.title()
             else:
-                title = None # Current menu title will be substituted.
+                title = None  # Current menu title will be substituted.
         if self._USE_BINDING_PARENT_TITLE:
             fw = self._binding_forward(req)
             if fw and fw.arg('title'):
@@ -533,6 +536,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
             extra_title = messages[0][0]
             for m in messages[1:]:
                 extra_title = extra_title + u'; ' + m[0]
+
             def interpolate(key, title=title, extra=extra_title):
                 return dict(title=title, extra=extra)[key]
             title = lcg.TranslatableText('%(title)s (%(extra)s)').interpolate(interpolate)
@@ -1415,7 +1419,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
             row_actions=self._ROW_ACTIONS,
             async_load=self._ASYNC_LOAD,
             immediate_filters=wiking.cfg.immediate_filters,
-            actions=(), # Display no actions by default, rather than just spec actions.
+            actions=(),  # Display no actions by default, rather than just spec actions.
             cell_editable=lambda *args: self._cell_editable(req, *args),
             expand_row=((lambda *args: self._expand_row(req, *args))
                         if self._ROW_EXPANSION else None),
@@ -1601,7 +1605,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
             for value in values:
                 try:
                     count = data.select(condition=pd.AND(pd.EQ(linking_column, key),
-                                                  pd.EQ(value_column, value)),
+                                                         pd.EQ(value_column, value)),
                                         transaction=transaction)
                 finally:
                     try:
@@ -1735,7 +1739,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
             my_record = self._record(req, row)
             content = self._form(form_cls, req, record=my_record, binding_uri=binding_uri,
                                  layout=self._layout(req, 'view', my_record),
-                                 actions=(), #self._form_actions_argument(req), #TODO: doesn't work
+                                 actions=(),  # self._form_actions_argument(req), #TODO: doesn't work
                                  **form_kwargs)
             # This would add another level of binding subforms.  They don't
             # seem to work now and we most likely don't want them.  content =
@@ -1779,7 +1783,9 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
 
         """
         resolver = wiking.WikingResolver()
+
         class ErrorResolver(pytis.output.Resolver):
+
             def get(self, module_name, spec_name, **kwargs):
                 if spec_name == 'body':
                     raise Exception("Output specification not found", module_name)
@@ -1818,6 +1824,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
             if http_referer:
                 path = urlparse.urlparse(http_referer).path[1:]
                 menu = wiking.module.Application.menu(req)
+
                 def find(menu, menu_path):
                     for m in menu:
                         if m.id() == path:
@@ -2117,6 +2124,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         columns = self._exported_columns(req)
         export_kwargs = dict([(cid, isinstance(self._type[cid], pd.Float)
                                and dict(locale_format=False) or {}) for cid in columns])
+
         def generator(records):
             data = ''
             buffer_size = 1024 * 512
@@ -2307,7 +2315,7 @@ class APIProvider(object):
         return [v.value() for v in record[cid].value()]
 
     def _api_content_serializer(self, req, record, cid):
-        return None # TODO: export?
+        return None  # TODO: export?
 
     def _api_serializers(self, columns):
         try:
@@ -2455,11 +2463,13 @@ class RssModule(object):
             text_format = self._view.field(descr_column).text_format()
             if text_format == pp.TextFormat.LCG:
                 parser = lcg.Parser()
+
                 def get_description(req, record):
                     text = self._rss_column_description(req, record)
                     return export(lcg.Container(parser.parse(text)))
             elif text_format == pp.TextFormat.HTML:
                 processor = lcg.HTMLProcessor()
+
                 def get_description(req, record):
                     text = self._rss_column_description(req, record)
                     return export(processor.html2lcg(text))
@@ -2573,6 +2583,7 @@ class PytisRssModule(PytisModule):
                 return value
             else:
                 return req.localize(value)
+
         def func(spec, default=None, raw=False):
             # Return a function of one argument (record) returning the channel
             # item value according to specification.
@@ -2641,6 +2652,7 @@ class CachedTables(PytisModule):
 
     def __init__(self, *args, **kwargs):
         super(CachedTables, self).__init__(*args, **kwargs)
+
         class Key(object):
             pass
         self._no_transaction_key = Key()
@@ -2673,6 +2685,7 @@ class CachedTables(PytisModule):
             info = self._table_info[transaction_key] = {}
         else:
             info.clear()
+
         def add(row):
             key = row['object_schema'].value() + '.' + row['object_name'].value()
             info[key] = (row['version'].value(), row['stamp'].value(),)
@@ -2707,6 +2720,7 @@ class CachedTables(PytisModule):
         if stamp is None:
             return None, None
         return stamp
+
 
 class CachingPytisModule(PytisModule):
     """Pytis module with general caching ability.
@@ -2894,6 +2908,7 @@ class CachingPytisModule(PytisModule):
             else:
                 self._update_cache_versions(transaction=transaction)
         return up_to_date
+
 
 class CbCachingPytisModule(CachingPytisModule):
     """Pytis module caching codebook exports.

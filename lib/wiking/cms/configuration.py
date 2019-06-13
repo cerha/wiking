@@ -30,6 +30,7 @@ from wiking import ApplicationConfiguration as cfg
 
 _ = lcg.TranslatableTextFactory('wiking-cms')
 
+
 class CMSConfiguration(cfg):
     """CMS Specific Configuration."""
 
@@ -61,7 +62,7 @@ class CMSConfiguration(cfg):
         _DESCR = _("Maximal upload size")
         _DOC = _("The maximal size of uploaded files in bytes.  The server "
                  "needs to be relaoded for the changes in this option to take effect.")
-        _DEFAULT = 3*1024*1024
+        _DEFAULT = 3 * 1024 * 1024
 
     class _Option_password_storage(cfg.StringOption):
         _DESCR = "Subclass of  for storing user passwords in the database"

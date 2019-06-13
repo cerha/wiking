@@ -22,8 +22,10 @@ from __future__ import unicode_literals
 import pytis.data.gensqlalchemy as sql
 import pytis.data
 
+
 class CommonAccesRights(object):
     access_rights = (('all', 'www-data'),)
+
 
 class CachedTables(CommonAccesRights, sql.SQLTable):
     """Information about data versions of cached tables.
@@ -39,6 +41,7 @@ class CachedTables(CommonAccesRights, sql.SQLTable):
                          doc="Flag for processing in FUpdateCachedTables"),
               )
 
+
 class FUpdateCachedTables(sql.SQLPlFunction):
     """Trigger function to increase data versions of cached tables.
     It increments version of both the given SCHEMA_.NAME_ table and
@@ -52,18 +55,21 @@ class FUpdateCachedTables(sql.SQLPlFunction):
     result_type = None
     depends_on = (CachedTables,)
 
+
 class FUpdateCachedTablesAfter(sql.SQLPlFunction, sql.SQLTrigger):
     name = 'f_update_cached_tables_after'
     events = ()
     arguments = ()
     depends_on = (FUpdateCachedTables,)
-    
+
+
 class CachedTablesUpdateTrigger(sql.SQLTrigger):
     name = 'cached_tables_update_trigger'
     events = ('insert', 'update', 'delete', 'truncate',)
     position = 'after'
     each_row = False
     body = FUpdateCachedTablesAfter
+
 
 class Base_CachingTable(sql.SQLTable):
     """Base class for tables with CachedTablesUpdateTrigger.

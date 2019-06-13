@@ -25,7 +25,11 @@ rolls back all changes when one of the scripts fails.
 
 """
 
-import os, sys, glob, psycopg2 as dbapi
+import os
+import sys
+import glob
+import psycopg2 as dbapi
+
 
 def usage(msg=None):
     message = """Perform incremental upgrades of an existing Wiking CMS database.
@@ -35,9 +39,10 @@ Usage: %s [-p port] database directory
     Wiking source archive)
 """ % sys.argv[0]
     if msg:
-        message += msg+'\n'
+        message += msg + '\n'
     sys.stderr.write(message)
     sys.exit(1)
+
 
 def run(args):
     if '--help' in args:
@@ -73,7 +78,7 @@ def run(args):
                              "but the highest upgrade script is %d.\n" %
                              (source_version, target_version))
             sys.exit(1)
-        for version in range(source_version+1, target_version+1):
+        for version in range(source_version + 1, target_version + 1):
             filename = 'upgrade.%02d.sql' % version
             sql = open(os.path.join(directory, filename)).read()
             print "Applying %s ..." % filename

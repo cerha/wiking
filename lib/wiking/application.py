@@ -79,7 +79,6 @@ class Application(wiking.Module):
         if wiking.cfg.allow_http_authentication:
             self._authentication_providers.append(wiking.HTTPBasicAuthenticationProvider())
 
-
     def initialize(self, req):
         """Perform application specific initialization.
 
@@ -547,8 +546,10 @@ class Application(wiking.Module):
         doc = req.module_uri('Documentation')
         if doc:
             uri = doc + '/wiking/user/accessibility'
+
             class A11yStatementLink(lcg.Content):
                 # A11y statement link with a hotkey (not supported by generic lcg links).
+
                 def export(self, context):
                     g = context.generator()
                     return g.a(_("Accessibility Statement"), href=uri, accesskey='0')
@@ -683,6 +684,7 @@ class Application(wiking.Module):
         from xml.sax import saxutils
         import cgitb
         import traceback
+
         def param_value(param):
             if param in ('passwd', 'password'):
                 value = '<password hidden>'
@@ -696,6 +698,7 @@ class Application(wiking.Module):
             elif len(value) > 40:
                 value = value[:40] + '... (trimmed; total %d chars)' % len(value)
             return saxutils.escape(value)
+
         def format_info(label, value):
             if value and (value.startswith('http://') or value.startswith('https://')):
                 value = '<a href="%s">%s</a>' % (value, value)
@@ -712,6 +715,7 @@ class Application(wiking.Module):
              "\n".join(["  %s = %s" % (saxutils.escape(param), param_value(param))
                         for param in req.params()])),
         )
+
         def escape(text):
             if isinstance(text, (tuple, list,)):
                 return [escape(t) for t in text]
@@ -748,8 +752,8 @@ class Application(wiking.Module):
             )
         subject = 'Wiking Error: ' + wiking.InternalServerError(einfo).buginfo()
         err = wiking.send_mail(address, subject, text, html=html,
-                        headers=(('Reply-To', address),
-                                 ('X-Wiking-Bug-Report-From', wiking.cfg.server_hostname)))
+                               headers=(('Reply-To', address),
+                                        ('X-Wiking-Bug-Report-From', wiking.cfg.server_hostname)))
         if err:
             log(OPR, "Failed sending exception info to %s:" % address, err)
         else:

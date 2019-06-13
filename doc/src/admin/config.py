@@ -1,16 +1,19 @@
 import lcg
 
+
 class Reader(lcg.Reader):
     """Generate documentation for Wiking Configuration."""
 
     def _title(self):
         return "Wiking Configuration Options"
-        
+
     def _variants(self):
         return ('en',)
 
     def _content(self, lang):
-        import wiking, wiking.cms
+        import wiking
+        import wiking.cms
+
         def descr(option):
             content = [lcg.em(o.description())]
             doc = option.documentation()

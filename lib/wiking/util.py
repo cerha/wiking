@@ -177,7 +177,7 @@ class Redirect(RequestError):
     you need a permanent redirection.
 
     """
-    _STATUS_CODE = httplib.FOUND # 302
+    _STATUS_CODE = httplib.FOUND  # 302
 
     def __init__(self, uri, *args, **kwargs):
         """Arguments:
@@ -219,7 +219,7 @@ class PermanentRedirect(Redirect):
     HTTP specification.
 
     """
-    _STATUS_CODE = httplib.MOVED_PERMANENTLY # 301
+    _STATUS_CODE = httplib.MOVED_PERMANENTLY  # 301
 
 
 class NotModified(RequestError):
@@ -230,7 +230,7 @@ class NotModified(RequestError):
     similar negotiation mechanism.
 
     """
-    _STATUS_CODE = httplib.NOT_MODIFIED # 304
+    _STATUS_CODE = httplib.NOT_MODIFIED  # 304
 
 
 class BadRequest(RequestError):
@@ -247,7 +247,7 @@ class BadRequest(RequestError):
     separate paragraph.
 
     """
-    _STATUS_CODE = httplib.BAD_REQUEST # 400
+    _STATUS_CODE = httplib.BAD_REQUEST  # 400
     # Translators: An error page title
     _TITLE = _("Invalid Request")
 
@@ -260,7 +260,7 @@ class BadRequest(RequestError):
 class AuthenticationError(RequestError):
     """Error indicating that authentication is required for the resource."""
 
-    _STATUS_CODE = httplib.UNAUTHORIZED # 401
+    _STATUS_CODE = httplib.UNAUTHORIZED  # 401
     # Translators: This is a warning on a webpage which is only accessible for logged in users
     _TITLE = _("Authentication required")
 
@@ -285,7 +285,7 @@ class AuthenticationError(RequestError):
 
     def headers(self, req):
         if ((wiking.cfg.allow_http_authentication
-             and (req.param('__http_auth') # HTTP Basic auth explicitly requested.
+             and (req.param('__http_auth')  # HTTP Basic auth explicitly requested.
                   # Force Basic auth for certain clients.
                   or self._HTTP_AUTH_MATCHER.match(req.header('User-Agent', 'unknown/?'))
                   # This was an invalid Basic auth attempt.
@@ -324,7 +324,7 @@ class Forbidden(RequestError):
     accessible.
 
     """
-    _STATUS_CODE = httplib.FORBIDDEN # 403
+    _STATUS_CODE = httplib.FORBIDDEN  # 403
     # Translators: An error page title
     _TITLE = _("Access Denied")
 
@@ -346,6 +346,7 @@ class AuthorizationError(Forbidden):
     this action." is used.
 
     """
+
     def _messages(self, req):
         return (self._message or
                 _("You don't have sufficient privilegs for this action."),
@@ -380,7 +381,7 @@ class PasswordExpirationError(Forbidden):
 
 class NotFound(RequestError):
     """Error indicating invalid request target."""
-    _STATUS_CODE = httplib.NOT_FOUND # 404
+    _STATUS_CODE = httplib.NOT_FOUND  # 404
     # Translators: Error page title when requesting URI which does not exist on server.
     _TITLE = _("Item Not Found")
 
@@ -402,7 +403,7 @@ class NotFound(RequestError):
 
 class NotAcceptable(RequestError):
     """Error indicating unavailability of the resource in the requested language."""
-    _STATUS_CODE = httplib.NOT_ACCEPTABLE # 406
+    _STATUS_CODE = httplib.NOT_ACCEPTABLE  # 406
     # Translators: Title of a dialog on a webpage
     _TITLE = _("Language selection")
 
@@ -450,7 +451,7 @@ class NotAcceptable(RequestError):
 
 class InternalServerError(RequestError):
     """General error in application -- error message is required as an argument."""
-    _STATUS_CODE = httplib.INTERNAL_SERVER_ERROR # 500
+    _STATUS_CODE = httplib.INTERNAL_SERVER_ERROR  # 500
     _TITLE = _("Internal Server Error")
 
     def __init__(self, einfo):
@@ -491,7 +492,7 @@ class InternalServerError(RequestError):
 
 class ServiceUnavailable(RequestError):
     """Error indicating a temporary problem, which may not appaper in further requests."""
-    _STATUS_CODE = httplib.SERVICE_UNAVAILABLE # 503
+    _STATUS_CODE = httplib.SERVICE_UNAVAILABLE  # 503
     _TITLE = _("Service Unavailable")
 
     def _messages(self, req):
@@ -519,6 +520,7 @@ class Abort(Exception):
     handler.
 
     """
+
     def __init__(self, result):
         """Arguments:
 
@@ -556,11 +558,14 @@ class Theme(object):
         no explicit value is defined in the color 'Theme'.
 
         """
+
         def __init__(self, id, inherit=None):
             self._id = id
             self._inherit = inherit
+
         def id(self):
             return self._id
+
         def inherit(self):
             return self._inherit
 
@@ -627,6 +632,7 @@ class Theme(object):
 
         """
         coldict = dict([(c.id(), c) for c in self.COLORS])
+
         def color(key):
             if colors and key in colors:
                 return colors[key]
@@ -646,6 +652,7 @@ class Theme(object):
 
 class MenuItem(object):
     """Abstract menu item representation."""
+
     def __init__(self, id, title, descr=None, submenu=(), hidden=False, active=True,
                  foldable=False, order=None, variants=None):
         """Arguments:
@@ -691,22 +698,31 @@ class MenuItem(object):
         self._submenu = submenu
         self._order = order
         self._variants = variants
+
     def id(self):
         return self._id
+
     def title(self):
         return self._title
+
     def descr(self):
         return self._descr
+
     def hidden(self):
         return self._hidden
+
     def active(self):
         return self._active
+
     def foldable(self):
         return self._foldable
+
     def order(self):
         return self._order
+
     def submenu(self):
         return self._submenu
+
     def variants(self):
         return self._variants
 
@@ -719,6 +735,7 @@ class Panel(object):
     application and optionally link to RSS channels.
 
     """
+
     def __init__(self, id, title, content, titlebar_content=None,
                  accessible_title=None, channel=None):
         """
@@ -900,6 +917,7 @@ class Response(object):
     response data out of a file within server's filesystem.
 
     """
+
     def __init__(self, data, content_type='text/html', content_length=None,
                  status_code=httplib.OK, last_modified=None, filename=None, headers=()):
         """Arguments:
@@ -989,6 +1007,7 @@ class Response(object):
 
 class Channel(object):
     """RSS channel specification."""
+
     def __init__(self, id, title, descr, content, limit=None, sorting=None, condition=None,
                  webmaster=None):
         """
@@ -1037,18 +1056,25 @@ class Channel(object):
 
     def id(self):
         return self._id
+
     def title(self):
         return self._title
+
     def descr(self):
         return self._descr
+
     def content(self):
         return self._content
+
     def limit(self):
         return self._limit
+
     def sorting(self):
         return self._sorting
+
     def condition(self):
         return self._condition
+
     def webmaster(self):
         return self._webmaster
 
@@ -1071,6 +1097,7 @@ class ChannelContent(object):
     output or a default value is used (as documented for each field).
 
     """
+
     def __init__(self, title, link=None, descr=None, date=None, author=None):
         """
         @type title: str or callable
@@ -1108,14 +1135,19 @@ class ChannelContent(object):
         self._descr = descr
         self._date = date
         self._author = author
+
     def title(self):
         return self._title
+
     def link(self):
         return self._link
+
     def descr(self):
         return self._descr
+
     def date(self):
         return self._date
+
     def author(self):
         return self._author
 
@@ -1226,6 +1258,7 @@ class PlainTextPasswordStorage(PasswordStorage):
     Only use when security does not matter at all.
 
     """
+
     def stored_password(self, password):
         return password
 
@@ -1241,6 +1274,7 @@ class UnsaltedMd5PasswordStorage(PasswordStorage):
     were created by older applications.
 
     """
+
     def _md5(self, password):
         if isinstance(password, unicode):
             password = password.encode('utf-8')
@@ -1268,6 +1302,7 @@ class Pbkdf2PasswordStorage(PasswordStorage):
     don't need to be updated).
 
     """
+
     def __init__(self, salt_length=32, hash_length=32, iterations=1000):
         """Arguments:
           salt_length -- length of the salt as int (number of characters)
@@ -1554,7 +1589,7 @@ class CookieAuthenticationProvider(AuthenticationProvider):
             # can be more specific.
             expires = wiking.cfg.session_expiration * 3600
         else:
-            expires = None # Cookie discarded when browser closed.
+            expires = None  # Cookie discarded when browser closed.
         secure = self._SECURE_AUTH_COOKIES
         if req.cookie(self._LOGIN_COOKIE) != login:
             # TODO: It would be better to use UID instead of login as part of
@@ -1688,6 +1723,7 @@ class LoginControl(TopBarControl):
     'wiking.Application.top_controls()'.
 
     """
+
     def _icon(self, context):
         return 'user-larger'
 
@@ -1765,7 +1801,7 @@ class LoginControl(TopBarControl):
             g = context.generator()
             uri = req.uri()
             if uri.endswith('_registration'):
-                uri = '/' # Redirect logins from the registration forms to site root
+                uri = '/'  # Redirect logins from the registration forms to site root
             # Translators: Login button label (verb in imperative).
             result = g.a(g.span('', cls='ctrl-icon circle-in-icon') + _("Log in"),
                          href=g.uri(uri, command='login'), cls='login-button', role='button',
@@ -1861,6 +1897,7 @@ class PanelItem(lcg.Content):
 
 class LoginDialog(lcg.Content):
     """Login dialog for entering login name and password."""
+
     def __init__(self, registration_uri=None, forgotten_password_uri=None,
                  top_content=None, bottom_content=None, login_is_email=False):
         self._registration_uri = registration_uri
@@ -1874,6 +1911,7 @@ class LoginDialog(lcg.Content):
         g = context.generator()
         req = context.req()
         ids = context.id_generator()
+
         def hidden_field(name, value):
             if isinstance(value, basestring):
                 return g.hidden(name=name, value=value)
@@ -1933,6 +1971,7 @@ class LoginDialog(lcg.Content):
 
 class DecryptionDialog(lcg.Content):
     """Password dialog for entering a decryption password."""
+
     def __init__(self, name):
         assert isinstance(name, basestring)
         self._decryption_name = name
@@ -1984,6 +2023,7 @@ class HtmlContent(lcg.TextContent):
     separation, so use only when there is no other choice and with caution.
 
     """
+
     def export(self, context):
         return self._text
 
@@ -2017,6 +2057,7 @@ class Message(lcg.Container):
             # does parsing first.  Maybe lcg.coerce() should be changed
             # this way, but it might have unknown consequences...
             class FormattedString(lcg.TextContent):
+
                 def export(self, context):
                     localized_text = context.localize(self._text)
                     return lcg.Parser().parse_inline_markup(localized_text).export(context)
@@ -2032,6 +2073,7 @@ class Message(lcg.Container):
         g = context.generator()
         return g.span(g.span('', cls='%s-icon' % self._kind), cls='icon')
 
+
 class HtmlTraceback(lcg.Content):
     """LCG content element displaying a Python exception traceback in HTML.
 
@@ -2039,6 +2081,7 @@ class HtmlTraceback(lcg.Content):
     first constructor argument.
 
     """
+
     def __init__(self, einfo, **kwargs):
         # Generete the traceback in constructor to avoid storing references
         # to einfo (see sys.exc_info() documentation).
@@ -2059,6 +2102,7 @@ class HtmlTraceback(lcg.Content):
 
 class IFrame(lcg.Content):
     """HTML specific IFRAME component."""
+
     def __init__(self, uri, width=400, height=200):
         self._uri = uri
         self._width = width
@@ -2075,6 +2119,7 @@ class IFrame(lcg.Content):
 
 from pytis.data.dbapi import DBAPIData
 
+
 class WikingDefaultDataClass(DBAPIData):
     """Default data class used by wiking modules connected to pytis data objects.
 
@@ -2089,7 +2134,7 @@ class WikingDefaultDataClass(DBAPIData):
 
     """
 
-    _dbfunction = {} # DBFunftion* instance cache
+    _dbfunction = {}  # DBFunftion* instance cache
 
     def __init__(self, *args, **kwargs):
         super(WikingDefaultDataClass, self).__init__(*args, **kwargs)
@@ -2189,7 +2234,7 @@ class WikingDefaultDataClass(DBAPIData):
 
 
 class Specification(pp.Specification):
-    help = None # Default value needed by CMSModule.descr()
+    help = None  # Default value needed by CMSModule.descr()
     actions = []
     data_cls = WikingDefaultDataClass
 
@@ -2217,6 +2262,7 @@ class Specification(pp.Specification):
 
 class Binding(pp.Binding):
     """Extension of Pytis 'Binding' with web specific parameters."""
+
     def __init__(self, *args, **kwargs):
         """Arguments:
 
@@ -2300,6 +2346,7 @@ class WikingResolver(pytis.util.Resolver):
 
 class ModuleInstanceResolver(object):
     """Single purpose class to be used as 'wiking.module' instance (see below)."""
+
     def __call__(self, name):
         return wiking.cfg.resolver.wiking_module(name)
 
@@ -2366,6 +2413,7 @@ class Date(pytis.data.Date):
         result = super(Date, self)._export(value, **kwargs)
         return lcg.LocalizableDateTime(result, show_weekday=show_weekday,
                                        leading_zeros=self._leading_zeros)
+
 
 class Time(pytis.data.Time):
     """Deprecated.  Use 'pytis.data.Time' directly."""
@@ -2445,7 +2493,9 @@ class InputForm(pytis.web.EditForm):
                  hidden_fields=(), name='InputForm', new=True, **kwargs):
         class Spec(pp.Specification):
             data_cls = pytis.data.RestrictedMemData
+
         class Record(pp.PresentedRow):
+
             def req(self):
                 return req
         for key, value in specification_kwargs.items():
@@ -2522,6 +2572,7 @@ class RecordsIterator(RowsIterator):
 # ============================================================================
 # Misc functions
 # ============================================================================
+
 
 def serve_file(req, path, content_type=None, filename=None, lock=False, headers=(),
                allow_redirect=True):
@@ -2601,6 +2652,7 @@ def serve_file(req, path, content_type=None, filename=None, lock=False, headers=
                 content_length = limit
                 headers += ('Content-Range', 'bytes %s-%d/%d' %
                             (range_start, min(range_end, info.st_size - 1), info.st_size)),
+
     def generator(offset=None, limit=None):
         f = file(path)
         if lock:
@@ -2629,6 +2681,7 @@ def serve_file(req, path, content_type=None, filename=None, lock=False, headers=
                            last_modified=datetime.datetime.utcfromtimestamp(info.st_mtime),
                            filename=filename, headers=headers)
 
+
 def ajax_response(req, form):
     """Call form.ajax_response() and translate the result to a Wiking response.
 
@@ -2645,6 +2698,7 @@ def ajax_response(req, form):
         return response
     else:
         return wiking.Response(json.dumps(response), content_type='application/json')
+
 
 def timeit(func, *args, **kwargs):
     """Measure the function execution time.
@@ -2671,6 +2725,7 @@ class MailAttachment(object):
         the contents file specified by 'file_name' is used
 
     """
+
     def __init__(self, file_name, stream=None, type='application/octet-stream'):
         assert file_name is None or isinstance(file_name, basestring), ('type error', file_name,)
         assert stream is None or hasattr(stream, 'read'), ('type error', stream,)
@@ -2681,15 +2736,19 @@ class MailAttachment(object):
         else:
             self._stream = stream
         self._type = type
+
     def file_name(self):
         """Return relative or full name of the attachment."""
         return self._file_name
+
     def stream(self):
         """Return the attachment data source as a file-like object."""
         return self._stream
+
     def type(self):
         """Return MIME type of the attachment."""
         return self._type
+
 
 def send_mail(addr, subject, text, sender=None, sender_name=None, html=None,
               export=False, lang=None, cc=(), headers=(), attachments=(),
@@ -2756,7 +2815,7 @@ def send_mail(addr, subject, text, sender=None, sender_name=None, html=None,
 
     if isinstance(text, unicode):
         text = localizer.localize(text)
-    if not sender or sender == '-': # Hack: '-' is the Wiking CMS Admin default value...
+    if not sender or sender == '-':  # Hack: '-' is the Wiking CMS Admin default value...
         sender = wiking.cfg.default_sender_address
     if sender_name:
         sender = '"%s" <%s>' % (Header(sender_name, 'utf-8').encode(), sender)
@@ -2841,6 +2900,7 @@ def send_mail(addr, subject, text, sender=None, sender_name=None, html=None,
         return None
     except Exception as e:
         return str(e)
+
 
 def validate_email_address(address, helo=None):
     """Validate given e-mail 'address'.
@@ -2942,6 +3002,7 @@ def cmp_versions(v1, v2):
 
 _ABS_URI_MATCHER = re.compile(r'^((https?|ftp)://[^/]+)(.*)$')
 
+
 def make_uri(base, *args, **kwargs):
     """Deprecated: Use 'Request.make_uri()' instead."""
     if base.startswith('mailto:'):
@@ -2964,6 +3025,7 @@ def make_uri(base, *args, **kwargs):
 _WKDAY = ('Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun',)
 _MONTH = ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',)
 
+
 def format_http_date(dt):
     """Return datetime as a basestring in the RFC 1123 format.
 
@@ -2980,6 +3042,7 @@ def format_http_date(dt):
     return '%s, %02d %s %04d %02d:%02d:%02d GMT' % (_WKDAY[dt.weekday()], dt.day,
                                                     _MONTH[dt.month - 1], dt.year,
                                                     dt.hour, dt.minute, dt.second)
+
 
 def parse_http_date(date_string):
     """Return datetime corresponding to RFC 2616 date_string.
@@ -3032,6 +3095,7 @@ def parse_http_date(date_string):
             return dt
     return None
 
+
 def pdf_document(content, lang):
     """Return PDF document created from 'lcg_content'.
 
@@ -3056,6 +3120,7 @@ def pdf_document(content, lang):
     context = exporter.context(lcg_content, lang)
     pdf = exporter.export(context)
     return pdf
+
 
 def generate_random_string(length):
     """Return a random string of given length."""

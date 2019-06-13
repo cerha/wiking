@@ -29,10 +29,12 @@ import psycopg2 as dbapi
 
 import wiking
 
+
 def open_database():
     database = wiking.cfg.dbname
     connection = dbapi.connect(database=database)
     return connection
+
 
 def delete_expired_registrations():
     db_connection = open_database()
@@ -40,9 +42,9 @@ def delete_expired_registrations():
     sql_query = "delete from users where state='new' and regexpire < now()"
     db_cursor.execute(sql_query)
 
+
 def run():
     delete_expired_registrations()
 
 if __name__ == '__main__':
     run()
-

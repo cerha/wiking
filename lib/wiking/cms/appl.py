@@ -29,6 +29,7 @@ from wiking.cms import CMSExtension, CMSExtensionModule, Roles, Users, \
 
 _ = lcg.TranslatableTextFactory('wiking-cms')
 
+
 class AdminControl(wiking.TopBarControl):
 
     def _icon(self, context):
@@ -166,7 +167,7 @@ class Application(wiking.Application):
             return None
 
     def handle(self, req):
-        req.wmi = False # Will be set to True by `WikingManagementInterface' if needed.
+        req.wmi = False  # Will be set to True by `WikingManagementInterface' if needed.
         preview_mode_param = req.param(self._PREVIEW_MODE_PARAM)
         if preview_mode_param is not None:
             req.set_cookie(self._PREVIEW_MODE_COOKIE, preview_mode_param == '1' and '1' or None)
@@ -277,7 +278,7 @@ class Application(wiking.Application):
                         # CMSExtensionModule submodules.
                         for modname_, modcls in wiking.cfg.resolver.walk(CMSExtension):
                             wiking.module(modname_)
-                        parent = mod.parent() # It's hopefully not None now...
+                        parent = mod.parent()  # It's hopefully not None now...
                     if parent is not None:
                         uri = parent.submodule_uri(req, modname)
                 if uri is None:
@@ -337,7 +338,7 @@ class Application(wiking.Application):
 
     def contained_roles(self, role):
         role_sets = wiking.module.RoleSets
-        if isinstance(role, (list, tuple, set,)): # role is actually role ids
+        if isinstance(role, (list, tuple, set,)):  # role is actually role ids
             role_ids = role_sets.included_role_ids_by_role_ids(role, instances=True)
         else:
             role_ids = role_sets.included_role_ids(role, instances=True)

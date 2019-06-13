@@ -35,6 +35,7 @@ import os
 import sys
 import subprocess
 
+
 def usage(message=None):
     text = ["Usage: %s directory" % os.path.basename(sys.argv[0])]
     if message:
@@ -45,10 +46,12 @@ def usage(message=None):
     sys.stderr.write('\n\n'.join(text) + '\n')
     sys.exit(1)
 
+
 def call(command, cwd):
     result = subprocess.call(command.split(' '), cwd=cwd)
     if result != 0:
         sys.exit(1)
+
 
 def update_src(directory):
     if not os.path.isdir(directory):
@@ -64,7 +67,7 @@ def update_src(directory):
         if ((os.path.exists(os.path.join(subdir, 'Makefile')) or
              os.path.exists(os.path.join(subdir, 'makefile')))):
             call('make', subdir)
-            
+
 if __name__ == '__main__':
     if '--help' in sys.argv:
         usage()

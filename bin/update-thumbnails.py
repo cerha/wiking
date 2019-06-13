@@ -27,12 +27,18 @@ match the new settings.
 
 """
 
-import sys, getopt, types, os, cStringIO, PIL.Image
+import sys
+import getopt
+import types
+import os
+import cStringIO
+import PIL.Image
 import pytis.util
 import pytis.data as pd
 import config
 import wiking
 import wiking.cms
+
 
 def usage(msg=None):
     sys.stderr.write("""Update Wiking attachment thumbnails in the database.
@@ -52,6 +58,7 @@ def resize(image, size):
     img.save(stream, image.format)
     return pd.Image.Buffer(buffer(stream.getvalue())), img.size
 
+
 def run():
     if '--help' in sys.argv:
         usage()
@@ -64,11 +71,12 @@ def run():
     wiking.cfg.user_config_file = config.config_file
     wiking.cms.cfg.user_config_file = config.config_file
     config.dblisten = False
-    config.log_exclude = [pytis.util.ACTION, pytis.util.EVENT, pytis.util.DEBUG, pytis.util.OPERATIONAL]
+    config.log_exclude = [pytis.util.ACTION, pytis.util.EVENT,
+                          pytis.util.DEBUG, pytis.util.OPERATIONAL]
     while True:
         try:
             data = pd.dbtable('cms_page_attachments',
-                              ('attachment_id', 'filename', 'image', 'thumbnail', 
+                              ('attachment_id', 'filename', 'image', 'thumbnail',
                                'thumbnail_size', 'thumbnail_width', 'thumbnail_height'),
                               config.dbconnection)
         except pd.DBLoginException as e:
@@ -96,7 +104,7 @@ def run():
                 image = PIL.Image.open(attachment)
             except IOError, e:
                 continue
-            sys.stderr.write("Resizing %s (%dx%d): " % 
+            sys.stderr.write("Resizing %s (%dx%d): " %
                              (row['filename'].value(), image.size[0], image.size[1]))
             thumbnail_size = row['thumbnail_size'].value()
             if thumbnail_size is None:

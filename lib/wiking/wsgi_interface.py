@@ -88,7 +88,7 @@ class WsgiRequest(wiking.Request):
                 return unicode(value.value, self._encoding)
                 # TODO: return BadRequest instead of InternalServerError? Is it always
                 # browser's fault if it doesn't encode the request properly?
-                #except UnicodeDecodeError:
+                # except UnicodeDecodeError:
                 #    raise wiking.BadRequest(_("Request parameters not encoded properly into %s.",
                 #                              self._encoding))
         try:
@@ -157,7 +157,7 @@ class WsgiRequest(wiking.Request):
         return None
 
     def start_http_response(self, status_code):
-        if True: #not self._response_started:
+        if True:  # not self._response_started:
             self._response_started = True
             response = '%d %s' % (status_code, httplib.responses[status_code])
             self._start_response(response, self._response_headers_storage)
@@ -177,6 +177,7 @@ class WsgiEntryPoint(object):
     point.  The instance is callable and will be called to serve the request.
 
     """
+
     def __init__(self):
         self._handler = None
 

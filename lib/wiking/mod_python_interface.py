@@ -15,11 +15,15 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-import sys, re, os
+import sys
+import re
+import os
 import wiking
 from wiking import debug, log, OPR
 
-import mod_python, mod_python.util, mod_python.apache
+import mod_python
+import mod_python.util
+import mod_python.apache
 
 
 class ModPythonRequest(wiking.Request):
@@ -131,7 +135,6 @@ class ModPythonRequest(wiking.Request):
         return certificate
 
 
-
 class ModPythonHandler(object):
     """The Apache/mod_python handler interface.
 
@@ -147,6 +150,7 @@ class ModPythonHandler(object):
     separate set of mod_python instances for each web server instance.
 
     """
+
     def __init__(self):
         self._handler = None
 

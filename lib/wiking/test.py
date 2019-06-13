@@ -14,6 +14,7 @@ import webtest
 
 import wiking.wsgi_interface
 
+
 class _TestBase(unittest.TestCase):
 
     class _Visited(set):
@@ -33,7 +34,7 @@ class _TestBase(unittest.TestCase):
             if transform is None:
                 transform = lambda url: None
             self._transform = transform
-            
+
         def __call__(self, url):
             transformed_url = self._transform(url)
             if transformed_url == url:
@@ -53,6 +54,7 @@ class _TestBase(unittest.TestCase):
             self._visited[url] = self._visited.get(url, 0) + 1
 
         _numeric_suffix_regexp = re.compile('^(.*/)[0-9]+$')
+
         @classmethod
         def numeric_suffix_transformer(class_, url):
             match = class_._numeric_suffix_regexp.match(url)
@@ -65,7 +67,7 @@ class _TestBase(unittest.TestCase):
         class_._config_file = config_file
         class_._host = host
         class_._options = options
-            
+
     def setUp(self):
         self._options = self._process_options(self.__class__._options)
 
@@ -123,6 +125,7 @@ class _TestBase(unittest.TestCase):
             self._info("  Accepted")
             url = urlparse.urljoin(self._current_url(browser), href)
             links.append(url)
+
         def exception_args():
             return (description, browser,) if self._options.verbose else ()
         if not links:
@@ -143,7 +146,7 @@ class _TestBase(unittest.TestCase):
             self._ajax_delay()
         form = self._find_form(browser, fields=form_fields)
         return self._submit_form(form, {'class': 'apply-filters'})
-            
+
     def _click(self, browser, description=None, index=None, status=None, verbose=False,
                follow=False):
         url = self._find_link(browser, description=description, index=index, verbose=verbose)
@@ -172,6 +175,7 @@ class _TestBase(unittest.TestCase):
 
     def _warning(self, message):
         sys.stderr.write('WARNING: %s\n' % (message,))
+
 
 class Test(_TestBase):
 
@@ -202,7 +206,7 @@ class Test(_TestBase):
 
     def _current_url(self, response):
         return response.request.url
-        
+
     def _get(self, path, status=None):
         if self._options.verbose:
             self._info('GET: %s' % (path,))
@@ -245,7 +249,7 @@ class Test(_TestBase):
             attributes = {}
         obj = response.html if isinstance(response, webtest.response.TestResponse) else response
         return obj.find_all(tag, **attributes)
-    
+
     def _attribute(self, element, name):
         return element.get(name)
 
@@ -274,6 +278,7 @@ class Test(_TestBase):
         if isinstance(regexp, basestring):
             regexp = re.compile(regexp)
         return regexp.search(response.text)
+
 
 class BrowserTest(_TestBase):
 
@@ -304,7 +309,7 @@ class BrowserTest(_TestBase):
     def _set_language(self):
         # Not possible in a general way
         pass
-            
+
     def _current_url(self, browser):
         return browser.url
 
@@ -324,7 +329,7 @@ class BrowserTest(_TestBase):
 
     def _get_follow(self, path):
         return self._get(path)
-    
+
     def _find_elements(self, browser, tag, attributes=None):
         xpath = 'descendant::' + tag
         if attributes:
@@ -357,13 +362,13 @@ class BrowserTest(_TestBase):
 
     def _attribute(self, element, name):
         return element[name]
-    
+
     def _element_text(self, element):
         return element.text
 
     def _set_field(self, form, field, value):
         form.find_by_name(field)[0].fill(value)
-        
+
     def _set_select_field(self, form, field, value=None, text=None):
         select_field = form.find_by_name(field)[0]
         if text is not None:
@@ -374,7 +379,7 @@ class BrowserTest(_TestBase):
             else:
                 raise KeyError(field, text)
         select_field.select(value)
-        
+
     def _ajax_delay(self, seconds=None, text=None):
         if text is None:
             time.sleep(seconds or self._ajax_delay_seconds)
@@ -407,7 +412,8 @@ class BrowserTest(_TestBase):
         if isinstance(regexp, basestring):
             regexp = re.compile(regexp)
         return regexp.search(browser.html)
-            
+
+
 def parse_options():
     parser = argparse.ArgumentParser()
     parser.add_argument('-l', '--language', dest='language', metavar='LANGUAGE',
@@ -427,7 +433,8 @@ def parse_options():
     parser.add_argument('unittest_options', metavar='UNITTEST-OPTIONS', nargs='*')
     args = parser.parse_args()
     return args
-    
+
+
 def main():
     args = parse_options()
     _TestBase.set_options(args.config_file, args.host, options=args)

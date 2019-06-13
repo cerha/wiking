@@ -22,6 +22,7 @@
 import unittest
 import wiking
 
+
 class Utils(unittest.TestCase):
 
     def test_password_storage(self):

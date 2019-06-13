@@ -24,12 +24,14 @@ convert the existing plain text or unsalted md5 passwords to salted PBKDF2 hashe
 
 """
 
-import sys, getopt
+import sys
+import getopt
 import pytis.util
 import pytis.data as pd
 import config
 import wiking
 import wiking.cms
+
 
 def usage(msg=None):
     sys.stderr.write("""Update Wiking CMS passwords to salted hashes.
@@ -54,7 +56,8 @@ def run():
     wiking.cfg.user_config_file = config.config_file
     wiking.cms.cfg.user_config_file = config.config_file
     config.dblisten = False
-    config.log_exclude = [pytis.util.ACTION, pytis.util.EVENT, pytis.util.DEBUG, pytis.util.OPERATIONAL]
+    config.log_exclude = [pytis.util.ACTION, pytis.util.EVENT,
+                          pytis.util.DEBUG, pytis.util.OPERATIONAL]
     while True:
         try:
             data = pd.dbtable('users', ('uid', 'login', 'password'), config.dbconnection)
@@ -85,7 +88,8 @@ def run():
             else:
                 continue
             password = prefix + ':' + storage.stored_password(orig_password)
-            data.update(row['uid'], pd.Row([('password', pd.sval(password))]), transaction=transaction)
+            data.update(row['uid'], pd.Row([('password', pd.sval(password))]),
+                        transaction=transaction)
             n += 1
     except:
         try:

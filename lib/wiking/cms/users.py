@@ -106,6 +106,7 @@ class RoleSets(UserManagementModule, CachingPytisModule):
     def _load_cache(self, transaction=None):
         super(RoleSets, self)._load_cache(transaction=transaction)
         cache = self._get_cache('containment')
+
         def add(row):
             role_id = row['role_id'].value()
             contained_role_id = row['member_role_id'].value()
@@ -227,6 +228,7 @@ class RoleMembers(UserManagementModule):
     class Spec(wiking.Specification):
         title = _("User Roles")
         table = 'cms_v_role_members'
+
         def fields(self):
             return (
                 Field('role_member_id'),
@@ -280,6 +282,7 @@ class RoleMembers(UserManagementModule):
             included_role_ids = wiking.module.RoleSets.containing_role_ids(role)
         condition = pd.OR(*[pd.EQ('role_id', pd.sval(m_id)) for m_id in included_role_ids])
         user_ids = []
+
         def add_user_id(row):
             uid = row['uid'].value()
             if uid not in user_ids:
@@ -297,6 +300,7 @@ class RoleMembers(UserManagementModule):
         """
         assert isinstance(uid, int)
         condition = pd.EQ('uid', pd.Value(pd.Integer(), uid))
+
         def role_id(row):
             return row['role_id'].value()
         return self._data.select_map(role_id, condition=condition)
@@ -328,9 +332,11 @@ class ApplicationRoles(UserManagementModule, CachingPytisModule):
         table = 'roles'
         # Translators: Form heading.
         title = _("User Groups")
+
         def __init__(self, *args, **kwargs):
             super(ApplicationRoles.Spec, self).__init__(*args, **kwargs)
             self._roles = wiking.module.Users.Roles()
+
         def fields(self):
             return (
                 # Translators: Form field label.
@@ -344,14 +350,18 @@ class ApplicationRoles(UserManagementModule, CachingPytisModule):
                 Field('auto', _("Automatic"), default=False, editable=pp.Editable.NEVER),
                 Field('role_info', computer=computer(self._role_info), virtual=True),
             )
+
         def _editable(self, record, system):
             return not system
+
         def _xname_computer(self, record, role_id, name):
-            return name or role_id and self._xname(role_id) # 'role_id' is None in a new record.
+            return name or role_id and self._xname(role_id)  # 'role_id' is None in a new record.
+
         def _xname_display(self, row):
             return (row['name'].value() or
                     self._xname(row['role_id'].value()) or
                     row['role_id'].value())
+
         def _xname(self, role_id):
             try:
                 role = self._roles[role_id]
@@ -359,6 +369,7 @@ class ApplicationRoles(UserManagementModule, CachingPytisModule):
                 return None
             else:
                 return role.name()
+
         def _role_info(self, record, role_id, system, auto):
             if auto:
                 info = _("This is a special system group with no explicit "
@@ -378,8 +389,10 @@ class ApplicationRoles(UserManagementModule, CachingPytisModule):
             return info
         columns = ('xname', 'role_id', 'system')
         layout = ('role_id', 'name', 'system')
+
         def cb(self):
             return pp.CodebookSpec(display=self._xname_display, prefer_display=True)
+
         def bindings(self):
             return (wiking.Binding('contained', _("Gets Rights of Groups"), 'RoleSets',
                                    'role_id', form=pw.ItemizedView),
@@ -508,17 +521,21 @@ class Users(UserManagementModule, CachingPytisModule):
         title = _("User Management")
         help = _("Manage registered users and their privileges.")
         table = wiking.dbdefs.Users
+
         def _fullname(self, record, firstname, surname, login):
             if firstname and surname:
                 return firstname + " " + surname
             else:
                 return firstname or surname or login
+
         def _registration_expiry(self):
             expiry_days = wiking.cms.cfg.registration_expiry_days
             return now() + datetime.timedelta(days=expiry_days)
+
         @staticmethod
         def _generate_registration_code():
             return wiking.generate_random_string(16)
+
         def fields(self):
             pwdtype = pd.Password(strength=wiking.cms.cfg.password_strength,
                                   minlen=wiking.cms.cfg.password_min_length,
@@ -673,6 +690,7 @@ class Users(UserManagementModule, CachingPytisModule):
                 return record.req().preferred_language()
             else:
                 return record['lang'].value()
+
         def _check_email(self, record):
             if not record.req().param('_pytis_form_update_request') \
                     and record['email'].value() and record.field_changed('email'):
@@ -714,8 +732,9 @@ class Users(UserManagementModule, CachingPytisModule):
             )
         columns = ('fullname', 'nickname', 'email', 'state', 'since')
         sorting = (('surname', ASC), ('firstname', ASC))
-        layout = () # Force specific layout definition for each action.
+        layout = ()  # Force specific layout definition for each action.
         cb = CodebookSpec(display='user', prefer_display=True)
+
         def profiles(self):
             return pp.Profiles(
                 # Translators: Name of group of users who have full access to the system.
@@ -733,7 +752,7 @@ class Users(UserManagementModule, CachingPytisModule):
                 # Translators: Name for a group of users whose accounts were blocked.
                 pp.Profile('disabled', _("Disabled users"),
                            filter=pd.EQ('state', pd.sval(Users.AccountState.DISABLED)),
-                ),
+                           ),
                 # Translators: Accounts as in user accounts (computer terminology).
                 pp.Profile('all', _("All accounts"), None),
                 default='enabled',
@@ -767,6 +786,7 @@ class Users(UserManagementModule, CachingPytisModule):
                    visible=lambda r: r['state'].value() in (Users.AccountState.NEW,
                                                             Users.AccountState.UNAPPROVED)),
         )
+
         def _crypto_user(self, record):
             uid = record.req().user().uid()
             if uid is None:
@@ -920,7 +940,7 @@ class Users(UserManagementModule, CachingPytisModule):
                 return wiking.module.Texts.parsed_text(req, cms_text, lang=req.preferred_language())
             else:
                 return None
-        if action not in self._LAYOUT: # Allow overriding this layout in derived classes.
+        if action not in self._LAYOUT:  # Allow overriding this layout in derived classes.
             if action == 'view':
                 account_state = ['state', 'last_password_change']
                 regconfirm = cms_text(wiking.cms.texts.regconfirm)
@@ -980,7 +1000,7 @@ class Users(UserManagementModule, CachingPytisModule):
                     # Add read-only login to make sure the user knows which password is edited.  It
                     # also helps the browser password helper to recognize which password is changed
                     # (if the user has multiple accounts).
-                    layout.insert(0, 'login') # Don't include email, since it is editable.
+                    layout.insert(0, 'login')  # Don't include email, since it is editable.
                 return layout
         return super(Users, self)._layout(req, action, record=record)
 
@@ -1406,7 +1426,9 @@ class Users(UserManagementModule, CachingPytisModule):
                         return Document(title, lcg.p(msg))
             else:
                 req.message(_("No user account for your query."), req.ERROR)
+
         class PasswordResetForm(lcg.Content):
+
             def export(self, context):
                 g = context.generator()
                 ids = context.id_generator()
@@ -1576,6 +1598,7 @@ class Users(UserManagementModule, CachingPytisModule):
             role_user_ids = wiking.module.RoleMembers.user_ids(role)
         base_uri = application.module_uri(None, 'ActiveUsers')
         registration_uri = application.module_uri(None, 'Registration')
+
         def make_user(row):
             if role is not None and row['uid'].value() not in role_user_ids:
                 return None
@@ -1771,6 +1794,7 @@ class ActivationForm(lcg.Content):
     will be displayed in such cases prompting the user for the code.
 
     """
+
     def __init__(self, uid):
         self._uid = uid
         super(ActivationForm, self).__init__()
@@ -1805,7 +1829,7 @@ class Session(PytisModule, wiking.Session):
             if kwargs:
                 message = message.interpolate(lambda x: kwargs[x])
             req.message(message, req.WARNING, formatted=True)
-        import wiking # Don't know why, but it needs to be here...
+        import wiking  # Don't know why, but it needs to be here...
         # Delete all expired records first.
         data = self._data
         now_ = now()
@@ -1847,11 +1871,13 @@ class Session(PytisModule, wiking.Session):
 
 
 class SessionLog(UserManagementModule):
+
     class Spec(wiking.Specification):
         # Translators: Heading for an overview when and how the user has accessed the application.
         title = _("Login History")
         help = _("History of successful login sessions and unsuccessful login attempts.")
         table = 'cms_v_session_log'
+
         def fields(self):
             return (
                 Field('log_id'),
@@ -1882,11 +1908,13 @@ class SessionLog(UserManagementModule):
                 # "HTTP" and if unsure, don't translate at all (it is a very technical term).
                 Field('referer', _("HTTP Referer")),
                 Field('uid_login'))
+
         def _hostname(self, row, ip_address):
             try:
                 return socket.gethostbyaddr(ip_address)[0]
             except:
-                return None # _("Unknown")
+                return None  # _("Unknown")
+
         def query_fields(self):
             return (
                 Field('kind', _("Show"), type=pd.String(), enumerator=('ok', 'failed'),
@@ -1896,6 +1924,7 @@ class SessionLog(UserManagementModule):
                 Field('from', _("From"), type=pd.Date()),
                 Field('to', _("To"), type=pd.Date()),
             )
+
         def condition_provider(self, query_fields={}, **kwargs):
             conditions = []
             if query_fields['from'].value():
@@ -1907,6 +1936,7 @@ class SessionLog(UserManagementModule):
             if query_fields['kind'].value():
                 conditions.append(pd.EQ('success', pd.bval(query_fields['kind'].value() == 'ok')))
             return pd.AND(*conditions) if conditions else None
+
         def row_style(self, row):
             if row['success'].value():
                 return None

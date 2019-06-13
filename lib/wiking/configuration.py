@@ -101,6 +101,7 @@ class Configuration(pytis.util.Configuration):
 
     class _Option_config_file(pc.StringOption, pc.HiddenOption):
         _DESCR = "Wiking global configuration file location"
+
         def default(self):
             for filename in ('/etc/wiking/config.py', '/etc/wiking.py',
                              '/usr/local/etc/wiking/config.py', '/usr/local/etc/wiking.py'):
@@ -110,6 +111,7 @@ class Configuration(pytis.util.Configuration):
 
     class _Option_user_config_file(pc.StringOption, pc.HiddenOption):
         _DESCR = "Site specific configuration file location"
+
         def default(self):
             try:
                 import wikingconfig
@@ -300,6 +302,7 @@ class Configuration(pytis.util.Configuration):
                 "searched.  These directories depend on your installation.  Each directory "
                 "should contain a subdirectory 'lang/LC_MESSAGES' and a file 'domain.mo' in it, "
                 "where lang is the language code and domain is the translation domain name.")
+
         def default(self):
             return ('/usr/local/share/wiking/translations',
                     '/usr/local/share/lcg/translations',
@@ -315,6 +318,7 @@ class Configuration(pytis.util.Configuration):
                 "exact list of directories where a particular file is searched when it is unable "
                 "to locate it.  Beware that all files located within the named directories will "
                 "be directly exposed to the Internet!")
+
         def default(self):
             return ('/usr/local/share/wiking/resources',
                     '/usr/local/share/lcg/resources',
@@ -329,6 +333,7 @@ class Configuration(pytis.util.Configuration):
                 "documentation of additional components (application specific documentation). "
                 "Dictionary values are names of directories containing documentation source "
                 "files, such as full path to the 'doc/src' subdirectory of the wiking package.")
+
         def default(self):
             return {'wiking': '/usr/local/share/wiking/doc/src',
                     'lcg': '/usr/local/share/lcg/doc/src'}
@@ -594,11 +599,13 @@ class ApplicationConfiguration(pytis.util.Configuration):
 
     """
     class _Option_config_file(pc.StringOption, pc.HiddenOption):
+
         def default(self):
             import wiking
             return wiking.cfg.config_file
 
     class _Option_user_config_file(pc.StringOption, pc.HiddenOption):
+
         def default(self):
             import wiking
             return wiking.cfg.user_config_file
