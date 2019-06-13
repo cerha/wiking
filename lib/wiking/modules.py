@@ -653,7 +653,7 @@ class Reload(Module):
                 try:
                     reload(module)
                     module_names.append(name)
-                except:
+                except Exception:
                     pass
         return module_names
 

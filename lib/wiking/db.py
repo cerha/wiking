@@ -1540,10 +1540,10 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         else:
             try:
                 result = operation(*args, **kwargs)
-            except:
+            except Exception:
                 try:
                     transaction.rollback()
-                except:
+                except Exception:
                     pass
                 raise
             else:
@@ -1609,7 +1609,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                 finally:
                     try:
                         data.close()
-                    except:
+                    except Exception:
                         pass
                 if count != 1:
                     row = pd.Row([(linking_column, key), (value_column, value)])

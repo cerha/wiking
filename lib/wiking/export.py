@@ -35,7 +35,7 @@ class MinimalExporter(lcg.HtmlExporter):
         g = context.generator()
         try:
             uri = context.req().module_uri('Resources')
-        except:
+        except Exception:
             uri = '_resources'
         return super(MinimalExporter, self)._head(context) + \
             [g.link(rel='stylesheet', type='text/css', href='/%s/default.css' % uri)]

@@ -190,7 +190,7 @@ class CryptoKeys(CMSExtensionModule):
             finally:
                 try:
                     self._data.close()
-                except:
+                except Exception:
                     pass
             if count > 0:
                 actions = [a for a in actions if a.id() != 'insert']

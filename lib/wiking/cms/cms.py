@@ -128,7 +128,7 @@ def _modtitle(name, default=None):
     else:
         try:
             cls = wiking.cfg.resolver.wiking_module_cls(name)
-        except:
+        except Exception:
             title = default or lcg.concat(name, ' (', _("unknown"), ')')
         else:
             title = cls.title()
@@ -325,7 +325,7 @@ class CMSModule(wiking.PytisModule, wiking.RssModule):
         """Helper method to get a binding instance if given module is EmbeddableCMSModule."""
         try:
             cls = wiking.cfg.resolver.wiking_module_cls(modname)
-        except:
+        except Exception:
             cls = None
         if cls and issubclass(cls, EmbeddableCMSModule):
             binding = cls.binding()

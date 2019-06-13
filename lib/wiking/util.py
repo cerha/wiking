@@ -2095,7 +2095,7 @@ class HtmlTraceback(lcg.Content):
             # something sensitive, such as database objects.
             import cgitb
             return g.noescape(cgitb.html(self._einfo))
-        except:
+        except Exception:
             import traceback
             return g.pre("".join(traceback.format_exception(*self._einfo)))
 
@@ -2172,7 +2172,7 @@ class WikingDefaultDataClass(DBAPIData):
         finally:
             try:
                 self.close()
-            except:
+            except Exception:
                 pass
         return rows
 

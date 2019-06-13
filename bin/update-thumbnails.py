@@ -127,10 +127,10 @@ def run():
                           image=resized_image_value)
             r = pd.Row([(key, pd.Value(row[key].type(), value)) for key, value in values.items()])
             #data.update(row['attachment_id'], r, transaction=transaction)
-    except:
+    except Exception:
         try:
             transaction.rollback()
-        except:
+        except Exception:
             pass
         sys.stderr.write("Transaction rolled back.\n")
         raise

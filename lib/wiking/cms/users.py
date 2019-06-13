@@ -446,7 +446,7 @@ class ApplicationRoles(UserManagementModule, CachingPytisModule):
         finally:
             try:
                 self._data.close()
-            except:
+            except Exception:
                 pass
         return roles
 
@@ -1912,7 +1912,7 @@ class SessionLog(UserManagementModule):
         def _hostname(self, row, ip_address):
             try:
                 return socket.gethostbyaddr(ip_address)[0]
-            except:
+            except Exception:
                 return None  # _("Unknown")
 
         def query_fields(self):

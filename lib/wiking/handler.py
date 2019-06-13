@@ -236,7 +236,7 @@ class Handler(object):
         exporter = wiking.MinimalExporter(translations=wiking.cfg.translation_path)
         try:
             lang = req.preferred_language()
-        except:
+        except Exception:
             lang = wiking.cfg.default_language_by_domain.get(req.server_hostname(),
                                                              wiking.cfg.default_language) or 'en'
         context = exporter.context(node, lang=lang)
@@ -423,5 +423,5 @@ try:
     # mod_python.
     import mod_python_interface
     handler = mod_python_interface.ModPythonHandler()
-except:
+except Exception:
     pass

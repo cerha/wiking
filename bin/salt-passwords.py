@@ -92,10 +92,10 @@ def run():
             data.update(row['uid'], pd.Row([('password', pd.sval(password))]),
                         transaction=transaction)
             n += 1
-    except:
+    except Exception:
         try:
             transaction.rollback()
-        except:
+        except Exception:
             pass
         sys.stderr.write("Transaction rolled back.\n")
         raise

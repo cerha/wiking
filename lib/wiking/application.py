@@ -724,11 +724,11 @@ class Application(wiking.Module):
         basic_traceback = ''.join(traceback.format_exception(*einfo))
         try:
             text_traceback = cgitb.text(einfo)
-        except:
+        except Exception:
             text_traceback = basic_traceback
         try:
             html_traceback = cgitb.html(einfo)
-        except:
+        except Exception:
             html_traceback = '<pre>' + text_traceback + '</pre>'
         try:
             text = "\n".join(["%s: %s" % pair for pair in req_info])
