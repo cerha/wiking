@@ -24,20 +24,20 @@ in the version control system history.
 
 """
 
-from wiking.cms import *
-
 import cStringIO
 import datetime
 import os
 import subprocess
+import time
 
-import pytis.data
-from pytis.presentation import computer, Computer, Field
-from lcg import log as debug
+import lcg
+import pytis.data as pd
+import wiking
+from pytis.presentation import Computer, Field, Editable
 
-ONCE = pp.Editable.ONCE
-NEVER = pp.Editable.NEVER
-ALWAYS = pp.Editable.ALWAYS
+ONCE = Editable.ONCE
+NEVER = Editable.NEVER
+ALWAYS = Editable.ALWAYS
 ASC = pd.ASCENDENT
 DESC = pd.DESCENDANT
 
@@ -81,10 +81,10 @@ keyUsage           = keyEncipherment
     return text, attachment, attachment_stream
 
 
-class Certificates(CMSModule):
+class Certificates(wiking.cms.CMSModule):
     """Base class of classes handling various kinds of certificates."""
 
-    class UniType(pytis.data.Type):
+    class UniType(pd.Type):
         """Universal type able to contain any value.
 
         This is just a utility type for internal use within 'Certificates'
@@ -92,10 +92,10 @@ class Certificates(CMSModule):
 
         """
 
-    class Spec(Specification):
+    class Spec(wiking.Specification):
 
         def __init__(self, *args, **kwargs):
-            Specification.__init__(self, *args, **kwargs)
+            wiking.Specification.__init__(self, *args, **kwargs)
             self._ca_x509 = None
 
         _ID_COLUMN = 'certificates_id'
@@ -103,7 +103,7 @@ class Certificates(CMSModule):
         def fields(self): return (
             Field(self._ID_COLUMN, width=8, editable=NEVER),
             Field('file', _("PEM file"), virtual=True, editable=ALWAYS,
-                  type=pytis.data.Binary(not_null=True, maxlen=10000),
+                  type=pd.Binary(not_null=True, maxlen=10000),
                   descr=_("Upload a PEM file containing the certificate")),
             Field('certificate', _("Certificate"), width=60, height=20, editable=NEVER,
                   computer=Computer(self._certificate_computer, depends=('file',))),
@@ -179,8 +179,14 @@ class Certificates(CMSModule):
             return self._convert_x509_timestamp(x509.expiration_time)
 
         def _text_computer(self, x509):
-            return ('Subject: %s\nIssuer: %s\nSerial number: %s\nVersion: %s\nValid from: %s\nValid until: %s\n' %
-                    (x509.subject, x509.issuer, x509.serial_number, x509.version, time.ctime(x509.activation_time), time.ctime(x509.expiration_time),))
+            return '\n'.join((
+                'Subject: %s' % (x509.subject,),
+                'Issuer: %s' % (x509.issuer,),
+                'Serial number: %s' % (x509.serial_number, ),
+                'Version: %s' % (x509.version,),
+                'Valid from: %s' % (time.ctime(x509.activation_time),),
+                'Valid until: %s' % (time.ctime(x509.expiration_time),),
+            ))
 
         def _convert_x509_timestamp(self, timestamp):
             time_tuple = time.gmtime(timestamp)
@@ -192,12 +198,12 @@ class Certificates(CMSModule):
             if x509 is None:
                 return ('file', _("The certificate is not valid"),)
 
-    RIGHTS_view = (Roles.ADMIN,)
-    RIGHTS_list = (Roles.ADMIN,)
-    RIGHTS_rss = (Roles.ADMIN,)
-    RIGHTS_insert = (Roles.ADMIN,)
-    RIGHTS_update = (Roles.ADMIN,)
-    RIGHTS_delete = (Roles.ADMIN,)
+    RIGHTS_view = (wiking.cms.Roles.ADMIN,)
+    RIGHTS_list = (wiking.cms.Roles.ADMIN,)
+    RIGHTS_rss = (wiking.cms.Roles.ADMIN,)
+    RIGHTS_insert = (wiking.cms.Roles.ADMIN,)
+    RIGHTS_update = (wiking.cms.Roles.ADMIN,)
+    RIGHTS_delete = (wiking.cms.Roles.ADMIN,)
 
     _LAYOUT = {'insert': ('file',)}
 
@@ -237,15 +243,40 @@ class UserCertificates(Certificates):
 
         def fields(self):
             fields = Certificates.Spec.fields(self)
-            fields = fields + (Field('subject', _("Subject"), virtual=True, editable=NEVER, type=Certificates.UniType(),
-                                     computer=self._make_x509_computer(self._subject_computer)),
-                               Field('common_name', _("Name"), editable=NEVER,
-                                     computer=Computer(self._common_name_computer, depends=('subject',))),
-                               Field('email', _("E-mail"), editable=NEVER,
-                                     computer=Computer(self._email_computer, depends=('subject',))),
-                               Field('uid', not_null=True),
-                               Field('purpose', not_null=True),
-                               )
+            fields = fields + (
+                Field(
+                    'subject',
+                    _("Subject"),
+                    virtual=True,
+                    editable=NEVER,
+                    type=Certificates.UniType(),
+                    computer=self._make_x509_computer(
+                        self._subject_computer)),
+                Field(
+                    'common_name',
+                    _("Name"),
+                    editable=NEVER,
+                    computer=Computer(
+                        self._common_name_computer,
+                        depends=(
+                            'subject',
+                        ))),
+                Field(
+                    'email',
+                    _("E-mail"),
+                    editable=NEVER,
+                    computer=Computer(
+                        self._email_computer,
+                        depends=(
+                            'subject',
+                        ))),
+                Field(
+                    'uid',
+                    not_null=True),
+                Field(
+                    'purpose',
+                    not_null=True),
+            )
             return fields
 
         columns = ('common_name', 'valid_from', 'valid_until', 'trusted',)
@@ -269,7 +300,7 @@ class UserCertificates(Certificates):
     def authentication_certificate(self, uid):
         """Return authentication certificate row of the given user.
 
-        The return value is the corresponding 'pytis.data.Row' instance.  If
+        The return value is the corresponding 'pd.Row' instance.  If
         the user doesn't have authentication certificate assigned, return
         'None'.
 
@@ -291,7 +322,7 @@ class UserCertificates(Certificates):
         finally:
             try:
                 self._data.close()
-            except:
+            except Exception:
                 pass
         return row
 
@@ -335,10 +366,12 @@ class CertificateRequest(UserCertificates):
                 'certificate_serial_number', dbconnection)
 
         def fields(self):
-            overridden = (Field('file', descr=_("Upload a PEM file containing the certificate request")),
-                          Field('purpose', default=self._PURPOSE_AUTHENTICATION))
+            overridden = (
+                Field(
+                    'file', descr=_("Upload a PEM file containing the certificate request")), Field(
+                    'purpose', default=self._PURPOSE_AUTHENTICATION))
             # We add some fields to propagate last form values to the new request
-            extra = (Field('regcode', type=pytis.data.String(), virtual=True),)
+            extra = (Field('regcode', type=pd.String(), virtual=True),)
             return self._inherited_fields(CertificateRequest, override=overridden) + extra
 
         def _certificate_computation(self, buffer):
@@ -352,14 +385,26 @@ class CertificateRequest(UserCertificates):
             try:
                 stdout = open(log_file, 'w')
                 open(request_file, 'w').write(str(buffer))
-                open(template_file, 'w').write('serial = %s\nexpiration_days = %s\ntls_www_client\n' %
-                                               (serial_number, wiking.cfg.certificate_expiration_days,))
-                return_code = subprocess.call(('/usr/bin/certtool', '--generate-certificate',
-                                               '--load-request', request_file,
-                                               '--outfile', certificate_file,
-                                               '--load-ca-certificate', wiking.cfg.ca_certificate_file, '--load-ca-privkey', wiking.cfg.ca_key_file,
-                                               '--template', template_file,),
-                                              stdout=stdout, stderr=stdout)
+                open(
+                    template_file, 'w').write(
+                    'serial = %s\nexpiration_days = %s\ntls_www_client\n' %
+                    (serial_number, wiking.cfg.certificate_expiration_days,))
+                return_code = subprocess.call(
+                    ('/usr/bin/certtool',
+                     '--generate-certificate',
+                     '--load-request',
+                     request_file,
+                     '--outfile',
+                     certificate_file,
+                     '--load-ca-certificate',
+                     wiking.cfg.ca_certificate_file,
+                     '--load-ca-privkey',
+                     wiking.cfg.ca_key_file,
+                     '--template',
+                     template_file,
+                     ),
+                    stdout=stdout,
+                    stderr=stdout)
                 if return_code != 0:
                     raise Exception(_("Certificate request could not be processed"),
                                     open(log_file).read())
@@ -396,11 +441,13 @@ class CertificateRequest(UserCertificates):
     #
     # class _Option_ca_certificate_file(pc.StringOption, pc.HiddenOption):
     #    _DESCR = "Name of the file containing the local certification authority certificate."
-    #    _DOC = ("This certificate is used to sign users' certificates used for authentication to the application.")
+    #    _DOC = ("This certificate is used to sign users' certificates used "
+    #            "for authentication to the application.")
     #    _DEFAULT = '/etc/wiking/ca-cert.pem'
     #
     # class _Option_ca_key_file(pc.StringOption, pc.HiddenOption):
-    #    _DESCR = "Name of the file containing the key corresponding to the local certification authority certificate."
+    #    _DESCR = ("Name of the file containing the key corresponding "
+    #              "to the local certification authority certificate.")
     #    _DOC = ("This is the secret certificate private key.")
     #    _DEFAULT = '/etc/wiking/ca-key.pem'
     #
