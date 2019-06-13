@@ -15,51 +15,43 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-__version__ = '2.1.0'
+from .util import (  # noqa: F401
+    DBG, EVT, OPR,
+    Abort, AuthenticationError, AuthenticationProvider, AuthenticationRedirect,
+    AuthorizationError, BadRequest, Binding, Channel, ChannelContent, ConfirmationDialog,
+    CookieAuthenticationProvider, Date, DateTime, DecryptionDialog, Document,
+    Forbidden, HTTPBasicAuthenticationProvider, HtmlContent, HtmlTraceback, IFrame, InputForm,
+    InternalServerError, LanguageSelection, LoginControl, LoginDialog, MailAttachment,
+    MaximizedModeControl, MenuItem, Message, ModuleInstanceResolver, NotAcceptable, NotFound,
+    NotModified, Panel, PanelItem, PasswordExpirationError, PasswordStorage,
+    Pbkdf2Md5PasswordStorage, Pbkdf2PasswordStorage, PermanentRedirect, PlainTextPasswordStorage,
+    RecordsIterator, Redirect, RequestError, Response, RowsIterator, RssWriter, ServiceUnavailable,
+    Specification, TZInfo, Theme, Time, TopBarControl, UniversalPasswordStorage,
+    UnsaltedMd5PasswordStorage, WikingDefaultDataClass, WikingResolver,
+    ajax_response, cmp_versions, format_http_date, generate_random_string, log, make_uri,
+    module, parse_http_date, pdf_document, send_mail, serve_file, validate_email_address,
+)
 
-import sys
-import os
-import time
-import string
-import re
-import copy
-import urllib
-import imp
+from .request import (  # noqa: F401
+    ClosedConnection, FileUpload, Request, Role, Roles, ServerInterface, User,
+)
+from .modules import (  # noqa: F401
+    ActionHandler, Documentation, Module, Reload, RequestHandler, Resources,
+    Robots, Search, Session, SiteIcon, SubmenuRedirect,
+)
+from .db import (  # noqa: F401
+    APIProvider, CachedTables, CachingPytisModule, CbCachingPytisModule, DBException,
+    PytisModule, PytisRssModule, RssModule,
+)
 
-# TODO: this can be removed once it is solved in Pytis...
-imp.reload(sys)
-sys.setdefaultencoding('utf-8')
+from .application import Application  # noqa: F401
+from .export import Exporter, Html5Exporter, MinimalExporter  # noqa: F401
+from .handler import Handler  # noqa: F401
 
-import pytis
-import pytis.util
-import pytis.data as pd
-import pytis.presentation as pp
-import pytis.web as pw
+from lcg import log as debug  # noqa: F401
 
-import lcg
-from lcg import log as debug
-
-from util import *
-from request import *
-from modules import *
-from db import *
-from application import *
-from export import *
-from handler import *
-
-from configuration import *
-# Initialize the global configuration object.
+# Initialize the global configuration object 'wiking.cfg'.
+from .configuration import Configuration, ApplicationConfiguration  # noqa: F401
 cfg = Configuration()
 
-# We don't want to overwrite module's __doc__ and other private identifiers...
-_globals = dict([(k, v) for k, v in globals().items() if not k.startswith('_')])
-import util
-import modules
-import db
-import application
-import export
-import request
-import handler
-for _file in (util, modules, db, application, export, handler):
-    _file.__dict__.update(_globals)
-del _globals, k, v, _file
+__version__ = '2.1.0'

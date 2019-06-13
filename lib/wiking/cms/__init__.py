@@ -17,25 +17,29 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 """Wiking Content Management System implemented as a Wiking application."""
+from __future__ import absolute_import
 
-# TODO: Get rid of * imports...
-from wiking import *
+from .cms import (  # noqa: F401
+    Attachments, BrailleExporter, CMSExtension, CMSExtensionMenuModule, CMSExtensionModule,
+    CMSModule, CmsPageExcerpts, CommonTexts, Config, ContactForm, ContentField,
+    ContentManagementModule, Countries, Discussions, EmailSpool, EmailText, Emails,
+    Embeddable, EmbeddableCMSModule, Languages, NavigablePages, News, NewsletterEditions,
+    NewsletterPosts, NewsletterSubscription, Newsletters, PDFExporter, PageHistory,
+    PageStructure, PageTitles, Pages, PanelItem, Panels, Planner, PublicationChapters,
+    PublicationExports, Publications, Resources, Roles, SettingsManagementModule,
+    SiteMap, SiteSpecificContentModule, StyleManagementModule, StyleSheets, Text,
+    TextReferrer, Texts, Themes, UserManagementModule, WikingManagementInterface,
+    text2content,
+)
 
-from configuration import CMSConfiguration
+from .users import (  # noqa: F401
+    ActivationForm, ActiveUsers, ApplicationRoles, ContainingRoles, Registration,
+    Role, RoleMembers, RoleSets, Session, SessionLog, UserGroups, UserRoles, Users,
+)
+
+from .appl import AdminControl, Application  # noqa: F401
+from .crypto import CryptoKeys, CryptoNames  # noqa: F401
+from .configuration import CMSConfiguration  # noqa: F401
+from . import texts  # noqa: F401
+
 cfg = CMSConfiguration()
-
-import wiking
-
-
-from cms import *
-from users import *
-from appl import *
-from crypto import *
-
-import texts
-
-_globals = dict([(k, v) for k, v in globals().items() if not k.startswith('_')])
-import appl
-import cms
-for _file in (appl, cms):
-    _file.__dict__.update(_globals)
