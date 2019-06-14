@@ -36,12 +36,14 @@ import lcg
 import wiking
 from pytis.data.dbapi import DBAPIData
 
+_ = lcg.TranslatableTextFactory('wiking')
+
+unistr = type(u'')  # Python 2/3 transition hack.
+
 DBG = pytis.util.DEBUG
 EVT = pytis.util.EVENT
 OPR = pytis.util.OPERATIONAL
 log = pytis.util.StreamLogger(sys.stderr).log
-
-_ = lcg.TranslatableTextFactory('wiking')
 
 
 class RequestError(Exception):
@@ -1276,7 +1278,7 @@ class UnsaltedMd5PasswordStorage(PasswordStorage):
     """
 
     def _md5(self, password):
-        if isinstance(password, unicode):
+        if isinstance(password, unistr):
             password = password.encode('utf-8')
         try:
             from hashlib import md5
@@ -1472,7 +1474,7 @@ class HTTPBasicAuthenticationProvider(AuthenticationProvider):
             return None
         credentials = auth_header.split()[1].decode("base64")
         try:
-            login, password = [unicode(x, req.encoding()) for x in credentials.split(":", 1)]
+            login, password = [unistr(x, req.encoding()) for x in credentials.split(":", 1)]
         except UnicodeError:
             return None
         application = wiking.module.Application
@@ -2812,7 +2814,7 @@ def send_mail(addr, subject, text, sender=None, sender_name=None, html=None,
     msg = MIMEMultipart(multipart_type)
     localizer = lcg.Localizer(lang, translation_path=wiking.cfg.translation_path)
 
-    if isinstance(text, unicode):
+    if isinstance(text, unistr):
         text = localizer.localize(text)
     if not sender or sender == '-':  # Hack: '-' is the Wiking CMS Admin default value...
         sender = wiking.cfg.default_sender_address
@@ -3014,9 +3016,9 @@ def make_uri(base, *args, **kwargs):
         else:
             uri = urllib.quote(base.encode('utf-8'))
     if args and isinstance(args[0], basestring):
-        uri += '#' + urllib.quote(unicode(args[0]).encode('utf-8'))
+        uri += '#' + urllib.quote(unistr(args[0]).encode('utf-8'))
         args = args[1:]
-    query = ';'.join([k + "=" + urllib.quote_plus(unicode(v).encode('utf-8'))
+    query = ';'.join([k + "=" + urllib.quote_plus(unistr(v).encode('utf-8'))
                       for k, v in args + tuple(kwargs.items()) if v is not None])
     if query:
         uri += '?' + query

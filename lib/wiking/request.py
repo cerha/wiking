@@ -31,6 +31,8 @@ from wiking import log, OPR, format_http_date, parse_http_date, Message
 
 _ = lcg.TranslatableTextFactory('wiking')
 
+unistr = type(u'')  # Python 2/3 transition hack.
+
 
 class ClosedConnection(Exception):
     """Exception raised when the client closes the connection during communication."""
@@ -47,7 +49,7 @@ class FileUpload(pytis.web.FileUpload):
 
     def __init__(self, field, encoding):
         self._field = field
-        self._filename = re.split(r'[\\/:]', unicode(field.filename, encoding))[-1]
+        self._filename = re.split(r'[\\/:]', unistr(field.filename, encoding))[-1]
 
     def file(self):
         return self._field.file
@@ -416,7 +418,7 @@ class Request(ServerInterface):
         """Get the value of given cookie as unicode or return DEFAULT if cookie was not set."""
         if name in self._cookies:
             try:
-                return unicode(self._cookies[name].value, self._encoding)
+                return unistr(self._cookies[name].value, self._encoding)
             except UnicodeDecodeError:
                 return default
         else:
@@ -438,7 +440,7 @@ class Request(ServerInterface):
             if name in self._cookies:
                 del self._cookies[name]
         else:
-            if isinstance(value, unicode):
+            if isinstance(value, unistr):
                 value = value.encode(self._encoding)
             self._cookies[name] = value
         c = Cookie.SimpleCookie()
@@ -611,7 +613,7 @@ class Request(ServerInterface):
         if isinstance(data, (list, types.GeneratorType)):
             result = data
         else:
-            if isinstance(data, unicode):
+            if isinstance(data, unistr):
                 data = data.encode(self._encoding)
                 if content_type in ("text/html", "application/xml", "text/css", "text/plain"):
                     content_type += "; charset=%s" % self._encoding
@@ -709,11 +711,11 @@ class Request(ServerInterface):
                 uri = urllib.quote(base_uri.encode(self._encoding))
             quote = urllib.quote_plus
         if args and isinstance(args[0], basestring):
-            anchor = urllib.quote(unicode(args[0]).encode(self._encoding))
+            anchor = urllib.quote(unistr(args[0]).encode(self._encoding))
             args = args[1:]
         else:
             anchor = None
-        query = '&'.join([k + "=" + quote(unicode(v).encode(self._encoding))
+        query = '&'.join([k + "=" + quote(unistr(v).encode(self._encoding))
                           for k, v in args + tuple(kwargs.items()) if v is not None])
         if query:
             uri += '?' + query

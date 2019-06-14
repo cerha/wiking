@@ -23,6 +23,8 @@ import wsgiref.util
 import wsgiref.headers
 import wiking
 
+unistr = type(u'')  # Python 2/3 transition hack.
+
 
 class WsgiRequest(wiking.Request):
     """Wiking server interface implementation for WSGI.
@@ -62,7 +64,7 @@ class WsgiRequest(wiking.Request):
         if self._uri is None:
             # Not done in constructor (see the constructor comment).
             raw_uri = self._environ.get('SCRIPT_NAME', '') + self._environ['PATH_INFO']
-            self._uri = unicode(raw_uri, self._encoding)
+            self._uri = unistr(raw_uri, self._encoding)
         return self._uri
 
     def unparsed_uri(self):
@@ -85,7 +87,7 @@ class WsgiRequest(wiking.Request):
             elif value.filename:
                 return wiking.FileUpload(value, self._encoding)
             else:
-                return unicode(value.value, self._encoding)
+                return unistr(value.value, self._encoding)
                 # TODO: return BadRequest instead of InternalServerError? Is it always
                 # browser's fault if it doesn't encode the request properly?
                 # except UnicodeDecodeError:

@@ -56,6 +56,8 @@ from wiking.cms import (
 
 _ = lcg.TranslatableTextFactory('wiking-cms')
 
+unistr = type(u'')  # Python 2/3 transition hack.
+
 
 class RoleSets(UserManagementModule, CachingPytisModule):
     """Accessor of role containment information stored in the database.
@@ -1391,7 +1393,7 @@ class Users(UserManagementModule, CachingPytisModule):
                         record.update(passcode=passcode,
                                       passexpire=now() + datetime.timedelta(minutes=expiry_minutes))
                     except pd.DBException as e:
-                        req.message(unicode(e), req.ERROR)
+                        req.message(unistr(e), req.ERROR)
                     else:
                         # Translators: Credentials such as password...
                         text = lcg.concat(

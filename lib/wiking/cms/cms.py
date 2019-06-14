@@ -55,6 +55,10 @@ from wiking import (
     Redirect, Response, Role, Specification, make_uri,
 )
 
+_ = lcg.TranslatableTextFactory('wiking-cms')
+
+unistr = type(u'')  # Python 2/3 transition hack.
+
 CHOICE = pp.SelectionType.CHOICE
 ALPHANUMERIC = pp.TextFilter.ALPHANUMERIC
 LOWER = pp.PostProcess.LOWER
@@ -64,8 +68,6 @@ ALWAYS = pp.Editable.ALWAYS
 ASC = pd.ASCENDENT
 DESC = pd.DESCENDANT
 now = pytis.data.DateTime.datetime
-
-_ = lcg.TranslatableTextFactory('wiking-cms')
 
 
 def enum(seq):
@@ -3392,7 +3394,7 @@ class Attachments(ContentManagementModule):
 
     class Spec(Specification):
 
-        class _FakeFile(unicode):
+        class _FakeFile(unistr):
             """The string value determines the file path, len() returns its size."""
 
             def __len__(self):
@@ -3916,7 +3918,7 @@ class Attachments(ContentManagementModule):
                 return not item.filename.endswith('/')  # Directory names end with a slash...
 
             def filename(self, item):
-                return unicode(item.filename, "cp437")
+                return unistr(item.filename, "cp437")
 
             def open(self, item):
                 return self._archive.open(item)
