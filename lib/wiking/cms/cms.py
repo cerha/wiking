@@ -548,7 +548,7 @@ class CMSExtension(wiking.Module, Embeddable, wiking.RequestHandler):
 
             """
             if __debug__:
-                assert isinstance(modname, (str, unicode)), modname
+                assert isinstance(modname, basestring), modname
                 assert enabled is None or isinstance(enabled, collections.Callable), enabled
                 for item in submenu:
                     assert isinstance(item, CMSExtension.MenuItem), item

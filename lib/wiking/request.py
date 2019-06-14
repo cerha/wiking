@@ -1110,8 +1110,8 @@ class User(object):
         panel, if defined.
 
         """
-        assert isinstance(login, (unicode, str))
-        assert name is None or isinstance(name, (unicode, str))
+        assert isinstance(login, basestring)
+        assert name is None or isinstance(name, basestring)
         assert isinstance(roles, (tuple, list))
         assert Roles.AUTHENTICATED in roles
         self._login = login
