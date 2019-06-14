@@ -26,12 +26,10 @@ option image_screen_size), thumbnails and rezized images must be regenerated to
 match the new settings.
 
 """
-
 import sys
 import getopt
-import types
 import os
-import cStringIO
+import io
 import PIL.Image
 
 import pytis
@@ -55,7 +53,7 @@ Options: Pytis command line options, such as --config or --dbhost and --dbname.
 def resize(image, size):
     img = image.copy()
     img.thumbnail(size, PIL.Image.ANTIALIAS)
-    stream = cStringIO.StringIO()
+    stream = io.BytesIO()
     img.save(stream, image.format)
     return pd.Image.Buffer(buffer(stream.getvalue())), img.size
 
@@ -138,6 +136,7 @@ def run():
         sys.stderr.write("Transaction commited.\n")
         transaction.commit()
     transaction.close()
+
 
 if __name__ == '__main__':
     run()

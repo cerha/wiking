@@ -15,6 +15,8 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+from builtins import object
+
 import wiking
 
 import mod_python
@@ -68,7 +70,7 @@ class ModPythonRequest(wiking.Request):
         return self._params.get(name, default)
 
     def params(self):
-        return self._params.keys()
+        return list(self._params.keys())
 
     def has_param(self, name):
         return name in self._params

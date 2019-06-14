@@ -27,6 +27,8 @@
 # into the database.  NAMESPACE, LABEL and LANGUAGECODE attributes of the
 # stored text are defined by the file name.
 
+from __future__ import print_function
+
 import codecs
 import os
 import sys
@@ -38,7 +40,7 @@ pytis.config.log_exclude = [pytis.util.ACTION, pytis.util.EVENT, pytis.util.DEBU
 
 
 def usage():
-    print 'usage: %s DATABASE DIRECTORY' % (sys.argv[0],)
+    print('usage: %s DATABASE DIRECTORY' % (sys.argv[0],))
     sys.exit(1)
 
 
@@ -55,16 +57,16 @@ def import_texts(database, directory):
     label_column_type = label_data.columns()[0].type()
     for filename in os.listdir(directory):
         parts = filename.split('.')
-        print "  - %s ..." % filename,
+        print("  - %s ..." % filename, end=' ')
         if filename.endswith('.txt') and len(parts) == 4:
             label = '.'.join(parts[:2])
             lang = parts[2]
             label_key = label_column_type.validate(label)[0]
             if not label_data.row(label_key):
-                print "new label `%s' ..." % label,
+                print("new label `%s' ..." % label, end=' ')
                 label_data.insert(pytis.data.Row([('label', label_key)]))
             else:
-                print "updating label `%s' ..." % label,
+                print("updating label `%s' ..." % label, end=' ')
             content = codecs.open(os.path.join(directory, filename), 'r', 'utf-8').read()
             text_id = label + '@' + lang
             row_data = [(c.id(), c.type().validate(v)[0],)
@@ -72,11 +74,11 @@ def import_texts(database, directory):
             row = pytis.data.Row(row_data)
             error, success = data.update(row[0], row)
             if success:
-                print "done"
+                print("done")
             else:
-                print "FAILED:", error
+                print("FAILED:", error)
         else:
-            print "ignored (file name doesn't match the required pattern)"
+            print("ignored (file name doesn't match the required pattern)")
 
 
 def run():

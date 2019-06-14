@@ -23,6 +23,12 @@ is stored in database and can be managed using a web browser.
 
 """
 
+from future import standard_library
+from functools import reduce
+from builtins import str
+from past.builtins import basestring
+from builtins import object
+
 import lcg
 import pytis.data as pd
 import pytis.presentation as pp
@@ -40,7 +46,6 @@ import re
 import string
 import sys
 import unicodedata
-import urllib
 import operator
 import json
 
@@ -54,6 +59,10 @@ from wiking import (
     Forbidden, MenuItem, NotFound, PanelItem,
     Redirect, Response, Role, Specification, make_uri,
 )
+
+standard_library.install_aliases()
+import urllib.parse
+import urllib.error
 
 _ = lcg.TranslatableTextFactory('wiking-cms')
 
@@ -1890,7 +1899,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
             if preview_mode:
                 variants = available_languages
             else:
-                variants = titles.keys()
+                variants = list(titles.keys())
             return MenuItem('/' + identifier,
                             title=lcg.SelfTranslatableText(identifier, translations=titles),
                             descr=lcg.SelfTranslatableText('', translations=descriptions),
@@ -3188,7 +3197,7 @@ class PublicationExports(ContentManagementModule):
             src_zip = zipfile.ZipFile(path, mode='r')
             try:
                 if self._WATERMARK_SUBSTITUTION_REGEX.search(src_zip.read(titlepage)):
-                    import cStringIO
+                    import io
                     date = lcg.LocalizableDateTime(now().strftime('%Y-%m-%d %H:%M:%S'), utc=True)
                     user = req.user()
                     # Visible watermark substitutions (the exported HTML must contain
@@ -3199,7 +3208,7 @@ class PublicationExports(ContentManagementModule):
                     # Simple invisible watermark (relying on known LCG export constructs).
                     replacement = ('<div id="heading">',
                                    '<div id="heading" class="heading-%d">' % user.uid())
-                    result = cStringIO.StringIO()
+                    result = io.StringIO()
                     dst_zip = zipfile.ZipFile(result, 'w')
                     try:
                         for item in src_zip.infolist():
@@ -3518,10 +3527,10 @@ class Attachments(ContentManagementModule):
         def _resize(self, image, size):
             # Compute the value by resizing the original image.
             import PIL.Image
-            import cStringIO
+            import io
             if image is None:
                 return None
-            f = cStringIO.StringIO(image)
+            f = io.StringIO(image)
             try:
                 image = PIL.Image.open(f)
             except IOError:
@@ -3529,7 +3538,7 @@ class Attachments(ContentManagementModule):
             else:
                 img = image.copy()
                 img.thumbnail(size, PIL.Image.ANTIALIAS)
-                stream = cStringIO.StringIO()
+                stream = io.StringIO()
                 img.save(stream, image.format)
                 return pd.Image.Buffer(buffer(stream.getvalue()))
 
@@ -4702,8 +4711,8 @@ class NewsletterEditions(CMSModule):
         html = re.sub(r'%(?!\([a-z]+\)s)', '%%', html)
         text = self._newsletter_text(html)
         for email, code in addresses:
-            subst = dict([(k, urllib.quote(v)) for k, v in (('email', email),
-                                                            ('code', code))])
+            subst = dict([(k, urllib.parse.quote(v)) for k, v in (('email', email),
+                                                                  ('code', code))])
             err = wiking.send_mail(email, title, html=html % subst, text=text % subst, lang=lang)
             if err:
                 errors += 1
@@ -4890,7 +4899,7 @@ class Discussions(ContentManagementModule, EmbeddableCMSModule):
                     # information needed for the Javascript 'Discussion' class
                     # instantiated below the form in the method related().
                     return g.div((g.span(record['comment_id'].export(), cls='id'),
-                                  g.span(urllib.quote(quoted.encode('utf-8')), cls='quoted'),
+                                  g.span(urllib.parse.quote(quoted.encode('utf-8')), cls='quoted'),
                                   ), cls='discussion-reply', style='display: none')
                 else:
                     return ''
@@ -5175,7 +5184,7 @@ class Text(Structure):
         value.
 
     """
-    _attributes = (Attribute('label', str),
+    _attributes = (Attribute('label', basestring),
                    Attribute('description', basestring),
                    Attribute('text', basestring),
                    Attribute('text_format', basestring),)

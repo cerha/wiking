@@ -17,8 +17,11 @@
 
 """Definition of the basic Wiking module classes."""
 
+from future import standard_library
+from builtins import str
+from builtins import object
+
 import datetime
-import httplib
 import os
 import re
 import types
@@ -28,6 +31,8 @@ import lcg
 import wiking
 from wiking import AuthenticationError, Forbidden, NotFound, Redirect
 
+standard_library.install_aliases()
+import http.client
 
 _ = lcg.TranslatableTextFactory('wiking')
 
@@ -372,7 +377,7 @@ class Resources(Module, RequestHandler):
             raise Forbidden()
         filename = os.path.join(*req.unresolved_path)
         response = self._handle_resource(req, filename)
-        if response.status_code() == httplib.OK and filename.endswith('.css'):
+        if response.status_code() == http.client.OK and filename.endswith('.css'):
             # Substitute the current color theme in stylesheets.
             theme, theme_mtime = self._theme(req)
             stylesheet_mtime = response.last_modified()
@@ -561,7 +566,7 @@ class Search(Module, ActionHandler):
                 g.hidden(name='action', value='search'),
             ))
 
-    class Result:
+    class Result(object):
 
         def __init__(self, uri, title, sample=None):
             self._title = title

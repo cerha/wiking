@@ -18,6 +18,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import unicode_literals
+from __future__ import absolute_import
+from builtins import str
 
 import os
 import glob
@@ -26,7 +28,7 @@ import sqlalchemy
 import pytis.data.gensqlalchemy as sql
 import pytis.data
 from pytis.data.dbdefs import and_, coalesce, func, ival, null, select, stype, sval
-from wiking_db import Base_CachingTable, CommonAccesRights
+from .wiking_db import Base_CachingTable, CommonAccesRights
 
 current_timestamp_0 = sqlalchemy.sql.functions.Function('current_timestamp', ival(0))
 

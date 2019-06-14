@@ -15,13 +15,18 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+from future import standard_library
+from builtins import object
+
 import cgi
-import httplib
 import os
-import urlparse
 import wsgiref.util
 import wsgiref.headers
 import wiking
+
+standard_library.install_aliases()
+import http.client
+import urllib.parse
 
 unistr = type(u'')  # Python 2/3 transition hack.
 
@@ -70,7 +75,7 @@ class WsgiRequest(wiking.Request):
     def unparsed_uri(self):
         uri = wsgiref.util.request_uri(self._environ)
         if uri:
-            uri = urlparse.urlunsplit(('', '',) + urlparse.urlsplit(uri)[2:])
+            uri = urllib.parse.urlunsplit(('', '',) + urllib.parse.urlsplit(uri)[2:])
         return uri
 
     def method(self):
@@ -161,7 +166,7 @@ class WsgiRequest(wiking.Request):
     def start_http_response(self, status_code):
         if True:  # not self._response_started:
             self._response_started = True
-            response = '%d %s' % (status_code, httplib.responses[status_code])
+            response = '%d %s' % (status_code, http.client.responses[status_code])
             self._start_response(response, self._response_headers_storage)
         else:
             raise RuntimeError("start_http_response() can only be called once!")

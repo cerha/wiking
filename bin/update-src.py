@@ -30,6 +30,7 @@ typically needed for Wiking web applications (LCG, Pytis, Wiking etc).  Note
 that you may need to run upgrade-db.py after this script.
 
 """
+from __future__ import print_function
 
 import os
 import sys
@@ -61,7 +62,7 @@ def update_src(directory):
     if not repos:
         usage("No subdirectories found: %s" % os.path.abspath(directory))
     for repo in repos:
-        print "Updating repository: %s" % repo
+        print("Updating repository: %s" % repo)
         subdir = os.path.join(directory, repo)
         call('git pull', subdir)
         if ((os.path.exists(os.path.join(subdir, 'Makefile')) or

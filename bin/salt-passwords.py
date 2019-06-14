@@ -23,6 +23,7 @@ May be optionally applied after upgrade of Wiking CMS database to version 72 to
 convert the existing plain text or unsalted md5 passwords to salted PBKDF2 hashes.
 
 """
+from __future__ import print_function
 
 import sys
 import getopt
@@ -100,8 +101,8 @@ def run():
         sys.stderr.write("Transaction rolled back.\n")
         raise
     else:
-        print "Total %d passwords updated (%d from plain text, %d from md5)." % \
-            (n, plain, n - plain)
+        print("Total %d passwords updated (%d from plain text, %d from md5)." % \
+            (n, plain, n - plain))
         transaction.commit()
     transaction.close()
 

@@ -15,10 +15,15 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+from __future__ import absolute_import
+from future import standard_library
+from builtins import range
+from past.builtins import basestring
+from builtins import object
+
 import os
 import sys
 import traceback
-import urlparse
 import json
 
 import wiking
@@ -28,6 +33,9 @@ import pytis.util
 from pytis.util import OPERATIONAL, log
 
 _ = lcg.TranslatableTextFactory('wiking')
+
+standard_library.install_aliases()
+import urllib.parse
 
 
 class Handler(object):
@@ -225,7 +233,7 @@ class Handler(object):
         return req.send_response(context.localize(content.export(context)))
 
     def _handle_maintenance_mode(self, req):
-        import httplib
+        import http.client
         # Translators: Meaning that the system (webpage) does not work now
         # because we are updating/fixing something but will work again after
         # the maintaince is finished.
@@ -240,7 +248,7 @@ class Handler(object):
         context = exporter.context(node, lang=lang)
         exported = exporter.export(context)
         return req.send_response(context.localize(exported),
-                                 status_code=httplib.SERVICE_UNAVAILABLE)
+                                 status_code=http.client.SERVICE_UNAVAILABLE)
 
     def _handle_request_error(self, req, error):
         if not isinstance(error, wiking.AuthenticationError):
@@ -267,7 +275,7 @@ class Handler(object):
                     return self._handle_maintenance_mode(req)
                 # Very basic CSRF prevention
                 if req.param('submit') and req.header('Referer'):
-                    referer = urlparse.urlparse(req.header('Referer'))
+                    referer = urllib.parse.urlparse(req.header('Referer'))
                     referer_uri = referer.scheme + '://' + referer.netloc
                     if referer_uri != req.server_uri():
                         wiking.debug("Request rejected due to CSRF protection:",
@@ -420,7 +428,7 @@ try:
     # module (which is no longer specific to mod_python).  If
     # mod_python_interface failed to import, we are not running under
     # mod_python.
-    import mod_python_interface
+    from . import mod_python_interface
     handler = mod_python_interface.ModPythonHandler()
 except Exception:
     pass

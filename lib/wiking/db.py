@@ -16,12 +16,17 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+from future import standard_library
+from builtins import zip
+from builtins import str
+from builtins import range
+from builtins import object
+
 import collections
 import datetime
-import cStringIO as StringIO
+import io
 import re
 import string
-import urlparse
 import weakref
 import json
 
@@ -38,6 +43,9 @@ import wiking
 from wiking import AuthorizationError, BadRequest, Forbidden, NotFound, Redirect
 
 _ = lcg.TranslatableTextFactory('wiking')
+
+standard_library.install_aliases()
+import urllib.parse
 
 
 class DBException(pd.DBException):
@@ -1822,7 +1830,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
             # Back action returning to some menu item?
             http_referer = req.header('Referer')
             if http_referer:
-                path = urlparse.urlparse(http_referer).path[1:]
+                path = urllib.parse.urlparse(http_referer).path[1:]
                 menu = wiking.module.Application.menu(req)
 
                 def find(menu, menu_path):
@@ -2481,7 +2489,7 @@ class RssModule(object):
         else:
             condition = None
         base_uri = req.server_uri(current=True)
-        buff = StringIO.StringIO()
+        buff = io.StringIO()
         writer = wiking.RssWriter(buff)
         writer.start(base_uri,
                      req.localize(wiking.cfg.site_title + ' - ' + self._rss_channel_title(req)),
@@ -2613,7 +2621,7 @@ class PytisRssModule(PytisModule):
         author = func(spec.author())
         date = func(spec.date(), raw=True)
         #
-        buff = StringIO.StringIO()
+        buff = io.StringIO()
         writer = wiking.RssWriter(buff)
         writer.start(base_uri,
                      localize(wiking.cfg.site_title + ' - ' + channel.title()),

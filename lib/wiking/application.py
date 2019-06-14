@@ -18,6 +18,9 @@
 
 """Definition of default Wiking application and its API."""
 
+from builtins import str
+from past.builtins import basestring
+
 import re
 import pytis
 import wiking

@@ -24,7 +24,9 @@ in the version control system history.
 
 """
 
-import cStringIO
+from builtins import str
+
+import io
 import datetime
 import os
 import subprocess
@@ -61,7 +63,7 @@ def _certificate_mail_info(record):
     attachment = "openssl.cnf"
     user_name = '%s %s' % (record['firstname'].value(), record['surname'].value(),)
     user_email = record['email'].value()
-    attachment_stream = cStringIO.StringIO(str('''[ req ]
+    attachment_stream = io.StringIO(str('''[ req ]
 distinguished_name  = req_distinguished_name
 attributes          = req_attributes
 x509_extensions     = v3_ca

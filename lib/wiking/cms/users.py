@@ -29,6 +29,10 @@ L{RoleSets}, L{RoleMembers}, L{ApplicationRoles}.
 
 """
 
+from builtins import str
+from past.builtins import basestring
+from builtins import object
+
 import datetime
 import random
 import socket
@@ -823,7 +827,7 @@ class Users(UserManagementModule, CachingPytisModule):
 
         @classmethod
         def states(cls):
-            return cls._STATES.keys()
+            return list(cls._STATES.keys())
 
         @classmethod
         def label(cls, gender):
@@ -835,7 +839,7 @@ class Users(UserManagementModule, CachingPytisModule):
 
         @classmethod
         def states(cls):
-            return cls._GENDERS.keys()
+            return list(cls._GENDERS.keys())
 
         @classmethod
         def label(cls, state):

@@ -16,18 +16,27 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
-import Cookie
-import httplib
+from past.builtins import cmp
+from future import standard_library
+from builtins import str
+from past.builtins import basestring
+from builtins import object
+
 import re
 import string
 import types
-import urllib
 
 import pytis
 import pytis.web
 import lcg
 import wiking
 from wiking import log, OPR, format_http_date, parse_http_date, Message
+
+standard_library.install_aliases()
+import http.cookies
+import http.client
+import urllib.parse
+import urllib.error
 
 _ = lcg.TranslatableTextFactory('wiking')
 
@@ -308,7 +317,7 @@ class Request(ServerInterface):
         self._forwards = []
         self._module_uri = {}
         self._user = self._UNDEFINED
-        self._cookies = Cookie.SimpleCookie(self.header('Cookie'))
+        self._cookies = http.cookies.SimpleCookie(self.header('Cookie'))
         self._preferred_language = None
         self._preferred_languages = None
         self._timezone = self._UNDEFINED
@@ -341,7 +350,7 @@ class Request(ServerInterface):
         stored = self.cookie(self._MESSAGES_COOKIE)
         if stored:
             lines = stored.splitlines()
-            uri = urllib.unquote(lines[0]).decode(self._encoding)
+            uri = urllib.parse.unquote(lines[0]).decode(self._encoding)
             if uri == self.server_uri(current=True) + self.unparsed_uri():
                 # Storing data on client side is always problematic.  In case of
                 # messages there is not much danger in it, but still it may
@@ -354,7 +363,7 @@ class Request(ServerInterface):
                         mtype, formatted, quoted = line.split(':', 2)
                         if mtype not in self._MESSAGE_TYPES or formatted not in ('t', 'f'):
                             raise ValueError("Invalid values:", mtype, formatted)
-                        message = urllib.unquote(str(quoted)).decode(self._encoding)
+                        message = urllib.parse.unquote(str(quoted)).decode(self._encoding)
                     except Exception as e:
                         log(OPR, "Error unpacking stored messages:", e)
                     else:
@@ -443,7 +452,7 @@ class Request(ServerInterface):
             if isinstance(value, unistr):
                 value = value.encode(self._encoding)
             self._cookies[name] = value
-        c = Cookie.SimpleCookie()
+        c = http.cookies.SimpleCookie()
         c[name] = value or ''
         # c[name]['domain'] = self._req.connection.local_host
         c[name]['path'] = '/'
@@ -538,7 +547,7 @@ class Request(ServerInterface):
                     return True
         return False
 
-    def start_response(self, status_code=httplib.OK, content_type=None, content_length=None,
+    def start_response(self, status_code=http.client.OK, content_type=None, content_length=None,
                        last_modified=None):
         """Set some common HTTP response attributes and send the HTTP headers.
 
@@ -587,7 +596,7 @@ class Request(ServerInterface):
         self.start_http_response(status_code)
 
     def send_response(self, data, content_type="text/html", content_length=None,
-                      status_code=httplib.OK, last_modified=None):
+                      status_code=http.client.OK, last_modified=None):
         """Start the HTTP response and send response data to the client.
 
         Arguments:
@@ -628,7 +637,7 @@ class Request(ServerInterface):
                             last_modified=last_modified)
         return result
 
-    def redirect(self, uri, args=(), status_code=httplib.FOUND):
+    def redirect(self, uri, args=(), status_code=http.client.FOUND):
         """Send an HTTP redirection response to the browser.
 
         Arguments:
@@ -664,9 +673,9 @@ class Request(ServerInterface):
             # will not be translatable anymore.  We make the assumption, that the
             # redirected request's locale will be the same as for this request,
             # but that seems quite appropriate assumption.
-            lines = [urllib.quote(uri.encode(self._encoding))] + \
+            lines = [urllib.parse.quote(uri.encode(self._encoding))] + \
                 [':'.join((mtype, 't' if formatted else 'f',
-                           urllib.quote(self.localize(message).encode(self._encoding))))
+                           urllib.parse.quote(self.localize(message).encode(self._encoding))))
                  for message, mtype, formatted in self._messages]
             self.set_cookie(self._MESSAGES_COOKIE, "\n".join(lines))
         html = ("<html><head><title>Redirected</title></head>"
@@ -702,16 +711,16 @@ class Request(ServerInterface):
         if base_uri.startswith('mailto:'):
             uri = base_uri
             # Many e-mail clients wouldn't replace '+' in the subject by spaces.
-            quote = urllib.quote
+            quote = urllib.parse.quote
         else:
             match = self._ABS_URI_MATCHER.match(base_uri)
             if match:
-                uri = match.group(1) + urllib.quote(match.group(3).encode(self._encoding))
+                uri = match.group(1) + urllib.parse.quote(match.group(3).encode(self._encoding))
             else:
-                uri = urllib.quote(base_uri.encode(self._encoding))
-            quote = urllib.quote_plus
+                uri = urllib.parse.quote(base_uri.encode(self._encoding))
+            quote = urllib.parse.quote_plus
         if args and isinstance(args[0], basestring):
-            anchor = urllib.quote(unistr(args[0]).encode(self._encoding))
+            anchor = urllib.parse.quote(unistr(args[0]).encode(self._encoding))
             args = args[1:]
         else:
             anchor = None
@@ -839,7 +848,8 @@ class Request(ServerInterface):
         if timezone is self._UNDEFINED:
             offsets = self.cookie(self._TZ_OFFSETS_COOKIE)
             try:
-                summer_offset, winter_offset = [int(x) for x in urllib.unquote(offsets).split(';')]
+                summer_offset, winter_offset = [int(x) for x in
+                                                urllib.parse.unquote(offsets).split(';')]
             except (ValueError, TypeError, AttributeError):
                 timezone = wiking.cfg.default_timezone
             else:

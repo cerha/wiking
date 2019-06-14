@@ -1,3 +1,4 @@
+from __future__ import division
 # Copyright (C) 2006-2017 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
@@ -15,17 +16,20 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+from past.builtins import cmp
+from future import standard_library
+from builtins import str
+from past.builtins import basestring
+from builtins import object
+
 import collections
 import datetime
 import json
-import httplib
 import mimetypes
 import os
 import re
 import sys
 import time
-import urllib
-import itertools
 from xml.sax import saxutils
 
 import pytis.data as pd
@@ -35,6 +39,10 @@ import pytis.web
 import lcg
 import wiking
 from pytis.data.dbapi import DBAPIData
+
+standard_library.install_aliases()
+import urllib.error
+import http.client
 
 _ = lcg.TranslatableTextFactory('wiking')
 
@@ -179,7 +187,7 @@ class Redirect(RequestError):
     you need a permanent redirection.
 
     """
-    _STATUS_CODE = httplib.FOUND  # 302
+    _STATUS_CODE = http.client.FOUND  # 302
 
     def __init__(self, uri, *args, **kwargs):
         """Arguments:
@@ -221,7 +229,7 @@ class PermanentRedirect(Redirect):
     HTTP specification.
 
     """
-    _STATUS_CODE = httplib.MOVED_PERMANENTLY  # 301
+    _STATUS_CODE = http.client.MOVED_PERMANENTLY  # 301
 
 
 class NotModified(RequestError):
@@ -232,7 +240,7 @@ class NotModified(RequestError):
     similar negotiation mechanism.
 
     """
-    _STATUS_CODE = httplib.NOT_MODIFIED  # 304
+    _STATUS_CODE = http.client.NOT_MODIFIED  # 304
 
 
 class BadRequest(RequestError):
@@ -249,7 +257,7 @@ class BadRequest(RequestError):
     separate paragraph.
 
     """
-    _STATUS_CODE = httplib.BAD_REQUEST  # 400
+    _STATUS_CODE = http.client.BAD_REQUEST  # 400
     # Translators: An error page title
     _TITLE = _("Invalid Request")
 
@@ -262,7 +270,7 @@ class BadRequest(RequestError):
 class AuthenticationError(RequestError):
     """Error indicating that authentication is required for the resource."""
 
-    _STATUS_CODE = httplib.UNAUTHORIZED  # 401
+    _STATUS_CODE = http.client.UNAUTHORIZED  # 401
     # Translators: This is a warning on a webpage which is only accessible for logged in users
     _TITLE = _("Authentication required")
 
@@ -326,7 +334,7 @@ class Forbidden(RequestError):
     accessible.
 
     """
-    _STATUS_CODE = httplib.FORBIDDEN  # 403
+    _STATUS_CODE = http.client.FORBIDDEN  # 403
     # Translators: An error page title
     _TITLE = _("Access Denied")
 
@@ -383,7 +391,7 @@ class PasswordExpirationError(Forbidden):
 
 class NotFound(RequestError):
     """Error indicating invalid request target."""
-    _STATUS_CODE = httplib.NOT_FOUND  # 404
+    _STATUS_CODE = http.client.NOT_FOUND  # 404
     # Translators: Error page title when requesting URI which does not exist on server.
     _TITLE = _("Item Not Found")
 
@@ -405,7 +413,7 @@ class NotFound(RequestError):
 
 class NotAcceptable(RequestError):
     """Error indicating unavailability of the resource in the requested language."""
-    _STATUS_CODE = httplib.NOT_ACCEPTABLE  # 406
+    _STATUS_CODE = http.client.NOT_ACCEPTABLE  # 406
     # Translators: Title of a dialog on a webpage
     _TITLE = _("Language selection")
 
@@ -453,7 +461,7 @@ class NotAcceptable(RequestError):
 
 class InternalServerError(RequestError):
     """General error in application -- error message is required as an argument."""
-    _STATUS_CODE = httplib.INTERNAL_SERVER_ERROR  # 500
+    _STATUS_CODE = http.client.INTERNAL_SERVER_ERROR  # 500
     _TITLE = _("Internal Server Error")
 
     def __init__(self, einfo):
@@ -494,7 +502,7 @@ class InternalServerError(RequestError):
 
 class ServiceUnavailable(RequestError):
     """Error indicating a temporary problem, which may not appaper in further requests."""
-    _STATUS_CODE = httplib.SERVICE_UNAVAILABLE  # 503
+    _STATUS_CODE = http.client.SERVICE_UNAVAILABLE  # 503
     _TITLE = _("Service Unavailable")
 
     def _messages(self, req):
@@ -921,7 +929,7 @@ class Response(object):
     """
 
     def __init__(self, data, content_type='text/html', content_length=None,
-                 status_code=httplib.OK, last_modified=None, filename=None, headers=()):
+                 status_code=http.client.OK, last_modified=None, filename=None, headers=()):
         """Arguments:
 
           data -- respnse data as one of the types described below.
@@ -1249,7 +1257,7 @@ class PasswordStorage(object):
 
         """
         diff = len(string1) ^ len(string2)
-        for a, b in itertools.izip(string1, string2):
+        for a, b in zip(string1, string2):
             diff |= ord(a) ^ ord(b)
         return diff == 0
 
@@ -2548,7 +2556,7 @@ class RowsIterator(object):
     def __len__(self):
         return self._len
 
-    def next(self):
+    def __next__(self):
         if self._limit is not None and self._count >= self._limit:
             raise StopIteration()
         row = self._data.fetchone()
@@ -2565,8 +2573,8 @@ class RecordsIterator(RowsIterator):
         super(RecordsIterator, self).__init__(record.data(), **kwargs)
         self._record = record
 
-    def next(self):
-        row = super(RecordsIterator, self).next()
+    def __next__(self):
+        row = next(super(RecordsIterator, self))
         self._record.set_row(row)
         return self._record
 
@@ -2636,7 +2644,7 @@ def serve_file(req, path, content_type=None, filename=None, lock=False, headers=
                 return wiking.Response('', content_type=content_type, filename=filename,
                                        headers=headers + (('X-Accel', uri),))
     offset = limit = None
-    status_code = httplib.OK
+    status_code = http.client.OK
     content_length = info.st_size
     range_request = req.header('Range')
     if range_request and range_request.strip().startswith('bytes='):
@@ -2649,7 +2657,7 @@ def serve_file(req, path, content_type=None, filename=None, lock=False, headers=
             if range_start >= 0 and range_end >= range_start:
                 offset = range_start
                 limit = min(range_end + 1, info.st_size) - range_start
-                status_code = httplib.PARTIAL_CONTENT
+                status_code = http.client.PARTIAL_CONTENT
                 content_length = limit
                 headers += ('Content-Range', 'bytes %s-%d/%d' %
                             (range_start, min(range_end, info.st_size - 1), info.st_size)),
@@ -3012,13 +3020,13 @@ def make_uri(base, *args, **kwargs):
     else:
         match = _ABS_URI_MATCHER.match(base)
         if match:
-            uri = match.group(1) + urllib.quote(match.group(3).encode('utf-8'))
+            uri = match.group(1) + urllib.parse.quote(match.group(3).encode('utf-8'))
         else:
-            uri = urllib.quote(base.encode('utf-8'))
+            uri = urllib.parse.quote(base.encode('utf-8'))
     if args and isinstance(args[0], basestring):
-        uri += '#' + urllib.quote(unistr(args[0]).encode('utf-8'))
+        uri += '#' + urllib.parse.quote(unistr(args[0]).encode('utf-8'))
         args = args[1:]
-    query = ';'.join([k + "=" + urllib.quote_plus(unistr(v).encode('utf-8'))
+    query = ';'.join([k + "=" + urllib.parse.quote_plus(unistr(v).encode('utf-8'))
                       for k, v in args + tuple(kwargs.items()) if v is not None])
     if query:
         uri += '?' + query

@@ -16,8 +16,12 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+from future import standard_library
+from builtins import range
+from past.builtins import basestring
+from builtins import object
+
 import argparse
-import cookielib
 import copy
 import os
 import random
@@ -25,11 +29,13 @@ import re
 import sys
 import time
 import unittest
-import urlparse
-
 import webtest
 
 import wiking.wsgi_interface
+
+standard_library.install_aliases()
+import http.cookiejar
+import urllib.parse
 
 
 class _TestBase(unittest.TestCase):
@@ -141,7 +147,7 @@ class _TestBase(unittest.TestCase):
                 self._info("  Skipped: doesn't match")
                 continue
             self._info("  Accepted")
-            url = urlparse.urljoin(self._current_url(browser), href)
+            url = urllib.parse.urljoin(self._current_url(browser), href)
             links.append(url)
 
         def exception_args():
@@ -178,7 +184,7 @@ class _TestBase(unittest.TestCase):
         host = self._host
         all_responses = []
         for url in self._find_link(browser, index=True):
-            hostname = urlparse.urlparse(url).hostname
+            hostname = urllib.parse.urlparse(url).hostname
             if hostname and hostname != host:
                 continue
             if ignored is not None and ignored(url):
@@ -201,7 +207,7 @@ class Test(_TestBase):
         super(Test, self).setUp()
         self._headers = self._make_headers()
         self._environment = self._make_environment()
-        self._cookies = cookielib.CookieJar()
+        self._cookies = http.cookiejar.CookieJar()
         self._application = webtest.TestApp(wiking.wsgi_interface.application,
                                             cookiejar=self._cookies)
         self._set_language()

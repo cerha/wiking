@@ -24,6 +24,8 @@ database table.  It runs a sequence of upgrade scripts in one transaction and
 rolls back all changes when one of the scripts fails.
 
 """
+from __future__ import print_function
+from builtins import range
 
 import os
 import sys
@@ -71,7 +73,7 @@ def run(args):
         cursor.execute("select version from cms_database_version;")
         source_version = cursor.fetchone()[0]
         if source_version == target_version:
-            print "The database is already at version %d.\n" % source_version
+            print("The database is already at version %d.\n" % source_version)
             sys.exit(0)
         elif source_version > target_version:
             sys.stderr.write("The database is already at version %d, "
@@ -81,7 +83,7 @@ def run(args):
         for version in range(source_version + 1, target_version + 1):
             filename = 'upgrade.%02d.sql' % version
             sql = open(os.path.join(directory, filename)).read()
-            print "Applying %s ..." % filename
+            print("Applying %s ..." % filename)
             cursor.execute(sql)
         cursor.execute("update cms_database_version set version=%d;" % target_version)
         connection.commit()
@@ -91,7 +93,7 @@ def run(args):
         sys.stderr.write("Transaction rolled back.\n")
         sys.exit(1)
     else:
-        print "Database %s upgraded successfully to version %d." % (database, target_version)
+        print("Database %s upgraded successfully to version %d." % (database, target_version))
     finally:
         connection.close()
 
