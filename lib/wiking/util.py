@@ -2163,7 +2163,7 @@ class WikingDefaultDataClass(DBAPIData):
             if skip:
                 self.skip(skip)
             while True:
-                row = self.fetchone(transaction=transaction)
+                row = self.fetchone()
                 if row is None:
                     break
                 rows.append(row)
