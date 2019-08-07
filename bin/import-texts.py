@@ -18,26 +18,24 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
 # This script serves for importing texts into database (the `_text' table).
 # It requires two command line arguments:
-# DATABASE -- name of the database to connect to
-# DIRECTORY -- directory containing text files
+#   DATABASE -- name of the database to connect to
+#   DIRECTORY -- directory containing text files
 # DIRECTORY is typically `sql/texts/' subdirectory of a Wiking extension and
 # it must contain files named `NAMESPACE.LABEL.LANGUAGECODE.txt'.  For each such
 # file the contents of the file, that must be a structured text, is imported
 # into the database.  NAMESPACE, LABEL and LANGUAGECODE attributes of the
 # stored text are defined by the file name.
 
-
 import codecs
 import os
-import re
 import sys
 
+import pytis
 import pytis.data
-import config
-config.log_exclude = [pytis.util.ACTION, pytis.util.EVENT, pytis.util.DEBUG]
+
+pytis.config.log_exclude = [pytis.util.ACTION, pytis.util.EVENT, pytis.util.DEBUG]
 
 
 def usage():
@@ -88,6 +86,7 @@ def run():
     database = sys.argv[1]
     directory = sys.argv[2]
     import_texts(database, directory)
+
 
 if __name__ == '__main__':
     run()

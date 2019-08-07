@@ -25,6 +25,7 @@ import urlparse
 import weakref
 import json
 
+import pytis
 import pytis.data as pd
 import pytis.output
 import pytis.presentation as pp
@@ -341,9 +342,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
 
     def __init__(self, name):
         super(PytisModule, self).__init__(name)
-        import config
-        self._dbconnection = config.dbconnection.select(self.Spec.connection)
-        del config
+        self._dbconnection = pytis.config.dbconnection.select(self.Spec.connection)
         resolver = wiking.cfg.resolver
         self._data_spec = resolver.get(name, 'data_spec')
         self._view = resolver.get(name, 'view_spec')

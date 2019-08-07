@@ -33,9 +33,10 @@ import types
 import os
 import cStringIO
 import PIL.Image
+
+import pytis
 import pytis.util
 import pytis.data as pd
-import config
 import wiking
 import wiking.cms
 
@@ -63,28 +64,28 @@ def run():
     if '--help' in sys.argv:
         usage()
     try:
-        config.add_command_line_options(sys.argv)
+        pytis.config.add_command_line_options(sys.argv)
         if len(sys.argv) > 1:
             usage()
     except getopt.GetoptError as e:
         usage(e.msg)
-    wiking.cfg.user_config_file = config.config_file
-    wiking.cms.cfg.user_config_file = config.config_file
-    config.dblisten = False
-    config.log_exclude = [pytis.util.ACTION, pytis.util.EVENT,
-                          pytis.util.DEBUG, pytis.util.OPERATIONAL]
+    wiking.cfg.user_config_file = pytis.config.config_file
+    wiking.cms.cfg.user_config_file = pytis.config.config_file
+    pytis.config.dblisten = False
+    pytis.config.log_exclude = [pytis.util.ACTION, pytis.util.EVENT,
+                                pytis.util.DEBUG, pytis.util.OPERATIONAL]
     while True:
         try:
             data = pd.dbtable('cms_page_attachments',
                               ('attachment_id', 'filename', 'image', 'thumbnail',
                                'thumbnail_size', 'thumbnail_width', 'thumbnail_height'),
-                              config.dbconnection)
+                              pytis.config.dbconnection)
         except pd.DBLoginException as e:
-            if config.dbconnection.password() is None:
+            if pytis.config.dbconnection.password() is None:
                 import getpass
-                login = config.dbuser
+                login = pytis.config.dbuser
                 password = getpass.getpass("Enter database password for %s: " % login)
-                config.dbconnection.update_login_data(user=login, password=password)
+                pytis.config.dbconnection.update_login_data(user=login, password=password)
         else:
             break
     image_screen_size = wiking.cms.cfg.image_screen_size
@@ -97,7 +98,7 @@ def run():
             if row is None:
                 break
             ext = os.path.splitext(row['filename'].value())[1].lower()
-            path = os.path.join(wiking.cms.cfg.storage, config.dbname, 'attachments',
+            path = os.path.join(wiking.cms.cfg.storage, pytis.config.dbname, 'attachments',
                                 row['attachment_id'].export() + (ext or '.'))
             attachment = file(path)
             try:

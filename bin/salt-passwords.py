@@ -26,9 +26,10 @@ convert the existing plain text or unsalted md5 passwords to salted PBKDF2 hashe
 
 import sys
 import getopt
+
+import pytis
 import pytis.util
 import pytis.data as pd
-import config
 import wiking
 import wiking.cms
 
@@ -48,25 +49,25 @@ def run():
     if '--help' in sys.argv:
         usage()
     try:
-        config.add_command_line_options(sys.argv)
+        pytis.config.add_command_line_options(sys.argv)
         if len(sys.argv) > 1:
             usage()
     except getopt.GetoptError as e:
         usage(e.msg)
-    wiking.cfg.user_config_file = config.config_file
-    wiking.cms.cfg.user_config_file = config.config_file
-    config.dblisten = False
-    config.log_exclude = [pytis.util.ACTION, pytis.util.EVENT,
-                          pytis.util.DEBUG, pytis.util.OPERATIONAL]
+    wiking.cfg.user_config_file = pytis.config.config_file
+    wiking.cms.cfg.user_config_file = pytis.config.config_file
+    pytis.config.dblisten = False
+    pytis.config.log_exclude = [pytis.util.ACTION, pytis.util.EVENT,
+                                pytis.util.DEBUG, pytis.util.OPERATIONAL]
     while True:
         try:
-            data = pd.dbtable('users', ('uid', 'login', 'password'), config.dbconnection)
+            data = pd.dbtable('users', ('uid', 'login', 'password'), pytis.config.dbconnection)
         except pd.DBLoginException as e:
-            if config.dbconnection.password() is None:
+            if pytis.config.dbconnection.password() is None:
                 import getpass
-                login = config.dbuser
+                login = pytis.config.dbuser
                 password = getpass.getpass("Enter database password for %s: " % login)
-                config.dbconnection.update_login_data(user=login, password=password)
+                pytis.config.dbconnection.update_login_data(user=login, password=password)
         else:
             break
     storage = wiking.Pbkdf2PasswordStorage()

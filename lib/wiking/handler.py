@@ -25,6 +25,8 @@ import json
 
 import wiking
 import lcg
+import pytis
+import pytis.util
 from pytis.util import OPERATIONAL, log
 
 _ = lcg.TranslatableTextFactory('wiking')
@@ -107,15 +109,13 @@ class Handler(object):
         if wiking.cfg.resolver is None:
             wiking.cfg.resolver = wiking.WikingResolver(wiking.cfg.modules)
         # Modify pytis configuration.
-        import pytis.util
-        import config
-        config.dblisten = False
-        config.log_exclude = [pytis.util.ACTION, pytis.util.EVENT, pytis.util.DEBUG]
+        pytis.config.dblisten = False
+        pytis.config.log_exclude = [pytis.util.ACTION, pytis.util.EVENT, pytis.util.DEBUG]
         for option in ('dbname', 'dbhost', 'dbport', 'dbuser', 'dbpass', 'dbsslm', 'dbschemas',):
-            setattr(config, option, getattr(wiking.cfg, option))
-        config.dbconnections = wiking.cfg.connections
-        config.dbconnection = config.option('dbconnection').default()
-        config.resolver = wiking.cfg.resolver
+            setattr(pytis.config, option, getattr(wiking.cfg, option))
+        pytis.config.dbconnections = wiking.cfg.connections
+        pytis.config.dbconnection = pytis.config.option('dbconnection').default()
+        pytis.config.resolver = wiking.cfg.resolver
         del config
         self._application = application = wiking.module.Application
         self._exporter = wiking.cfg.exporter(translations=wiking.cfg.translation_path)
