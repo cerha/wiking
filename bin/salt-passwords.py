@@ -70,7 +70,7 @@ def run():
         else:
             break
     storage = wiking.Pbkdf2PasswordStorage()
-    transaction = pd.DBTransactionDefault(config.dbconnection)
+    transaction = pd.transaction()
     data.select(transaction=transaction)
     n = 0
     plain = 0

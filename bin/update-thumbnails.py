@@ -89,7 +89,7 @@ def run():
             break
     image_screen_size = wiking.cms.cfg.image_screen_size
     image_thumbnail_sizes = wiking.cms.cfg.image_thumbnail_sizes
-    transaction = pd.DBTransactionDefault(config.dbconnection)
+    transaction = pd.transaction()
     data.select(transaction=transaction)
     try:
         while True:
