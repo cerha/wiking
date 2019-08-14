@@ -3547,7 +3547,7 @@ class Attachments(ContentManagementModule):
 
         def _file_data(self, record):
             path = record['file_path'].value()
-            f = file(path)
+            f = open(path)
             try:
                 data = f.read()
             finally:
@@ -3868,7 +3868,7 @@ class Attachments(ContentManagementModule):
             if path_only:
                 return path
             # log(OPR, "Loading file:", path)
-            f = file(path)
+            f = open(path)
             try:
                 data = f.read()
             finally:

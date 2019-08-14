@@ -98,7 +98,7 @@ def run():
             ext = os.path.splitext(row['filename'].value())[1].lower()
             path = os.path.join(wiking.cms.cfg.storage, pytis.config.dbname, 'attachments',
                                 row['attachment_id'].export() + (ext or '.'))
-            attachment = file(path)
+            attachment = open(path)
             try:
                 image = PIL.Image.open(attachment)
             except IOError as e:

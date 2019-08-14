@@ -2663,7 +2663,7 @@ def serve_file(req, path, content_type=None, filename=None, lock=False, headers=
                             (range_start, min(range_end, info.st_size - 1), info.st_size)),
 
     def generator(offset=None, limit=None):
-        f = file(path)
+        f = open(path)
         if lock:
             import fcntl
             fcntl.lockf(f, fcntl.LOCK_SH)
