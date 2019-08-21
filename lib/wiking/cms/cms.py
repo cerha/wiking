@@ -2800,14 +2800,14 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter, PDFExpo
 
             def _get_resource_data(self, context, resource):
                 data = wiking.module.Attachments.retrieve(req, page_id, resource.filename())
+                if not data:
+                    r = wiking.module.Resources.resource(resource.filename())
+                    if r:
+                        data = r.get()
                 if data:
                     return data
                 else:
-                    r = wiking.module.Resources.resource(resource.filename())
-                    if r and r.src_file():
-                        return r.get()
-                    else:
-                        raise Exception("Unable to retrieve resource %s." % resource.filename())
+                    raise Exception("Unable to retrieve resource %s." % resource.filename())
         exporter = EpubExporter(translations=wiking.cfg.translation_path)
         context = exporter.context(publication, req.preferred_language(),
                                    allow_interactivity=bool(req.param('allow_interactivity')))
