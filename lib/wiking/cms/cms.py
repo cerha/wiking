@@ -3538,12 +3538,12 @@ class Attachments(ContentManagementModule):
             else:
                 img = image.copy()
                 img.thumbnail(size, PIL.Image.ANTIALIAS)
-                stream = io.StringIO()
+                stream = io.BytesIO()
                 img.save(stream, image.format)
-                return pd.Image.Buffer(buffer(stream.getvalue()))
+                return stream.getvalue()
 
         def _image(self, record, upload):
-            return self._resize(upload and upload.buffer(), wiking.cms.cfg.image_screen_size)
+            return self._resize(upload, wiking.cms.cfg.image_screen_size)
 
         def _file_data(self, record):
             path = record['file_path'].value()
@@ -3564,7 +3564,7 @@ class Attachments(ContentManagementModule):
             else:
                 return None
             if upload:
-                image = upload.buffer()
+                image = upload
             elif record['attachment_id'].value() is not None:
                 image = self._file_data(record)
             else:
@@ -3897,7 +3897,7 @@ class Attachments(ContentManagementModule):
         if not value:
             raise NotFound()
         else:
-            return Response(value.buffer(), content_type='image/%s' % value.image().format.lower(),
+            return Response(value, content_type='image/%s' % value.image().format.lower(),
                             last_modified=last_modified)
 
     def action_upload_archive(self, req):
@@ -4389,7 +4389,7 @@ class Newsletters(EmbeddableCMSModule):
         # if req.cached_since(last_modified):
         #     raise wiking.NotModified()
         value = record['image'].value()
-        return Response(value.buffer(), content_type='image/%s' % value.image().format.lower())
+        return Response(value, content_type='image/%s' % value.image().format.lower())
         # last_modified=last_modified)
 
 
@@ -4856,7 +4856,7 @@ class NewsletterPosts(CMSModule):
         # if req.cached_since(last_modified):
         #     raise wiking.NotModified()
         value = record['image'].value()
-        return Response(value.buffer(), content_type='image/%s' % value.image().format.lower())
+        return Response(value, content_type='image/%s' % value.image().format.lower())
         # last_modified=last_modified)
 
 

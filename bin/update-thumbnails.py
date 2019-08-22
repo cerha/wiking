@@ -55,7 +55,7 @@ def resize(image, size):
     img.thumbnail(size, PIL.Image.ANTIALIAS)
     stream = io.BytesIO()
     img.save(stream, image.format)
-    return pd.Image.Buffer(buffer(stream.getvalue())), img.size
+    return stream.getvalue(), img.size
 
 
 def run():
