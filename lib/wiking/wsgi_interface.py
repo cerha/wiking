@@ -53,7 +53,7 @@ class WsgiRequest(wiking.Request):
         # are called.
         self._environ = environ
         self._start_response = start_response
-        self._uri = None
+        self._uri = self._environ.get('SCRIPT_NAME', '') + self._environ['PATH_INFO']
         self._params = {}
         if self.method() == 'OPTIONS':
             self._raw_params = {}
@@ -66,10 +66,6 @@ class WsgiRequest(wiking.Request):
         super(WsgiRequest, self).__init__(encoding=encoding)
 
     def uri(self):
-        if self._uri is None:
-            # Not done in constructor (see the constructor comment).
-            raw_uri = self._environ.get('SCRIPT_NAME', '') + self._environ['PATH_INFO']
-            self._uri = unistr(raw_uri, self._encoding)
         return self._uri
 
     def unparsed_uri(self):
@@ -92,12 +88,7 @@ class WsgiRequest(wiking.Request):
             elif value.filename:
                 return wiking.FileUpload(value, self._encoding)
             else:
-                return unistr(value.value, self._encoding)
-                # TODO: return BadRequest instead of InternalServerError? Is it always
-                # browser's fault if it doesn't encode the request properly?
-                # except UnicodeDecodeError:
-                #    raise wiking.BadRequest(_("Request parameters not encoded properly into %s.",
-                #                              self._encoding))
+                return value.value
         try:
             return self._params[name]
         except KeyError:
@@ -135,7 +126,7 @@ class WsgiRequest(wiking.Request):
 
     def set_header(self, name, value, **params):
         # See wsgiref.headers.Headers.add_header for the documentation.
-        self._response_headers.add_header(name, value.encode(self._encoding), **params)
+        self._response_headers.add_header(name, value, **params)
 
     def port(self):
         port = self._environ['SERVER_PORT']

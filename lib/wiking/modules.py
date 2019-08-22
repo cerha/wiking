@@ -389,9 +389,9 @@ class Resources(Module, RequestHandler):
                 mtime = None
             data = response.data()
             if isinstance(data, (list, types.GeneratorType)):
-                data = ''.join(data)
-            elif isinstance(data, buffer):
-                data = str(data)
+                data = b''.join(data)
+            if isinstance(data, bytes):
+                data = str(data, 'utf-8')
             data = self._substitute(data, theme)
             response = wiking.Response(data, content_type=response.content_type(),
                                        last_modified=mtime, filename=response.filename(),

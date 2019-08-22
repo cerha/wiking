@@ -18,7 +18,6 @@
 
 from past.builtins import cmp
 from future import standard_library
-from builtins import str
 from past.builtins import basestring
 from builtins import object
 
@@ -32,11 +31,13 @@ import lcg
 import wiking
 from wiking import log, OPR, format_http_date, parse_http_date, Message
 
-standard_library.install_aliases()
 import http.cookies
 import http.client
 import urllib.parse
 import urllib.error
+
+standard_library.install_aliases()
+
 
 _ = lcg.TranslatableTextFactory('wiking')
 
@@ -58,7 +59,7 @@ class FileUpload(pytis.web.FileUpload):
 
     def __init__(self, field, encoding):
         self._field = field
-        self._filename = re.split(r'[\\/:]', unistr(field.filename, encoding))[-1]
+        self._filename = re.split(r'[\\/:]', field.filename)[-1]
 
     def file(self):
         return self._field.file
@@ -423,7 +424,7 @@ class Request(ServerInterface):
         """Get the value of given cookie as unicode or return DEFAULT if cookie was not set."""
         if name in self._cookies:
             try:
-                return unistr(self._cookies[name].value, self._encoding)
+                return self._cookies[name].value
             except UnicodeDecodeError:
                 return default
         else:
@@ -445,8 +446,6 @@ class Request(ServerInterface):
             if name in self._cookies:
                 del self._cookies[name]
         else:
-            if isinstance(value, unistr):
-                value = value.encode(self._encoding)
             self._cookies[name] = value
         c = http.cookies.SimpleCookie()
         c[name] = value or ''
@@ -584,7 +583,7 @@ class Request(ServerInterface):
 
         """
         if content_type is not None:
-            self.set_header('Content-Type', str(content_type))
+            self.set_header('Content-Type', content_type)
         if content_length is not None:
             self.set_header('Content-Length', str(content_length))
         if last_modified is not None:
@@ -596,8 +595,9 @@ class Request(ServerInterface):
         """Start the HTTP response and send response data to the client.
 
         Arguments:
-          data -- respnse data as a string or unicode.  Unicode data will be
-            automatically encoded to string using the current encoding.
+
+          data -- respnse data as str or bytes.  String will be automatically
+            encoded to bytes using the current encoding.
           content_type -- same as in 'start_response()', but the current
             encoding will be automatically appended for types "text/html",
             "application/xml", "text/css" and "text/plain".  So for example
@@ -618,13 +618,11 @@ class Request(ServerInterface):
         if isinstance(data, (list, types.GeneratorType)):
             result = data
         else:
-            if isinstance(data, unistr):
+            if isinstance(data, str):
                 data = data.encode(self._encoding)
                 if content_type in ("text/html", "application/xml", "text/css", "text/plain"):
                     content_type += "; charset=%s" % self._encoding
-            elif isinstance(data, buffer):
-                data = str(data)
-            elif not isinstance(data, str):
+            elif not isinstance(data, bytes):
                 raise Exception('Invalid data arguemnt to Request.send_response(): %s' % type(data))
             result = [data]
             if content_length is None:

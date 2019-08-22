@@ -1,4 +1,3 @@
-from __future__ import division
 # Copyright (C) 2006-2017 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
@@ -16,6 +15,7 @@ from __future__ import division
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+from __future__ import division
 from past.builtins import cmp
 from future import standard_library
 from builtins import str
@@ -40,9 +40,10 @@ import lcg
 import wiking
 from pytis.data.dbapi import DBAPIData
 
-standard_library.install_aliases()
 import urllib.error
 import http.client
+
+standard_library.install_aliases()
 
 _ = lcg.TranslatableTextFactory('wiking')
 
@@ -940,7 +941,7 @@ class Response(object):
             "text/plain; charset=UTF-8".
 
           content_length -- Explicit value for the 'Content-Length' HTTP header
-            (basestring).  Set automatically when 'data' is 'str', 'buffer' or
+            (basestring).  Set automatically when 'data' is 'str', 'bytes' or
             'unicode', but should be supplied when 'data' is an iterable
             object.
 
@@ -971,11 +972,10 @@ class Response(object):
             a sequence of pairs NAME, VALUE (strings).
 
         The supported response data types:
-          str -- is sent unchanged to the client
-          buffer -- is converted to str
-          unicode -- is encoded to str using the current request encoding
+          bytes -- is sent unchanged to the client
+          str -- is encoded using the current request encoding
           iterable -- iterable object (typically a generator) returning
-            response data in chunks.  The returned chunks must be strings.
+            response data in chunks.  The returned chunks must be strings or bytes.
 
         """
         self._data = data
