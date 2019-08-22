@@ -419,15 +419,3 @@ class Handler(object):
                     callback = None
                 wiking.WikingDefaultDataClass.close_idle_connections()
                 wiking.WikingDefaultDataClass.rollback_connections(callback=callback)
-
-
-try:
-    # Only for backwards compatibility with older Apache/mod_python
-    # configurations which relied on the entry point to be located in this
-    # module (which is no longer specific to mod_python).  If
-    # mod_python_interface failed to import, we are not running under
-    # mod_python.
-    from . import mod_python_interface
-    handler = mod_python_interface.ModPythonHandler()
-except Exception:
-    pass
