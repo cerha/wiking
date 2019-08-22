@@ -703,9 +703,7 @@ class MenuItem(object):
         self._hidden = hidden
         self._active = active
         self._foldable = foldable
-        submenu = list(submenu)
-        submenu.sort(key=lambda i: i.order())
-        self._submenu = submenu
+        self._submenu = sorted(submenu, key=lambda i: i.order() or 0)
         self._order = order
         self._variants = variants
 
