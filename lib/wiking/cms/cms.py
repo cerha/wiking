@@ -3546,13 +3546,8 @@ class Attachments(ContentManagementModule):
             return self._resize(upload, wiking.cms.cfg.image_screen_size)
 
         def _file_data(self, record):
-            path = record['file_path'].value()
-            f = open(path)
-            try:
-                data = f.read()
-            finally:
-                f.close()
-            return data
+            with open(record['file_path'].value(), 'rb') as f:
+                return f.read()
 
         def _thumbnail(self, record, upload, thumbnail_size):
             if thumbnail_size == 'small':
@@ -3868,12 +3863,8 @@ class Attachments(ContentManagementModule):
             if path_only:
                 return path
             # log(OPR, "Loading file:", path)
-            f = open(path)
-            try:
-                data = f.read()
-            finally:
-                f.close()
-            return data
+            with open(path, 'rb') as f:
+                return f.read()
         else:
             return None
 
