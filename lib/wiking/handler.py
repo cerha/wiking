@@ -122,7 +122,6 @@ class Handler(object):
         pytis.config.dbconnections = wiking.cfg.connections
         pytis.config.dbconnection = pytis.config.option('dbconnection').default()
         pytis.config.resolver = wiking.cfg.resolver
-        del config
         self._application = application = wiking.module.Application
         self._exporter = wiking.cfg.exporter(translations=wiking.cfg.translation_path)
         application.initialize(req)
