@@ -51,10 +51,10 @@ from pytis.presentation import (
 )
 from wiking import (
     Module, ActionHandler, PytisModule, CachingPytisModule, Document,
-    send_mail, log, OPR,
+    Role, send_mail, log, OPR,
 )
 from wiking.cms import (
-    EmbeddableCMSModule, UserManagementModule, Role, Roles,
+    EmbeddableCMSModule, UserManagementModule, Roles,
     enum, now, ASC, DESC, NEVER, ONCE
 )
 

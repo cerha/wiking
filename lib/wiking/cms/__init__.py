@@ -29,7 +29,7 @@ from .cms import (  # noqa: F401
     PublicationExports, Publications, Resources, Roles, SettingsManagementModule,
     SiteMap, SiteSpecificContentModule, StyleManagementModule, StyleSheets, Text,
     TextReferrer, Texts, Themes, UserManagementModule, WikingManagementInterface,
-    text2content,
+    text2content, enum, now, ASC, DESC, NEVER, ONCE,
 )
 
 from .users import (  # noqa: F401
@@ -41,5 +41,7 @@ from .appl import AdminControl, Application  # noqa: F401
 from .crypto import CryptoKeys, CryptoNames  # noqa: F401
 from .configuration import CMSConfiguration  # noqa: F401
 from . import texts  # noqa: F401
+
+from wiking import CachedTables, Documentation  # noqa: F401
 
 cfg = CMSConfiguration()
