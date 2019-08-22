@@ -385,23 +385,18 @@ class Request(ServerInterface):
         accessed via 'item.value' and 'item.params'.  The special parameter 'q'
         (if present) has a float value, other parameters have string values.
 
-        The items appear in the returned list in the order of their presence in
-        the header, but sorting the list will put them to the order of their
-        precedence (actually lowest precedence first because sorting normally
-        sorts lowest values first).  The precedence is given by the value of
-        the 'q' parameter as describerd by the HTTP standard.
+        The returned list is sorted in the order of precedence given by the
+        parameter 'q' (as describerd by the HTTP standard).  The items with
+        higher precedence come first.
 
         Any items with invalid syntax or values are ignored.
 
         """
         class Item(object):
-
             def __init__(self, value, params):
                 self.value = value
                 self.params = params
 
-            def __cmp__(self, other):
-                return cmp(self.params.get('q', 1.0), other.params.get('q', 1.0))
         items = []
         for item in self.header(header, '').split(','):
             try:
@@ -421,7 +416,8 @@ class Request(ServerInterface):
                 continue
             if value:
                 items.append(Item(value, params))
-        return items
+
+        return reversed(sorted(items, key=lambda item: item.params.get('q', 1.0)))
 
     def cookie(self, name, default=None):
         """Get the value of given cookie as unicode or return DEFAULT if cookie was not set."""
@@ -783,7 +779,7 @@ class Request(ServerInterface):
 
         """
         languages = []
-        for item in reversed(sorted(self._parse_accept_header('Accept-Language'))):
+        for item in self._parse_accept_header('Accept-Language'):
             lang = item.value
             if '-' in lang:
                 # For now we ignore the country part and recognize just the core languages.
@@ -1059,7 +1055,7 @@ class Request(ServerInterface):
         """
         if self._is_api_request is None:
             def is_api_request():
-                for item in reversed(sorted(self._parse_accept_header('Accept'))):
+                for item in self._parse_accept_header('Accept'):
                     mime_type = item.value
                     if mime_type == 'text/html':
                         return False
