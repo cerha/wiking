@@ -202,8 +202,7 @@ class WsgiEntryPoint(object):
 application = WsgiEntryPoint()
 
 # Hack to allow wsgi shell access, any better solution is welcome.
-
-_wsgi_shell_config_file = os.path.join(os.getenv('HOME'), 'ispyd.ini')
+_wsgi_shell_config_file = os.path.expanduser('~/ispyd.ini')
 if os.access(_wsgi_shell_config_file, os.R_OK):
     from ispyd.manager import ShellManager
     shell_manager = ShellManager(_wsgi_shell_config_file)
