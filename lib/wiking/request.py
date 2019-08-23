@@ -16,7 +16,6 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
-from past.builtins import cmp
 from future import standard_library
 from past.builtins import basestring
 from builtins import object
@@ -1255,15 +1254,12 @@ class Role(object):
     def __repr__(self):
         return "<role '%s'>" % self._id
 
-    def __cmp__(self, other):
-        """
-        Two roles are equal if their unique identifiers are equal.
-        """
+    def __eq__(self, other):
+        """Two roles are equal if their unique identifiers are equal."""
         if isinstance(other, Role):
-            result = cmp(self.id(), other.id())
+            return self._id == other._id
         else:
-            result = cmp(id(self), id(other))
-        return result
+            return NotImplemented
 
     def id(self):
         """
