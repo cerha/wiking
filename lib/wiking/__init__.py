@@ -28,8 +28,8 @@ from .util import (  # noqa: F401
     RecordsIterator, Redirect, RequestError, Response, RowsIterator, RssWriter, ServiceUnavailable,
     Specification, TZInfo, Theme, Time, TopBarControl, UniversalPasswordStorage,
     UnsaltedMd5PasswordStorage, WikingDefaultDataClass, WikingResolver,
-    ajax_response, cmp_versions, format_http_date, generate_random_string, log, make_uri,
-    module, parse_http_date, pdf_document, send_mail, serve_file, validate_email_address,
+    ajax_response, format_http_date, generate_random_string, log, make_uri, module,
+    parse_http_date, pdf_document, send_mail, serve_file, validate_email_address,
 )
 
 from .request import (  # noqa: F401

@@ -16,7 +16,6 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 from __future__ import division
-from past.builtins import cmp
 from future import standard_library
 from builtins import str
 from past.builtins import basestring
@@ -2981,21 +2980,6 @@ def validate_email_address(address, helo=None):
                                 "not on the side of this application and we can not "
                                 "do anything about it. Please, try again later.")
     return True, None
-
-
-def cmp_versions(v1, v2):
-    """Compare version strings, such as '0.3.1' and return the result.
-
-    The returned value is -1, 0 or 1 such as for the builtin 'cmp()' function.
-
-    """
-    v1a = [int(v) for v in v1.split('.')]
-    v2a = [int(v) for v in v2.split('.')]
-    for (n1, n2) in zip(v1a, v2a):
-        c = cmp(n1, n2)
-        if c != 0:
-            return c
-    return 0
 
 
 _ABS_URI_MATCHER = re.compile(r'^((https?|ftp)://[^/]+)(.*)$')
