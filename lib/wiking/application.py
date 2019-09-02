@@ -445,6 +445,15 @@ class Application(wiking.Module):
         """
         return False
 
+    def body_class_names(self, req):
+        """Return a sequence of CSS class names to assign to the BODY element.
+
+        This allows application specific class names to be assigned to the top
+        level BODY element in the HTML export of all pages.
+
+        """
+        return ()
+
     def login_dialog_top_content(self, req):
         """Return the content displayed above the login dialog as 'lcg.Content' element(s).
 

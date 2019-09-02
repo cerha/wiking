@@ -241,14 +241,11 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             cls.append('maximized')
         else:
             cls.append('non-maximized')
-        if context.application.preview_mode(req):
-            cls.append('preview-mode')
-        else:
-            cls.append('production-mode')
         if context.panels():
             cls.append('with-panels')
         if context.has_submenu:
             cls.append('with-submenu')
+        cls.extend(context.application.body_class_names(req))
         return dict(attr,
                     onload=context.generator().js_call('new wiking.Handler'),
                     cls=' '.join(cls))
