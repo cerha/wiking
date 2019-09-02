@@ -466,8 +466,8 @@ class InternalServerError(RequestError):
             self._basic_traceback = ''.join(traceback.format_exception(cls, value, tb))
             try:
                 # cgitb returns str with undocumented encoding (seems to be latin1).
-                self._html_traceback = unicode(cgitb.html((cls, value, tb)), errors='replace')
-                self._text_traceback = unicode(cgitb.text((cls, value, tb)), errors='replace')
+                self._html_traceback = cgitb.html((cls, value, tb))
+                self._text_traceback = cgitb.text((cls, value, tb))
             except Exception as e:
                 # cgitb sometimes fails when the introspection touches
                 # something sensitive, such as database objects.
