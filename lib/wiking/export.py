@@ -15,7 +15,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-from builtins import object
 import re
 
 import lcg
@@ -108,7 +107,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             """Return the current export layout as one of 'Exporter.Layout' constants."""
             return self._layout
 
-    class Layout(object):
+    class Layout:
         """Enumeration of output document layout styles."""
         DEFAULT = 'default'
         """Default Wiking layout wrapping the page content in menus, panels etc."""

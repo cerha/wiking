@@ -15,16 +15,12 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-from future import standard_library
-from builtins import object
-
 import cgi
 import os
 import wsgiref.util
 import wsgiref.headers
 import wiking
 
-standard_library.install_aliases()
 import http.client
 import urllib.parse
 
@@ -37,7 +33,7 @@ class WsgiRequest(wiking.Request):
     Implements the 'wiking.ServerInterface' API.
 
     """
-    class Generator(object):
+    class Generator:
         pass
 
     def __init__(self, environ, start_response, encoding='utf-8'):
@@ -166,7 +162,7 @@ class WsgiRequest(wiking.Request):
         return self._environ.get('wiking.' + name, default)
 
 
-class WsgiEntryPoint(object):
+class WsgiEntryPoint:
     """WSGI entry point.
 
     This class implements a WSGI specific wrapper of 'wiking.Handler'.

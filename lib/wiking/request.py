@@ -15,11 +15,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-
-from future import standard_library
-from past.builtins import basestring
-from builtins import object
-
 import re
 import string
 import types
@@ -34,8 +29,6 @@ import http.cookies
 import http.client
 import urllib.parse
 import urllib.error
-
-standard_library.install_aliases()
 
 
 _ = lcg.TranslatableTextFactory('wiking')
@@ -235,7 +228,7 @@ class Request(ServerInterface):
 
     """
 
-    class ForwardInfo(object):
+    class ForwardInfo:
         """Request forwarding information.
 
         The method 'forward()' automatically adds forward information (as an
@@ -392,7 +385,7 @@ class Request(ServerInterface):
         Any items with invalid syntax or values are ignored.
 
         """
-        class Item(object):
+        class Item:
             def __init__(self, value, params):
                 self.value = value
                 self.params = params
@@ -712,7 +705,7 @@ class Request(ServerInterface):
             else:
                 uri = urllib.parse.quote(base_uri.encode(self._encoding))
             quote = urllib.parse.quote_plus
-        if args and isinstance(args[0], basestring):
+        if args and isinstance(args[0], str):
             anchor = urllib.parse.quote(unistr(args[0]).encode(self._encoding))
             args = args[1:]
         else:
@@ -1084,7 +1077,7 @@ class Request(ServerInterface):
         return self._is_api_request
 
 
-class User(object):
+class User:
     """Representation of the logged in user.
 
     The authentication module returns an instance of this class on successful
@@ -1132,8 +1125,8 @@ class User(object):
         panel, if defined.
 
         """
-        assert isinstance(login, basestring)
-        assert name is None or isinstance(name, basestring)
+        assert isinstance(login, str)
+        assert name is None or isinstance(name, str)
         assert isinstance(roles, (tuple, list))
         assert Roles.AUTHENTICATED in roles
         self._login = login
@@ -1193,7 +1186,7 @@ class User(object):
         return self._data
 
 
-class Role(object):
+class Role:
     """Representation of a user role.
 
     Every user can have assigned any number of roles.  The roles can serve
@@ -1276,7 +1269,7 @@ class Role(object):
         return self._name
 
 
-class Roles(object):
+class Roles:
     """Set of available user roles.
 
     This particular class defines a very limited set of special purpose Wiking

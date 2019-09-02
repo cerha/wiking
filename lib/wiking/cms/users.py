@@ -29,10 +29,6 @@ L{RoleSets}, L{RoleMembers}, L{ApplicationRoles}.
 
 """
 
-from builtins import str
-from past.builtins import basestring
-from builtins import object
-
 import datetime
 import random
 import socket
@@ -856,7 +852,7 @@ class Users(UserManagementModule, CachingPytisModule):
 
         def fullname(self):
             """
-            @rtype: basestring
+            @rtype: str
             @return: User's full name.
             """
             fullname = self._firstname + ' ' if self._firstname else ''
@@ -1491,7 +1487,7 @@ class Users(UserManagementModule, CachingPytisModule):
           state -- if not 'None', only users with the given state (one of the
             state codes defined by L{Users.AccountState}) are returned
           role -- if not 'None', only users belonging to the given role ('Role'
-            instance or role name as basestring) are returned
+            instance or role name as string) are returned
           confirm -- if not 'None', only users with this value of 'confirm' flag
             (boolean) are returned
 
@@ -1502,7 +1498,7 @@ class Users(UserManagementModule, CachingPytisModule):
             role_id = None
         elif isinstance(role, Role):
             role_id = role.id()
-        elif isinstance(role, basestring):
+        elif isinstance(role, str):
             role_id = role
             role = wiking.module.ApplicationRoles.get_role(role_id)
         else:

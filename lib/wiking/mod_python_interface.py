@@ -15,8 +15,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-from builtins import object
-
 import wiking
 
 import mod_python
@@ -135,7 +133,7 @@ class ModPythonRequest(wiking.Request):
         return certificate
 
 
-class ModPythonHandler(object):
+class ModPythonHandler:
     """The Apache/mod_python handler interface.
 
     This class implements a mod_python specific wrapper.  The actual processing

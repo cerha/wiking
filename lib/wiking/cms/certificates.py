@@ -23,9 +23,6 @@ Wiking CMS.  It was taken out from cms.py on 2009-05-07, so the other related ch
 in the version control system history.
 
 """
-
-from builtins import str
-
 import io
 import datetime
 import os
@@ -170,7 +167,7 @@ class Certificates(wiking.cms.CMSModule):
 
         def _serial_number_computer(self, x509):
             number = int(x509.serial_number)
-            if not isinstance(number, int):  # it may be long
+            if not isinstance(number, int):
                 raise Exception(_("Unprocessable serial number"))
             return number
 

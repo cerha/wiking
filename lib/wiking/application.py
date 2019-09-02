@@ -18,9 +18,6 @@
 
 """Definition of default Wiking application and its API."""
 
-from builtins import str
-from past.builtins import basestring
-
 import re
 import os
 import sys
@@ -312,7 +309,7 @@ class Application(wiking.Module):
         responsive to the actual display size through CSS.
 
         Any content acceptable by 'lcg.coerce()' may be returned ('lcg.Content'
-        instance, basestring, or their sequence).  Consider using the base
+        instance, str, or their sequence).  Consider using the base
         class 'wiking.TopBarControl' for definition of custom controls.
 
         The default implementation returns a list of two instances:
@@ -502,7 +499,7 @@ class Application(wiking.Module):
             return None
 
     def menu_panel_title(self, req):
-        """Return the displayed title of the left side hierarchical menu as a basestring.
+        """Return the displayed title of the left side hierarchical menu as a string.
 
         Python string, unicode or lcg.Translatable instance is accepted.
 
@@ -512,7 +509,7 @@ class Application(wiking.Module):
         return _("In this section:")
 
     def menu_panel_tooltip(self, req):
-        """Return the tooltip of the left side hierarchical menu as a basestring.
+        """Return the tooltip of the left side hierarchical menu as a string.
 
 
         Python string, unicode or lcg.Translatable instance is accepted.
@@ -588,8 +585,7 @@ class Application(wiking.Module):
                             value = lines[0][:40] + '... (trimmed; total %d lines)' % len(lines)
                         if len(value) > 40:
                             value = value[:40] + '... (trimmed; total %d chars)' % len(value)
-            name = unicode(param, errors='replace')
-            return "   %s = %s" % (saxutils.escape(name), saxutils.escape(value))
+            return "   %s = %s" % (saxutils.escape(param), saxutils.escape(value))
         def maybe_link(value):
             if value and (value.startswith('http://') or value.startswith('https://')):
                 value = '<a href="%s">%s</a>' % (value, value)

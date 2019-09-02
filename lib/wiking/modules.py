@@ -17,10 +17,6 @@
 
 """Definition of the basic Wiking module classes."""
 
-from future import standard_library
-from builtins import str
-from builtins import object
-
 import datetime
 import os
 import re
@@ -31,13 +27,12 @@ import lcg
 import wiking
 from wiking import AuthenticationError, Forbidden, NotFound, Redirect
 
-standard_library.install_aliases()
 import http.client
 
 _ = lcg.TranslatableTextFactory('wiking')
 
 
-class Module(object):
+class Module:
     """Abstract base class defining the basic Wiking module."""
     _TITLE = None
     _DESCR = None
@@ -74,7 +69,7 @@ class Module(object):
         super(Module, self).__init__()
 
 
-class RequestHandler(object):
+class RequestHandler:
     """Mix-in class for modules capable of handling requests."""
 
     def _base_uri(self, req):
@@ -570,7 +565,7 @@ class Search(Module, ActionHandler):
                 g.hidden(name='action', value='search'),
             ))
 
-    class Result(object):
+    class Result:
 
         def __init__(self, uri, title, sample=None):
             self._title = title

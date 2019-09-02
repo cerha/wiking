@@ -16,12 +16,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-from future import standard_library
-from builtins import zip
-from builtins import str
-from builtins import range
-from builtins import object
-
 import collections
 import datetime
 import io
@@ -44,7 +38,6 @@ from wiking import AuthorizationError, BadRequest, Forbidden, NotFound, Redirect
 
 _ = lcg.TranslatableTextFactory('wiking')
 
-standard_library.install_aliases()
 import urllib.parse
 
 
@@ -1471,7 +1464,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         @param record: the record containing the field data to be printed
         @type field: C{pytis.presentation.Field}
         @param field: the field to be printed (exported into a PDF document)
-        @rtype: basestring
+        @rtype: str
         @return: Main heading of the PDF document containing the exported field
            content.
 
@@ -1489,7 +1482,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         @param record: the record containing the field data to be printed
         @type field: C{pytis.presentation.Field}
         @param field: the field to be printed (exported into a PDF document)
-        @rtype: basestring
+        @rtype: str
         @return: File name sent within the 'Content-disposition' HTTP response
           header.
 
@@ -2217,7 +2210,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         The default redirection URI leads to the list action of the
         same module.
 
-        @rtype: tuple of (basestring, dict)
+        @rtype: tuple of (str, dict)
         @return: Pair (uri, kwargs), where 'uri' is the base URI and
         'kwargs' is the dictionary of URI parameters to encoded into
         the final redirection URI.
@@ -2233,7 +2226,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         The default redirection URI leads to the view action of the
         same record.
 
-        @rtype: tuple of (basestring, dict)
+        @rtype: tuple of (str, dict)
         @return: Pair (uri, kwargs), where 'uri' is the base URI and
         'kwargs' is the dictionary of URI parameters to encoded into
         the final redirection URI.
@@ -2251,7 +2244,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         The default redirection URI leads to the list action of the
         same module.
 
-        @rtype: tuple of (basestring, dict)
+        @rtype: tuple of (str, dict)
         @return: Pair (uri, kwargs), where 'uri' is the base URI and
         'kwargs' is the dictionary of URI parameters to encoded into
         the final redirection URI.
@@ -2279,7 +2272,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
 # Module extensions
 # ==============================================================================
 
-class APIProvider(object):
+class APIProvider:
     """Mix in class adding REST API support to a 'PytisModule'.
 
     This is an experimental attempt to seamlessly integrate REST API support to
@@ -2415,7 +2408,7 @@ class APIProvider(object):
             return super(APIProvider, self).action_view(req, record=record)
 
 
-class RssModule(object):
+class RssModule:
     """Deprecated in favour of PytisRssModule defined below."""
     _RSS_TITLE_COLUMN = None
     _RSS_DESCR_COLUMN = None
@@ -2690,7 +2683,7 @@ class CachedTables(PytisModule):
     def __init__(self, *args, **kwargs):
         super(CachedTables, self).__init__(*args, **kwargs)
 
-        class Key(object):
+        class Key:
             pass
         self._no_transaction_key = Key()
         self._table_info = weakref.WeakKeyDictionary()
@@ -2890,7 +2883,7 @@ class CachingPytisModule(PytisModule):
         return dt
 
     def _database_dependency(self, dependency):
-        return dependency[0] in string.lowercase
+        return dependency[0] in string.ascii_lowercase
 
     def _load_cache(self, transaction=None):
         self._update_cache_versions(transaction=transaction)
