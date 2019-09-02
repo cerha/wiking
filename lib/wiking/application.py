@@ -60,13 +60,6 @@ class Application(wiking.Module):
 
     """
 
-    _STYLESHEETS = (('default.css', 'all'), ('layout.css', 'screen'), ('print.css', 'print'))
-    """Static list of available style sheets used by the 'stylesheets()' method.
-
-    The list consists of pairs (FILENAME, MEDIA), corresponding to the
-    'lcg.Stylesheet' constructor arguments of the same name.
-
-    """
     _PREFERRED_LANGUAGE_COOKIE = 'wiking_preferred_language'
 
     def __init__(self, *args, **kwargs):
@@ -423,12 +416,11 @@ class Application(wiking.Module):
         (serving them to clients).  Wiking provides a generic 'Resources'
         module for this purpose.
 
-        The default implementation returns the list of style sheets defined by
-        the '_STYLESHEETS' constant of the class (see its docstring for more
-        info).
+        The default implementation returns the 'default.css' stylesheet defined
+        by Wiking.
 
         """
-        return [lcg.Stylesheet(filename, media=media) for filename, media in self._STYLESHEETS]
+        return [lcg.Stylesheet('default.css')]
 
     def registration_uri(self, req):
         """Return the URI for new user registration or None if registration is not allowed."""
