@@ -302,6 +302,12 @@ class Application(wiking.Application):
     def stylesheets(self, req):
         return wiking.module.StyleSheets.stylesheets(req)
 
+    def body_class_names(self, req):
+        if self.preview_mode(req):
+            return ('preview-mode',)
+        else:
+            return ('production-mode',)
+
     def authenticate(self, req, login, password, auth_type):
         user = wiking.module.Users.user(req, login)
         if user is None and wiking.cms.cfg.allow_registration:
