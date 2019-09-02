@@ -343,7 +343,7 @@ class Request(ServerInterface):
         stored = self.cookie(self._MESSAGES_COOKIE)
         if stored:
             lines = stored.splitlines()
-            uri = urllib.parse.unquote(lines[0]).decode(self._encoding)
+            uri = urllib.parse.unquote(lines[0])
             if uri == self.server_uri(current=True) + self.unparsed_uri():
                 # Storing data on client side is always problematic.  In case of
                 # messages there is not much danger in it, but still it may
@@ -356,7 +356,7 @@ class Request(ServerInterface):
                         mtype, formatted, quoted = line.split(':', 2)
                         if mtype not in self._MESSAGE_TYPES or formatted not in ('t', 'f'):
                             raise ValueError("Invalid values:", mtype, formatted)
-                        message = urllib.parse.unquote(str(quoted)).decode(self._encoding)
+                        message = urllib.parse.unquote(quoted)
                     except Exception as e:
                         log(OPR, "Error unpacking stored messages:", e)
                     else:
