@@ -16,11 +16,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-from future import standard_library
-from builtins import range
-from past.builtins import basestring
-from builtins import object
-
 import argparse
 import copy
 import os
@@ -33,7 +28,6 @@ import webtest
 
 import wiking.wsgi_interface
 
-standard_library.install_aliases()
 import http.cookiejar
 import urllib.parse
 
@@ -50,7 +44,7 @@ class _TestBase(unittest.TestCase):
                 visited = False
             return visited
 
-    class _RandomlyVisited(object):
+    class _RandomlyVisited:
 
         def __init__(self, transform=None):
             self._visited = dict()
@@ -299,7 +293,7 @@ class Test(_TestBase):
         return text in response
 
     def _search(self, response, regexp):
-        if isinstance(regexp, basestring):
+        if isinstance(regexp, str):
             regexp = re.compile(regexp)
         return regexp.search(response.text)
 
@@ -433,7 +427,7 @@ class BrowserTest(_TestBase):
         return browser.is_text_present(text)
 
     def _search(self, browser, regexp):
-        if isinstance(regexp, basestring):
+        if isinstance(regexp, str):
             regexp = re.compile(regexp)
         return regexp.search(browser.html)
 

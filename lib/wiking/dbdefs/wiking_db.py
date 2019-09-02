@@ -17,13 +17,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import unicode_literals
-
 import pytis.data.gensqlalchemy as sql
 import pytis.data
 
 
-class CommonAccesRights(object):
+class CommonAccesRights:
     access_rights = (('all', 'www-data'),)
 
 

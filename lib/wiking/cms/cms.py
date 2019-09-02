@@ -22,13 +22,6 @@ The actual contents served by CMS modules, as well as its structure and applicat
 is stored in database and can be managed using a web browser.
 
 """
-
-from future import standard_library
-from functools import reduce
-from builtins import str
-from past.builtins import basestring
-from builtins import object
-
 import lcg
 import pytis.data as pd
 import pytis.presentation as pp
@@ -58,7 +51,6 @@ from wiking import (
     Forbidden, MenuItem, NotFound, Redirect, Response, Role, Specification, make_uri,
 )
 
-standard_library.install_aliases()
 import urllib.parse
 import urllib.error
 
@@ -463,7 +455,7 @@ class MailManagementModule(_ManagementModule):
     _ADMIN_ROLES = (Roles.MAIL_ADMIN,)
 
 
-class Embeddable(object):
+class Embeddable:
     """Mix-in class for modules which may be embedded into page content.
 
     Wiking CMS allows setting an extension module for each page in its global
@@ -541,7 +533,7 @@ class CMSExtension(wiking.Module, Embeddable, wiking.RequestHandler):
     from 'CMSExtensionModule' in the menu.
 
     """
-    class MenuItem(object):
+    class MenuItem:
         """Specification of a menu item bound to a submodule of an extension."""
 
         def __init__(self, modname, id=None, submenu=(), enabled=None, **kwargs):
@@ -565,7 +557,7 @@ class CMSExtension(wiking.Module, Embeddable, wiking.RequestHandler):
 
             """
             if __debug__:
-                assert isinstance(modname, basestring), modname
+                assert isinstance(modname, str), modname
                 assert enabled is None or isinstance(enabled, collections.Callable), enabled
                 for item in submenu:
                     assert isinstance(item, CMSExtension.MenuItem), item
@@ -621,7 +613,7 @@ class CMSExtension(wiking.Module, Embeddable, wiking.RequestHandler):
         return self._base_uri(req) + '/' + self._rmapping[modname]
 
 
-class CMSExtensionMenuModule(object):
+class CMSExtensionMenuModule:
     """Mixin class for modules to be used in 'CMSExtension' menu."""
 
     def __init__(self, *args, **kwargs):
@@ -2204,7 +2196,7 @@ class BrailleExporter(wiking.Module):
                 pass
             else:
                 for o in dir(local_presentation):
-                    if o[0] in string.lowercase and hasattr(presentation, o):
+                    if o[0] in string.ascii_lowercase and hasattr(presentation, o):
                         setattr(presentation, o, getattr(local_presentation, o))
         else:
             presentation = None
@@ -3910,7 +3902,7 @@ class Attachments(ContentManagementModule):
         class Error(Exception):
             pass
 
-        class Archive(object):
+        class Archive:
             pass
 
         class ZipArchive(Archive):
@@ -5183,10 +5175,10 @@ class Text(Structure):
         value.
 
     """
-    _attributes = (Attribute('label', basestring),
-                   Attribute('description', basestring),
-                   Attribute('text', basestring),
-                   Attribute('text_format', basestring),)
+    _attributes = (Attribute('label', str),
+                   Attribute('description', str),
+                   Attribute('text', str),
+                   Attribute('text_format', str),)
 
     @classmethod
     def _module_class(class_):
@@ -5549,11 +5541,11 @@ class EmailText(Structure):
 
     """
     _attributes = (Attribute('label', str),
-                   Attribute('description', basestring),
-                   Attribute('text', basestring),
-                   Attribute('subject', basestring),
+                   Attribute('description', str),
+                   Attribute('text', str),
+                   Attribute('subject', str),
                    Attribute('cc', str, default=''),
-                   Attribute('text_format', basestring),)
+                   Attribute('text_format', str),)
 
     @classmethod
     def _module_class(class_):
@@ -5584,7 +5576,7 @@ class Emails(CommonTexts):
     class LabelType(pytis.data.String):
 
         def _validate(self, obj, **kwargs):
-            if isinstance(obj, basestring) and not obj.startswith('_'):
+            if isinstance(obj, str) and not obj.startswith('_'):
                 obj = '_' + obj
             return pytis.data.String._validate(self, obj, **kwargs)
 
@@ -5676,7 +5668,7 @@ class Emails(CommonTexts):
         return send_mail_args
 
 
-class TextReferrer(object):
+class TextReferrer:
     """Convenience class for modules using 'Texts' and 'Emails' modules.
 
     It defines convenience methods for text retrieval.

@@ -23,8 +23,6 @@ May be optionally applied after upgrade of Wiking CMS database to version 72 to
 convert the existing plain text or unsalted md5 passwords to salted PBKDF2 hashes.
 
 """
-from __future__ import print_function
-
 import sys
 import getopt
 

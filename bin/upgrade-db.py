@@ -24,9 +24,6 @@ database table.  It runs a sequence of upgrade scripts in one transaction and
 rolls back all changes when one of the scripts fails.
 
 """
-from __future__ import print_function
-from builtins import range
-
 import os
 import sys
 import glob

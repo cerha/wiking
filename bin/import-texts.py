@@ -27,8 +27,6 @@
 # into the database.  NAMESPACE, LABEL and LANGUAGECODE attributes of the
 # stored text are defined by the file name.
 
-from __future__ import print_function
-
 import codecs
 import os
 import sys

@@ -15,12 +15,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-from __future__ import division
-from future import standard_library
-from builtins import str
-from past.builtins import basestring
-from builtins import object
-
 import collections
 import datetime
 import json
@@ -45,8 +39,6 @@ from pytis.data.dbapi import DBAPIData
 
 import urllib.error
 import http.client
-
-standard_library.install_aliases()
 
 _ = lcg.TranslatableTextFactory('wiking')
 
@@ -207,7 +199,7 @@ class Redirect(RequestError):
             'Request.make_uri()' apply.
 
         """
-        assert isinstance(uri, basestring)
+        assert isinstance(uri, str)
         super(Redirect, self).__init__()
         self._uri = uri
         self._args = args + tuple(kwargs.items())
@@ -595,7 +587,7 @@ class Abort(Exception):
 # ============================================================================
 
 
-class Theme(object):
+class Theme:
     """Color theme representation.
 
     Color themes are used for substitution of symbolic color names by color
@@ -605,7 +597,7 @@ class Theme(object):
     'Theme.Color' instances.
 
     """
-    class Color(object):
+    class Color:
         """Theme color specification.
 
         Each color defines its own identifier and optionally the identifier of
@@ -705,14 +697,14 @@ class Theme(object):
         return self._theme[key]
 
 
-class MenuItem(object):
+class MenuItem:
     """Abstract menu item representation."""
 
     def __init__(self, id, title, descr=None, submenu=(), hidden=False, active=True,
                  foldable=False, order=None, variants=None):
         """Arguments:
 
-          id -- unique menu item identifier (basestring) which is at the same
+          id -- unique menu item identifier (str) which is at the same
             time used as the target URI.  It should start with a slash (if not,
             it is prepended automatically, but this is deprecated).
           title -- title as a (translatable) string displayed in menu.
@@ -780,7 +772,7 @@ class MenuItem(object):
         return self._variants
 
 
-class Panel(object):
+class Panel:
     """Panel representation to be passed to 'Document.build()'.
 
     Panels are small applet windows displayed by the right side of the page (in
@@ -792,17 +784,17 @@ class Panel(object):
     def __init__(self, id, title, content, titlebar_content=None,
                  accessible_title=None, channel=None):
         """
-        @type id: basestring
+        @type id: str
         @param id: Panel unique identifier.  This identifier is included in
         the output and thus may be used for panel specific styling.
 
-        @type title: basestring
+        @type title: str
         @param title: Title displayed in panel heading.
 
         @type content: L{lcg.Content}
         @param content: Content displayed within the panel area.
 
-        @type accessible_title: basestring
+        @type accessible_title: str
         @param accessible_title: Panel title for assistive technologies or
         None.  Panel is by default represented by its 'title' to assistive
         technologies.  If you need to use a more descriptive title for this
@@ -813,19 +805,18 @@ class Panel(object):
         Additional panel title bar content.  If defined, the exported content
         will be appended to the panel title inside the panel title bar.
 
-        @type channel: basestring
+        @type channel: str
         @param channel: RSS channel URI if this panel represents an RSS
         channel.  If not None, the panel will indicate a channel icon with a
         link to the channel.  Channels of all panels present on a page will
         also be automatically included in <link> tags within the page header.
 
         """
-        assert isinstance(id, basestring), id
-        assert isinstance(title, basestring), title
+        assert isinstance(id, str), id
+        assert isinstance(title, str), title
         assert isinstance(content, lcg.Content), content
-        assert accessible_title is None or isinstance(accessible_title, basestring), \
-            accessible_title
-        assert channel is None or isinstance(channel, basestring), channel
+        assert accessible_title is None or isinstance(accessible_title, str), accessible_title
+        assert channel is None or isinstance(channel, str), channel
         self._id = id
         self._title = title
         self._content = content
@@ -854,7 +845,7 @@ class Panel(object):
         return self._channel
 
 
-class Document(object):
+class Document:
     """Independent Wiking document representation.
 
     The 'Document' is Wiking's abstraction of an LCG document (represented by
@@ -955,7 +946,7 @@ class Document(object):
         return self.__class__(**dict(args, **kwargs))
 
 
-class Response(object):
+class Response:
     """Abstract representation of HTTP request response.
 
     The response is the final result of request processing.  Methods involved
@@ -978,14 +969,14 @@ class Response(object):
           data -- respnse data as one of the types described below.
 
           content_type -- The value to be used for the 'Content-Type' HTTP
-            header (basestring).  When 'data' is a unicode instance, and
+            header (str).  When 'data' is a unicode instance, and
             'content_type' is one of "text/html", "application/xml", "text/css"
             and "text/plain", the charset information is appended automatically
             to the value.  So for example "text/plain" will be converted to
             "text/plain; charset=UTF-8".
 
           content_length -- Explicit value for the 'Content-Length' HTTP header
-            (basestring).  Set automatically when 'data' is 'str', 'bytes' or
+            (str).  Set automatically when 'data' is 'str', 'bytes' or
             'unicode', but should be supplied when 'data' is an iterable
             object.
 
@@ -993,7 +984,7 @@ class Response(object):
             (default is 'httplib.OK').  It is recommended to use 'httplib'
             constants for the status codes.
 
-          filename -- file name (basestring) for the 'Content-disposition' HTTP
+          filename -- file name (str) for the 'Content-disposition' HTTP
             header.  This has the same effect as adding a pair
             ('Content-disposition', "attachment; filename=<filename>" to
             'headers'.  The browser will usually show a "Save File" dialog and
@@ -1057,21 +1048,21 @@ class Response(object):
         self._headers.append((name, value))
 
 
-class Channel(object):
+class Channel:
     """RSS channel specification."""
 
     def __init__(self, id, title, descr, content, limit=None, sorting=None, condition=None,
                  webmaster=None):
         """
-        @type id: basestring
+        @type id: str
         @param id: Channel identifier unique within one module's channels.  The
         identifier is used as a part of channel URL, so it should not contain
         special characters.
 
-        @type title: basestring
+        @type title: str
         @param title: Channel title
 
-        @type descr: basestring
+        @type descr: str
         @param descr: Channel description/subtitle
 
         @type content: L{ChannelContent}
@@ -1088,14 +1079,14 @@ class Channel(object):
         the channel (appended to any other conditions imposed by the underlying
         module).
 
-        @type webmaster: basestring
+        @type webmaster: str
         @param webmaster: Channel webmaster e-mail address.  If None,
         'wiking.cfg.webmaster_address' is used.
 
         """
-        assert isinstance(id, basestring)
-        assert isinstance(title, basestring)
-        assert isinstance(descr, basestring)
+        assert isinstance(id, str)
+        assert isinstance(title, str)
+        assert isinstance(descr, str)
         assert isinstance(content, ChannelContent)
         self._id = id
         self._title = title
@@ -1131,7 +1122,7 @@ class Channel(object):
         return self._webmaster
 
 
-class ChannelContent(object):
+class ChannelContent:
     """Defines how PytisModule records map to RSS channel items.
 
     Used for 'Channel' 'content' constructor argument.
@@ -1204,7 +1195,7 @@ class ChannelContent(object):
         return self._author
 
 
-class RssWriter(object):
+class RssWriter:
     """Simple RSS stream writer."""
 
     def __init__(self, stream):
@@ -1249,7 +1240,7 @@ class RssWriter(object):
         self._stream.write('</channel>\n</rss>\n')
 
 
-class PasswordStorage(object):
+class PasswordStorage:
     """Abstract base class for various methods of transforming passwords for storage.
 
     Defines the API for conversion of user passwords before storing and
@@ -1269,9 +1260,9 @@ class PasswordStorage(object):
         """Return the transformed representation of given password for storing.
 
         Arguments:
-          password -- the password to transform in clear text as a basestring.
+          password -- the password to transform in clear text as a str.
 
-        Returns the transformed representation of the password as a basestring.
+        Returns the transformed representation of the password as a str.
 
         """
         raise NotImplementedError()
@@ -1280,8 +1271,8 @@ class PasswordStorage(object):
         """Verify that given password is the correct original of the stored password.
 
         Arguments:
-          password -- the password to check in clear text as a basestring.
-          stored_password -- the stored version of the correct password as a basestring.
+          password -- the password to check in clear text as a str.
+          stored_password -- the stored version of the correct password as a str.
 
         Returns True if the password is correct. False otherwise.
 
@@ -1454,7 +1445,7 @@ class UniversalPasswordStorage(PasswordStorage):
         return self._default_prefix + ':' + self._default_storage.stored_password(password)
 
 
-class AuthenticationProvider(object):
+class AuthenticationProvider:
     """Abstract intercace for authentication providers.
 
     Various authentication mechanisms may be implemented by implementing this
@@ -1683,7 +1674,7 @@ class TopBarControl(lcg.Content):
 
         This content is displayed between the label and the menu.
 
-        Returns the exported content as a basestring or HtmlEscapedUnicode if
+        Returns the exported content as a str or HtmlEscapedUnicode if
         the content contains HTML tags.  If None is returned, nothing is
         displayed.
 
@@ -1706,7 +1697,7 @@ class TopBarControl(lcg.Content):
         displays the current value selected from the menu (when this makes
         sense) or other information about the current state of the control.
 
-        Returns the exported content as a basestring or HtmlEscapedUnicode if
+        Returns the exported content as a str or HtmlEscapedUnicode if
         the content contains HTML tags.  If None is returned, nothing is
         displayed.
 
@@ -1931,7 +1922,7 @@ class LoginDialog(lcg.Content):
         ids = context.id_generator()
 
         def hidden_field(name, value):
-            if isinstance(value, basestring):
+            if isinstance(value, str):
                 return g.hidden(name=name, value=value)
             elif isinstance(value, (tuple, list)):
                 return lcg.concat([hidden_field(name, v) for v in value], separator="\n")
@@ -1991,7 +1982,7 @@ class DecryptionDialog(lcg.Content):
     """Password dialog for entering a decryption password."""
 
     def __init__(self, name):
-        assert isinstance(name, basestring)
+        assert isinstance(name, str)
         self._decryption_name = name
         super(DecryptionDialog, self).__init__()
 
@@ -2049,7 +2040,7 @@ class HtmlContent(lcg.TextContent):
 class Message(lcg.Container):
     """Distinguishable message displayed within other content.
 
-    The message may be pure text (passing 'basestring' as 'content' to the
+    The message may be pure text (passing 'str' as 'content' to the
     constructor) or any 'lcg.Content' instance.  Messages may also use inline
     formatting when the argument 'formatted' is True as in 'lcg.coerce()'.
 
@@ -2338,7 +2329,7 @@ class WikingResolver(pytis.util.Resolver):
         return [module_cls for name, module_cls in self.walk(wiking.Module)]
 
 
-class ModuleInstanceResolver(object):
+class ModuleInstanceResolver:
     """Single purpose class to be used as 'wiking.module' instance (see below)."""
 
     def __call__(self, name):
@@ -2520,7 +2511,7 @@ class InputForm(pytis.web.EditForm):
                                         name=name, hidden=hidden_fields, **kwargs)
 
 
-class RowsIterator(object):
+class RowsIterator:
     """Select rows from a Pytis data object through a convenient iterator interface."""
 
     def __init__(self, data, condition=None, arguments=None, sorting=None, limit=None, offset=0):
@@ -2577,7 +2568,7 @@ def serve_file(req, path, content_type=None, filename=None, lock=False, headers=
     Arguments:
       path -- Full path to the file in server's filesystem.
       content_type -- The value to be used for the 'Content-Type' HTTP header
-        (basestring).  If None, the type will be automatically guessed using the
+        (str).  If None, the type will be automatically guessed using the
         python mimetypes module.
       filename -- File name to be used for the 'Content-Disposition' HTTP header.
          This will force the browser to save the file under given file name instead
@@ -2708,7 +2699,7 @@ def timeit(func, *args, **kwargs):
     return result, time.clock() - t1, time.time() - t2
 
 
-class MailAttachment(object):
+class MailAttachment:
     """Definition of a mail attachment.
 
     Mail attachment is defined by the following attributes, given in the class
@@ -2723,9 +2714,9 @@ class MailAttachment(object):
     """
 
     def __init__(self, file_name, stream=None, type='application/octet-stream'):
-        assert file_name is None or isinstance(file_name, basestring), ('type error', file_name,)
+        assert file_name is None or isinstance(file_name, str), ('type error', file_name,)
         assert stream is None or hasattr(stream, 'read'), ('type error', stream,)
-        assert isinstance(type, basestring), ('type error', type,)
+        assert isinstance(type, str), ('type error', type,)
         self._file_name = file_name
         if stream is None:
             self._stream = open(file_name)
@@ -2783,16 +2774,16 @@ def send_mail(addr, subject, text, sender=None, sender_name=None, html=None,
         'wiking.cfg.special_cc_exclude_roles'.
 
     """
-    assert isinstance(addr, (basestring, tuple, list)), ('type error', addr,)
-    assert isinstance(subject, basestring), ('type error', subject,)
-    assert isinstance(text, basestring), ('type error', text,)
-    assert sender is None or isinstance(sender, basestring), ('type error', sender,)
-    assert sender_name is None or isinstance(sender_name, basestring), ('type error', sender_name,)
-    assert html is None or isinstance(html, basestring), ('type error', html,)
+    assert isinstance(addr, (str, tuple, list)), ('type error', addr,)
+    assert isinstance(subject, str), ('type error', subject,)
+    assert isinstance(text, str), ('type error', text,)
+    assert sender is None or isinstance(sender, str), ('type error', sender,)
+    assert sender_name is None or isinstance(sender_name, str), ('type error', sender_name,)
+    assert html is None or isinstance(html, str), ('type error', html,)
     assert isinstance(export, bool), ('type error', bool,)
-    assert lang is None or isinstance(lang, basestring), ('type error', lang,)
+    assert lang is None or isinstance(lang, str), ('type error', lang,)
     assert isinstance(cc, (tuple, list)), ('type error', cc,)
-    assert smtp_server is None or isinstance(smtp_server, basestring), ('type error', smtp_server,)
+    assert smtp_server is None or isinstance(smtp_server, str), ('type error', smtp_server,)
     assert smtp_port is None or isinstance(smtp_port, int), ('type error', smtp_port,)
     assert uid is None or isinstance(uid, int), uid
     if __debug__:
@@ -2917,7 +2908,7 @@ def validate_email_address(address, helo=None):
     of the address on remote sites.
 
     """
-    assert isinstance(address, basestring)
+    assert isinstance(address, str)
     import dns.resolver
     import smtplib
     try:
@@ -2995,7 +2986,7 @@ def make_uri(base, *args, **kwargs):
             uri = match.group(1) + urllib.parse.quote(match.group(3).encode('utf-8'))
         else:
             uri = urllib.parse.quote(base.encode('utf-8'))
-    if args and isinstance(args[0], basestring):
+    if args and isinstance(args[0], str):
         uri += '#' + urllib.parse.quote(unistr(args[0]).encode('utf-8'))
         args = args[1:]
     query = ';'.join([k + "=" + urllib.parse.quote_plus(unistr(v).encode('utf-8'))
@@ -3010,7 +3001,7 @@ _MONTH = ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 
 
 
 def format_http_date(dt):
-    """Return datetime as a basestring in the RFC 1123 format.
+    """Return datetime as a str in the RFC 1123 format.
 
     Arguments:
 
@@ -3032,7 +3023,7 @@ def parse_http_date(date_string):
 
     Arguments:
 
-      date_string -- basestring representing date and time in one of the
+      date_string -- string representing date and time in one of the
         formats supported by RFC 2616
 
     Returns corresponding 'datetime.datetime' instance in UTC or None when the

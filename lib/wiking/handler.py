@@ -15,12 +15,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-from __future__ import absolute_import
-from future import standard_library
-from builtins import range
-from past.builtins import basestring
-from builtins import object
-
 import os
 import sys
 import traceback
@@ -34,11 +28,10 @@ from pytis.util import OPERATIONAL, log
 
 _ = lcg.TranslatableTextFactory('wiking')
 
-standard_library.install_aliases()
 import urllib.parse
 
 
-class Handler(object):
+class Handler:
     """Wiking handler.
 
     The handler passes the actual request processing to the current application.  Its main job is
@@ -131,7 +124,7 @@ class Handler(object):
     def _resource_provider(self, req):
         styles = []
         for x in self._application.stylesheets(req):
-            if isinstance(x, basestring):
+            if isinstance(x, str):
                 x = lcg.Stylesheet(x, uri=x)
             styles.append(x)
         return lcg.ResourceProvider(resources=styles, dirs=wiking.cfg.resource_path)

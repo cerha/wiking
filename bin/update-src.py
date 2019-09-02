@@ -30,8 +30,6 @@ typically needed for Wiking web applications (LCG, Pytis, Wiking etc).  Note
 that you may need to run upgrade-db.py after this script.
 
 """
-from __future__ import print_function
-
 import os
 import sys
 import subprocess
