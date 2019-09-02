@@ -24,7 +24,7 @@ from .cms import (  # noqa: F401
     ContentManagementModule, Countries, Discussions, EmailSpool, EmailText, Emails,
     Embeddable, EmbeddableCMSModule, Languages, NavigablePages, News, NewsletterEditions,
     NewsletterPosts, NewsletterSubscription, Newsletters, PDFExporter, PageHistory,
-    PageStructure, PageTitles, Pages, PanelItem, Panels, Planner, PublicationChapters,
+    PageStructure, PageTitles, Pages, Panels, Planner, PublicationChapters,
     PublicationExports, Publications, Resources, Roles, SettingsManagementModule,
     SiteMap, SiteSpecificContentModule, StyleManagementModule, StyleSheets, Text,
     TextReferrer, Texts, Themes, UserManagementModule, WikingManagementInterface,
@@ -33,7 +33,8 @@ from .cms import (  # noqa: F401
 
 from .users import (  # noqa: F401
     ActivationForm, ActiveUsers, ApplicationRoles, ContainingRoles, Registration,
-    Role, RoleMembers, RoleSets, Session, SessionLog, UserGroups, UserRoles, Users,
+    Role, RoleMembers, RoleSets, Session, UserGroups, UserRoles, Users, LoginFailures,
+    SessionHistory,
 )
 
 from .appl import AdminControl, Application  # noqa: F401
@@ -41,6 +42,6 @@ from .crypto import CryptoKeys, CryptoNames  # noqa: F401
 from .configuration import CMSConfiguration  # noqa: F401
 from . import texts  # noqa: F401
 
-from wiking import CachedTables, Documentation  # noqa: F401
+from wiking import CachedTables, Documentation, SiteIcon  # noqa: F401
 
 cfg = CMSConfiguration()
