@@ -1386,8 +1386,8 @@ class Pbkdf2PasswordStorage(PasswordStorage):
 
     def _pbkdf2_hash(self, password, salt, iterations, output_characters):
         import pbkdf2
-        output_bytes = pbkdf2.PBKDF2(password, salt, iterations).read(output_characters / 2 + 1)
-        return output_bytes.encode('hex')[:output_characters]
+        output_bytes = pbkdf2.PBKDF2(password, salt, iterations).read(output_characters // 2 + 1)
+        return ''.join(['%x' % byte for byte in output_bytes])[:output_characters]
 
 
 class Pbkdf2Md5PasswordStorage(Pbkdf2PasswordStorage, UnsaltedMd5PasswordStorage):
@@ -3100,9 +3100,9 @@ def generate_random_string(length):
     """Return a random string of given length."""
     # import base64
     try:
-        code = ''.join(['%02x' % ord(c) for c in os.urandom(length / 2 + 1)])
+        code = ''.join(['%02x' % byte for byte in os.urandom(length // 2 + 1)])
     except NotImplementedError:
         import random
         random.seed()
-        code = ''.join(['%02x' % random.randint(0, 255) for i in range(length / 2 + 1)])
+        code = ''.join(['%02x' % random.randint(0, 255) for i in range(length // 2 + 1)])
     return code[:length]
