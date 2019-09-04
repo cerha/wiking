@@ -48,7 +48,7 @@ from pytis.presentation import (
     Action, Binding, CodebookSpec, Field, FieldSet, HGroup, computer,
 )
 from wiking import (
-    Forbidden, MenuItem, NotFound, Redirect, Response, Role, Specification, make_uri,
+    Forbidden, MenuItem, NotFound, Redirect, Response, Role, Specification
 )
 
 import urllib.parse
@@ -4117,7 +4117,7 @@ class _News(ContentManagementModule, EmbeddableCMSModule, wiking.CachingPytisMod
     def _record_uri(self, req, record, *args, **kwargs):
         page_uri = wiking.module.Pages.page_uri(req, record['page_id'].value())
         anchor = 'item-' + record[self._referer].export()
-        return make_uri(page_uri, anchor)
+        return req.make_uri(page_uri, anchor)
 
     def _redirect_after_insert(self, req, record):
         req.message(self._insert_msg(req, record), req.SUCCESS)
