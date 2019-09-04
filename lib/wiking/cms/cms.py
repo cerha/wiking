@@ -5160,8 +5160,7 @@ class Text(Structure):
       label -- unique identifier of the text, string
       description -- human description of the text, presented to application
         administrators managing the texts
-      text -- the text itself, as a translatable string or unicode in LCG
-        formatting
+      text -- the text itself, as a translatable string in LCG formatting
       text_format -- One of 'pytis.presentation.TextFormat' constants.  The
         default value None denotes that the format depends on the current
         setting of 'wiking.cfg.content_editor'.  Otherwise the format of given
@@ -5480,7 +5479,7 @@ class Texts(CommonTexts, wiking.CachingPytisModule):
         return lcg.SelfTranslatableText(text.text() or '', translations=translations)
 
     def localized_text(self, req, text, lang=None, args=None):
-        """Return localized text corresponding to 'text' as unicode.
+        """Return the localized text corresponding to 'text' as a string.
 
         Arguments:
 
@@ -5531,8 +5530,8 @@ class EmailText(Structure):
       label -- unique identifier of the e-mail, string
       description -- human description of the e-mail, presented to application
         administrators managing the e-mails
-      subject -- subject of the mail, as a translatable plain text string or unicode
-      text -- body of the mail, as a translatable plain text string or unicode
+      subject -- subject of the mail, as a translatable plain text string
+      text -- body of the mail, as a translatable plain text string
       cc -- comma separated recipient e-mail addresses, as a string
 
     Note the predefined e-mail texts get automatically localized.

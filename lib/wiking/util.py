@@ -969,16 +969,15 @@ class Response:
           data -- respnse data as one of the types described below.
 
           content_type -- The value to be used for the 'Content-Type' HTTP
-            header (str).  When 'data' is a unicode instance, and
-            'content_type' is one of "text/html", "application/xml", "text/css"
-            and "text/plain", the charset information is appended automatically
-            to the value.  So for example "text/plain" will be converted to
-            "text/plain; charset=UTF-8".
+            header (str).  When 'data' is a string and 'content_type' is one of
+            "text/html", "application/xml", "text/css" or "text/plain", the
+            charset information is appended automatically to the value.  So for
+            example "text/plain" will be converted to "text/plain;
+            charset=UTF-8".
 
           content_length -- Explicit value for the 'Content-Length' HTTP header
-            (str).  Set automatically when 'data' is 'str', 'bytes' or
-            'unicode', but should be supplied when 'data' is an iterable
-            object.
+            (str).  Set automatically when 'data' is 'str' or 'bytes', but
+            should be supplied when 'data' is an iterable object.
 
           status_code -- integer number denoting the HTTP response status code
             (default is 'httplib.OK').  It is recommended to use 'httplib'
@@ -1127,17 +1126,16 @@ class ChannelContent:
 
     Used for 'Channel' 'content' constructor argument.
 
-    The constructor arguments correspond to the supported channel item
-    fields and given values define how to get the field value from the
-    module's record.  Each value is either string, function (callable
-    object) or None.  In case of a string, the field value is taken
-    directly from the record's exported field value of the same name.  A
-    callable object allows more flexibility.  Given function is called with
-    two arguments ('req' and 'record') and the returned value is used
-    directly.  The function must return a string, unicode,
-    L{lcg.TranslatableText} or None.  If the specification value is None or
-    if the resulting field value is None, the field is not included in the
-    output or a default value is used (as documented for each field).
+    The constructor arguments correspond to the supported channel item fields
+    and given values define how to get the field value from the module's
+    record.  Each value is either string, function (callable object) or None.
+    In case of a string, the field value is taken directly from the record's
+    exported field value of the same name.  A callable object allows more
+    flexibility.  Given function is called with two arguments ('req' and
+    'record') and the returned value is used directly.  The function must
+    return a string or None.  If the specification value is None or if the
+    resulting field value is None, the field is not included in the output or a
+    default value is used (as documented for each field).
 
     """
 
@@ -2745,33 +2743,34 @@ def send_mail(addr, subject, text, sender=None, sender_name=None, html=None,
     Arguments:
 
       addr -- recipient address as a string or sequence of recipient addresses
-      subject -- message subject as a string or unicode
-      text -- message text as a string or unicode
-      sender -- sender email address as a string; if None, the address specified by the
-        configuration option `default_sender_address' is used.
-      sender_name -- optional human readable sender name as a string or
-        unicode; if not None, the name will be added to the 'From' header in
-        the standard form: "sender name" <sender@email>.  Proper encoding is
-        taken care of when necessary.
-      html -- HTML part of the message as string or unicode
-      export -- iff true, create the HTML part of the message by parsing 'text' as LCG Structured
-        text and exporting it to HTML.
-      lang -- ISO language code as a string; if not None, message 'subject', 'text' and 'html' will
-         be translated into given language (if they are LCG translatable strings)
+      subject -- message subject as a string
+      text -- message text as a string
+      sender -- sender email address as a string; if None, the address
+        specified by the configuration option `default_sender_address' is used.
+      sender_name -- optional human readable sender name as a string; if not
+        None, the name will be added to the 'From' header in the standard form:
+        "sender name" <sender@email>.  Proper encoding is taken care of when
+        necessary.
+      html -- HTML part of the message as string
+      export -- iff true, create the HTML part of the message by parsing 'text'
+        as LCG Structured text and exporting it to HTML.
+      lang -- ISO language code as a string; if not None, message 'subject',
+         'text' and 'html' will be translated into given language (if they are
+         LCG translatable strings)
       cc -- sequence of other recipient string addresses
       headers -- additional headers to insert into the mail; it must be a tuple
-        of pairs (HEADER, VALUE) where HEADER is an ASCII string containing
-        the header name (without the final colon) and value is an ASCII string
+        of pairs (HEADER, VALUE) where HEADER is an ASCII string containing the
+        header name (without the final colon) and value is an ASCII string
         containing the header value
-      attachments -- sequence of 'MailAttachment' instances describing the objects to attach
-        to the mail
+      attachments -- sequence of 'MailAttachment' instances describing the
+        objects to attach to the mail
       smtp_server -- SMTP server name to use for sending the message as a
         string; if 'None', server given in configuration is used
-      smtp_port -- SMTP port to use for sending the message as a
-        number; if 'None', server given in configuration is used
+      smtp_port -- SMTP port to use for sending the message as a number; if
+        'None', server given in configuration is used
       uid -- if not 'None' then special CC addresses defined in
-        'wiking.cfg.special_cc_addresses' are added if the given uid is not in any of the
-        'wiking.cfg.special_cc_exclude_roles'.
+        'wiking.cfg.special_cc_addresses' are added if the given uid is not in
+        any of the 'wiking.cfg.special_cc_exclude_roles'.
 
     """
     assert isinstance(addr, (str, tuple, list)), ('type error', addr,)
@@ -2911,11 +2910,9 @@ def validate_email_address(address, helo=None):
     import dns.resolver
     import smtplib
     try:
-        # DNS query doesn't work with unicode
-        address = str(address)
         # We validate only common addresses, not pathological cases
         __, domain = address.split('@')
-    except (UnicodeEncodeError, ValueError):
+    except ValueError:
         return False, _("Invalid e-mail address format.")
     try:
         mxhosts = dns.resolver.query(domain, 'MX')

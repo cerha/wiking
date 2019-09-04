@@ -83,8 +83,8 @@ class ServerInterface(pytis.web.Request):
     def uri(self):
         """Return request URI path relative to server's root.
 
-        The returned URI is a unicode value, which normally starts with a slash
-        and continues with an arbitrary numper of path elements separated by
+        The returned URI is a string value, which normally starts with a slash
+        and continues with an arbitrary number of path elements separated by
         slashes.  Transfer encoding and HTTP escapes are decoded.
 
         """
@@ -110,10 +110,10 @@ class ServerInterface(pytis.web.Request):
     def param(self, name, default=None):
         """Return the value of request parameter 'name' or 'default' if not present.
 
-        The returned value is a unicode string (with HTTP escapes decoded) for
-        ordinary parameters, a 'FileUpload' instance for uploaded multipart
-        data or a sequence of such values when multiple values of the parameter
-        were sent with the request.
+        The returned value is a string (with HTTP escapes decoded) for ordinary
+        parameters, a 'FileUpload' instance for uploaded multipart data or a
+        sequence of such values when multiple values of the parameter were sent
+        with the request.
 
         """
         pass
@@ -131,7 +131,7 @@ class ServerInterface(pytis.web.Request):
 
         Arguments:
           name -- parameter name as a string.
-          value -- unicode value to set or None to remove the parameter.
+          value -- string value to set or None to remove the parameter.
 
         """
         pass
@@ -412,7 +412,7 @@ class Request(ServerInterface):
         return reversed(sorted(items, key=lambda item: item.params.get('q', 1.0)))
 
     def cookie(self, name, default=None):
-        """Get the value of given cookie as unicode or return DEFAULT if cookie was not set."""
+        """Get the value of given cookie as a string or return DEFAULT if the cookie was not set."""
         if name in self._cookies:
             try:
                 return self._cookies[name].value
@@ -426,7 +426,7 @@ class Request(ServerInterface):
 
         Arguments:
           name -- cookie name as a string.
-          value -- unicode value to store or None to remove the cookie.
+          value -- string value to store or None to remove the cookie.
           expires -- cookie expiration time in seconds or None for unlimited
             cookie.
           secure -- if True, the cookie will only be returned by the browser on
@@ -597,7 +597,7 @@ class Request(ServerInterface):
           last_modified -- same as in 'start_response()'.
 
         This method is actually just a shorthand for calling 'start_response()'
-        and returning response data in one step with additional unicode
+        and returning response data in one step with additional charset
         handling.  The 'Content-Length' HTTP header is automatically set
         according to the length of 'data'.
 
@@ -689,8 +689,8 @@ class Request(ServerInterface):
 
         If any of 'args' or 'kwargs' VALUE is None, the argument is omitted.
 
-        The URI and the arguments may be unicode strings.  All strings are
-        properly encoded in the returned URI.
+        The URI and the arguments may be strings.  All strings are properly
+        encoded in the returned URI.
 
         """
         if base_uri.startswith('mailto:'):
@@ -847,14 +847,13 @@ class Request(ServerInterface):
 
         Arguments:
 
-          string -- 'lcg.Translatable' or unicode instance
+          string -- string to localize if possible.
           lang -- target language code as a string or None.  If None, the
             current preferred language is used instead.
 
-        Unicode instances which are not 'lcg.Localizable' are returned without
-        change.  Translatable instances are returned as unicode localized
-        according to the current locale settings (preferred language,
-        timezone, ...).
+        Strings which are not 'lcg.Localizable' are returned without change.
+        Localizable instances are returned as strings localized according to
+        the current locale settings (preferred language, timezone, ...).
 
         This is actually just a convenience wrapper for a frequently used call
         to 'Request.localizer().localize()'.
@@ -1237,7 +1236,7 @@ class Role:
           English letters, digits, underscores and dots.  Dots are reserved for
           separating identifier components, e.g. to add prefixes to user
           defined roles to avoid name conflicts with standard application roles.
-        @type name: string or unicode
+        @type name: str
         @param name: Human readable name of the role.
         """
         self._id = role_id
@@ -1262,7 +1261,7 @@ class Role:
 
     def name(self):
         """
-        @rtype: string or unicode
+        @rtype: str
         @return: Human readable name of the role.
         """
         return self._name
