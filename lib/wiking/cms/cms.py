@@ -1976,7 +1976,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
             if self._SEPARATOR.search(text):
                 pre, post = self._SEPARATOR.split(text, maxsplit=2)
             else:
-                pre, post = text, u''
+                pre, post = text, ''
             content = [text2content(req, pre)] + content + [text2content(req, post)]
         # Process page attachments
         storage = record.attachment_storage('_content')

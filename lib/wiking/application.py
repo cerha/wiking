@@ -544,7 +544,7 @@ class Application(wiking.Module):
 
         """
         return lcg.join((lcg.link('/privacy-policy', _("Privacy policy")),
-                         self._accessibility_statement_link(req)), separator=u' \u2022 ')
+                         self._accessibility_statement_link(req)), separator=' \u2022 ')
 
     def footer_content(self, req):
         """Return the content displayed in page footer as 'lcg.Content' element(s).
