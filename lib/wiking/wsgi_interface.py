@@ -24,8 +24,6 @@ import wiking
 import http.client
 import urllib.parse
 
-unistr = type(u'')  # Python 2/3 transition hack.
-
 
 class WsgiRequest(wiking.Request):
     """Wiking server interface implementation for WSGI.

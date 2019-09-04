@@ -21,8 +21,6 @@ import mod_python
 import mod_python.util
 import mod_python.apache
 
-unistr = type(u'')  # Python 2/3 transition hack.
-
 
 class ModPythonRequest(wiking.Request):
     """Mod_python server interface implementing the 'wiking.Request' interface."""
@@ -34,7 +32,7 @@ class ModPythonRequest(wiking.Request):
         # Store params and options in real dictionaries (not mod_python's mp_table).
         self._options = self._init_options()
         self._params = self._init_params(encoding)
-        self._uri = unistr(req.uri, encoding)
+        self._uri = str(req.uri, encoding)
         super(ModPythonRequest, self).__init__(encoding=encoding)
 
     def _init_options(self):
@@ -48,7 +46,7 @@ class ModPythonRequest(wiking.Request):
             elif isinstance(value, mod_python.util.Field):
                 return wiking.FileUpload(value, encoding)
             else:
-                return unistr(value, encoding)
+                return str(value, encoding)
         try:
             fields = mod_python.util.FieldStorage(self._req)
         except IOError as e:
