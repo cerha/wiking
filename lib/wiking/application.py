@@ -500,22 +500,13 @@ class Application(wiking.Module):
             return None
 
     def menu_panel_title(self, req):
-        """Return the displayed title of the left side hierarchical menu as a string.
-
-        Python string, unicode or lcg.Translatable instance is accepted.
-
-        """
+        """Return the displayed title of the left side hierarchical menu as a string."""
         # Translators: Heading of webpage left side hierarchical navigation
         # menu containing a list of links to pages in this web section
         return _("In this section:")
 
     def menu_panel_tooltip(self, req):
-        """Return the tooltip of the left side hierarchical menu as a string.
-
-
-        Python string, unicode or lcg.Translatable instance is accepted.
-
-        """
+        """Return the tooltip of the left side hierarchical menu as a string."""
         return _("Local navigation")
 
     def menu_panel_bottom_content(self, req):
