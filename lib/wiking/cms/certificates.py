@@ -37,8 +37,6 @@ from pytis.presentation import Computer, Field, Editable
 # Strings for this domain will not be translated until this module is unused.
 _ = lcg.TranslatableTextFactory('wiking-cms-certificates')
 
-unistr = type(u'')  # Python 2/3 transition hack.
-
 ONCE = Editable.ONCE
 NEVER = Editable.NEVER
 ALWAYS = Editable.ALWAYS
@@ -172,7 +170,7 @@ class Certificates(wiking.cms.CMSModule):
             return number
 
         def _issuer_computer(self, x509):
-            return unistr(x509.issuer)
+            return str(x509.issuer)
 
         def _valid_from_computer(self, x509):
             return self._convert_x509_timestamp(x509.activation_time)

@@ -56,8 +56,6 @@ import urllib.error
 
 _ = lcg.TranslatableTextFactory('wiking-cms')
 
-unistr = type(u'')  # Python 2/3 transition hack.
-
 CHOICE = pp.SelectionType.CHOICE
 ALPHANUMERIC = pp.TextFilter.ALPHANUMERIC
 LOWER = pp.PostProcess.LOWER
@@ -3403,7 +3401,7 @@ class Attachments(ContentManagementModule):
 
     class Spec(Specification):
 
-        class _FakeFile(unistr):
+        class _FakeFile(str):
             """The string value determines the file path, len() returns its size."""
 
             def __len__(self):
@@ -3918,7 +3916,7 @@ class Attachments(ContentManagementModule):
                 return not item.filename.endswith('/')  # Directory names end with a slash...
 
             def filename(self, item):
-                return unistr(item.filename, "cp437")
+                return str(item.filename, "cp437")
 
             def open(self, item):
                 return self._archive.open(item)

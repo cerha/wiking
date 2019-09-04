@@ -34,8 +34,6 @@ import urllib.error
 
 _ = lcg.TranslatableTextFactory('wiking')
 
-unistr = type(u'')  # Python 2/3 transition hack.
-
 
 class ClosedConnection(Exception):
     """Exception raised when the client closes the connection during communication."""
@@ -707,11 +705,11 @@ class Request(ServerInterface):
                 uri = urllib.parse.quote(base_uri.encode(self._encoding))
             quote = urllib.parse.quote_plus
         if args and isinstance(args[0], str):
-            anchor = urllib.parse.quote(unistr(args[0]).encode(self._encoding))
+            anchor = urllib.parse.quote(args[0].encode(self._encoding))
             args = args[1:]
         else:
             anchor = None
-        query = '&'.join([k + "=" + quote(unistr(v).encode(self._encoding))
+        query = '&'.join([k + "=" + quote(str(v).encode(self._encoding))
                           for k, v in args + tuple(kwargs.items()) if v is not None])
         if query:
             uri += '?' + query

@@ -19,6 +19,8 @@ import collections
 import datetime
 import json
 import mimetypes
+import base64
+import binascii
 import os
 import re
 import sys
@@ -41,8 +43,6 @@ import urllib.error
 import http.client
 
 _ = lcg.TranslatableTextFactory('wiking')
-
-unistr = type(u'')  # Python 2/3 transition hack.
 
 DBG = pytis.util.DEBUG
 EVT = pytis.util.EVENT
@@ -1319,7 +1319,7 @@ class UnsaltedMd5PasswordStorage(PasswordStorage):
     """
 
     def _md5(self, password):
-        if isinstance(password, unistr):
+        if isinstance(password, str):
             password = password.encode('utf-8')
         try:
             from hashlib import md5
@@ -1513,11 +1513,11 @@ class HTTPBasicAuthenticationProvider(AuthenticationProvider):
         auth_header = req.header('Authorization')
         if not auth_header or not auth_header.startswith('Basic '):
             return None
-        credentials = auth_header.split()[1].decode("base64")
         try:
-            login, password = [unistr(x, req.encoding()) for x in credentials.split(":", 1)]
-        except UnicodeError:
+            credentials = str(base64.b64decode(auth_header.split()[1]), req.encoding())
+        except (binascii.Error, UnicodeError):
             return None
+        login, password = credentials.split(":", 1)
         application = wiking.module.Application
         user = application.authenticate(req, login, password, self._AUTH_TYPE)
         if user:
@@ -2797,11 +2797,9 @@ def send_mail(addr, subject, text, sender=None, sender_name=None, html=None,
         multipart_type = 'mixed'
     else:
         multipart_type = 'alternative'
-    msg = MIMEMultipart(multipart_type)
     localizer = lcg.Localizer(lang, translation_path=wiking.cfg.translation_path)
 
-    if isinstance(text, unistr):
-        text = localizer.localize(text)
+    text = localizer.localize(text)
     if not sender or sender == '-':  # Hack: '-' is the Wiking CMS Admin default value...
         sender = wiking.cfg.default_sender_address
     if sender_name:
@@ -2816,6 +2814,7 @@ def send_mail(addr, subject, text, sender=None, sender_name=None, html=None,
             if not set(user_roles).intersection(set(special_roles)):
                 cc = tuple(cc) + tuple(wiking.cfg.special_cc_addresses)
     # Set up message headers.
+    msg = MIMEMultipart(multipart_type)
     msg['From'] = sender
     msg['To'] = addr
     if cc:
