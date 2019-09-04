@@ -26,7 +26,7 @@ _ = lcg.TranslatableTextFactory('wiking-cms')
 top = Text(
     'cms.top',
     _("Text displayed at the very top of every page next to the site title"),
-    u'')
+    '')
 
 disabled = Text(
     'cms.disabled',

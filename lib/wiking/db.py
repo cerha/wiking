@@ -535,7 +535,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
             # A bit complicated in order to preserve translations
             extra_title = messages[0][0]
             for m in messages[1:]:
-                extra_title = extra_title + u'; ' + m[0]
+                extra_title = extra_title + '; ' + m[0]
 
             def interpolate(key, title=title, extra=extra_title):
                 return dict(title=title, extra=extra)[key]

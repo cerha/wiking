@@ -32,7 +32,7 @@ class Utils(unittest.TestCase):
                                 ('pbkdf2', wiking.Pbkdf2PasswordStorage()),
                                 ('pbkdf2/md5', wiking.Pbkdf2Md5PasswordStorage()),
                                 (None, wiking.UniversalPasswordStorage())):
-            for passwd in ('bla', 'xxxxx', 'wer2d544aSWdD5', u'34čůdl1G5'):
+            for passwd in ('bla', 'xxxxx', 'wer2d544aSWdD5', '34čůdl1G5'):
                 stored = storage.stored_password(passwd)
                 if not isinstance(storage, wiking.PlainTextPasswordStorage):
                     self.assertNotEqual(stored, passwd, (storage, passwd, stored))

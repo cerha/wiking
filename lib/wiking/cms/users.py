@@ -586,9 +586,9 @@ class Users(UserManagementModule, CachingPytisModule):
                       visible=computer(lambda r: r.req().param('action') != 'reinsert'),
                       descr=_("Write the same password into both fields.")),
                 # UI Fields for password change.
-                Field('old_password', _(u"Old password"), virtual=True, width=16,
+                Field('old_password', _("Old password"), virtual=True, width=16,
                       type=pd.Password(verify=False, not_null=True),
-                      descr=_(u"Verify your identity by entering your original (current) "
+                      descr=_("Verify your identity by entering your original (current) "
                               "password.")),
                 # The only difference between initial_password and new_password is in label.
                 Field('new_password', _("New password"), virtual=True, width=16, type=pwdtype,
@@ -708,20 +708,20 @@ class Users(UserManagementModule, CachingPytisModule):
             if req.param('action') == 'passwd' and req.user().uid() == record['uid'].value():
                 old_password = record['old_password'].value()
                 if not old_password:
-                    return ('old_password', _(u"Enter your current password."))
+                    return ('old_password', _("Enter your current password."))
                 stored_old_password = record.original_row()['password'].value()
                 storage = wiking.cms.cfg.password_storage
                 if not storage.check_password(old_password, stored_old_password):
-                    return ('old_password', _(u"Invalid password."))
+                    return ('old_password', _("Invalid password."))
 
         def _check_new_password(self, record):
             if record.req().param('action') == 'passwd':
                 new_password = record['new_password'].value()
                 if not new_password:
-                    return ('new_password', _(u"Enter the new password."))
+                    return ('new_password', _("Enter the new password."))
                 storage = wiking.cms.cfg.password_storage
                 if storage.check_password(new_password, record.original_row()['password'].value()):
-                    return ('new_password', _(u"The new password is the same as the old one."))
+                    return ('new_password', _("The new password is the same as the old one."))
 
         def check(self):
             return (self._check_email, self._check_old_password, self._check_new_password)
