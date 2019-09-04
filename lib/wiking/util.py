@@ -2973,29 +2973,6 @@ def validate_email_address(address, helo=None):
     return True, None
 
 
-_ABS_URI_MATCHER = re.compile(r'^((https?|ftp)://[^/]+)(.*)$')
-
-
-def make_uri(base, *args, **kwargs):
-    """Deprecated: Use 'Request.make_uri()' instead."""
-    if base.startswith('mailto:'):
-        uri = base
-    else:
-        match = _ABS_URI_MATCHER.match(base)
-        if match:
-            uri = match.group(1) + urllib.parse.quote(match.group(3).encode('utf-8'))
-        else:
-            uri = urllib.parse.quote(base.encode('utf-8'))
-    if args and isinstance(args[0], str):
-        uri += '#' + urllib.parse.quote(unistr(args[0]).encode('utf-8'))
-        args = args[1:]
-    query = ';'.join([k + "=" + urllib.parse.quote_plus(unistr(v).encode('utf-8'))
-                      for k, v in args + tuple(kwargs.items()) if v is not None])
-    if query:
-        uri += '?' + query
-    return uri
-
-
 _WKDAY = ('Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun',)
 _MONTH = ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',)
 
