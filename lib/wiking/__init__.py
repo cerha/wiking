@@ -23,7 +23,7 @@ from .util import (  # noqa: F401
     Forbidden, HTTPBasicAuthenticationProvider, HtmlContent, IFrame, InputForm,
     InternalServerError, LanguageSelection, LoginControl, LoginDialog, MailAttachment,
     MaximizedModeControl, MenuItem, Message, ModuleInstanceResolver, NotAcceptable, NotFound,
-    NotModified, Panel, PasswordExpirationError, PasswordStorage,
+    NotModified, Panel, PasswordStorage,
     Pbkdf2Md5PasswordStorage, Pbkdf2PasswordStorage, PermanentRedirect, PlainTextPasswordStorage,
     RecordsIterator, Redirect, RequestError, Response, RowsIterator, RssWriter, ServiceUnavailable,
     Specification, TZInfo, Theme, Time, TopBarControl, UniversalPasswordStorage,

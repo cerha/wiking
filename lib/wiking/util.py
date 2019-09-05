@@ -364,24 +364,6 @@ class AuthorizationError(Forbidden):
         return [lcg.p(message), lcg.p(req.translate(notice), formatted=True)]
 
 
-class PasswordExpirationError(Forbidden):
-    """Exception raised on password expiration."""
-
-    # Translators: An error page title
-    _TITLE = _("Your password expired")
-
-    def _messages(self, req):
-        return (self._message or
-                _("Your password expired.  Access to the application is now blocked for "
-                  "security reasons until you change your password."),)
-
-    def content(self, req):
-        content = super(PasswordExpirationError, self).content(req)
-        uri = wiking.module.Application.password_change_uri(req)
-        if uri:
-            # Translators: This is a link on a webpage
-            content.append(lcg.p(lcg.link(uri, _("Change your password"))))
-        return content
 
 
 class NotFound(RequestError):
@@ -1776,7 +1758,7 @@ class LoginControl(TopBarControl):
                 if password_expiration:
                     # Translators: Login panel info. '%(date)s' is replaced by a concrete date.
                     tooltip = _("Your password expires on %(date)s",
-                                date=lcg.LocalizableDateTime(str(password_expiration)))
+                                date=lcg.LocalizableDateTime(password_expiration))
                 else:
                     tooltip = None
                 # Translators: Menu item label.
