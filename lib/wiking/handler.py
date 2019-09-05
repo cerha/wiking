@@ -282,25 +282,33 @@ class Handler:
                     # Temporary backwards compatibility conversion.
                     content_type, data = result
                     result = wiking.Response(data, content_type=content_type)
-                if isinstance(result, (lcg.Content, wiking.Document)):
-                    if req.is_api_request():
-                        # This is a very generic detection of invalid API
-                        # requests.  We just assume, that the clients, which
-                        # indicate that they accept JSON responses are API
-                        # clients and they are not interested in responses, which
-                        # display human readable content.
-                        raise wiking.BadRequest(_("This URI does not belong to server API."))
-                    # Always perform authentication (if it was not performed
-                    # before) to handle authentication exceptions here and
-                    # prevent them in export time.  If the result is a
-                    # document, we will surely need to authenticate anyway,
-                    # because we need to display the login control at the top
-                    # of the page.
-                    req.user()
-                    if isinstance(result, wiking.Document):
-                        return self._serve_document(req, result)
-                    else:
-                        return self._serve_content(req, result)
+                if req.is_api_request() and isinstance(result, (lcg.Content, wiking.Document)):
+                    # This is a very generic detection of invalid API
+                    # requests.  We just assume, that the clients, which
+                    # indicate that they accept JSON responses are API
+                    # clients and they are not interested in responses, which
+                    # display human readable content.
+                    raise wiking.BadRequest(_("This URI does not belong to server API."))
+                if isinstance(result, wiking.Document):
+                    # Perform authentication here if it was not performed before
+                    # to handle authentication exceptions now and prevent them in
+                    # export time.  When the result is a Document, we will always
+                    # need to know the authenticated user in order to display the
+                    # login control at the top of the page.
+                    user = req.user()
+                    if user:
+                        password_expiration = user.password_expiration()
+                        password_change_uri = wiking.module.Application.password_change_uri(req)
+                        if ((password_change_uri and password_expiration and
+                             password_expiration <= datetime.date.today() and
+                             req.uri() != password_change_uri)):
+                            req.message(_("Your password expired."), req.ERROR)
+                            req.message(_("Access to the application is now restricted "
+                                          "until you change your password."))
+                            raise wiking.Redirect(password_change_uri)
+                    return self._serve_document(req, result)
+                elif isinstance(result, lcg.Content):
+                    return self._serve_content(req, result)
                 elif isinstance(result, wiking.Response):
                     last_modified = result.last_modified()
                     if last_modified is not None and req.cached_since(last_modified):
@@ -316,7 +324,7 @@ class Handler:
                                              status_code=result.status_code(),
                                              last_modified=result.last_modified())
                 else:
-                    raise Exception('Invalid wiking handler result: %s' % type(result))
+                    raise Exception('Invalid handler result: %s' % type(result))
             except wiking.NotModified as error:
                 return req.send_response('', status_code=error.status_code(), content_type=None)
             except wiking.Redirect as r:

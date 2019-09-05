@@ -912,27 +912,22 @@ class Request(ServerInterface):
         but are not valid (what that means depends on particular authentication
         providers).
 
-        'PasswordExpirationError' may be raised if the user is correctly
-        authenticated, but 'User.password_expiration()' date is today or
-        earlier.
-
         """
         if self._user is self._UNDEFINED:
-            # Set to None for the case that authentication raises an exception.
-            self._user = None
-            for provider in wiking.cfg.authentication_providers:
-                user = provider.authenticate(self)
-                if user is not None:
-                    if ((user.password_expiration() is not None and
-                         user.password_expiration() <= datetime.date.today() and
-                         self.uri() != wiking.module.Application.password_change_uri(self))):
-                        raise wiking.PasswordExpirationError()
-                    else:
-                        self._user = user
+            user = None
+            try:
+                for provider in wiking.cfg.authentication_providers:
+                    user = provider.authenticate(self)
+                    if user is not None:
                         break
-        if require and self._user is None:
+            finally:
+                # Make sure to set self._user even in case that authentication raises an exception.
+                self._user = user
+        else:
+            user = self._user
+        if require and user is None:
             raise wiking.AuthenticationError()
-        return self._user
+        return user
 
     def check_roles(self, *args):
         """Return true, iff the current user belongs to at least one of given roles.
@@ -1110,7 +1105,12 @@ class User:
             password authentication is not allowed.  The login password will be
             checked against this value for authentication to succeed.
           password_expiration -- password expiration date as a Python 'date'
-            instance or None
+            instance or None.  It is up to the application to decide whether a
+            user whose password has already expired has access to the
+            application.  This should be reflected in the 'roles' the user
+            receives.  Regardless of the roles, however, wiking.Handler will
+            automatically redirect to 'Application.password_change_uri()' if it
+            is defined and if the password expired today or earlier.
           gender -- User's gender as one of MALE/FEMALE class constants or None
             if unknown
           lang -- code of the user's preferred language
