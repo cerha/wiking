@@ -178,9 +178,6 @@ class ActionHandler(RequestHandler):
         else:
             return self._default_action(req, **kwargs)
 
-    def _check_owner(self, req, action, **kwargs):
-        return False
-
     def _authorized(self, req, action, **kwargs):
         try:
             roles = getattr(self, 'RIGHTS_' + action)
@@ -188,8 +185,6 @@ class ActionHandler(RequestHandler):
             roles = ()
         if req.check_roles(roles):
             return True
-        elif wiking.Roles.OWNER in roles:
-            return self._check_owner(req, action, **kwargs)
         else:
             return False
 
