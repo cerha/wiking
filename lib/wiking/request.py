@@ -1100,8 +1100,7 @@ class User:
         Arguments:
 
           login -- user's login name as a string
-          uid -- user identifier used for ownership determination (see role
-            OWNER)
+          uid -- numeric user identifier (int)
           name -- visible name as a string (login is used if None)
           roles -- sequence of user roles as 'Role' instances.  Since every
             user must be authenticated, roles must always contain at least the
@@ -1296,18 +1295,6 @@ class Roles:
     groups of authenticated users, based on their actual level of access to the
     application.  See L{wiking.cms.Roles} for examples of such more specific
     roles.
-
-    """
-    # Translators: Short description of a user group purpose.
-    OWNER = Role('owner', _("Current record owner"))
-    """The owner of the item being operated.
-
-    Interpretation of the term I{owner} is on the particular application.
-    Standard way of owner identification is implemented in
-    L{PytisModule._check_owner}, based on the owner of the processed database
-    record.  Applications may redefine this method or implement their own
-    L{Module._check_owner} method to change the concept of owner authorization
-    when needed.
 
     """
 

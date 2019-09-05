@@ -215,7 +215,6 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
     # Translators: Message displayed after a database record deletion (computer terminology).
     _DELETE_MSG = _("The record was deleted.")
 
-    _OWNER_COLUMN = None
     _SEQUENCE_FIELDS = ()
     _ARRAY_FIELDS = ()
     """Specification of array fields with automatically updated linking tables.
@@ -1122,11 +1121,6 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         if row is None:
             raise NotFound()
         return row
-
-    def _check_owner(self, req, action, record=None):
-        if record and self._OWNER_COLUMN is not None:
-            return self._check_uid(req, record, self._OWNER_COLUMN)
-        return False
 
     def _check_uid(self, req, record, column):
         user = req.user()
