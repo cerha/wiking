@@ -2094,8 +2094,6 @@ class WikingDefaultDataClass(DBAPIData):
 
     """
 
-    _dbfunction = {}  # DBFunftion* instance cache
-
     def __init__(self, *args, **kwargs):
         super(WikingDefaultDataClass, self).__init__(*args, **kwargs)
         # We don't want to care how `connection_data' is stored in the parent class...
@@ -2145,17 +2143,6 @@ class WikingDefaultDataClass(DBAPIData):
 
     def make_row(self, **kwargs):
         return pd.Row(self._row_data(**kwargs))
-
-    def dbfunction(self, name, *args):
-        """DEPRECATED.  Use PytisModule._call_db_function() instead."""
-        # Used in some applications (solas).
-        try:
-            function = self.__class__._dbfunction[name]
-        except KeyError:
-            function = self.__class__._dbfunction[name] = \
-                pd.DBFunctionDefault(name, self._dbconnection)
-        result = function.call(pytis.data.Row(args))
-        return result[0][0].value()
 
     def _update_cached_tables(self):
         try:
