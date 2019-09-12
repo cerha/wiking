@@ -633,6 +633,42 @@ h1 a { outline: none; }
     top: -1px;
     line-height: 20px;
 }
+.login-control .ctrl-content {
+    position: relative;
+}
+.login-control .password-expiration-warning {
+    display: inline-block;
+    position: absolute;
+    top: -.7rem;
+    left: -2rem;
+}
+.login-control .password-expiration-warning .badge {
+    display: inline-block;
+    width: .9rem;
+    height: .9rem;
+    border-radius: .45rem;
+    background-color: #f00;
+    color: #fff;
+    line-height: .9rem;
+    font-weight: bold;
+    font-size: .7rem;
+    text-align: center;
+}
+.login-control .password-expiration-warning .info {
+    display: inline-block;
+    position: absolute;
+    top: 1.5rem;
+    left: .2rem;
+    z-index: 3;
+    padding: .2em .5rem .4rem .5rem;
+    border-radius: 3px;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
+    line-height: 2rem;
+    background-color: $color.background;
+}
+.login-control .password-expiration-warning .warning-icon {
+    margin: 0 .4rem .2rem 0;
+}
 .login-control .login-button {
     color: $color.foreground;
     text-decoration: none;

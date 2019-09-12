@@ -1754,16 +1754,9 @@ class LoginControl(TopBarControl):
                                                cls='user-profile'))
             password_change_uri = wiking.module.Application.password_change_uri(req)
             if password_change_uri:
-                password_expiration = user.password_expiration()
-                if password_expiration:
-                    # Translators: Login panel info. '%(date)s' is replaced by a concrete date.
-                    tooltip = _("Your password expires on %(date)s",
-                                date=lcg.LocalizableDateTime(password_expiration))
-                else:
-                    tooltip = None
                 # Translators: Menu item label.
                 items.append(lcg.PopupMenuItem(_("Change my password"), icon='key-icon',
-                                               uri=password_change_uri, tooltip=tooltip))
+                                               uri=password_change_uri))
             # Translators: Menu item label (verb in imperative).
             items.append(lcg.PopupMenuItem(_("Log out"), icon='circle-out-icon',
                                            uri=req.make_uri(req.uri(), command='logout')))
@@ -1800,19 +1793,34 @@ class LoginControl(TopBarControl):
 
     def _content(self, context):
         req = context.req()
-        if wiking.cfg.show_login_control and req.user() is None:
+        user = req.user()
+        if user:
+            password_expiration = user.password_expiration()
+            if password_expiration:
+                g = context.generator()
+                msg_id = context.unique_id()
+                return g.div(
+                    (g.span('!', cls='badge', aria_hidden='true'),
+                     g.div((g.span('', cls='warning-icon'),
+                            # Translators: Login panel info. '%(date)s'
+                            # is replaced by a concrete date.
+                            _("Your password expires on %(date)s",
+                              date=lcg.LocalizableDateTime(password_expiration))),
+                           id=msg_id, cls='info', style='display: none')),
+                    cls='password-expiration-warning',
+                    aria_labelledby=msg_id, aria_role='note',
+                )
+        elif wiking.cfg.show_login_control:
             g = context.generator()
             uri = req.uri()
             if uri.endswith('_registration'):
                 uri = '/'  # Redirect logins from the registration forms to site root
             # Translators: Login button label (verb in imperative).
-            result = g.a(g.span('', cls='ctrl-icon circle-in-icon') + _("Log in"),
-                         href=g.uri(uri, command='login'), cls='login-button', role='button',
-                         # Translators: Login status info.
-                         title=_("User not logged in"))
-        else:
-            result = None
-        return result
+            return g.a(g.span('', cls='ctrl-icon circle-in-icon') + _("Log in"),
+                       href=g.uri(uri, command='login'), cls='login-button', role='button',
+                       # Translators: Login status info.
+                       title=_("User not logged in"))
+        return None
 
 
 class LanguageSelection(TopBarControl):

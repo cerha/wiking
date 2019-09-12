@@ -113,6 +113,27 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
             }.bind(this));
         }.bind(this));
 
+        $$('.login-control .password-expiration-warning, .login-control .ctrl-icon').each(function(element) {
+            var info = element.up('.login-control').down('.password-expiration-warning .info');
+            info._dismiss_handler = function (event) {
+                if (info._ignore_next_click) {
+                    info._ignore_next_click = false;
+                } else {
+                    if (event.findElement('.info') !== info) {
+                        info.hide();
+                        $(document).stopObserving('click', info._dismiss_handler);
+                    }
+                }
+            };
+            element.observe('click', function(event) {
+                if (!info.visible()) {
+                    info.show();
+                    info._ignore_next_click = true;
+                    $(document).observe('click', info._dismiss_handler);
+                }
+            }.bind(this));
+        }.bind(this));
+
         // Bind submenu with the main menu so that Arrow-up on a top
         // level sumenu item navigates to the current main menu item.
         var submenu = $('submenu');
@@ -339,7 +360,7 @@ wiking.MainMenu = Class.create(lcg.FoldableTree, {
         }
         return $super(item, recourse);
     },
-        
+
     _collapse_item: function ($super, item) {
         if (item.up('ul').hasClassName('level-1')) {
             $(document).stopObserving('click', this._on_click);
