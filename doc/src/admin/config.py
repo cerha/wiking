@@ -15,7 +15,7 @@ class Reader(lcg.Reader):
         import wiking.cms
 
         def descr(option):
-            content = [lcg.em(o.description())]
+            content = [lcg.em(option.description())]
             doc = option.documentation()
             if doc:
                 content.append(lcg.p(doc))
