@@ -2155,7 +2155,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         if not field.printable():
             raise AuthorizationError()
         exporter = lcg.pdf.PDFExporter(translations=wiking.cfg.translation_path)
-        node = lcg.ContentNode(req.uri().encode('utf-8'),
+        node = lcg.ContentNode(req.uri(),
                                title=self._print_field_title(req, record, field),
                                content=self._print_field_content(req, record, field))
         context = exporter.context(node, req.preferred_language())
