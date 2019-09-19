@@ -52,11 +52,17 @@ pc = pytis.util.Configuration
 class Configuration(pytis.util.Configuration):
     """Wiking Configuration.
 
-    Wiking configuration options can be set through configuration files.  There is one global
-    configuration file and it is possible to override configuration options for individual site
-    through a site specific configuration file.
+    Wiking configuration options can be set through:
+      * global configuration file
+      * site specific configuration files
+      * environment variables
+      * Wiking Management Interface in Wiking CMS (when used)
 
-    The global configuration file is searched in the following locations:
+    The configuration options defined in the later named sources override the
+    values of any options from the previous sources.
+
+    The global configuration may be practical for customizing global defaults.
+    The following locations are searched:
 
       * /etc/wiking/config.py
       * /etc/wiking.py
@@ -65,37 +71,54 @@ class Configuration(pytis.util.Configuration):
 
     First of the named files which exists is used.
 
-    Site specific configuration file must be set through the web server's
-    configiration and the particular syntax depends on the web server
-    environment being used.  Examples for Apache/mod_python and Apache/mod_wsgi
-    follow.
+    Site specific configuration file is set through the environment variable
+    =wiking.config_file=.  With uWSGI this is done using the following option
+    in the uWSGI INI file:
 
-    Apache/mod_python (inside the VirtualHost directive):
     -----
-      PythonOption config_file /etc/wiking/sites/mysite.py
+    route-run = addvar:wiking.config_file=/var/www/yoursite/config.py
     -----
 
-    Apache/mod_wsgi (inside the VirtualHost directive):
+    Configuration files use Python syntax to assign values to configuration
+    options.  The supported options are described below.  Options, which are
+    not set through either method will retain their default value (listed for
+    each option).  It is usually necessery to reload the application after
+    configuration file changes.
+
+    Setting options through environment variables may be useful if you prefer
+    controlling them from web server's configuration files, uWSGI INI files or
+    any other place where you are able to set the environment for your
+    processes.  Such options take precedence over the options set through the
+    configuration files.  The name of the environment variable consists of the
+    prefix "=wiking.=" and the option name (all in lower case).  This approach
+    has some limitations and special rules, because environment variables are
+    just strings, not Python:
+
+      * You can not pass Python objects — only primitive types, such as
+        strings, numbers, boolean values and their sequences are supported.
+      * The allowed values for boolean options are 'Yes', 'No', 'True',
+        'False', 'On', 'Off' and are case insensitive.
+      * String values must be enclosed in double quotes if they contain a
+        space.
+      * Sequence values may use a comma or colon to separate the items. Spaces
+        between items are allowed, but remember to put quotes around.
+      * =translation_path= is /appended/ to the path defined by configuration
+        files.
+      * =resource_path= is /added in front/ of the path defined by
+        configuration files.
+
+    Examples:
     -----
-      SetEnv wiking.config_file /etc/wiking/sites/mysite.py
+      # Apache's configuration file (inside the <VirtualHost> directive):
+      SetEnv wiking.dbhost 10.0.0.122
+      SetEnv wiking.dbport 5433
+      # NGINX configuration file (inside the server {} block):
+      uwsgi_param wiking.maintenance True;
+      uwsgi_param wiking.modules 'biblio, wiking.cms'
+      # uWSGI INI file:
+      route-run = addvar:wiking.translation_path=/some/path:/other/path
+      route-run = addvar:wiking.resource_path=/var/www/myapp/resources
     -----
-
-    See [apache] for more details.
-
-    Once the configuration file is set, its actual content is independent of
-    the web server environment.  The configuration file uses Python syntax to
-    assign values to configuration options.  The supported options are
-    described below.  Options, which are not found in one of the configuration
-    files will retain their default value (listed below for each option).
-
-    The configuration files are re-read automatically in runtime whenever the
-    file is modified so in general you should not need to reload the server for
-    the changes to take effect.  Some options, however, initialize persistent
-    objects and you may need to reload the server in order to reload these
-    persistent objects.
-
-    Please note, that Wiking CMS will override many of the configuration
-    options by values set through the Wiking Management Interface.
 
     """
 
