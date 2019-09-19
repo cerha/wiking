@@ -23,6 +23,7 @@ import re
 import string
 import weakref
 import json
+import urllib.parse
 
 import pytis
 import pytis.data as pd
@@ -37,8 +38,6 @@ import wiking
 from wiking import AuthorizationError, BadRequest, Forbidden, NotFound, Redirect
 
 _ = lcg.TranslatableTextFactory('wiking')
-
-import urllib.parse
 
 
 class DBException(pd.DBException):
