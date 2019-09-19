@@ -37,7 +37,7 @@ class Reader(lcg.Reader):
         ]
         overview = [
             lcg.Section(title=section.title() + " Overview", content=lcg.ul(
-                lcg.coerce(("Option '", lcg.link(s, s.id()), "': ", s.descr()))
+                lcg.coerce((lcg.link(s, s.id()), ": ", s.descr()))
                 for s in section.sections()))
             for section in sections
         ]
