@@ -1,0 +1,7 @@
+# All Wiking apps need this subset of Pytis dependencies:
+future
+psycopg2-binary
+sqlalchemy
+pillow
+reportlab
+
