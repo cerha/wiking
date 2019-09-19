@@ -1,0 +1,236 @@
+# -*- coding: utf-8; mode: structured-text -*-
+
+= Deployment =
+
+Wiking apps may run on any WSGI compliant web server.  Although there are other
+options, this documentation concentrates on running through uWSGI on NGINX or
+Apache.
+
+== Getting Wiking, Pytis and LCG ==
+
+The curently recommended method of Wiking app deployment is running all three
+key components (Wiking, Pytis and LCG) directly from directories checked out
+from git repositories.  It allows you to check out newer versions at any time.
+Note, that Wiking, Pytis and LCG versions often depend on each other, so you
+will mostly need to update all three components at once.  The script
+=bin/update-src.py= may help you automate such updates with a single command.
+
+Note, when running Wiking CMS (or an application based on it), you will also
+need to run the script =bin/upgrade-db.py= to upgrade the CMS database.
+
+The typical setup puts the git sources into the =src= subdirectory inside the
+site's root direcotry (such as =\/var/www/yoursite/src=.  There you will have
+the subdirectories =wiking=, =pytis= and =lcg= and possibly also your own apps
+and/or extensions.
+
+-----
+mkdir -p /var/www/yoursite/src
+cd /var/www/yoursite/src
+git clone http://github.com/cerha/wiking
+git clone http://github.com/cerha/pytis
+git clone http://github.com/cerha/lcg
+cd ..
+-----
+
+Then we usually also create a =lib= subdirectory and link the Python libraries
+of all components installed in =src= into this directory to have a single item
+to add to the Python path.
+
+-----
+mkdir lib
+cd lib
+ln -s ../src/wiking/lib/wiking .
+ln -s ../src/pytis/lib/pytis .
+ln -s ../src/lcg/lib/lcg .
+cd ..
+-----
+
+== Preparing a Virtual Environment ==
+
+Now we need to create a virtual environment:
+
+-----
+python3 -m venv venv
+source venv/bin/activate
+pip3 install -r src/wiking/requirements.txt
+deactivate
+-----
+
+When your app is Wiking CMS, or an app based on it, just use the file
+reqirements-cms.txt in the =pip3 install= step above.  If you want another app
+or extension, you may need to install its requirements too.  Just watch for its
+requirements files.
+
+
+== Creating a configuration file ==
+
+Now we need to create the configuration file =\/var/www/yoursite/config.py= and
+set [config#resource_path resource_path], [config#translation_path
+translation_path] and [config#doc_dirs doc_dirs] to match our directory layout.
+
+Sample =config.py=:
+-----
+import os
+
+dbname = 'yoursite'
+dbuser = 'www-data'
+smtp_server = 'smtp.yourprovider.com'
+default_sender_address = 'wiking@yousite.com'
+bug_report_address = 'bugs@yourdomain.com'
+
+sitedir = '/var/www/yoursite'
+resource_path = [os.path/join(sitedir, 'src', subdir, 'resources')
+                 for subdir in ('wiking', 'pytis', 'lcg')]
+translation_path = [os.path/join(sitedir, 'src', subdir, 'translations')
+                    for subdir in ('wiking', 'pytis', 'lcg')]
+doc_dirs = {subdir: os.path/join(sitedir, 'src', subdir, 'doc', 'src')
+            for subdir in ('wiking', 'pytis', 'lcg')}
+-----
+
+This example sets the most important options.  You may want/need to set some
+other options too.   See [config Configuration Options] for the full list.
+
+
+== uWSGI ==
+
+[https://uwsgi-docs.readthedocs.io/en/latest/ uWSGI] is the current No. 1
+deployment platform.  Wiking also supports the legacy mod_python and mod_wsgi
+backends, but due to the clear advantages of uWSGI, these options are not
+documented here.
+
+uWSGI runs the application in a standalone process (or a group of processes)
+and communicates with the web server which plays the role of a thin HTTP
+frontend in this setup.  To make the communication work, you need to set up
+both (uWSGI and the web server) to use the same socket (see below).
+
+=== Running uWSGI manually ===
+
+It may be useful to run uWSGI manually for simple testing and debugging.  The
+advantage is that you see most problems immediately on its output, which is
+sometimes harder in emperor mode (described below) when unsure how logging is
+precisely configured.
+
+-----
+uwsgi --plugin=python3 \
+      --chdir=/var/www/yoursite \
+      --wsgi-file=lib/wiking/wsgi_interface.py \
+      --python-path=lib \
+      --virtualenv=venv \
+      --socket=yoursite.socket \
+      --route-run=addvar:wiking.config_file=config.py \
+      --master --processes 3
+-----
+
+This will create the web server communication socket in
+=\/var/www/yoursite/yoursite.socket=.  Make sure the current user has sufficient
+access rights to create it or choose a different location.  Then you will need
+to configure the web server to communicate with the app through this socket and
+make sure that the web server user has read/write access to it.
+
+=== Emperor mode ===
+
+uWSGI's Emperor mode is best suited for production as well as for development
+deployment of Wiking applications.  In this mode you create one uWSGI
+configuration file for each app (known as vassal in uWSGI's terminology).
+These files are created in =\/etc/uwsgi/apps-enabled= on Debian and Ubuntu based
+systems (other systems or distributions may use a different location).  The
+Emperor will automatically take care of running and managing uwsgi processes
+for each file found in this directory and will reload them whenever the
+configuration file's modification time changes.
+
+Example =\/etc/uwsgi/apps-available/yoursite.ini=:
+-----
+[uwsgi]
+plugin = python3
+chdir = /var/www/yoursite
+wsgi-file = lib/wiking/wsgi_interface.py
+python-path = lib
+virtualenv = venv
+route-run = addvar:wiking.config_file=config.py
+-----
+
+To activate this app, link this file to =\/etc/uwsgi/apps-enabled=:
+-----
+ln -s /etc/uwsgi/apps-available/yoursite.ini /etc/uwsgi/apps-available/
+-----
+
+The default Debian/Ubuntu uWSGI setup will create the socket in
+=\/run/uwsgi/app/yoursite/socket= and set the rights and ownership correctly to
+make it work with the web server.  You only need to configure the web server to
+use the correct socket in further steps.
+
+The default log file location on Debian/Ubuntu is
+=\/var/log/uwsgi/app/yoursite.log=.  It is a good idea to observe it while
+setting the web server up (and of course in all further development/deployment
+activities).
+
+If your system doesn't have working defaults or you want more control, the
+following uWSGI options might become handy:
+
+-----
+# User and group of the uWSGI processes of your app.
+uid = www-data
+gid = www-data
+
+# Where the PID file and log file is created. Uid/gid
+# needs read-write access to the directory.
+pidfile = /var/www/yoursite/yoursite.pid
+logto = /var/log/uwsgi/yoursite.log
+
+# Where the UNIX socket is created. Uid/gid needs read-write
+# access to the directory and your web server needs at least
+# read-only access to the directory.
+socket = /var/www/yoursite/yoursite.socket
+
+# Socket privileges.  Its uid/gid matches uid/gid set above.
+# The web server user needs read-write access to the socket.
+chmod-socket=660
+
+# Auto-reload the app on each modification of config.py.
+touch-reload = /var/www/yoursite/config.py
+-----
+
+See [https://uwsgi-docs.readthedocs.io/en/latest uWSGI documentation] for
+further details.
+
+
+== NGINX web server == nginx
+
+Generally you only need to include the =uwsgi_params= file (included in nginx
+distribution), and set the location of the uWSGI socket with =uwsgi_pass=
+directive.
+
+NGINX virtual server configuration file may look like:
+-----
+server {
+    listen 80;
+    server_name www.yoursite.com;
+    location / {
+        include uwsgi_params;
+        uwsgi_pass unix://run/uwsgi/app/yoursite/socket;
+    }
+}
+-----
+
+As explained above, the socket location =\/run/uwsgi/app/yoursite/socket= is the
+default for uWSGI Emperor mode on Debian and Ubuntu systems.  If your system
+uses another location, you will need to find out.  The NGINX error log
+(=\/var/log/nginx/error.log= in default Debian/Ubuntu setup) will tell you more
+in case of troubles.
+
+
+== Apache web server == apache
+
+First you need to install =mod_proxy= and enable it in Apache's configuration.
+Then configuring a virtual host to pass request handling to your uwsgi app is
+as simple as:
+
+-----
+<VirtualHost *>
+  ServerName www.yoursite.com
+  ProxyPass / unix:/run/uwsgi/app/yoursite/socket;
+</VirtualHost>
+-----
+
+
+
