@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2006-2013 Brailcom, o.p.s.
+#
+# Copyright (C) 2006-2013 OUI Technology Ltd.
+# Copyright (C) 2019 Tomáš Cerha <t.cerha@gmail.com>
 # Author: Milan Zamazal
 #
 # This program is free software; you can redistribute it and/or modify

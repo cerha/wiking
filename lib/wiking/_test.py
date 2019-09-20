@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
-# Author: Tomas Cerha <cerha@brailcom.org>
 #
-# Copyright (C) 2015 Brailcom, o.p.s.
+# Copyright (C) 2015 OUI Technology Ltd.
+# Copyright (C) 2019 Tomáš Cerha <t.cerha@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

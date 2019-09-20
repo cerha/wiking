@@ -1,5 +1,5 @@
 # Wiking CMS translations.
-# Copyright (C) 2006, 2007, 2008, 2009 Brailcom, o.p.s.
+# Copyright (C) 2006, 2007, 2008, 2009 OUI Technology Ltd.
 # This file is distributed under the same license as the Wiking package.
 # Tomas Cerha <cerha@brailcom.org>, 2006.
 #
@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2017-11-29 11:15+0100\n"
-"PO-Revision-Date: 2009-09-01 13:56+0100\n"
+"PO-Revision-Date: 2019-09-20 11:30+0200\n"
 "Last-Translator: Hynek Hanke <hanke@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
 "Language: cs\n"

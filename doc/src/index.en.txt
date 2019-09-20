@@ -2,7 +2,7 @@
 
 = Wiking Documentation =
 
-Copyright (c) 2006, 2007 Brailcom, o.p.s.
+Copyright (c) 2006, 2007 OUI Technology Ltd.
 
 Permission is granted to copy, distribute and/or modify this document under the
 terms of the GNU Free Documentation License, Version 1.2 or any later version
@@ -29,7 +29,7 @@ administrator] and [devel software developer].
   * Wiking project homepage: http://www.freebsoft.org/wiking
   * Mailing-list: wiking@lists.freebsoft.org
     (subscribe at http://lists.freebsoft.org/mailman/listinfo/wiking)
-  * Author: Tomáš Cerha <cerha@brailcom.org>
+  * Author: Tomáš Cerha <t.cerha@gmail.com>
 
 
 == Appendices ==
