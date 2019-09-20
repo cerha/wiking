@@ -1,5 +1,5 @@
 # Wiking CMS translations.
-# Copyright (C) 2008 Brailcom, o.p.s.
+# Copyright (C) 2008 OUI Technology Ltd.
 # This file is distributed under the same license as the Wiking package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, .
 #
@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2017-11-29 11:15+0100\n"
-"PO-Revision-Date: 2010-02-02 15:43+0100\n"
+"PO-Revision-Date: 2019-09-20 11:29+0200\n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: French <wiking@lists.freebsoft.org>\n"
 "Language: fr\n"
