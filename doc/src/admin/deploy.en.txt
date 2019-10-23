@@ -103,6 +103,9 @@ and communicates with the web server which plays the role of a thin HTTP
 frontend in this setup.  To make the communication work, you need to set up
 both (uWSGI and the web server) to use the same socket (see below).
 
+Wiking is currently not thread safe so you should never run the application in
+multi-threaded mode (just leave the 'threads' option unset).
+
 === Running uWSGI manually ===
 
 It may be useful to run uWSGI manually for simple testing and debugging.  The
