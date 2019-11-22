@@ -195,9 +195,11 @@ class Handler:
                 if subpath in nodes:
                     parent = nodes[subpath]
                     break
-            variants = document.variants() or parent and parent.variants() or None
-            node = mknode(wiking.MenuItem(uri, document.title() or parent.title(),
-                                          hidden=True, variants=variants))
+            node = mknode(wiking.MenuItem(
+                uri, hidden=True,
+                title=document.title() or parent and parent.title() or None,
+                variants=document.variants() or parent and parent.variants() or None,
+            ))
             if parent:
                 node._set_parent(parent)
                 parent._children += (node,)
