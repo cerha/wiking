@@ -106,9 +106,16 @@ both (uWSGI and the web server) to use the same socket (see below).
 Wiking is currently not thread safe so you should never run the application in
 multi-threaded mode (just leave the 'threads' option unset).
 
-Note: When installing uWSGI through pip, you need to have libpcre3 installed on
-your system including development files (such as libpcre3-dev) in order to get
+=== uWSGI Installation ===
+
+When installing uWSGI through pip, you need to have libpcre3 installed on your
+system including development files (such as libpcre3-dev) in order to get
 internal routing support compiled.
+
+When installing from your system's package management system, you usually need
+the package uwsgi itself and the Python 3 plugin (such as
+uwsgi-plugin-python3 on Debian based systems).
+
 
 === Running uWSGI manually ===
 
