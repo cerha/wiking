@@ -1,5 +1,5 @@
 -r requirements.txt
 reportlab
-dns.resolver
+dnspython
 pillow
 pbkdf2
