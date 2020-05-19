@@ -3080,3 +3080,11 @@ def generate_random_string(length):
         random.seed()
         code = ''.join(['%02x' % random.randint(0, 255) for i in range(length // 2 + 1)])
     return code[:length]
+
+
+def test_generate_random_string():
+    for length in (1, 2, 8, 9, 10, 28, 32, 33):
+        string = generate_random_string(length)
+        assert len(string) == length
+        string2 = generate_random_string(length)
+        assert string != string2
