@@ -28,8 +28,6 @@ import re
 import sys
 import time
 import cgitb
-import urllib
-import itertools
 import traceback
 from xml.sax import saxutils
 
@@ -41,7 +39,6 @@ import lcg
 import wiking
 from pytis.data.dbapi import DBAPIData
 
-import urllib.error
 import http.client
 
 _ = lcg.TranslatableTextFactory('wiking')
@@ -364,8 +361,6 @@ class AuthorizationError(Forbidden):
     def content(self, req):
         message, notice = self._messages(req)
         return [lcg.p(message), lcg.p(req.translate(notice), formatted=True)]
-
-
 
 
 class NotFound(RequestError):
