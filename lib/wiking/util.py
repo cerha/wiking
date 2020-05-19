@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2006-2017 OUI Technology Ltd.
-# Copyright (C) 2019 Tomáš Cerha <t.cerha@gmail.com>
+# Copyright (C) 2019-2020 Tomáš Cerha <t.cerha@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -1425,6 +1425,28 @@ class UniversalPasswordStorage(PasswordStorage):
 
     def stored_password(self, password):
         return self._default_prefix + ':' + self._default_storage.stored_password(password)
+
+
+def test_password_storage():
+    ustorage = wiking.UniversalPasswordStorage()
+    for prefix, storage in (('plain', wiking.PlainTextPasswordStorage()),
+                            ('md5u', wiking.UnsaltedMd5PasswordStorage()),
+                            ('pbkdf2', wiking.Pbkdf2PasswordStorage()),
+                            ('pbkdf2/md5', wiking.Pbkdf2Md5PasswordStorage()),
+                            (None, wiking.UniversalPasswordStorage())):
+        for passwd in ('bla', 'xxxxx', 'wer2d544aSWdD5', '34čůdl1G5'):
+            stored = storage.stored_password(passwd)
+            if prefix not in ('plain',):
+                assert stored != passwd
+            if prefix not in ('plain', 'md5u'):
+                # Check that salting works (two hashes of the same password not equal)
+                stored2 = storage.stored_password(passwd)
+                assert stored != stored2
+            assert storage.check_password(passwd, stored)
+            assert not storage.check_password('xx', stored)
+            if prefix:
+                assert ustorage.check_password(passwd, prefix + ':' + stored)
+                assert not ustorage.check_password('xx', prefix + ':' + stored)
 
 
 class AuthenticationProvider:
