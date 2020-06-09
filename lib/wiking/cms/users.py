@@ -891,10 +891,13 @@ class Users(UserManagementModule, CachingPytisModule):
             return True
         elif action in ('update', 'passwd'):
             return req.check_roles(Roles.USER_ADMIN) or self._check_uid(req, record, 'uid')
-        elif action in ('enable', 'disable', 'reinsert'):
+        elif action in ('enable', 'disable', 'reinsert', 'export'):
             return req.check_roles(Roles.USER_ADMIN)
         else:
             return super(Users, self)._authorized(req, action, record=record, **kwargs)
+
+    def _exported_columns(self, req):
+        return ['uid'] + list(self._columns(req))
 
     def _insert_form_content(self, req, form, record):
         return (self._registration_form_intro(req, record) +
