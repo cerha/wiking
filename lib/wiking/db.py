@@ -2403,6 +2403,17 @@ class APIProvider(object):
         else:
             return super(APIProvider, self).action_list(req, record=record)
 
+    def _api_view(self, req, record):
+        serializers = self._api_serializers(self._api_columns(req))
+        data = dict([(cid, serializer(req, record, cid)) for cid, serializer in serializers])
+        return wiking.Response(json.dumps(data), content_type='application/json')
+
+    def action_view(self, req, record):
+        if req.is_api_request():
+            return self._api_view(req, record)
+        else:
+            return super(APIProvider, self).action_list(req, record=record)
+
 
 class RssModule(object):
     """Deprecated in favour of PytisRssModule defined below."""
