@@ -2318,6 +2318,8 @@ class APIProvider(object):
         ctype = self._type[column_id]
         if isinstance(ctype, pd.DateTime):
             return self._api_datetime_serializer
+        elif isinstance(ctype, pd.Float):
+            return self._api_float_serializer
         elif isinstance(ctype, pd.Array):
             return self._api_array_serializer
         elif isinstance(ctype, pw.Content):
@@ -2330,6 +2332,10 @@ class APIProvider(object):
 
     def _api_datetime_serializer(self, req, record, cid):
         return record[cid].export()
+
+    def _api_float_serializer(self, req, record, cid):
+        # Avoid "TypeError: Decimal('0') is not JSON serializable"
+        return float(record[cid].value())
 
     def _api_array_serializer(self, req, record, cid):
         return [v.value() for v in record[cid].value()]
