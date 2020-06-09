@@ -2629,7 +2629,7 @@ def serve_file(req, path, content_type=None, filename=None, lock=False, headers=
                 rel_uri = '/'.join(path[len(prefix.rstrip(os.sep)):].split(os.sep))
                 uri = base_uri.rstrip('/') + rel_uri
                 return wiking.Response('', content_type=content_type, filename=filename,
-                                       headers=headers + (('X-Accel', uri),))
+                                       headers=headers + (('X-Accel-Redirect', uri),))
     offset = limit = None
     status_code = http.client.OK
     content_length = info.st_size
