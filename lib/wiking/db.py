@@ -2412,7 +2412,7 @@ class APIProvider(object):
         if req.is_api_request():
             return self._api_view(req, record)
         else:
-            return super(APIProvider, self).action_list(req, record=record)
+            return super(APIProvider, self).action_view(req, record=record)
 
 
 class RssModule(object):
