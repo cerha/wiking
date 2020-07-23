@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2005-2017 OUI Technology Ltd.
-# Copyright (C) 2019 Tomáš Cerha <t.cerha@gmail.com>
+# Copyright (C) 2019-2020 Tomáš Cerha <t.cerha@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -1751,16 +1751,13 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
             # seem to work now and we most likely don't want them.  content =
             # self._view_form_content(req, form, my_record)
         else:
-            lang = req.preferred_language(raise_error=False)
+            conditions = [self._condition(req),
+                          self._binding_condition(binding, record)]
             if self._LIST_BY_LANGUAGE:
-                lcondition = pd.AND(pd.EQ('lang', pd.sval(lang)))
-            else:
-                lcondition = None
-            condition = pd.AND(self._condition(req),
-                               self._binding_condition(binding, record),
-                               lcondition)
+                conditions.append(pd.EQ('lang', pd.sval(req.preferred_language(raise_error=False))))
             form = self._form(form_cls, req,
-                              binding_uri=binding_uri, condition=condition,
+                              binding_uri=binding_uri,
+                              condition=pd.AND(conditions),
                               columns=[c for c in self._columns(req)
                                        if c != binding.binding_column()],
                               arguments=self._binding_arguments(binding, record),
