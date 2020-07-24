@@ -320,8 +320,16 @@ class Handler:
                         req.set_header(header, value)
                     filename = result.filename()
                     if filename:
-                        req.set_header('Content-Disposition',
-                                       'attachment; filename="%s"' % filename)
+                        # When the filename contains non-ascii characters, uwsgi raises:
+                        # TypeError: http header must be encodable in latin1
+                        # Some context at: https://stackoverflow.com/questions/93551/
+                        try:
+                            filename.encode('latin-1')
+                        except UnicodeEncodeError:
+                            filename_info = "filename*=UTF-8''" + urllib.parse.quote(filename)
+                        else:
+                            filename_info = 'filename="%s"' % filename
+                        req.set_header('Content-Disposition', 'attachment; ' + filename_info)
                     return req.send_response(result.data(), content_type=result.content_type(),
                                              content_length=result.content_length(),
                                              status_code=result.status_code(),
