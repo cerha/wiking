@@ -19,6 +19,7 @@
 import collections
 import datetime
 import io
+import mimetypes
 import re
 import string
 import weakref
@@ -380,7 +381,10 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         record = pp.PresentedRow(fields, self._data, None, resolver=resolver)
         self._type = dict([(k, record.type(k)) for k in record.keys()])
         self._links = {}
+        self._filenames = {}
         for f in fields:
+            if f.filename():
+                self._filenames[f.id()] = f.filename()
             if f.codebook():
                 cb_field = f
             elif isinstance(f.computer(), pp.CbComputer):
@@ -723,13 +727,13 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                                     **kwargs)
             else:
                 return None
+        elif cid in self._links:
+            modname, referer = self._links[cid]
+            return wiking.module(modname).record_uri(req, record[referer].export())
+        elif cid in self._filenames:
+            return self._link_provider(req, uri, record, None, action='download', field=cid)
         else:
-            try:
-                modname, referer = self._links[cid]
-            except KeyError:
-                return None
-            else:
-                return wiking.module(modname).record_uri(req, record[referer].export())
+            return None
 
     def _image_provider(self, req, uri, record, cid):
         return None
@@ -2160,6 +2164,21 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         result = exporter.export(context)
         return wiking.Response(result, content_type='application/pdf',
                                filename=self._print_field_filename(req, record, field))
+
+    def action_download(self, req, record):
+        field = self._view.field(req.param('field'))
+        if not field:
+            raise BadRequest()
+        filename_spec = field.filename()
+        if not filename_spec:
+            raise AuthorizationError()
+        if callable(filename_spec):
+            filename = filename_spec(record)
+        else:
+            filename = record[filename_spec].value()
+        content_type = mimetypes.guess_type(filename)[0] or 'application/octet-stream'
+        return wiking.Response(record[field.id()].value(),
+                               content_type=content_type, filename=filename)
 
     def _action_subtitle(self, req, action, record=None):
         if action == 'list':
