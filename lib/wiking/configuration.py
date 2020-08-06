@@ -620,6 +620,14 @@ class Configuration(pytis.util.Configuration):
                 "(reduce unecessary 'clutter' on the page).")
         _DEFAULT = True
 
+    class _Option_show_submenu(pc.BooleanOption):
+        _DESCR = _("Show submenu side bar")
+        _DOC = ("The submenu of the current main menu item is by default displayed "
+                "at the left side of every page.  This submenu allows quick access "
+                "to other subsections of the current top level section, which may be "
+                "practical, but it is redundant when the top menu is foldable.")
+        _DEFAULT = True
+
 
 class ApplicationConfiguration(pytis.util.Configuration):
     """Base class for application specific configuration.

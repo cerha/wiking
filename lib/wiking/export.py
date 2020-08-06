@@ -78,7 +78,8 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             # Allow simple access to some often used data through context attributes ...
             # These attributes are not the part of the official context extension (such as the
             # 'req()' method, so their use should be limited to this module only!
-            self.has_submenu = any(not n.hidden() for n in top_node.children())
+            self.has_submenu = (wiking.cfg.show_submenu and
+                                any(not n.hidden() for n in top_node.children()))
             self.application = application
             # Make sure that Prototype.js is always loaded first, so that it is
             # available in any other scripts.
