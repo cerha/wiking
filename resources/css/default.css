@@ -566,11 +566,12 @@ h1 a { outline: none; }
     position: relative;
 }
 #top-content, #top-controls {
-    padding: 8px 0;
+    padding: 6px 0;
 }
 #top-content {
     float: left;
     color: #222;
+    line-height: 26px;
 }
 #site-title {
     font-size: 1.2em;
@@ -722,7 +723,6 @@ body.non-maximized #root-wrap {
 #menu {
     font-size: 1.2em;
     font-weight: bold;
-    margin-bottom: -5px;
 }
 #menu a {
     color: #222;
@@ -740,7 +740,7 @@ body.non-maximized #root-wrap {
     z-index: 2;
 }
 #menu ul.level-1 {
-    margin: 0 -18px;
+    margin: 0 -18px -5px -18px;
     padding: 0;
 }
 #menu ul.level-1:after { /* Avoid floated elements outside container (clearfix). */
@@ -1026,13 +1026,10 @@ form.login-form label {
 /* Smaller mobile phone screen layout */
 @media only screen and (max-width: 600px) {
 
-    #menu {
-        margin-bottom: 0;
-    }
     #menu .menu-button {
         position: absolute;
         display: inline-block;
-        padding: 6px 10px;
+        padding: 7px 10px;
         margin-right: -11px;
         margin-left: 4px;
         cursor: pointer;
@@ -1053,7 +1050,7 @@ form.login-form label {
     .login-control .popup-menu-ctrl-widget { background: none; }
     .login-control .login-button { display: none }
     #top-controls .login-control .invoke-menu.labeled { padding-left: 0; }
-    #top-controls  { padding: 4px 34px 9px 0; }
+    #top-controls  { padding-right: 34px; }
 
 
 } /* End of smaller mobile phone screen layout */
