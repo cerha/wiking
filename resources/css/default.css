@@ -953,7 +953,7 @@ body.non-maximized #root-wrap {
     margin-top: 2em;
     clear: both;
     font-size: .9em;
-    border-top: solid 4px #eee;
+    border-top: solid 5px #eee;
     padding-top: 0.1em;
 }
 #bottom-bar {
