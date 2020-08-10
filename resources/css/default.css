@@ -712,14 +712,17 @@ body.non-maximized #root-wrap {
 #top, #main, #bottom {
     padding: 0 18px;
 }
+#top {
+    border-bottom: solid 5px #eee;
+}
 #main {
     padding-top: 18px;
-    background-image: linear-gradient(180deg, #bbb, $color.background 4px);
 }
 
 #menu {
     font-size: 1.2em;
     font-weight: bold;
+    margin-bottom: -5px;
 }
 #menu a {
     color: #222;
@@ -758,7 +761,7 @@ body.non-maximized #root-wrap {
 #menu ul.level-1 > li > .item {
     padding: 0.2em 18px;
     text-decoration: none;
-    border-bottom: 5px solid $color.background;
+    border-bottom: 5px solid transparent;
     margin: 0;
 }
 #menu ul.level-1 > li > .item:hover {
@@ -950,7 +953,7 @@ body.non-maximized #root-wrap {
     margin-top: 2em;
     clear: both;
     font-size: .9em;
-    border-top: solid 4px $color.top-border;
+    border-top: solid 4px #eee;
     padding-top: 0.1em;
 }
 #bottom-bar {
@@ -1023,10 +1026,13 @@ form.login-form label {
 /* Smaller mobile phone screen layout */
 @media only screen and (max-width: 600px) {
 
+    #menu {
+        margin-bottom: 0;
+    }
     #menu .menu-button {
         position: absolute;
         display: inline-block;
-        padding: 9px 10px;
+        padding: 6px 10px;
         margin-right: -11px;
         margin-left: 4px;
         cursor: pointer;
@@ -1047,7 +1053,7 @@ form.login-form label {
     .login-control .popup-menu-ctrl-widget { background: none; }
     .login-control .login-button { display: none }
     #top-controls .login-control .invoke-menu.labeled { padding-left: 0; }
-    #top-controls  { padding-right: 34px; }
+    #top-controls  { padding: 4px 34px 9px 0; }
 
 
 } /* End of smaller mobile phone screen layout */
