@@ -180,14 +180,7 @@ class ActionHandler(RequestHandler):
             return self._default_action(req, **kwargs)
 
     def _authorized(self, req, action, **kwargs):
-        try:
-            roles = getattr(self, 'RIGHTS_' + action)
-        except AttributeError:
-            roles = ()
-        if req.check_roles(roles):
-            return True
-        else:
-            return False
+        return False
 
     def _handle(self, req, action, **kwargs):
         """Perform action authorization and call the action method."""

@@ -310,18 +310,17 @@ class CMSModule(wiking.PytisModule, wiking.RssModule):
 
     def _authorized(self, req, action, **kwargs):
         if hasattr(self, 'RIGHTS_' + action):
-            # This needs to be first in order to maintain backwards
-            # compatibility with existing RIGHTS_* specifications.  When
-            # RIGHTS_* are removed everywhere, calling super class should
-            # become the last resort.
-            return super(CMSModule, self)._authorized(req, action, **kwargs)
+            # Maintain backwards compatibility with existing RIGHTS_* specifications.
+            # When RIGHTS_* are removed everywhere (in boss), this can be removed.
+            roles = getattr(self, 'RIGHTS_' + action)
+            return req.check_roles(roles)
         elif action in ('view', 'list', 'rss', 'print_field'):
             return True
         elif action in ('insert', 'update', 'delete'):
             return req.check_roles(Roles.ADMIN)
         else:
             # Actions 'export' and 'copy' denied by default.  Enable explicitly when needed.
-            return False
+            return super(CMSModule, self)._authorized(req, action, **kwargs)
 
     def _embed_binding(self, modname):
         """Helper method to get a binding instance if given module is EmbeddableCMSModule."""
