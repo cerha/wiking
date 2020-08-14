@@ -662,4 +662,14 @@ class ApplicationConfiguration(pytis.util.Configuration):
         # Options are not inherited - copy them to force inheritance.
         self.__class__._Option_config_file = ApplicationConfiguration._Option_config_file
         self.__class__._Option_user_config_file = ApplicationConfiguration._Option_user_config_file
-        pc.__init__(self, *args, **kwargs)
+        # Delay configuration initialization until first access to avoid a dependency loop
+        # when the application's Python module is imported into its config file (eg. in
+        # order to use its __version__ in resources_version configuration option).  The
+        # app's Pyton module creates an ApplicationConfiguration instance and this instance
+        # needs to read the configuration file in time when the module import is not
+        # finished yet which usually results in an AttributeError.
+        self.__dict__['_delayed_init'] = lambda: pc.__init__(self, *args, **kwargs)
+
+    def __getattr__(self, name):
+        self._delayed_init()
+        return getattr(self, name)
