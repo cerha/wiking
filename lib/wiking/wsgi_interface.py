@@ -53,7 +53,8 @@ class WsgiRequest(wiking.Request):
         if self.method() == 'OPTIONS':
             self._raw_params = {}
         else:
-            self._raw_params = cgi.FieldStorage(fp=environ['wsgi.input'], environ=environ)
+            self._raw_params = cgi.FieldStorage(fp=environ['wsgi.input'], environ=environ,
+                                                keep_blank_values=True)
         self._unset_params = []
         self._response_headers_storage = []
         self._response_headers = wsgiref.headers.Headers(self._response_headers_storage)
@@ -76,7 +77,7 @@ class WsgiRequest(wiking.Request):
         def param_value(value):
             # Value processing not done in constructor (see the constructor comment).
             if isinstance(value, (tuple, list)):
-                return tuple([param_value(v) for v in value])
+                return tuple(param_value(v) for v in value)
             elif value.filename == '' and value.value == '':
                 # Empty file upload fields give this strange combination...
                 return None
