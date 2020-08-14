@@ -285,7 +285,6 @@ textarea {
 }
 select {
     padding: 2px 0;
-    height: 1.75em; /* hack to force WebKit to fit the expected size */
     line-height: 1.5em;
 }
 
