@@ -671,5 +671,7 @@ class ApplicationConfiguration(pytis.util.Configuration):
         self.__dict__['_delayed_init'] = lambda: pc.__init__(self, *args, **kwargs)
 
     def __getattr__(self, name):
-        self._delayed_init()
-        return getattr(self, name)
+        if self._delayed_init:
+            self._delayed_init()
+            self._delayed_init = None
+        return super().__getattr__(name)
