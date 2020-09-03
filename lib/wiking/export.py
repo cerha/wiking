@@ -23,10 +23,10 @@ import pytis
 import wiking
 
 _ = lcg.TranslatableTextFactory('wiking')
-Part = lcg.HtmlExporter.Part
+Part = lcg.Html5Exporter.Part
 
 
-class MinimalExporter(lcg.HtmlExporter):
+class MinimalExporter(lcg.Html5Exporter):
     _PAGE_STRUCTURE = (
         Part('main'),
         Part('bottom-bar'),
@@ -59,9 +59,9 @@ class MinimalExporter(lcg.HtmlExporter):
                        wiking.__version__))
 
 
-class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
+class Exporter(lcg.StyledHtmlExporter, lcg.Html5Exporter):
 
-    class Context(lcg.HtmlExporter.Context):
+    class Context(lcg.Html5Exporter.Context):
 
         def _init_kwargs(self, req=None, layout='default', **kwargs):
             super(Exporter.Context, self)._init_kwargs(timezone=req.timezone(), **kwargs)
@@ -384,7 +384,3 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             return lcg.coerce(content).export(context)
         else:
             return None
-
-
-class Html5Exporter(lcg.Html5Exporter, Exporter):
-    pass

@@ -46,7 +46,7 @@ from .db import (  # noqa: F401
 )
 
 from .application import Application  # noqa: F401
-from .export import Exporter, Html5Exporter, MinimalExporter  # noqa: F401
+from .export import Exporter, MinimalExporter  # noqa: F401
 from .handler import Handler  # noqa: F401
 
 from lcg import log as debug  # noqa: F401
