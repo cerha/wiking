@@ -2178,7 +2178,9 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
             filename = record[filename_spec].value()
         content_type = mimetypes.guess_type(filename)[0] or 'application/octet-stream'
         return wiking.Response(record[field.id()].value(),
-                               content_type=content_type, filename=filename)
+                               content_type=content_type,
+                               filename=filename,
+                               inline=field.inline())
 
     def _action_subtitle(self, req, action, record=None):
         if action == 'list':

@@ -342,7 +342,8 @@ class Handler:
                             filename_info = "filename*=UTF-8''" + urllib.parse.quote(filename)
                         else:
                             filename_info = 'filename="%s"' % filename
-                        req.set_header('Content-Disposition', 'attachment; ' + filename_info)
+                        disposition = 'inline' if result.inline() else 'attachment'
+                        req.set_header('Content-Disposition', disposition + '; ' + filename_info)
                     return req.send_response(result.data(), content_type=result.content_type(),
                                              content_length=result.content_length(),
                                              status_code=result.status_code(),

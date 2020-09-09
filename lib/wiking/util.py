@@ -941,7 +941,8 @@ class Response:
     """
 
     def __init__(self, data, content_type='text/html', content_length=None,
-                 status_code=http.client.OK, last_modified=None, filename=None, headers=()):
+                 status_code=http.client.OK, last_modified=None, filename=None,
+                 inline=False, headers=()):
         """Arguments:
 
           data -- respnse data as one of the types described below.
@@ -967,6 +968,14 @@ class Response:
             'headers'.  The browser will usually show a "Save File" dialog and
             suggest given file name as the default name for saving the request
             result into a file.
+
+          inline -- set to True to force the data to be displayed inline in the
+            browser window when 'filename' is set.  Otherwise the content is
+            downloaded and saved to users the filesystem.  The user can still
+            save inline content using the "Save As" function of the browser.
+            Actually modifies the 'Content-Disposition' header mentioned above
+            by replacing 'attachment' by 'inline'.  Irrelevant when 'filename'
+            not set.
 
           last_modified -- last modification time as a python datetime
             instance.  The value will be used for the 'Last-Modified' HTTP
@@ -997,6 +1006,7 @@ class Response:
         self._last_modified = last_modified
         self._headers = headers
         self._filename = filename
+        self._inline = inline
 
     def data(self):
         return self._data
@@ -1015,6 +1025,9 @@ class Response:
 
     def filename(self):
         return self._filename
+
+    def inline(self):
+        return self._inline
 
     def headers(self):
         return tuple(self._headers)
