@@ -26,6 +26,7 @@ import wiking
 import lcg
 import pytis
 import pytis.util
+import pytis.data as pd
 from pytis.util import OPERATIONAL, log
 
 _ = lcg.TranslatableTextFactory('wiking')
@@ -116,6 +117,18 @@ class Handler:
             setattr(pytis.config, option, getattr(wiking.cfg, option))
         pytis.config.dbconnections = wiking.cfg.connections
         pytis.config.dbconnection = pytis.config.option('dbconnection').default()
+        if pytis.config.dbpass:
+            # We currently support global encryption password for the configured dbuser
+            # using dbpass when database pasword is set in the configuration file.
+            # If using a different encryption password is desired, we would need to introduce
+            # some new configuration options.
+            dbfunction = pd.DBFunctionDefault('pytis_crypto_db_key', pytis.config.dbconnection)
+            db_key = dbfunction.call(pd.Row((('key_name_', pd.sval('pytis'),),)))[0][0].value()
+            crypto_password = pytis.util.rsa_encrypt(db_key, pytis.config.dbpass).decode('ascii')
+            # Need to reset all connections, because the previous dbfunction call
+            # already initialized a connection without a crypto password, so
+            # pytis.config.dbconnection.set_crypto_password() does not suffice.
+            dbfunction.reset_crypto_password(crypto_password)
         pytis.config.resolver = wiking.cfg.resolver
         self._application = application = wiking.module.Application
         self._exporter = wiking.cfg.exporter(translations=wiking.cfg.translation_path)
