@@ -1192,9 +1192,6 @@ body .pytis-form.browse-form #found-record {
 body .pytis-form.list-view .tree-indent {
     border-left-color: $color.frame-border
 }
-body .pytis-form.list-view #found-record h3 {
-    background-color: $color.highlight-bg;
-}
 body .pytis-form.list-view .list-item .meta {
     color: $color.meta-fg;
     background-color: $color.meta-bg;
