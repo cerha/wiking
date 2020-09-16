@@ -337,8 +337,7 @@ wiking.MainMenu = Class.create(lcg.FoldableTree, {
              */
             li.addClassName('script-expanded');
             this._update_item(item, true);
-            // The first menu item slides strangely. Short slide duration makes it less appearant.
-            dropdown.slideDown({duration: 0.1});
+            dropdown.slideDown({duration: 0.25});
             this._on_touchstart = function (event) { this._touch_moved = false; }.bind(this);
             this._on_touchmove = function (event) { this._touch_moved = true; }.bind(this);
             this._on_touchend = function (event) {
