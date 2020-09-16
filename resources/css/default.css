@@ -1189,13 +1189,13 @@ body .pytis-form.browse-form table.data-table tfoot td {
 body .pytis-form.browse-form #found-record {
     background-color: $color.highlight-bg;
 }
-body .pytis-form.list-view div.tree-indent {
+body .pytis-form.list-view .tree-indent {
     border-left-color: $color.frame-border
 }
 body .pytis-form.list-view #found-record h3 {
     background-color: $color.highlight-bg;
 }
-body .pytis-form.list-view div.list-item div.meta {
+body .pytis-form.list-view .list-item .meta {
     color: $color.meta-fg;
     background-color: $color.meta-bg;
 }
@@ -1205,7 +1205,7 @@ body .pytis-form .field-label.disabled {
 body .pytis-form .group span.color-display {
     border-color: $color.border;
 }
-body .pytis-form.edit-form div.help {
+body .pytis-form.edit-form .help {
     color: $color.help;
 }
 body .pytis-form input.text-search-field,
@@ -1214,7 +1214,7 @@ body .pytis-form.edit-form textarea,
 body .pytis-form.edit-form select {
     border-color: $color.border;
 }
-body .pytis-form.list-view div.summary {
+body .pytis-form.list-view .summary {
     border-top-color: $color.frame-border;
 }
 /*.pytis-form .invalid {
