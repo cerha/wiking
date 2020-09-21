@@ -48,7 +48,7 @@ class WsgiRequest(wiking.Request):
         # are called.
         self._environ = environ
         self._start_response = start_response
-        self._uri = self._environ.get('SCRIPT_NAME', '') + self._environ['PATH_INFO']
+        self._uri = self._environ['PATH_INFO']
         self._params = {}
         if self.method() == 'OPTIONS':
             self._raw_params = {}
