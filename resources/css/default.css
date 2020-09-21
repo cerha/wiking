@@ -1178,7 +1178,8 @@ body .pytis-form.browse-form table.data-table tr.data-row,
 body .pytis-form.browse-form table.data-table tr.row-expansion {
     background-color: $color.table-cell;
 }
-body .pytis-form.browse-form table.data-table tr.data-row.even {
+body .pytis-form.browse-form table.data-table tr.data-row.even,
+body .pytis-form.browse-form table.data-table tr.row-expansion.even {
     background-color: $color.table-cell2;
 }
 
