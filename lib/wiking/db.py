@@ -1760,7 +1760,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                 conditions.append(pd.EQ('lang', pd.sval(req.preferred_language(raise_error=False))))
             form = self._form(form_cls, req,
                               binding_uri=binding_uri,
-                              condition=pd.AND(conditions),
+                              condition=pd.AND(*conditions),
                               columns=[c for c in self._columns(req)
                                        if c != binding.binding_column()],
                               arguments=self._binding_arguments(binding, record),
