@@ -422,7 +422,7 @@ class Request(ServerInterface):
         else:
             return default
 
-    def set_cookie(self, name, value, expires=None, secure=False):
+    def set_cookie(self, name, value, expires=None, domain=None, secure=False):
         """Set given value as a cookie with given name.
 
         Arguments:
@@ -430,6 +430,8 @@ class Request(ServerInterface):
           value -- string value to store or None to remove the cookie.
           expires -- cookie expiration time in seconds or None for unlimited
             cookie.
+          domain -- cookie domain restriction (browser will not send the cookie
+            outside this domain).  If None, only the originating host is allowed.
           secure -- if True, the cookie will only be returned by the browser on
             secure connections.
 
@@ -441,10 +443,11 @@ class Request(ServerInterface):
             self._cookies[name] = value
         c = http.cookies.SimpleCookie()
         c[name] = value or ''
-        # c[name]['domain'] = self._req.connection.local_host
         c[name]['path'] = '/'
         if expires is not None:
             c[name]['expires'] = expires
+        if domain is not None:
+            c[name]['domain'] = domain
         if secure:
             c[name]['secure'] = True
         cookie = c[name].OutputString()
