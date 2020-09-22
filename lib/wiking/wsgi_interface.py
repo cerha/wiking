@@ -78,7 +78,7 @@ class WsgiRequest(wiking.Request):
             # Value processing not done in constructor (see the constructor comment).
             if isinstance(value, (tuple, list)):
                 return tuple(param_value(v) for v in value)
-            elif value.filename == '' and value.value == '':
+            elif value.filename == '' and value.value == b'':
                 # Empty file upload fields give this strange combination...
                 return None
             elif value.filename:
