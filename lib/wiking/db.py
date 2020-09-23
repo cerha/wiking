@@ -1020,8 +1020,8 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
 
         Pytis module resolves to 'record' argument if the URI corresponds to a
         particular record through the referer column or to no arguments if the
-        URI is just a base URI of the modue (no subpath).  'NotFound' is raised
-        when the URI refers to an inexistent record.
+        URI is just a base URI of the module (no subpath).  'NotFound' is
+        raised when the URI refers to an inexistent record.
 
         """
         row = self._resolve(req)
