@@ -838,18 +838,20 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         def uri_provider(record, kind, target):
             if record is None:
                 assert kind == UriType.LINK
-                return uri
+                result = uri
             elif kind == UriType.ACTION:
-                return self._action_uri_provider(req, uri, record, form_cls, target)
-            elif kind == UriType.LINK:
-                method = self._link_provider
-            elif kind == UriType.IMAGE:
-                method = self._image_provider
-            elif kind == UriType.TOOLTIP:
-                method = self._tooltip_provider
-            elif kind == UriType.PRINT:
-                method = self._print_uri_provider
-            return method(req, uri, record, target)
+                result = self._action_uri_provider(req, uri, record, form_cls, target)
+            else:
+                if kind == UriType.LINK:
+                    method = self._link_provider
+                elif kind == UriType.IMAGE:
+                    method = self._image_provider
+                elif kind == UriType.TOOLTIP:
+                    method = self._tooltip_provider
+                elif kind == UriType.PRINT:
+                    method = self._print_uri_provider
+                result = method(req, uri, record, target)
+            return result
         return uri_provider
 
     def _cell_editable(self, req, record, cid):
