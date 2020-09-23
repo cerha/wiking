@@ -855,7 +855,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         return uri_provider
 
     def _cell_editable(self, req, record, cid):
-        """Retrun True it table cell of given column id in given record is editable inline."""
+        """Retrun True if table cell of given column id in given record is editable inline."""
         return False
 
     def _expand_row(self, req, record, form):
