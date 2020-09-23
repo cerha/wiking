@@ -81,8 +81,19 @@ class ServerInterface(pytis.web.Request):
 
     """
 
+    def root(self):
+        """Return the root URI of the current application.
+
+        Returns None when the current application runs in the root of the web
+        server.  If not None, it is a string value starting with a slash.  This
+        is typically used to run multiple applications at one server, where
+        each application has its own root.
+
+        """
+        pass
+
     def uri(self):
-        """Return request URI path relative to server's root.
+        """Return request URI path relative to application's root URI.
 
         The returned URI is a string value, which normally starts with a slash
         and continues with an arbitrary number of path elements separated by
@@ -647,11 +658,12 @@ class Request(ServerInterface):
         'wiking.Redirect' exception instead.
 
         """
-        if not (uri.startswith('http://') or uri.startswith('https://')):
+        if uri.startswith('http://') or uri.startswith('https://'):
+            uri = self.make_uri(uri, *args)
+        else:
             if not uri.startswith('/'):
                 uri = '/' + uri
-            uri = self.server_uri(current=True) + uri
-        uri = self.make_uri(uri, *args)
+            uri = self.server_uri(current=True) + self.make_uri(uri, *args)
         if self._messages:
             # Store the current list of interactive messages in browsers cookie
             # to allow loading the same messages within the redirected request.
@@ -673,18 +685,18 @@ class Request(ServerInterface):
         self.set_header('Location', uri)
         return self.send_response(html, status_code=status_code, content_type="text/html")
 
-    def make_uri(self, base_uri, *args, **kwargs):
+    def make_uri(self, uri, *args, **kwargs):
         """Return a URI constructed from given base URI and arguments.
 
         Arguments:
 
-          base_uri -- base URI.  May be a relative path, such as '/xx/yy',
+          uri -- base URI.  May be a relative path, such as '/xx/yy',
             absolute URI, such as 'http://host.domain.com/xx/yy' or a mailto
             URI, such as 'mailto:name@domain.com'.
           *args -- pairs (NAME, VALUE) representing arguments appended to
-            'base_uri' in the order in which they appear.  The first positional
+            'uri' in the order in which they appear.  The first positional
             argument may also be a string representing an anchor name.  If
-            that's the case, the anchor is appended to 'base_uri' after a '#'
+            that's the case, the anchor is appended to 'uri' after a '#'
             sign and the first argument is not considered to be a (NAME, VALUE)
             pair.
           **kwargs -- keyword arguments representing additional arguments to
@@ -697,26 +709,28 @@ class Request(ServerInterface):
         encoded in the returned URI.
 
         """
-        if base_uri.startswith('mailto:'):
-            uri = base_uri
+        quote = urllib.parse.quote
+        if uri.startswith('mailto:'):
             # Many e-mail clients wouldn't replace '+' in the subject by spaces.
-            quote = urllib.parse.quote
+            quote_param = quote
         else:
-            match = self._ABS_URI_MATCHER.match(base_uri)
+            match = self._ABS_URI_MATCHER.match(uri)
             if match:
-                uri = match.group(1) + urllib.parse.quote(match.group(3).encode(self._encoding))
+                uri = match.group(1) + quote(match.group(3))
             else:
-                uri = urllib.parse.quote(base_uri.encode(self._encoding))
-            quote = urllib.parse.quote_plus
+                root = self.root()
+                if root and not uri.startswith(root + '/'):
+                    uri = root + uri
+                uri = quote(uri)
+            quote_param = urllib.parse.quote_plus
         if args and isinstance(args[0], str):
-            anchor = urllib.parse.quote(args[0].encode(self._encoding))
+            anchor = quote(args[0])
             args = args[1:]
         else:
             anchor = None
-        query = '&'.join([k + "=" + quote(str(v).encode(self._encoding))
-                          for k, v in args + tuple(kwargs.items()) if v is not None])
-        if query:
-            uri += '?' + query
+        params = [(k, v) for k, v in args + tuple(kwargs.items()) if v is not None]
+        if params:
+            uri += '?' + urllib.parse.urlencode(params, quote_via=quote_param)
         if anchor:
             uri += '#' + anchor
         return uri

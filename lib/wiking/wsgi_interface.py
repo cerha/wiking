@@ -48,6 +48,7 @@ class WsgiRequest(wiking.Request):
         # are called.
         self._environ = environ
         self._start_response = start_response
+        self._root = self._environ.get('SCRIPT_NAME')
         self._uri = self._environ['PATH_INFO']
         self._params = {}
         if self.method() == 'OPTIONS':
@@ -60,6 +61,9 @@ class WsgiRequest(wiking.Request):
         self._response_headers = wsgiref.headers.Headers(self._response_headers_storage)
         self._response_started = False
         super(WsgiRequest, self).__init__(encoding=encoding)
+
+    def root(self):
+        return self._root
 
     def uri(self):
         return self._uri

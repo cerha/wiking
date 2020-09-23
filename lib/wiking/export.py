@@ -384,3 +384,6 @@ class Exporter(lcg.StyledHtmlExporter, lcg.Html5Exporter):
             return lcg.coerce(content).export(context)
         else:
             return None
+
+    def uri(self, context, target, **kwargs):
+        return (context.req().root() or '') + super().uri(context, target, **kwargs)
