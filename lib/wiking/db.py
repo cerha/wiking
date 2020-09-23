@@ -775,7 +775,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                 record[self._referer].export())
 
     def _form(self, form_cls, req, record=None, action=None, new=False, prefill=None,
-              handler=None, binding_uri=None, hidden_fields=(), **kwargs):
+              binding_uri=None, hidden_fields=(), **kwargs):
         """Form instance creation wrapper.
 
         You may override this method if you need to tweek form constructor
@@ -817,9 +817,8 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
             rows = data.get_rows(condition=pd.EQ(linking_column, form_record[self._key]))
             values = tuple([r[value_column] for r in rows])
             form_record[fid] = pd.Value(form_record.type(fid), values)
-        form = form_cls(self._view, req, form_record, handler=handler or req.uri(),
-                        name=self.name(), uri_provider=self._uri_provider(req, form_cls, uri),
-                        hidden=hidden_fields, **kwargs)
+        form = form_cls(self._view, req, self._uri_provider(req, form_cls, uri),
+                        form_record, name=self.name(), hidden=hidden_fields, **kwargs)
         if binding_uri is None:
             # We use heading_info only for main form, not for binding side
             # forms.  That's why we test binding_uri here (not very nice...).
