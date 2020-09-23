@@ -645,7 +645,7 @@ class Theme:
                  'table-cell2': '#f8fbfb',
                  'top-bg': '#e4e5e4;',
                  'top-border': '#ccdcec',
-                 'highlight-bg': '#ffd0c0',
+                 'highlight-bg': '#ff7c90',
                  'inactive-folder': '#e0e0e0',
                  }
 

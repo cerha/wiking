@@ -1188,7 +1188,7 @@ body .pytis-form.browse-form table.data-table tfoot td {
     border-color: $color.frame-border;
 }
 body .pytis-form.browse-form #found-record {
-    background-color: $color.highlight-bg;
+    outline: $color.highlight-bg solid 1px;
 }
 body .pytis-form.list-view .tree-indent {
     border-left-color: $color.frame-border
