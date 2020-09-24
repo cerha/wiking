@@ -179,7 +179,7 @@ class Configuration(pytis.util.Configuration):
     class _Option_dbschemas(pc.StringOption):
         _DESCR = "List of database schemas to use in the order of their preference"
 
-    class _Option_connections(pc.Option):
+    class _Option_dbconnections(pc.Option):
         _DESCR = "Alternative database connections."
         _DOC = ("Wiking modules normally use the default database connection defined by 'dbname', "
                 "'dbhost', 'dbport', 'dbuser', 'dbpass' and 'dbsslm', "

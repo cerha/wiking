@@ -115,7 +115,7 @@ class Handler:
         pytis.config.log_exclude = [pytis.util.ACTION, pytis.util.EVENT, pytis.util.DEBUG]
         for option in ('dbname', 'dbhost', 'dbport', 'dbuser', 'dbpass', 'dbsslm', 'dbschemas',):
             setattr(pytis.config, option, getattr(wiking.cfg, option))
-        pytis.config.dbconnections = wiking.cfg.connections
+        pytis.config.dbconnections = wiking.cfg.dbconnections
         pytis.config.dbconnection = pytis.config.option('dbconnection').default()
         if pytis.config.dbpass:
             # We currently support global encryption password for the configured dbuser
