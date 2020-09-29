@@ -1376,15 +1376,13 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                     raise Forbidden()
         raise NotFound()
 
-    def _call_rows_db_function(self, name, *args, **kwargs):
+    def _call_rows_db_function(self, name, *args, transaction=None):
         """Call database function NAME with given arguments and return the result.
 
         'args' are Python values wich will be automatically wrapped into
-        'pd.Value' instances.  'kwargs' may contain 'transaction'
-        argument to be passed to the database function.
+        'pd.Value' instances.
 
         """
-        transaction = kwargs.get('transaction')
         try:
             function, arg_spec = self._db_function[name]
         except KeyError:
@@ -1397,18 +1395,16 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         arg_data = [(spec[0], pd.Value(spec[1], value)) for spec, value in zip(arg_spec, args)]
         return function.call(pd.Row(arg_data), transaction=transaction)
 
-    def _call_db_function(self, name, *args, **kwargs):
+    def _call_db_function(self, name, *args, transaction=None):
         """Call database function NAME with given arguments and return the first result.
 
         If the result and its first row are non-empty, return the first value
         of the first row; otherwise return 'None'.
 
         'args' are Python values wich will be automatically wrapped into
-        'pd.Value' instances.  'kwargs' may contain 'transaction'
-        argument to be passed to the database function.
+        'pd.Value' instances.
 
         """
-        transaction = kwargs.get('transaction')
         row = self._call_rows_db_function(name, *args, transaction=transaction)[0]
         if row:
             result = row[0].value()
