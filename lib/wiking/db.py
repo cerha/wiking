@@ -721,17 +721,19 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         code.
 
         """
+        def record_uri(**kwargs):
+            return req.make_uri(uri.rstrip('/') + '/' + record[self._referer].export(), **kwargs)
+
         if cid is None:
             if uri:
-                return req.make_uri(uri.rstrip('/') + '/' + record[self._referer].export(),
-                                    **kwargs)
+                return record_uri(**kwargs)
             else:
                 return None
         elif cid in self._links:
             modname, referer = self._links[cid]
             return wiking.module(modname).record_uri(req, record[referer].export())
         elif cid in self._filenames:
-            return self._link_provider(req, uri, record, None, action='download', field=cid)
+            return record_uri(action='download', field=cid)
         else:
             return None
 
