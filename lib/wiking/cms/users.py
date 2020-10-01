@@ -73,8 +73,10 @@ class RoleSets(UserManagementModule, CachingPytisModule):
         table = 'role_sets'
         fields = (
             Field('role_set_id'),
-            Field('role_id', _("Group"), not_null=True, codebook='ApplicationRoles'),
-            Field('member_role_id', _("Gets rights of"), not_null=True, codebook='UserGroups'),
+            Field('role_id', _("Group"), not_null=True, codebook='ApplicationRoles',
+                  selection_type=pp.SelectionType.CHOICE),
+            Field('member_role_id', _("Gets rights of"), not_null=True, codebook='UserGroups',
+                  selection_type=pp.SelectionType.CHOICE),
         )
         columns = layout = ('role_id', 'member_role_id')
 
@@ -231,9 +233,11 @@ class RoleMembers(UserManagementModule):
         def fields(self):
             return (
                 Field('role_member_id'),
-                Field('role_id', _("Group"), not_null=True, codebook='UserGroups'),
+                Field('role_id', _("Group"), not_null=True, codebook='UserGroups',
+                      selection_type=pp.SelectionType.CHOICE),
                 Field('role_name'),
                 Field('uid', _("User"), not_null=True, codebook='Users',
+                      selection_type=pp.SelectionType.CHOICE,
                       inline_display='user_name', inline_referer='user_login'),
                 Field('user_login'),
                 Field('user_name'),
@@ -539,6 +543,7 @@ class Users(UserManagementModule, CachingPytisModule):
             (DISABLED, _("Account disabled")),
             (ENABLED, _("Active account")),
         )
+        selection_type = pp.SelectionType.CHOICE
 
     class Gender(Enumeration):
         enumeration = ((wiking.User.MALE, _("Male")),
@@ -1807,6 +1812,7 @@ class SessionHistory(UserManagementModule):
             field = fields.modify
             field('auth_type', label=_("Authentication method"))
             field('uid', label=_('User'), not_null=True, codebook='Users',
+                  selection_type=pp.SelectionType.CHOICE,
                   inline_display='user', inline_referer='login')
             # Translators: Table column heading: Date and time of the user session beginning.
             field('start_time', label=_("Start time"))

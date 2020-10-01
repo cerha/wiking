@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2011, 2012, 2013, 2015 OUI Technology Ltd.
-# Copyright (C) 2019 Tomáš Cerha <t.cerha@gmail.com>
+# Copyright (C) 2019, 2020 Tomáš Cerha <t.cerha@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@ import lcg
 import wiking
 from wiking.cms import CMSExtensionModule, Roles
 import pytis.data as pd
-from pytis.presentation import Editable, Field, Action, computer
+from pytis.presentation import Editable, Field, Action, SelectionType, computer
 import pytis.web as pw
 
 _ = lcg.TranslatableTextFactory('wiking-cms')
@@ -86,8 +86,10 @@ class CryptoKeys(CMSExtensionModule):
                 Field('key_id', _("Id"), editable=Editable.NEVER),
                 Field('name', _("Name"), not_null=True,
                       codebook='CryptoNames', editable=Editable.NEVER),
-                Field('uid', _("User"), not_null=True, codebook='Users', editable=Editable.ONCE),
-                Field('new_uid', _("New user"), not_null=True, codebook='Users', type=pd.Integer,
+                Field('uid', _("User"), not_null=True, codebook='Users',
+                      selection_type=SelectionType.CHOICE, editable=Editable.ONCE),
+                Field('new_uid', _("New user"), not_null=True, codebook='Users',
+                      selection_type=SelectionType.CHOICE, type=pd.Integer,
                       virtual=True, runtime_filter=computer(self._new_uid_filter)),
                 Field('key', _("Key")),
                 Field('remove', _("Action"), virtual=True,
