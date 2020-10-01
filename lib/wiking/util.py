@@ -2769,8 +2769,8 @@ def send_mail(addr, subject, text, sender=None, sender_name=None, html=None,
       cc -- sequence of other recipient string addresses
       headers -- additional headers to insert into the mail; it must be a tuple
         of pairs (HEADER, VALUE) where HEADER is an ASCII string containing the
-        header name (without the final colon) and value is an ASCII string
-        containing the header value
+        header name (without the final colon) and value is a string containing
+        the header value
       attachments -- sequence of 'MailAttachment' instances describing the
         objects to attach to the mail
       smtp_server -- SMTP server name to use for sending the message as a
@@ -2811,12 +2811,11 @@ def send_mail(addr, subject, text, sender=None, sender_name=None, html=None,
     if not sender or sender == '-':  # Hack: '-' is the Wiking CMS Admin default value...
         sender = wiking.cfg.default_sender_address
     if sender_name:
-        sender = '"%s" <%s>' % (Header(sender_name, 'utf-8').encode(), sender)
+        sender = '"%s" <%s>' % (sender_name, sender)
     if uid is not None:
-        special_cc_addresses = wiking.cfg.special_cc_addresses
-        if special_cc_addresses:
+        if wiking.cfg.special_cc_addresses:
             # `Users' is in wiking.cms, but we probably don't want to make
-            # wiking.cms.send_mail because of this, don't we?
+            # wiking.cms.send_mail because of this, do we?
             user_roles = wiking.module.Users.user(uid=uid).roles()
             special_roles = wiking.cfg.special_cc_exclude_roles
             if not set(user_roles).intersection(set(special_roles)):
@@ -2826,13 +2825,8 @@ def send_mail(addr, subject, text, sender=None, sender_name=None, html=None,
     msg['From'] = sender
     msg['To'] = addr
     if cc:
-        msg['Cc'] = Header(', '.join(cc), 'utf-8')
-    translated_subject = localizer.localize(subject)
-    try:
-        encoded_subject = translated_subject.encode('ascii')
-    except UnicodeEncodeError:
-        encoded_subject = Header(translated_subject, 'utf-8')
-    msg['Subject'] = encoded_subject
+        msg['Cc'] = ', '.join(cc)
+    msg['Subject'] = localizer.localize(subject)
     msg['Date'] = time.strftime("%a, %d %b %Y %H:%M:%S %z")
     for header, value in headers:
         msg[header] = value
