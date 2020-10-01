@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2006-2017 OUI Technology Ltd.
-# Copyright (C) 2019 Tomáš Cerha <t.cerha@gmail.com>
+# Copyright (C) 2019-2020 Tomáš Cerha <t.cerha@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -50,7 +50,7 @@ from wiking import (
 )
 from wiking.cms import (
     EmbeddableCMSModule, UserManagementModule, Roles,
-    enum, now, ASC, DESC, NEVER, ONCE
+    now, ASC, DESC, NEVER, ONCE
 )
 
 _ = lcg.TranslatableTextFactory('wiking-cms')
@@ -546,7 +546,6 @@ class Users(UserManagementModule, CachingPytisModule):
         prefer_display = True
         selection_type = pp.SelectionType.RADIO
 
-
     class Spec(wiking.Specification):
         title = _("User Management")
         help = _("Manage registered users and their privileges.")
@@ -946,7 +945,7 @@ class Users(UserManagementModule, CachingPytisModule):
                 # Add read-only login to make sure the user knows which password is edited.  It
                 # also helps the browser password helper to recognize which password is changed
                 # (if the user has multiple accounts).
-                layout.insert(0, 'login') # Don't include email, since it is editable.
+                layout.insert(0, 'login')  # Don't include email, since it is editable.
             return layout
         return super(Users, self)._layout(req, action, record=record)
 
@@ -1874,8 +1873,8 @@ class LoginFailures(UserManagementModule):
         def _hostname(self, row, ip_address):
             try:
                 return socket.gethostbyaddr(ip_address)[0]
-            except:
-                return None # _("Unknown")
+            except Exception:
+                return None  # _("Unknown")
 
         columns = ('timestamp', 'login', 'auth_type', 'ip_address', 'user_agent')
         layout = ('timestamp', 'login', 'auth_type', 'ip_address', 'hostname', 'user_agent')

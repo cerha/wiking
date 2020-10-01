@@ -111,7 +111,7 @@ def text2content(req, text):
                 content = lcg.Container(_parser.parse(text))
             else:
                 content = _processor.html2lcg(text)
-        except:
+        except Exception:
             content = [wiking.Message(_("Error processing document content."), kind='error')]
             error = wiking.InternalServerError()
             if wiking.cfg.debug:
@@ -148,7 +148,8 @@ class WikingManagementInterface(wiking.Module, wiking.RequestHandler):
         # Translators: Heading and menu title.
         ('users', _("Users"),
          _("Manage user accounts, privileges and perform other user related tasks."),
-         ['Users', 'ApplicationRoles', 'SessionHistory', 'LoginFailures', 'EmailSpool', 'CryptoNames']),
+         ['Users', 'ApplicationRoles', 'SessionHistory', 'LoginFailures',
+          'EmailSpool', 'CryptoNames']),
         # Translators: Heading and menu title. Computer idiom meaning configuration of appearance
         # (colors, sizes, positions, graphical presentation...).
         ('style', _("Look & Feel"),
