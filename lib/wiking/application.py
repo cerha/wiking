@@ -571,12 +571,14 @@ class Application(wiking.Module):
                 else:
                     if isinstance(value, wiking.FileUpload):
                         value = '%s; mime_type="%s"' % (value.filename(), value.mime_type())
+                    elif isinstance(value, tuple):
+                        value = repr(value)
                     else:
                         lines = value.splitlines()
                         if len(lines) > 1:
                             value = lines[0][:40] + '... (trimmed; total %d lines)' % len(lines)
-                        if len(value) > 40:
-                            value = value[:40] + '... (trimmed; total %d chars)' % len(value)
+                    if len(value) > 40:
+                        value = value[:40] + '... (trimmed; total %d chars)' % len(value)
             return "   %s = %s" % (saxutils.escape(param), saxutils.escape(value))
         def maybe_link(value):
             if value and (value.startswith('http://') or value.startswith('https://')):
