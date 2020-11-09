@@ -1979,9 +1979,9 @@ class LoginDialog(lcg.Content):
         if links:
             content.append(g.ul(*links))
         if not req.https() and wiking.cfg.force_https_login:
-            uri = req.server_uri(force_https=True) + req.uri()
+            uri = req.server_uri(force_https=True) + (req.root() or '') + req.uri()
         else:
-            uri = req.uri()
+            uri = (req.root() or '') + req.uri()
         result = (g.form(content, method='POST', action=uri, name='login_form', cls='login-form',
                          novalidate=True) +
                   # The script below is redundant in browsers supporting <input>
