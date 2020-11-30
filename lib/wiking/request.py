@@ -664,12 +664,35 @@ class Request(ServerInterface):
             if not uri.startswith('/'):
                 uri = '/' + uri
             uri = self.server_uri(current=True) + self.make_uri(uri, *args)
+        self.store_messages(uri)
+        html = ("<html><head><title>Redirected</title></head>"
+                "<body>Your request has been redirected to "
+                "<a href='" + uri + "'>" + uri + "</a>.</body></html>").encode(self._encoding)
+        self.set_header('Location', uri)
+        return self.send_response(html, status_code=status_code, content_type="text/html")
+
+    def store_messages(self, uri):
+        """Store the current messages for the next request.
+
+        Arguments:
+          uri -- next uri for which the messages will be used.
+
+        The messages are stored in browser's cookie to allow loading them
+        within the next request.  This is typically practical for
+        POST/redirect/GET where the messages are genereted while handling the
+        POST request but should be displayed in the resulting GET request.
+        Wiking will take care of storing the messages automatically when
+        redirection is done throug Wiking's standard API (raise
+        wiking.Redirect()).  You may need to call this method manually only if
+        you need the same effect without redirection.  For example when the
+        POST response is processed by JavaScript and the redirection is invoked
+        there.
+
+        Of course, this only works if the next request is handled by the same
+        Wiking app.
+
+        """
         if self._messages:
-            # Store the current list of interactive messages in browsers cookie
-            # to allow loading the same messages within the redirected request.
-            # Store them together with the target URI to recognize for which
-            # request they should be loaded.  Of course, this will not work,
-            # when the redirection target is outside the current wiking host.
             # Translate the messages before quoting, since the resulting strings
             # will not be translatable anymore.  We make the assumption, that the
             # redirected request's locale will be the same as for this request,
@@ -679,11 +702,6 @@ class Request(ServerInterface):
                            urllib.parse.quote(self.localize(message).encode(self._encoding))))
                  for message, mtype, formatted in self._messages]
             self.set_cookie(self._MESSAGES_COOKIE, "\n".join(lines))
-        html = ("<html><head><title>Redirected</title></head>"
-                "<body>Your request has been redirected to "
-                "<a href='" + uri + "'>" + uri + "</a>.</body></html>").encode(self._encoding)
-        self.set_header('Location', uri)
-        return self.send_response(html, status_code=status_code, content_type="text/html")
 
     def make_uri(self, uri, *args, **kwargs):
         """Return a URI constructed from given base URI and arguments.
