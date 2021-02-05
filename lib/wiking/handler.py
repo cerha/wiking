@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2006-2017 OUI Technology Ltd.
-# Copyright (C) 2019-2020 Tomáš Cerha <t.cerha@gmail.com>
+# Copyright (C) 2019-2021 Tomáš Cerha <t.cerha@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -411,22 +411,4 @@ class Handler:
             sys.stderr.flush()
             return self._result
         else:
-            # result, t1, t2 = timeit(self._handle, req)
-            # log(OPERATIONAL, "Request processed in %.1f ms (%.1f ms CPU):" %
-            #                   (1000*t2, 1000*t1), req.uri())
-            # return result
-            try:
-                return self._handle(req)
-            finally:
-                # We can observe pending transactions in Wiking applications,
-                # so let's close them all after each request.
-                if __debug__ and wiking.cfg.debug_transactions:
-                    def callback(connection):
-                        stack = connection.connection_info('transaction_start_stack')
-                        if stack is not None:
-                            wiking.debug("Unclosed transaction started at:\n%s\n" %
-                                         (''.join(traceback.format_stack(stack)),))
-                else:
-                    callback = None
-                wiking.WikingDefaultDataClass.close_idle_connections()
-                wiking.WikingDefaultDataClass.rollback_connections(callback=callback)
+            return self._handle(req)
