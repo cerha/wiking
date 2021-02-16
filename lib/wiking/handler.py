@@ -370,6 +370,8 @@ class Handler:
             enable_profiling = True
             if not hasattr(self, '_first_request_served'):
                 if req.param('ignore_first'):
+                    # First request does a lot of unusual suff, so profiling it
+                    # usually doesn't make much sense.
                     wiking.debug("Profiling disabled for the initial request.")
                     enable_profiling = False
                 else:
