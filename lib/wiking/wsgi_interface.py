@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2010-2016 OUI Technology Ltd.
-# Copyright (C) 2019-2020 Tomáš Cerha <t.cerha@gmail.com>
+# Copyright (C) 2019-2021 Tomáš Cerha <t.cerha@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -59,7 +59,6 @@ class WsgiRequest(wiking.Request):
         self._unset_params = []
         self._response_headers_storage = []
         self._response_headers = wsgiref.headers.Headers(self._response_headers_storage)
-        self._response_started = False
         super(WsgiRequest, self).__init__(encoding=encoding)
 
     def root(self):
@@ -155,12 +154,10 @@ class WsgiRequest(wiking.Request):
         return None
 
     def start_http_response(self, status_code):
-        if True:  # not self._response_started:
-            self._response_started = True
-            response = '%d %s' % (status_code, http.client.responses[status_code])
-            self._start_response(response, self._response_headers_storage)
-        else:
-            raise RuntimeError("start_http_response() can only be called once!")
+        self._start_response(
+            '%d %s' % (status_code, http.client.responses[status_code]),
+            self._response_headers_storage
+        )
 
     def option(self, name, default=None):
         return self._environ.get('wiking.' + name, default)
