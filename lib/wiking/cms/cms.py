@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2006-2018 OUI Technology Ltd.
-# Copyright (C) 2019-2020 Tomáš Cerha <t.cerha@gmail.com>
+# Copyright (C) 2019-2021 Tomáš Cerha <t.cerha@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -1013,6 +1013,11 @@ class Panels(SiteSpecificContentModule, wiking.CachingPytisModule):
             restriction = {'published': True}
         return self._data.get_rows(site=wiking.cfg.server_hostname, lang=lang,
                                    sorting=self._sorting, **restriction)
+
+    def _link_provider(self, req, uri, record, cid, **kwargs):
+        if cid is None and not kwargs:
+            return '/'
+        return super(Panels, self)._link_provider(req, uri, record, cid, **kwargs)
 
     def panels(self, req, lang):
         panels = []
