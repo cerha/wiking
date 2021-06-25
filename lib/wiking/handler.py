@@ -273,9 +273,9 @@ class Handler:
                 if req.param('submit') and req.header('Referer'):
                     referer = urllib.parse.urlparse(req.header('Referer'))
                     referer_uri = referer.scheme + '://' + referer.netloc
-                    if referer_uri != req.server_uri():
-                        wiking.debug("Request rejected due to CSRF protection:",
-                                     referer_uri, req.server_uri())
+                    server_uri = req.server_uri(current=True)
+                    if referer_uri != server_uri:
+                        wiking.debug("Request rejected due to CSRF protection:", referer_uri, server_uri)
                         raise wiking.Redirect(req.server_uri(current=True))
                 # Regular processing starts here.
                 try:
