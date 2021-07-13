@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2006-2017 OUI Technology Ltd.
-# Copyright (C) 2019-2020 Tomáš Cerha <t.cerha@gmail.com>
+# Copyright (C) 2019-2021 Tomáš Cerha <t.cerha@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -2794,9 +2794,7 @@ def send_mail(addr, subject, text, sender=None, sender_name=None, html=None,
     assert smtp_server is None or isinstance(smtp_server, str), ('type error', smtp_server,)
     assert smtp_port is None or isinstance(smtp_port, int), ('type error', smtp_port,)
     assert uid is None or isinstance(uid, int), uid
-    if __debug__:
-        for a in attachments:
-            assert isinstance(a, MailAttachment), ('type error', attachments, a,)
+    assert all(isinstance(a, MailAttachment) for a in attachments), attachments
     if isinstance(addr, (tuple, list)):
         addr = ', '.join(addr)
     from email.mime.multipart import MIMEMultipart
