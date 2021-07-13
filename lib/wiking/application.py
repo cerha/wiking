@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2006-2017 OUI Technology Ltd.
-# Copyright (C) 2019-2020 Tomáš Cerha <t.cerha@gmail.com>
+# Copyright (C) 2019-2021 Tomáš Cerha <t.cerha@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -650,6 +650,7 @@ class Application(wiking.Module):
             )
             log(OPR, wiking.cfg.log_format % info)
             if isinstance(error, wiking.InternalServerError):
+                log(OPR, error.traceback())
                 address = wiking.cfg.bug_report_address
                 if address:
                     err = self._send_bug_report(req, error, info, address)
@@ -657,6 +658,5 @@ class Application(wiking.Module):
                         log(OPR, "Failed sending error details to %s:" % address, err)
                     else:
                         log(OPR, "Error details sent to %s." % address)
-                log(OPR, error.traceback())
             elif wiking.cfg.debug:
                 log(OPR, error.traceback())
