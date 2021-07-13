@@ -141,19 +141,18 @@ img.lcg-image {
     max-width: 100%;
     height: auto !important;
     box-sizing: border-box;
-    padding: .5em .8em;
+    margin: .5em 1em;
 }
 img.lcg-image.left-aligned {
-    padding: .25em 1em .25em 0;
+    margin: .2em 1em .4em 0;
 }
 img.lcg-image.right-aligned {
-    padding: .25em 0 .25em 1em;
+    margin: .2em 0 .4em 1em;
 }
 
 figure {
   border: thin silver solid;
-  margin: 0.5em;
-  padding: 0.5em;
+  margin: 1em;
   width: auto;
   display: table-cell;
 }
@@ -392,10 +391,8 @@ body .collapsible-section-widget.expanded > div > div > div > .collapsible-secti
     margin-top: 0;
     border-top: none;
 }
-div.wiking-image-gallery img {
-    margin-right: 1.6em;
-    margin-top: .8em;
-    margin-bottom: .8em;
+div.wiking-image-gallery {
+    margin: 0 -1em;
 }
 
 form.activation-form {
