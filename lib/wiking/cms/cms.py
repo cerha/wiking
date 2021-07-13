@@ -33,6 +33,7 @@ import wiking.cms
 import collections
 import datetime
 import difflib
+import io
 import mimetypes
 import os
 import re
@@ -3208,7 +3209,6 @@ class PublicationExports(ContentManagementModule):
             src_zip = zipfile.ZipFile(path, mode='r')
             try:
                 if self._WATERMARK_SUBSTITUTION_REGEX.search(src_zip.read(titlepage)):
-                    import io
                     date = lcg.LocalizableDateTime(now().strftime('%Y-%m-%d %H:%M:%S'), utc=True)
                     user = req.user()
                     # Visible watermark substitutions (the exported HTML must contain
@@ -3219,7 +3219,7 @@ class PublicationExports(ContentManagementModule):
                     # Simple invisible watermark (relying on known LCG export constructs).
                     replacement = ('<div id="heading">',
                                    '<div id="heading" class="heading-%d">' % user.uid())
-                    result = io.StringIO()
+                    result = io.BytesIO()
                     dst_zip = zipfile.ZipFile(result, 'w')
                     try:
                         for item in src_zip.infolist():
@@ -3539,10 +3539,9 @@ class Attachments(ContentManagementModule):
         def _resize(self, image, size):
             # Compute the value by resizing the original image.
             import PIL.Image
-            import io
             if image is None:
                 return None
-            f = io.StringIO(image)
+            f = io.BytesIO(data)
             try:
                 image = PIL.Image.open(f)
             except IOError:
