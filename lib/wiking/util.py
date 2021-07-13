@@ -2877,6 +2877,12 @@ def send_mail(addr, subject, text, sender=None, sender_name=None, html=None,
     if not smtp_port:
         smtp_port = wiking.cfg.smtp_port or 25
     try:
+        # Logging here is particularly useful to avoid confusion during development.
+        # When smtp_server is not configured correctly, sendmail blocks waiting for
+        # timeout.  This may look like nothing is happenning when watching the error
+        # log during development (eg. when sending the bug report after
+        # InternalServerError) while the request processing is not finished yet.
+        log(OPR, "Sending mail to %s using %s:%s." % (addr, smtp_server, smtp_port))
         import smtplib
         server = smtplib.SMTP(smtp_server, smtp_port)
         try:
