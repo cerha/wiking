@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2006-2016 OUI Technology Ltd.
-# Copyright (C) 2019-2020 Tomáš Cerha <t.cerha@gmail.com>
+# Copyright (C) 2019-2021 Tomáš Cerha <t.cerha@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -154,7 +154,7 @@ class CMSConfiguration(cfg):
                 "This "
                 "size is usually smaller than the original image size (which "
                 "may be larger than the screen size).  If the original is smaller")
-        _DEFAULT = (800, 800)
+        _DEFAULT = (1024, 1024)
 
     class _Option_content_editor(cfg.StringOption):
         _DESCR = "CMS text editor to be used"
