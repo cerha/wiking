@@ -656,14 +656,19 @@ class CmsPageAttachments(CommonAccesRights, sql.SQLTable):
               sql.Column('bytesize', pytis.data.Integer(not_null=True)),
               sql.Column('created', pytis.data.DateTime(not_null=True)),
               sql.Column('last_modified', pytis.data.DateTime(not_null=True)),
-              sql.Column('image', pytis.data.Binary()),
+              sql.Column('image', pytis.data.Binary(),
+                         doc="Resized image"),
+              sql.Column('image_width', pytis.data.Integer(),
+                         doc="Resized image pixel width."),
+              sql.Column('image_height', pytis.data.Integer(),
+                         doc="Resized image pixel height."),
               sql.Column('thumbnail', pytis.data.Binary()),
               sql.Column('thumbnail_size', pytis.data.String(),
-                         doc="desired size - small/medium/large"),
+                         doc="Desired thumbnail size - small/medium/large"),
               sql.Column('thumbnail_width', pytis.data.Integer(),
-                         doc="the actual pixel width of the thumbnail"),
+                         doc="Thumbnail pixel width."),
               sql.Column('thumbnail_height', pytis.data.Integer(),
-                         doc="the actual pixel height of the thumbnail"),
+                         doc="Thumbnail pixel height."),
               sql.Column('in_gallery', pytis.data.Boolean(not_null=True), default=False),
               sql.Column('listed', pytis.data.Boolean(not_null=True), default=False),
               sql.Column('author', pytis.data.String()),
@@ -700,7 +705,7 @@ class CmsVPageAttachments(CommonAccesRights, sql.SQLView):
                        lang.c.lang,
                        a.c.attachment_id, a.c.page_id, t.c.title, t.c.description,
                        a.c.filename, a.c.mime_type, a.c.bytesize,
-                       a.c.image,
+                       a.c.image, a.c.image_width, a.c.image_height,
                        a.c.thumbnail, a.c.thumbnail_size, a.c.thumbnail_width, a.c.thumbnail_height,
                        a.c.in_gallery, a.c.listed, a.c.author, a.c.location, a.c.width, a.c.height,
                        a.c.created, a.c.last_modified],
@@ -714,12 +719,14 @@ class CmsVPageAttachments(CommonAccesRights, sql.SQLView):
     insert into cms_page_attachment_texts (attachment_id, lang, title, description)
            select new.attachment_id, new.lang, new.title, new.description
            where new.title is not null OR new.description is not null;
-    insert into cms_page_attachments (attachment_id, page_id, filename, mime_type, bytesize, image,
+    insert into cms_page_attachments (attachment_id, page_id, filename, mime_type, bytesize,
+                                 image, image_width, image_height,
                                  thumbnail, thumbnail_size, thumbnail_width, thumbnail_height,
                                  in_gallery, listed, author, "location", width, height,
                                  created, last_modified)
            values (new.attachment_id, new.page_id, new.filename, new.mime_type,
-                   new.bytesize, new.image, new.thumbnail, new.thumbnail_size,
+                   new.bytesize, new.image, new.image_width, new.image_height,
+                   new.thumbnail, new.thumbnail_size,
                    new.thumbnail_width, new.thumbnail_height, new.in_gallery, new.listed,
                    new.author, new."location", new.width, new.height,
                    new.created, new.last_modified)
@@ -727,7 +734,7 @@ class CmsVPageAttachments(CommonAccesRights, sql.SQLView):
              attachment_id ||'.'|| (select max(lang) from cms_page_attachment_texts
                                     where attachment_id=attachment_id), null::char(2),
              attachment_id, page_id, null::text, null::text,
-             filename, mime_type, bytesize, image, thumbnail,
+             filename, mime_type, bytesize, image, image_width, image_height, thumbnail,
              thumbnail_size, thumbnail_width, thumbnail_height, in_gallery, listed,
              author, "location", width, height, created, last_modified
         )""",)
@@ -740,6 +747,8 @@ class CmsVPageAttachments(CommonAccesRights, sql.SQLView):
            mime_type = new.mime_type,
            bytesize = new.bytesize,
            image = new.image,
+           image_width = new.image_width,
+           image_height = new.image_height,
            thumbnail = new.thumbnail,
            thumbnail_size = new.thumbnail_size,
            thumbnail_width = new.thumbnail_width,

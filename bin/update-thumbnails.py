@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2011, 2012, 2013 OUI Technology Ltd.
-# Copyright (C) 2019 Tomáš Cerha <t.cerha@gmail.com>
+# Copyright (C) 2019-2021 Tomáš Cerha <t.cerha@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -74,7 +74,8 @@ def run():
     while True:
         try:
             data = pd.dbtable('cms_page_attachments',
-                              ('attachment_id', 'filename', 'image', 'thumbnail',
+                              ('attachment_id', 'filename', 'width', 'height',
+                               'image', 'image_width', 'image_height', 'thumbnail',
                                'thumbnail_size', 'thumbnail_width', 'thumbnail_height'),
                               pytis.config.dbconnection)
         except pd.DBLoginException as e:
@@ -118,10 +119,16 @@ def run():
                 sys.stderr.write("%dx%d, " % real_thumbnail_size)
             resized_image_value, resized_image_size = resize(image, image_screen_size)
             sys.stderr.write("%dx%d\n" % resized_image_size)
-            values = dict(thumbnail=thumbnail_value,
-                          thumbnail_width=real_thumbnail_size[0],
-                          thumbnail_height=real_thumbnail_size[1],
-                          image=resized_image_value)
+            values = dict(
+                width=image.size[0],
+                height=image.size[1],
+                thumbnail=thumbnail_value,
+                thumbnail_width=real_thumbnail_size[0],
+                thumbnail_height=real_thumbnail_size[1],
+                image=resized_image_value,
+                image_width=resized_image_size[0],
+                image_height=resized_image_size[1],
+            )
             r = pd.Row([(key, pd.Value(row[key].type(), value)) for key, value in values.items()])
             data.update(row['attachment_id'], r, transaction=transaction)
     except Exception:

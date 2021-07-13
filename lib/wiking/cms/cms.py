@@ -3497,7 +3497,11 @@ class Attachments(ContentManagementModule):
                 # is generated (they also reflect the image aspect ratio).
                 Field('thumbnail_width', computer=computer(self._thumbnail_width)),
                 Field('thumbnail_height', computer=computer(self._thumbnail_height)),
-                Field('image', type=pd.Image(), computer=computer(self._image)),
+                Field('image', type=pd.Image(), computer=computer(self._resized_image)),
+                Field('image_width', computer=computer(self._resized_image_width)),
+                Field('image_height', computer=computer(self._resized_image_height)),
+                Field('width', computer=computer(self._orig_width)),
+                Field('height', computer=computer(self._orig_height)),
                 Field('in_gallery', _("In Gallery"),
                       # editable=computer(lambda r, thumbnail_size: thumbnail_size is not None),
                       # The computer doesn't work (probably a PresentedRow issue?).
@@ -3536,24 +3540,31 @@ class Attachments(ContentManagementModule):
                 ext = filename and os.path.splitext(filename)[1].lower()
                 return len(ext) > 1 and ext[1:] or ext
 
-        def _resize(self, image, size):
-            # Compute the value by resizing the original image.
+        def _image(self, data):
+            # Return PIL.Image instance if 'data' is an image or None if not.
             import PIL.Image
-            if image is None:
+            if data is None:
                 return None
             f = io.BytesIO(data)
             try:
-                image = PIL.Image.open(f)
+                return PIL.Image.open(f)
             except IOError:
                 return None
-            else:
+
+        def _resize(self, data, size):
+            # Return PIL.Image resized to given size if 'data' is an image or None if not.
+            image = self._image(data)
+            if image:
+                import PIL.Image
                 img = image.copy()
                 img.thumbnail(size, PIL.Image.ANTIALIAS)
                 stream = io.BytesIO()
                 img.save(stream, image.format)
                 return stream.getvalue()
+            else:
+                return None
 
-        def _image(self, record, upload):
+        def _resized_image(self, record, upload):
             return self._resize(upload, wiking.cms.cfg.image_screen_size)
 
         def _file_data(self, record):
@@ -3578,16 +3589,24 @@ class Attachments(ContentManagementModule):
             return self._resize(image, (size, size))
 
         def _thumbnail_width(self, record, thumbnail):
-            if thumbnail:
-                return thumbnail.image().size[0]
-            else:
-                return None
+            return thumbnail.image().size[0] if thumbnail else None
 
         def _thumbnail_height(self, record, thumbnail):
-            if thumbnail:
-                return thumbnail.image().size[1]
-            else:
-                return None
+            return thumbnail.image().size[1] if thumbnail else None
+
+        def _resized_image_width(self, record, image):
+            return image.image().size[0] if image else None
+
+        def _resized_image_height(self, record, image):
+            return image.image().size[1] if image else None
+
+        def _orig_width(self, record, upload):
+            image = self._image(upload)
+            return image.size[0] if image else None
+
+        def _orig_height(self, record, upload):
+            image = self._image(upload)
+            return image.size[1] if image else None
 
         def _file_path(self, record, attachment_id, ext):
             fname = str(attachment_id) + '.' + ext
