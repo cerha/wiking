@@ -68,7 +68,6 @@ def run():
     except getopt.GetoptError as e:
         usage(e.msg)
     wiking.cfg.user_config_file = pytis.config.config_file
-    wiking.cms.cfg.user_config_file = pytis.config.config_file
     pytis.config.dblisten = False
     pytis.config.log_exclude = [pytis.util.ACTION, pytis.util.EVENT,
                                 pytis.util.DEBUG, pytis.util.OPERATIONAL]
@@ -98,7 +97,7 @@ def run():
             ext = os.path.splitext(row['filename'].value())[1].lower()
             path = os.path.join(wiking.cms.cfg.storage, pytis.config.dbname, 'attachments',
                                 row['attachment_id'].export() + (ext or '.'))
-            attachment = open(path)
+            attachment = open(path, 'rb')
             try:
                 image = PIL.Image.open(attachment)
             except IOError as e:
