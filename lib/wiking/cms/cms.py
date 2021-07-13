@@ -3786,7 +3786,8 @@ class Attachments(ContentManagementModule):
         value = record['upload'].value()
         if value is not None:
             log(OPERATIONAL, "Saving file:", (path, format_byte_size(len(value))))
-            value.save(path)
+            with open(path, 'wb') as f:
+                f.write(value)
 
     def _insert_transaction(self, req, record):
         return self._transaction()
