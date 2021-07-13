@@ -4976,7 +4976,6 @@ class Discussions(ContentManagementModule, EmbeddableCMSModule):
                 context.resource('discussion.css')
                 if req.check_roles(Roles.USER):
                     g = context.generator()
-                    context.resource('effects.js')
                     context.resource('discussion.js')
                     return g.script(g.js_call('new Discussion', form.form_id(), uri, 'text'))
                 else:
