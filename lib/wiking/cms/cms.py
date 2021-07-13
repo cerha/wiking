@@ -3676,7 +3676,7 @@ class Attachments(ContentManagementModule):
                                   thumbnail_size=thumbnail_size)
 
         def _resource_uri(self, filename):
-            return self._req.make_uri(self._base_uri + '/' + filename)
+            return self._req.make_uri(self._base_uri + '/' + filename, action='download')
 
         def _image_uri(self, filename):
             return self._req.make_uri(self._base_uri + '/' + filename, action='image')
@@ -3736,12 +3736,6 @@ class Attachments(ContentManagementModule):
         else:
             return False
 
-    def _default_action(self, req, record=None):
-        if record is None:
-            return 'list'
-        else:
-            return 'download'
-
     def _layout(self, req, action, record=None):
         if action == 'move':
             return ('page_id',)
@@ -3760,9 +3754,7 @@ class Attachments(ContentManagementModule):
         return super(Attachments, self)._layout(req, action, record=record)
 
     def _link_provider(self, req, uri, record, cid, **kwargs):
-        if cid is None and not kwargs:
-            return self._link_provider(req, uri, record, None, action='view')
-        elif cid == 'fake_file':
+        if cid == 'fake_file':
             return self._link_provider(req, uri, record, None, action='download')
         return super(Attachments, self)._link_provider(req, uri, record, cid, **kwargs)
 
