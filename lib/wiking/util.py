@@ -2514,8 +2514,8 @@ class InputForm(pytis.web.EditForm):
                         resolver=wiking.cfg.resolver, new=new)
         hidden_fields += (('action', action),
                           ('submit', 'submit'))
-        super(InputForm, self).__init__(view_spec, req, record, handler=req.uri(),
-                                        name=name, hidden=hidden_fields, **kwargs)
+        super().__init__(view_spec, req, lambda *args: req.uri(), record,
+                         name=name, hidden=hidden_fields, **kwargs)
 
 
 class RowsIterator:
