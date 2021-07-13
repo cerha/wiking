@@ -3504,7 +3504,7 @@ class Attachments(ContentManagementModule):
                       # computer=computer(lambda r, thumbnail_size: thumbnail_size is not None),
                       descr=_("Check if you want the image to appear in an image Gallery "
                               "below the page text.")),
-                Field('listed', _("Listed"), default=True,
+                Field('listed', _("Listed"), default=False,
                       descr=_("Check if you want the item to appear in the listing of attachments "
                               "at the bottom of the page.")),
                 # Field('author', _("Author"), width=30),

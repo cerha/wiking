@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2006-2016 OUI Technology Ltd.
-# Copyright (C) 2019 Tomáš Cerha <t.cerha@gmail.com>
+# Copyright (C) 2019-2021 Tomáš Cerha <t.cerha@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -665,7 +665,7 @@ class CmsPageAttachments(CommonAccesRights, sql.SQLTable):
               sql.Column('thumbnail_height', pytis.data.Integer(),
                          doc="the actual pixel height of the thumbnail"),
               sql.Column('in_gallery', pytis.data.Boolean(not_null=True), default=False),
-              sql.Column('listed', pytis.data.Boolean(not_null=True), default=True),
+              sql.Column('listed', pytis.data.Boolean(not_null=True), default=False),
               sql.Column('author', pytis.data.String()),
               sql.Column('location', pytis.data.String()),
               sql.Column('width', pytis.data.Integer()),
