@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2006-2016 OUI Technology Ltd.
-# Copyright (C) 2019-2020 Tomáš Cerha <t.cerha@gmail.com>
+# Copyright (C) 2019-2021 Tomáš Cerha <t.cerha@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -220,10 +220,9 @@ class Configuration(pytis.util.Configuration):
         _DOC = ("Wiking email validation functions may use SMTP to verify the existence of an "
                 "e-mail account on the remote mail server.  Some installations, however, may "
                 "not allow the server to create such SMTP connections (e.g. when the server "
-                "is located behind a firewall).  This option allows you to disable SMTP checking "
-                "in such situations.  If disabled, the mail addres domain is only checked "
-                "through DNS")
-        _DEFAULT = True
+                "is located behind a firewall) so this option is off by default.  If not "
+                "enabled, the mail addres domain is only checked through DNS.")
+        _DEFAULT = False
 
     class _Option_debug(pc.BooleanOption):
         _DESCR = "Debugging mode"
