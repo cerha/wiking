@@ -1553,6 +1553,13 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
         )
         # Translators: Noun. Such as e-mail attachments (here attachments for a webpage).
         bindings = (
+            # We include Attachments twice under different identifiers.  The binding
+            # 'attachments-management' is for the management form, where the URL
+            # /<page-id>/attachments-management/<filename.ext> leads to a ShowForm
+            # displaying attachment details and allowing further actions, while
+            # /<page-id>/attachments/<filename.ext> leads to direct attachment download
+            # and allows simply linking this URL from other pages.
+            Binding('attachments-management', _("Attachments"), 'Attachments', 'page_id'),
             Binding('attachments', _("Attachments"), 'Attachments', 'page_id'),
             Binding('history', _("History"), 'PageHistory', 'page_key'),
         )
@@ -1691,6 +1698,12 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                         if not req.unresolved_path:
                             raise
         return super(Pages, self)._handle_subpath(req, record)
+
+    def _binding_visible(self, req, record, binding):
+        if binding.id() == 'attachments':
+            return False
+        else:
+            return super()._binding_visible(req, record, binding)
 
     def _current_base_uri(self, req, record=None):
         return '/'
@@ -3728,13 +3741,25 @@ class Attachments(ContentManagementModule):
         self._non_binary_columns = [c.id() for c in self._data.columns()
                                     if not isinstance(c.type(), pd.Binary)]
 
-    def _authorized(self, req, action, **kwargs):
-        if action in ('download', 'image', 'thumbnail'):
-            return req.page_read_access
-        elif action in ('list', 'view', 'insert', 'upload_archive', 'update', 'delete', 'move'):
-            return req.page_write_access
+    def _default_action(self, req, record=None):
+        if record and self._current_base_uri(req, record).endswith('/attachments'):
+            # When accessing through /<page-id>/attachments/<filename.ext>, just download.
+            return 'download'
         else:
-            return False
+            return super()._default_action(req, record=record)
+
+    def _authorized(self, req, action, record=None, **kwargs):
+        if self._current_base_uri(req, record).endswith('/attachments-management'):
+            if action in ('download', 'image', 'thumbnail'):
+                return req.page_read_access
+            elif action in ('list', 'view', 'insert', 'upload_archive', 'update', 'delete', 'move'):
+                return req.page_write_access
+            else:
+                return False
+        elif action == 'download':
+            # When accessing through /<page-id>/attachments/<filename.ext>, only allow download.
+            # See Pages.Spec.bindings for more info.
+            return req.page_read_access
 
     def _cell_editable(self, req, record, cid):
         if cid in ('title', 'in_gallery', 'listed'):
