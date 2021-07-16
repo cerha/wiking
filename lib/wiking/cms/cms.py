@@ -3667,6 +3667,8 @@ class Attachments(ContentManagementModule):
                 size = (row['image_width'].value(), row['image_height'].value())
             else:
                 size = None
+                log(OPERATIONAL, "{}: Unknown size: Run bin/update-thumbnails.py to fix that."
+                    .format(row['filename'].value()))
             return self._resource(row['filename'].value(),
                                   title=row['title'].value(),
                                   descr=row['description'].value(),
