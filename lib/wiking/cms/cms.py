@@ -3663,6 +3663,10 @@ class Attachments(ContentManagementModule):
                 thumbnail_size = (row['thumbnail_width'].value(), row['thumbnail_height'].value())
             else:
                 thumbnail_size = None
+            if row['image_width'].value() and row['image_height'].value():
+                size = (row['image_width'].value(), row['image_height'].value())
+            else:
+                size = None
             return self._resource(row['filename'].value(),
                                   title=row['title'].value(),
                                   descr=row['description'].value(),
@@ -3671,7 +3675,7 @@ class Attachments(ContentManagementModule):
                                             listed=row['listed'].value(),
                                             in_gallery=row['in_gallery'].value(),
                                             thumbnail_size=row['thumbnail_size'].value()),
-                                  size=(row['image_width'].value(), row['image_height'].value()),
+                                  size=size,
                                   has_thumbnail=thumbnail_size is not None,
                                   thumbnail_size=thumbnail_size)
 
