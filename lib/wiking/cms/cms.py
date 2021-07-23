@@ -716,6 +716,11 @@ class Config(SettingsManagementModule, wiking.CachingPytisModule):
     def _default_action(self, req, **kwargs):
         return 'update'
 
+    def _link_provider(self, req, uri, record, cid, **kwargs):
+        if cid is None and not kwargs:
+            return self._base_uri(req)
+        return super(Config, self)._link_provider(req, uri, record, cid, **kwargs)
+
     def _redirect_after_update(self, req, record):
         req.message(self._update_msg(req, record), req.SUCCESS)
         raise Redirect(req.uri())
