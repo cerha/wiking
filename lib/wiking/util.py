@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2006-2017 OUI Technology Ltd.
-# Copyright (C) 2019-2021 Tomáš Cerha <t.cerha@gmail.com>
+# Copyright (C) 2019-2022 Tomáš Cerha <t.cerha@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -1156,13 +1156,11 @@ class ChannelContent:
         specifications.
 
         """
-        assert isinstance(title, str) or isinstance(title, collections.Callable), title
-        assert link is None or isinstance(link, str) or isinstance(link, collections.Callable), link
-        assert (descr is None or isinstance(descr, str) or
-                isinstance(descr, collections.Callable)), descr
-        assert date is None or isinstance(date, str) or isinstance(date, collections.Callable), date
-        assert (author is None or isinstance(author, str) or
-                isinstance(author, collections.Callable)), author
+        assert isinstance(title, str) or callable(title), title
+        assert link is None or isinstance(link, str) or callable(link), link
+        assert (descr is None or isinstance(descr, str) or callable(descr)), descr
+        assert date is None or isinstance(date, str) or callable(date), date
+        assert (author is None or isinstance(author, str) or callable(author)), author
         self._title = title
         self._link = link
         self._descr = descr
@@ -2235,7 +2233,7 @@ class Specification(pp.Specification):
         if self.table is None:
             self.table = pytis.util.camel_case_to_lower(wiking_module.name(), '_')
         actions = self.actions
-        if isinstance(actions, collections.Callable):
+        if callable(actions):
             actions = actions()
         actions = list(actions)
         for base in wiking_module.__bases__ + (wiking_module,):
@@ -2491,7 +2489,7 @@ class InputForm(pytis.web.EditForm):
             def req(self):
                 return req
         for key, value in specification_kwargs.items():
-            if isinstance(value, collections.Callable):
+            if callable(value):
                 # This is necessary to avoid calling functions (such as 'check'
                 # or 'row_style') as methods.
                 function = value

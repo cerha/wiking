@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2006-2018 OUI Technology Ltd.
-# Copyright (C) 2019-2021 Tomáš Cerha <t.cerha@gmail.com>
+# Copyright (C) 2019-2022 Tomáš Cerha <t.cerha@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -558,7 +558,7 @@ class CMSExtension(wiking.Module, Embeddable, wiking.RequestHandler):
             """
             if __debug__:
                 assert isinstance(modname, str), modname
-                assert enabled is None or isinstance(enabled, collections.Callable), enabled
+                assert enabled is None or callable(enabled), enabled
                 for item in submenu:
                     assert isinstance(item, CMSExtension.MenuItem), item
             self.modname = modname
@@ -1052,7 +1052,7 @@ class Panels(SiteSpecificContentModule, wiking.CachingPytisModule):
 
                 def is_enabled(action):
                     enabled = action.enabled()
-                    if isinstance(enabled, collections.Callable):
+                    if callable(enabled):
                         enabled = enabled(record)
                     return enabled
                 items = [lcg.PopupMenuItem(action.title(),

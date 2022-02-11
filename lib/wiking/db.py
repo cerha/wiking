@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2005-2017 OUI Technology Ltd.
-# Copyright (C) 2019-2020 Tomáš Cerha <t.cerha@gmail.com>
+# Copyright (C) 2019-2020, 2022 Tomáš Cerha <t.cerha@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -485,7 +485,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                         msg += ' (%s)' % matched_id
                 else:
                     field_id = None
-                if isinstance(msg, collections.Callable):
+                if callable(msg):
                     msg = msg(match)
                 return (field_id, msg)
         return (None, _("Unable to perform a database operation:") + ' ' + error)
@@ -1343,7 +1343,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
 
         """
         enabled = binding.enabled()
-        if isinstance(enabled, collections.Callable):
+        if callable(enabled):
             enabled = enabled(record)
         return bool(enabled)
 
@@ -2636,7 +2636,7 @@ class PytisRssModule(PytisModule):
                     return default
                 else:
                     return lambda record: None
-            elif isinstance(spec, collections.Callable):
+            elif callable(spec):
                 return lambda record: localize(spec(req, record))
             elif raw:
                 return lambda record: localize(record[spec].value())
