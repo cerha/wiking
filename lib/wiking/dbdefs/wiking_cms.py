@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2006-2016 OUI Technology Ltd.
-# Copyright (C) 2019-2021 Tomáš Cerha <t.cerha@gmail.com>
+# Copyright (C) 2019-2022 Tomáš Cerha <t.cerha@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -380,7 +380,7 @@ class CmsVSessionHistory(CommonAccesRights, sql.SQLView):
     def query(cls):
         h = sql.t.CmsSessionHistory.alias('h')
         u = sql.t.Users.alias('u')
-        return select(h.c + [
+        return select(list(h.c) + [
             u.c.login,
             u.c.user_.label('user'),
             sqlalchemy.cast(h.c.end_time == null, sqlalchemy.Boolean()).label('active'),
