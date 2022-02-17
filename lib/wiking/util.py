@@ -2516,51 +2516,6 @@ class InputForm(pytis.web.EditForm):
                          name=name, hidden=hidden_fields, **kwargs)
 
 
-class RowsIterator:
-    """Select rows from a Pytis data object through a convenient iterator interface."""
-
-    def __init__(self, data, condition=None, arguments=None, sorting=None, limit=None, offset=0):
-        self._data = data
-        self._condition = condition
-        self._arguments = arguments
-        self._sorting = sorting
-        self._limit = limit
-        self._offset = offset
-        self._count = 0
-
-    def __iter__(self):
-        self._len = self._data.select(condition=self._condition,
-                                      arguments=self._arguments,
-                                      sort=self._sorting)
-        if self._offset:
-            self._data.skip(self._offset)
-        return self
-
-    def __len__(self):
-        return self._len
-
-    def __next__(self):
-        if self._limit is not None and self._count >= self._limit:
-            raise StopIteration()
-        row = self._data.fetchone()
-        if row is None:
-            raise StopIteration()
-        self._count += 1
-        return row
-
-
-class RecordsIterator(RowsIterator):
-    """Select records from a Pytis data object through a convenient iterator interface."""
-
-    def __init__(self, record, **kwargs):
-        super(RecordsIterator, self).__init__(record.data(), **kwargs)
-        self._record = record
-
-    def __next__(self):
-        row = next(super(RecordsIterator, self))
-        self._record.set_row(row)
-        return self._record
-
 # ============================================================================
 # Misc functions
 # ============================================================================

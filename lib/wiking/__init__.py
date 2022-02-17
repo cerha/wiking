@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2006-2016 OUI Technology Ltd.
-# Copyright (C) 2019-2020 Tomáš Cerha <t.cerha@gmail.com>
+# Copyright (C) 2019-2022 Tomáš Cerha <t.cerha@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ from .util import (  # noqa: F401
     MaximizedModeControl, MenuItem, Message, ModuleInstanceResolver, NotAcceptable, NotFound,
     NotModified, Panel, PasswordStorage,
     Pbkdf2Md5PasswordStorage, Pbkdf2PasswordStorage, PermanentRedirect, PlainTextPasswordStorage,
-    RecordsIterator, Redirect, RequestError, Response, RowsIterator, RssWriter, ServiceUnavailable,
+    Redirect, RequestError, Response, RssWriter, ServiceUnavailable,
     Specification, TZInfo, Theme, Time, TopBarControl, UniversalPasswordStorage,
     UnsaltedMd5PasswordStorage, WikingDefaultDataClass, WikingResolver,
     ajax_response, format_http_date, generate_random_string, log, module,

@@ -1276,23 +1276,30 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
             lang_condition = None
         return pd.AND(self._condition(req), condition, lang_condition)
 
+    def _rows_generator(self, req, condition=None, lang=None, limit=None, offset=0, sorting=None):
+        count = 0
+        self._data.select(
+            condition=self._make_condition(req, condition, lang=lang),
+            arguments=self._arguments(req),
+            sort=sorting or self._sorting,
+        )
+        if offset:
+            self._data.skip(offset)
+        while limit is None or count < limit:
+            count += 1
+            row = self._data.fetchone()
+            if row is not None:
+                yield row
+
+    def _rows(self, req, condition=None, lang=None, limit=None, offset=0, sorting=None):
+        return list(self._rows_generator(req, condition=condition, lang=lang,
+                                         limit=limit, offset=offset, sorting=sorting))
+
     def _records(self, req, condition=None, lang=None, limit=None, offset=0, sorting=None):
-        return wiking.RecordsIterator(self._record(req, None),
-                                      condition=self._make_condition(req, condition, lang=lang),
-                                      arguments=self._arguments(req),
-                                      sorting=sorting or self._sorting,
-                                      limit=limit, offset=offset)
-
-    def _rows_iterator(self, req, condition=None, lang=None, limit=None, offset=0, sorting=None):
-        return wiking.RowsIterator(self._data,
-                                   condition=self._make_condition(req, condition, lang=lang),
-                                   arguments=self._arguments(req),
-                                   sorting=sorting or self._sorting,
-                                   limit=limit, offset=offset)
-
-    def _rows(self, req, condition=None, lang=None, limit=None, sorting=None):
-        return list(self._rows_iterator(req, condition=condition, lang=lang, limit=limit,
-                                        sorting=sorting))
+        for row in self._rows_generator(req, condition=condition, lang=lang, limit=limit, offset=offset,
+                                        sorting=sorting):
+            self._record.set_row(row)
+            yield self._record
 
     def _handle(self, req, action, **kwargs):
         record = kwargs.get('record')
