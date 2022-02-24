@@ -3754,17 +3754,14 @@ class Attachments(ContentManagementModule):
             return super()._default_action(req, record=record)
 
     def _authorized(self, req, action, record=None, **kwargs):
-        if self._current_base_uri(req, record).endswith('/attachments-management'):
-            if action in ('download', 'image', 'thumbnail'):
-                return req.page_read_access
-            elif action in ('list', 'view', 'insert', 'upload_archive', 'update', 'delete', 'move'):
-                return req.page_write_access
-            else:
-                return False
-        elif action == 'download':
-            # When accessing through /<page-id>/attachments/<filename.ext>, only allow download.
-            # See Pages.Spec.bindings for more info.
+        if action in ('image', 'download', 'thumbnail'):
             return req.page_read_access
+        elif self._current_base_uri(req, record).endswith('/attachments-management'):
+            # See Pages.Spec.bindings for diferences in access through /<page_id>/attachments/
+            # and /<page_id>/attachments-management/
+            if action in ('list', 'view', 'insert', 'upload_archive', 'update', 'delete', 'move'):
+                return req.page_write_access
+        return False
 
     def _cell_editable(self, req, record, cid):
         if cid in ('title', 'in_gallery', 'listed'):
