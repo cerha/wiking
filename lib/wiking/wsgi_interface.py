@@ -124,8 +124,15 @@ class WsgiRequest(wiking.Request):
         return self._environ.get(environ_name, default)
 
     def set_header(self, name, value, **params):
+        def encode(string):
+            # Hack: Non latin-1 characters will lead to
+            # "TypeError: http header must be encodable in latin1"
+            # when start_http_response() is called.  There doesn't seem to be
+            # any official documentation how this should be solved correctly,
+            # but this hack seems to work.
+            return string.encode(self._encoding).decode('latin1')
         # See wsgiref.headers.Headers.add_header for the documentation.
-        self._response_headers.add_header(name, value, **params)
+        self._response_headers.add_header(name, encode(value), **{k: encode(v) for k, v in params.items()})
 
     def port(self):
         port = self._environ['SERVER_PORT']
