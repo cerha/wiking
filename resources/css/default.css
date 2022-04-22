@@ -252,8 +252,15 @@ button::-moz-focus-inner {
 button:hover:enabled {
     background-image: linear-gradient(#fff, #f0f0f0);
 }
-button:focus {
-    outline: 1px dotted;
+a:focus,
+td:focus,
+span:focus,
+input:focus,
+button:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    box-shadow: 0 0 3px 2px cornflowerblue;
 }
 button[disabled] span {
     opacity: 0.5;
