@@ -5008,7 +5008,7 @@ class Discussions(ContentManagementModule, EmbeddableCMSModule):
                 if req.check_roles(Roles.USER):
                     g = context.generator()
                     context.resource('discussion.js')
-                    return g.script(g.js_call('new Discussion', form.form_id(), uri, 'text'))
+                    return g.script(g.js_call('new wiking.Discussion', form.form_id(), uri, 'text'))
                 else:
                     return ''
             content.append(lcg.HtmlContent(render))

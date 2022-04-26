@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2006-2018 OUI Technology Ltd.
-# Copyright (C) 2019-2020 Tomáš Cerha <t.cerha@gmail.com>
+# Copyright (C) 2019-2022 Tomáš Cerha <t.cerha@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -81,9 +81,9 @@ class Exporter(lcg.StyledHtmlExporter, lcg.Html5Exporter):
             self.has_submenu = (wiking.cfg.show_submenu and
                                 any(not n.hidden() for n in top_node.children()))
             self.application = application
-            # Make sure that Prototype.js is always loaded first, so that it is
+            # Make sure that jQuery is always loaded first, so that it is
             # available in any other scripts.
-            scripts = ('prototype.js', 'effects.js', 'gettext.js', 'lcg.js', 'wiking.js')
+            scripts = ('jquery.min.js', 'gettext.js', 'lcg.js', 'wiking.js')
             for filename in scripts + tuple(wiking.cfg.extra_scripts):
                 self.resource(filename)
             if self.lang() != 'en':
@@ -129,6 +129,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.Html5Exporter):
 
         def _css_class_name(self, context):
             return 'foldable-tree-widget'
+
 
     _PAGE_STRUCTURE = (
         Part('root', content=(
