@@ -5016,8 +5016,7 @@ class Discussions(ContentManagementModule, EmbeddableCMSModule):
             content.append(lcg.HtmlContent(render))
             if req.check_roles(Roles.USER):
                 # Embed insertion form directly below the message list.
-                content.append(self._form(pw.EditForm, req, action='insert', handler=uri,
-                                          show_reset_button=False))
+                content.append(self._form(pw.EditForm, req, action='insert', show_reset_button=False))
             else:
                 # Translators: The square brackets mark a link.  Please leave the brackets and the
                 # link target '?command=login' untouched and traslate 'log in' to fit into the
@@ -5071,7 +5070,7 @@ class ContactForm(wiking.Module, Embeddable):
                           id='contact-form-response-text'))
         form = pytis.web.VirtualForm(req, wiking.cfg.resolver, dict(fields=self._FIELDS,
                                                                     check=(self._check_email,)),
-                                     handler=req.uri(), submit_buttons=(('submit', _("Submit")),),
+                                     submit_buttons=(('submit', _("Submit")),),
                                      show_reset_button=False)
         if form.is_ajax_request(req):
             return wiking.ajax_response(req, form)
