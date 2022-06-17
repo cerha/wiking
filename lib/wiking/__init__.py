@@ -30,7 +30,7 @@ from .util import (  # noqa: F401
     Specification, TZInfo, Theme, Time, TopBarControl, UniversalPasswordStorage,
     UnsaltedMd5PasswordStorage, WikingDefaultDataClass, WikingResolver,
     ajax_response, format_http_date, generate_random_string, log, module,
-    parse_http_date, pdf_document, send_mail, serve_file, validate_email_address,
+    parse_http_date, pdf_document, send_mail, serve_file, validate_email_address, breakpoint,
 )
 
 from .request import (  # noqa: F401

@@ -3047,3 +3047,20 @@ def test_generate_random_string():
         assert len(string) == length
         string2 = generate_random_string(length)
         assert string != string2
+
+
+_pdb = None
+
+def breakpoint():
+    """Insert a breakpoing at given position and start PDB if not already running.
+
+    Starts a PDB session if one was not started previously and inserts a
+    breakpoint.  The debugger can be accessed by telnet on localhost, port
+    4444.
+
+    """
+    global _pdb
+    if not _pdb:
+        from remote_pdb import RemotePdb
+        _pdb = RemotePdb('127.0.0.1', 4444)
+    _pdb.set_trace()
