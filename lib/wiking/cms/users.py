@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2006-2017 OUI Technology Ltd.
-# Copyright (C) 2019-2020 Tomáš Cerha <t.cerha@gmail.com>
+# Copyright (C) 2019-2020, 2022 Tomáš Cerha <t.cerha@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -1261,7 +1261,7 @@ class Users(UserManagementModule, CachingPytisModule):
                 except (TypeError, ValueError,):
                     raise wiking.BadRequest(_("Invalid password reset request."))
                 user = wiking.module.Users.user(req, uid=uid)
-            elif query.find('@') == -1:
+            elif '@' in query:
                 user = wiking.module.Users.user(req, login=query)
             else:
                 users = wiking.module.Users.find_users(req, query)
