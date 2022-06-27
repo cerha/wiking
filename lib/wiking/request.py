@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2006-2016 OUI Technology Ltd.
-# Copyright (C) 2019-2020 Tomáš Cerha <t.cerha@gmail.com>
+# Copyright (C) 2019-2022 Tomáš Cerha <t.cerha@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -433,7 +433,7 @@ class Request(ServerInterface):
         else:
             return default
 
-    def set_cookie(self, name, value, expires=None, domain=None, secure=False):
+    def set_cookie(self, name, value, expires=None, domain=None, secure=False, samesite=False):
         """Set given value as a cookie with given name.
 
         Arguments:
@@ -445,6 +445,19 @@ class Request(ServerInterface):
             outside this domain).  If None, only the originating host is allowed.
           secure -- if True, the cookie will only be returned by the browser on
             secure connections.
+          samesite -- treating third party sites (see
+            https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite)
+            False corresponds to 'Lax' in HTTP spec and it is the dafault
+            value.  The cookie is not sent on normal cross-site subrequests
+            (third party site image or frame load), but is sent when a user is
+            navigating to the origin site (i.e., when following a link).
+            Passing True corresponds to 'Strict' in the spec an will only be
+            sent in a first-party context and not be sent along with requests
+            initiated by third party websites.  None is the most permissive
+            option (corresponds to 'None' in the spec) and will be sent in all
+            contexts, i.e. in responses to both first-party and cross-site
+            requests.  The 'secure' argument must also be set in this case or
+            the cookie will be blocked.
 
         """
         if value is None:
@@ -452,17 +465,21 @@ class Request(ServerInterface):
                 del self._cookies[name]
         else:
             self._cookies[name] = value
-        c = http.cookies.SimpleCookie()
-        c[name] = value or ''
-        c[name]['path'] = '/'
+        cookie = http.cookies.SimpleCookie()
+        cookie[name] = value or ''
+        cookie[name]['path'] = '/'
         if expires is not None:
-            c[name]['expires'] = expires
+            cookie[name]['Expires'] = expires
         if domain is not None:
-            c[name]['domain'] = domain
+            cookie[name]['Domain'] = domain
         if secure:
-            c[name]['secure'] = True
-        cookie = c[name].OutputString()
-        self.set_header('Set-Cookie', cookie)
+            cookie[name]['Secure'] = True
+        cookie[name]['SameSite'] = {
+            True: 'Strict',
+            False: 'Lax',
+            None: 'None',
+        }[samesite]
+        self.set_header('Set-Cookie', cookie[name].OutputString())
 
     def encoding(self):
         """Return the character encoding used in HTTP communication."""
