@@ -148,7 +148,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.Html5Exporter):
                 Part('main', content=(
                     Part('main-wrap', content=(
                         # Part('breadcrumbs'),
-                        Part('submenu', role='navigation'),
+                        Part('submenu', role='navigation', aria_hidden='true'),
                         Part('page',
                              aria_label=_("Main content"),
                              aria_labelledby='main-heading',
