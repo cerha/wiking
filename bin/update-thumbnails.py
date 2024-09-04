@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2011, 2012, 2013 OUI Technology Ltd.
-# Copyright (C) 2019-2021 Tomáš Cerha <t.cerha@gmail.com>
+# Copyright (C) 2019-2021, 2024 Tomáš Cerha <t.cerha@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -52,7 +52,7 @@ Options: Pytis command line options, such as --config or --dbhost and --dbname.
 
 def resize(image, size):
     img = image.copy()
-    img.thumbnail(size, PIL.Image.ANTIALIAS)
+    img.thumbnail(size, PIL.Image.LANCZOS)
     stream = io.BytesIO()
     img.save(stream, image.format)
     return stream.getvalue(), img.size

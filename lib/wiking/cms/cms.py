@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2006-2018 OUI Technology Ltd.
-# Copyright (C) 2019-2022 Tomáš Cerha <t.cerha@gmail.com>
+# Copyright (C) 2019-2022, 2024 Tomáš Cerha <t.cerha@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -3575,7 +3575,7 @@ class Attachments(ContentManagementModule):
             if image:
                 import PIL.Image
                 img = image.copy()
-                img.thumbnail(size, PIL.Image.ANTIALIAS)
+                img.thumbnail(size, PIL.Image.LANCZOS)
                 stream = io.BytesIO()
                 img.save(stream, image.format)
                 return stream.getvalue()
