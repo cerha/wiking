@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2006-2017 OUI Technology Ltd.
-# Copyright (C) 2019-2021 Tomáš Cerha <t.cerha@gmail.com>
+# Copyright (C) 2019-2024 Tomáš Cerha <t.cerha@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -375,7 +375,7 @@ class Handler:
                     wiking.debug("Profiling disabled for the initial request.")
                     enable_profiling = False
                 else:
-                    wiking.debug("Profiling note: This is an initial request.")
+                    wiking.debug("Profiling note: This is the initial request.")
         else:
             enable_profiling = False
         self._first_request_served = True
