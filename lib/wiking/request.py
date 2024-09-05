@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2006-2016 OUI Technology Ltd.
-# Copyright (C) 2019-2022 Tomáš Cerha <t.cerha@gmail.com>
+# Copyright (C) 2019-2024 Tomáš Cerha <t.cerha@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -447,7 +447,7 @@ class Request(ServerInterface):
             secure connections.
           samesite -- treating third party sites (see
             https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite)
-            False corresponds to 'Lax' in HTTP spec and it is the dafault
+            False corresponds to 'Lax' in HTTP spec and it is the default
             value.  The cookie is not sent on normal cross-site subrequests
             (third party site image or frame load), but is sent when a user is
             navigating to the origin site (i.e., when following a link).
