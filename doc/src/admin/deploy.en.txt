@@ -51,15 +51,15 @@ Now we need to create a virtual environment:
 
 -----
 python3 -m venv venv
+pip install --upgrade pip
 source venv/bin/activate
-pip3 install -r src/wiking/requirements.txt
+pip install -r src/wiking/requirements.txt
 deactivate
 -----
 
 When your app is Wiking CMS, or an app based on it, just use the file
-reqirements-cms.txt in the =pip3 install= step above.  If you want another app
-or extension, you may need to install its requirements too.  Just watch for its
-requirements files.
+reqirements-cms.txt in the =pip install= step above.  If you want another app
+or extension, you may need to repeat this step with its requirements file too.
 
 
 == Creating a configuration file ==
@@ -165,7 +165,7 @@ route-run = addvar:wiking.config_file=config.py
 
 To activate this app, link this file to =\/etc/uwsgi/apps-enabled=:
 -----
-ln -s /etc/uwsgi/apps-available/yoursite.ini /etc/uwsgi/apps-available/
+ln -s /etc/uwsgi/apps-available/yoursite.ini /etc/uwsgi/apps-enabled/
 -----
 
 The default Debian/Ubuntu uWSGI setup will create the socket in
