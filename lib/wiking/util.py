@@ -1465,6 +1465,7 @@ def test_password_storage():
                 # Check that salting works (two hashes of the same password not equal)
                 stored2 = storage.stored_password(passwd)
                 assert stored != stored2
+                assert storage.check_password(passwd, stored2)
             assert storage.check_password(passwd, stored)
             assert not storage.check_password('xx', stored)
             if prefix:
