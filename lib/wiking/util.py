@@ -1357,6 +1357,18 @@ class Pbkdf2PasswordStorage(PasswordStorage):
         self._hash_length = hash_length
         self._iterations = iterations
 
+    @property
+    def salt_length(self):
+        return self._salt_length
+
+    @property
+    def hash_length(self):
+        return self._hash_length
+
+    @property
+    def iterations(self):
+        return self._iterations
+
     def stored_password(self, password):
         salt = generate_random_string(self._salt_length)
         iterations = self._iterations
@@ -1437,11 +1449,16 @@ def test_password_storage():
     ustorage = wiking.UniversalPasswordStorage()
     for prefix, storage in (('plain', wiking.PlainTextPasswordStorage()),
                             ('md5u', wiking.UnsaltedMd5PasswordStorage()),
+                            ('pbkdf2', wiking.Pbkdf2PasswordStorage(5, 9)),
+                            ('pbkdf2', wiking.Pbkdf2PasswordStorage(10, 16)),
                             ('pbkdf2', wiking.Pbkdf2PasswordStorage()),
                             ('pbkdf2/md5', wiking.Pbkdf2Md5PasswordStorage()),
                             (None, wiking.UniversalPasswordStorage())):
         for passwd in ('bla', 'xxxxx', 'wer2d544aSWdD5', '34čůdl1G5'):
             stored = storage.stored_password(passwd)
+            if prefix == 'pbkdf2':
+                assert len(stored) == (len(str(storage.iterations)) + storage.salt_length +
+                                       storage.hash_length + 2)
             if prefix not in ('plain',):
                 assert stored != passwd
             if prefix not in ('plain', 'md5u'):
