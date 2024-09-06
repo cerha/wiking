@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2006-2017 OUI Technology Ltd.
-# Copyright (C) 2019-2022 Tomáš Cerha <t.cerha@gmail.com>
+# Copyright (C) 2019-2024 Tomáš Cerha <t.cerha@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -1374,7 +1374,7 @@ class Pbkdf2PasswordStorage(PasswordStorage):
 
     def _pbkdf2_hash(self, password, salt, iterations, output_characters):
         import pbkdf2
-        output_bytes = pbkdf2.PBKDF2(password, salt, iterations).read(output_characters // 2 + 1)
+        output_bytes = pbkdf2.PBKDF2(password, salt, iterations).read(output_characters // 2 + 2)
         return ''.join(['%x' % byte for byte in output_bytes])[:output_characters]
 
 
