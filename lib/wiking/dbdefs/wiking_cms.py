@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2006-2016 OUI Technology Ltd.
-# Copyright (C) 2019-2022 Tomáš Cerha <t.cerha@gmail.com>
+# Copyright (C) 2019-2024 Tomáš Cerha <t.cerha@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@ import sqlalchemy
 
 import pytis.data.gensqlalchemy as sql
 import pytis.data
-from pytis.data.dbdefs import and_, coalesce, func, ival, null, select, stype, sval
+from pytis.data.dbdefs import and_, or_, coalesce, func, ival, null, select, stype, sval
 from .wiking_db import Base_CachingTable, CommonAccesRights
 
 current_timestamp_0 = sqlalchemy.sql.functions.Function('current_timestamp', ival(0))
@@ -35,6 +35,19 @@ upgrade_files = glob.glob(os.path.join(upgrade_directory, 'upgrade.*.sql'))
 assert upgrade_files, 'No upgrade files found in upgrade directory: %s' % upgrade_directory
 last_upgrade_script = max(upgrade_files)
 version = int(last_upgrade_script[len(upgrade_directory) + len(os.sep) + 8:-4])
+
+
+class SQLView(sql.SQLView):
+
+    @classmethod
+    def _reference(cls, kind):
+        """Refer NEW and OLD columns in rules."""
+        class Reference:
+            def __init__(self, kind):
+                self._kind = kind
+            def __getattr__(self, name):
+                return sqlalchemy.literal_column(self._kind + '.' + name)
+        return Reference(kind)
 
 
 class CmsDatabaseVersion(sql.SQLTable):
@@ -253,7 +266,7 @@ class RoleMembers(CommonAccesRights, Base_CachingTable):
     init_values = (('cms-admin', 1),)
 
 
-class CmsVRoleMembers(CommonAccesRights, sql.SQLView):
+class CmsVRoleMembers(CommonAccesRights, SQLView):
     name = 'cms_v_role_members'
 
     @classmethod
@@ -374,7 +387,7 @@ class CmsSessionsTrigger(sql.SQLTrigger):
     each_row = True
     body = CmsUpdateSesionHistory
 
-class CmsVSessionHistory(CommonAccesRights, sql.SQLView):
+class CmsVSessionHistory(CommonAccesRights, SQLView):
     name = 'cms_v_session_history'
     @classmethod
     def query(cls):
@@ -475,7 +488,7 @@ class CmsPageTreePublished(sql.SQLFunction):
     stability = 'stable'
 
 
-class CmsVPages(CommonAccesRights, sql.SQLView):
+class CmsVPages(CommonAccesRights, SQLView):
     name = 'cms_v_pages'
 
     @classmethod
@@ -512,85 +525,100 @@ class CmsVPages(CommonAccesRights, sql.SQLView):
                       )
 
     def on_insert(self):
-        return ("""(
-     insert into cms_pages (site, kind, identifier, parent, modname,
-                            owner, read_role_id, write_role_id,
-                            menu_visibility, foldable, ord)
-     values (new.site, new.kind, new.identifier, new.parent, new.modname,
-             new.owner, new.read_role_id, new.write_role_id,
-             new.menu_visibility, new.foldable, new.ord);
-     update cms_pages set tree_order = cms_page_tree_order(page_id)
-            where site = new.site and
-                  (identifier = new.identifier or tree_order != cms_page_tree_order(page_id));
-     insert into cms_page_texts (page_id, lang, published, parents_published,
-                                 creator, created, published_since,
-                                 title, description, content,
-                                 _title, _description, _content)
-     select page_id, new.lang, new.published, cms_page_tree_published(new.parent, new.lang),
-            new.creator, new.created, new.published_since,
-            new.title, new.description, new.content,
-            new._title, new._description, new._content
-     from cms_pages where identifier=new.identifier and site=new.site and kind=new.kind
-     returning page_id ||'.'|| lang, null::text, null::text,
-       lang, page_id, null::text, null::int, null::text, null::text, null::boolean,
-       null::int, null::text, null::int, null::name, null::name,
-       published, parents_published, published_since, creator,
-       created, title, title, description, content, _title,
-       _description, _content, null::varchar(64), null::text, null::varchar(64), null::text;
-        )""",)
+        pages = sql.t.CmsPages
+        texts = sql.t.CmsPageTexts
+        new = self._reference('new')
+        return (
+            pages.insert().inline().values(**{c.name: getattr(new, c.name) for c in pages.c
+                                              if c.name not in ('page_id', 'tree_order')}),
+            pages.update().values(tree_order=func.cms_page_tree_order(pages.c.page_id)).where(
+                and_(pages.c.site == new.site,
+                     or_(pages.c.identifier == new.identifier,
+                         pages.c.tree_order != func.cms_page_tree_order(pages.c.page_id)))
+            ),
+            texts.insert().from_select(
+                texts.c,
+                select(*[
+                    pages.c.page_id if c.name == 'page_id' else getattr(new, c.name)
+                    for c in texts.c
+                ]).select_from(
+                    pages
+                ).where(and_(
+                    pages.c.identifier == new.identifier,
+                    pages.c.site == new.site,
+                    pages.c.kind == new.kind,
+                ))
+            ).returning(*[
+                (stype(texts.c.page_id) + sval('.') + texts.c.lang).label(c.name)
+                if c.name == 'page_key' else
+                getattr(texts.c, c.name) if hasattr(texts.c, c.name) else
+                sqlalchemy.cast(null, c.type).label(c.name)
+                for c in self.c
+            ]),
+
+        )
 
     def on_update(self):
-        return ("""(
-    -- Set the ord=0 first to work around the problem with recursion order in
-    -- cms_pages_update_order trigger (see the comment there for more info).
-    update cms_pages set ord=0 where cms_pages.page_id = old.page_id and new.ord < old.ord;
-    update cms_pages set
-        site = new.site,
-        kind = new.kind,
-        identifier = new.identifier,
-        parent = new.parent,
-        modname = new.modname,
-        owner = new.owner,
-        read_role_id = new.read_role_id,
-        write_role_id = new.write_role_id,
-        menu_visibility = new.menu_visibility,
-        foldable = new.foldable,
-        ord = new.ord
-    where cms_pages.page_id = old.page_id;
-    update cms_pages set tree_order = cms_page_tree_order(page_id)
-           where site = new.site and tree_order != cms_page_tree_order(page_id);
-    update cms_page_texts set
-        published = new.published,
-        title = new.title,
-        description = new.description,
-        creator = new.creator,
-        created = new.created,
-        published_since = new.published_since,
-        content = new.content,
-        _title = new._title,
-        _description = new._description,
-        _content = new._content
-    where page_id = old.page_id and lang = new.lang;
-    insert into cms_page_texts (page_id, lang, published, parents_published,
-                                creator, created, published_since,
-                                title, description, content,
-                                _title, _description, _content)
-           select old.page_id, new.lang, new.published,
-                  cms_page_tree_published(new.parent, new.lang),
-                  new.creator, new.created, new.published_since,
-                  new.title, new.description, new.content,
-                  new._title, new._description, new._content
-           where new.lang not in (select lang from cms_page_texts where page_id=old.page_id)
-                 and coalesce(new.title, new.description, new.content,
-                              new._title, new._description, new._content) is not null;
-    update cms_page_texts t set parents_published = x.parents_published
-        from (select page_id, lang, cms_page_tree_published(parent, lang) as parents_published
-              from cms_pages join cms_page_texts using (page_id)) as x
-        where t.page_id=x.page_id and t.lang=x.lang
-              and t.parents_published != x.parents_published;
-    )""",)
+        pages = sql.t.CmsPages
+        texts = sql.t.CmsPageTexts
+        new = self._reference('new')
+        old = self._reference('old')
+        published = select(
+            pages.c.page_id, texts.c.lang,
+            func.cms_page_tree_published(pages.c.parent, texts.c.lang).label('parents_published')
+        ).select_from(pages.join(texts, texts.c.page_id == pages.c.page_id)).alias('published')
+        return (
+            # Set the ord=0 first to work around the problem with recursion order in
+            # cms_pages_update_order trigger (see the comment there for more info).
+            pages.update().values(
+                ord=ival(0)
+            ).where(and_(
+                pages.c.page_id == old.page_id,
+                new.ord < old.ord,
+            )),
+            # Update the page structure and global data.
+            pages.update().values(**{
+                c.name: getattr(new, c.name) for c in pages.c
+            }).where(
+                pages.c.page_id == old.page_id
+            ),
+            # Update tree order for the whole site in case page structure has changed.
+            pages.update().values(
+                tree_order=func.cms_page_tree_order(pages.c.page_id)
+            ).where(and_(
+                pages.c.site == new.site,
+                pages.c.tree_order != func.cms_page_tree_order(pages.c.page_id)
+            )),
+            # Update texts if they already exist for given page in given lang.
+            texts.update().values(**{
+                c.name: getattr(new, c.name)
+                for c in texts.c if c.name not in ('page_id', 'lang', 'parents_published')
+            }).where(and_(
+                texts.c.page_id == old.page_id,
+                texts.c.lang == new.lang
+            )),
+            # Insert texts if they didn't exist for given page in given lang.
+            texts.insert().from_select(
+                texts.c,
+                select(*[
+                    getattr(old if c.name == 'page_id' else new, c.name) for c in texts.c
+                ]).where(and_(
+                    new.lang.not_in(select(texts.c.lang).select_from(texts).where(texts.c.page_id==old.page_id)),
+                    func.coalesce(new.title, new.description, new.content,
+                                  new._title, new._description, new._content) != null,
+                ))
+            ),
+            texts.update().values(
+                parents_published=published.c.parents_published
+            ).where(and_(
+                texts.c.page_id == published.c.page_id,
+                texts.c.lang == published.c.lang,
+                texts.c.parents_published != published.c.parents_published,
+            )),
+        )
+
     delete_order = (CmsPages,)
-    depends_on = (CmsPageTreePublished,)
+    depends_on = (CmsPages, CmsPageTexts, CmsPageTreePublished,)
 
 
 class CmsPageHistory(CommonAccesRights, sql.SQLTable):
@@ -611,7 +639,7 @@ class CmsPageHistory(CommonAccesRights, sql.SQLTable):
                           ondelete='cascade'),)
 
 
-class CmsVPageHistory(CommonAccesRights, sql.SQLView):
+class CmsVPageHistory(CommonAccesRights, SQLView):
     name = 'cms_v_page_history'
 
     @classmethod
@@ -693,7 +721,7 @@ class CmsPageAttachmentTexts(CommonAccesRights, sql.SQLTable):
     unique = (('attachment_id', 'lang',),)
 
 
-class CmsVPageAttachments(CommonAccesRights, sql.SQLView):
+class CmsVPageAttachments(CommonAccesRights, SQLView):
     name = 'cms_v_page_attachments'
 
     @classmethod
@@ -834,7 +862,7 @@ class CmsPublications(CommonAccesRights, sql.SQLTable):
     )
 
 
-class CmsVPublications(CommonAccesRights, sql.SQLView):
+class CmsVPublications(CommonAccesRights, SQLView):
     name = 'cms_v_publications'
 
     @classmethod
@@ -945,7 +973,7 @@ class CmsPublicationExports(CommonAccesRights, sql.SQLTable):
     unique = (('page_id', 'lang', 'format', 'version',),)
 
 
-class CmsVPublicationExports(CommonAccesRights, sql.SQLView):
+class CmsVPublicationExports(CommonAccesRights, SQLView):
     name = 'cms_v_publication_exports'
 
     @classmethod
@@ -975,7 +1003,7 @@ class CmsNews(CommonAccesRights, Base_CachingTable):
               )
 
 
-class CmsVNews(CommonAccesRights, sql.SQLView):
+class CmsVNews(CommonAccesRights, SQLView):
     name = 'cms_v_news'
 
     @classmethod
@@ -1029,7 +1057,7 @@ class CmsPlanner(CommonAccesRights, Base_CachingTable):
               )
 
 
-class CmsVPlanner(CommonAccesRights, sql.SQLView):
+class CmsVPlanner(CommonAccesRights, SQLView):
     name = 'cms_v_planner'
 
     @classmethod
@@ -1097,7 +1125,7 @@ class CmsNewsletterSubscription(CommonAccesRights, Base_CachingTable):
               ('newsletter_id', 'email',),)
 
 
-class CmsVNewsletterSubscription(CommonAccesRights, sql.SQLView):
+class CmsVNewsletterSubscription(CommonAccesRights, SQLView):
     name = 'cms_v_newsletter_subscription'
 
     @classmethod
@@ -1194,7 +1222,7 @@ class CmsPanels(CommonAccesRights, Base_CachingTable):
     unique = (('identifier', 'site', 'lang',),)
 
 
-class CmsVPanels(CommonAccesRights, sql.SQLView):
+class CmsVPanels(CommonAccesRights, SQLView):
     name = 'cms_v_panels'
 
     @classmethod
@@ -1318,7 +1346,7 @@ class CmsSystemTexts(CommonAccesRights, Base_CachingTable):
                           onupdate='CASCADE', ondelete='CASCADE'),)
 
 
-class CmsVSystemTextLabels(CommonAccesRights, sql.SQLView):
+class CmsVSystemTextLabels(CommonAccesRights, SQLView):
     name = 'cms_v_system_text_labels'
 
     @classmethod
@@ -1329,7 +1357,7 @@ class CmsVSystemTextLabels(CommonAccesRights, sql.SQLView):
                       from_obj=[labels, languages])
 
 
-class CmsVSystemTexts(CommonAccesRights, sql.SQLView):
+class CmsVSystemTexts(CommonAccesRights, SQLView):
     name = 'cms_v_system_texts'
 
     @classmethod
@@ -1386,7 +1414,7 @@ class CmsEmails(CommonAccesRights, sql.SQLTable):
     unique = (('label', 'lang',),)
 
 
-class CmsVEmails(CommonAccesRights, sql.SQLView):
+class CmsVEmails(CommonAccesRights, SQLView):
     name = 'cms_v_emails'
 
     @classmethod
