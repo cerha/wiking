@@ -490,6 +490,7 @@ class CmsPageTreePublished(sql.SQLFunction):
 
 class CmsVPages(CommonAccesRights, SQLView):
     name = 'cms_v_pages'
+    primary_column = 'page_key'
 
     @classmethod
     def query(cls):
@@ -819,8 +820,8 @@ class CmsPublications(CommonAccesRights, sql.SQLTable):
     """bibliographic data of the original (paper) books"""
     name = 'cms_publications'
     fields = (
-        sql.Column('page_id', pytis.data.Integer(not_null=True), unique=True,
-                   references=sql.a(sql.r.CmsPages, ondelete='CASCADE')),
+        sql.PrimaryColumn('page_id', pytis.data.Integer(not_null=True),
+                          references=sql.a(sql.r.CmsPages, ondelete='CASCADE')),
         sql.Column('author', pytis.data.String(not_null=True),
                    doc="creator(s) of the original work; full name(s), one name per line"),
         sql.Column('contributor', pytis.data.String(),
@@ -864,70 +865,59 @@ class CmsPublications(CommonAccesRights, sql.SQLTable):
 
 class CmsVPublications(CommonAccesRights, SQLView):
     name = 'cms_v_publications'
+    primary_column = 'page_key'
 
     @classmethod
     def query(cls):
         pages = sql.t.CmsVPages.alias('pages')
         publications = sql.t.CmsPublications.alias('publications')
         attachments = sql.t.CmsPageAttachments.alias('attachments')
-        return select(([pages.c.page_id] +
-                       cls._exclude(pages, publications.c.page_id) +
-                       cls._exclude(publications, publications.c.page_id) +
-                       [attachments.c.filename.label('cover_image_filename')]),
-                      from_obj=[pages.
-                                join(publications, publications.c.page_id == pages.c.page_id).
-                                outerjoin(attachments,
-                                          attachments.c.attachment_id == publications.c.cover_image)
-                                ])
+        return select(
+            cls._exclude(pages, pages.c.page_id) +
+            cls._exclude(publications) +
+            [attachments.c.filename.label('cover_image_filename')]
+        ).select_from(
+            pages
+            .join(publications, publications.c.page_id == pages.c.page_id)
+            .outerjoin(attachments, attachments.c.attachment_id == publications.c.cover_image)
+        )
 
     def on_insert(self):
-        def returning_column(c):
-            if c.name == 'page_id':
-                return c.name
-            elif c.name == 'page_key':
-                return ("page_id ||'.'|| (select min(lang) from cms_page_texts "
-                        "where page_id=cms_publications.page_id)")
-            elif c.name.endswith('_role_id'):
-                return 'null::name'
-            else:
-                casted = str(sqlalchemy.cast(null, c.type))
-                # force serial to int and varchar to text
-                return casted.replace('SERIAL', 'INTEGER').replace('VARCHAR)', 'TEXT)')
+        pages = sql.t.CmsPages
         vpages = sql.t.CmsVPages
-        page_columns = [c.name for c in vpages.c if c.name not in ('page_id', 'page_key')]
         publications = sql.t.CmsPublications
-        return [sqlalchemy.text(q) for q in (
-            "insert into cms_v_pages (%s) values (%s)" % (
-                ', '.join(page_columns),
-                ', '.join(['new.' + cname for cname in page_columns]),
-            ),
-            "insert into cms_publications (%s) "
-            "select %s from cms_pages "
-            "where identifier=new.identifier and site=new.site and kind=new.kind "
-            "returning %s" % (
-                ', '.join(c.name for c in publications.c),
-                ', '.join([c.name if c.name in vpages.c else 'new.' + c.name
-                           for c in publications.c]),
-                ', '.join([returning_column(c) for c in self.c]),
-            )
-        )]
-
-    def on_update(self):
-        def update_columns(table):
-            return ', '.join('%s = new.%s' % (c.name, c.name) for c in table.c
-                             if c.name not in ('page_id', 'page_key'))
-        return [sqlalchemy.text(q) for q in (
-            "update cms_v_pages set %s where page_id = old.page_id and lang = old.lang" % (
-                update_columns(sql.t.CmsVPages),),
-            "update cms_publications set %s where page_id = old.page_id;" % (
-                update_columns(sql.t.CmsPublications),)
-        )]
-
-    def on_delete(self):
-        return ("delete from cms_pages where page_id = old.page_id",)
+        texts = sql.t.CmsPageTexts.alias('texts')
+        new = self._reference('new')
+        return (
+            vpages.insert().values(**{
+                c.name: getattr(new, c.name) for c in vpages.c if c.name not in ('page_id', 'page_key')
+            }),
+            publications.insert().from_select(
+                publications.c,
+                select([
+                    c if hasattr(vpages.c, c.name) else getattr(new, c.name) for c in publications.c
+                ]).select_from(
+                    pages
+                ).where(and_(
+                    pages.c.identifier == new.identifier,
+                    pages.c.site == new.site,
+                    pages.c.kind == new.kind,
+                )),
+            ).returning(*[
+                (stype(publications.c.page_id) + sval('.') +
+                 select(func.min(texts.c.lang)).select_from(texts).where(
+                     texts.c.page_id == publications.c.page_id
+                 ).as_scalar()).label(c.name)
+                if c.name == 'page_key' else
+                getattr(publications.c, c.name) if hasattr(publications.c, c.name) else
+                sqlalchemy.cast(null, c.type).label(c.name)
+                for c in self.c
+            ]),
+        )
 
     update_order = (CmsVPages, CmsPublications)
-    delete_order = (CmsPages,)
+    no_update_columns = ('page_id', 'page_key', 'lang')
+    delete_order = (CmsVPages,)
 
 
 class CmsPublicationLanguages(CommonAccesRights, sql.SQLTable):
