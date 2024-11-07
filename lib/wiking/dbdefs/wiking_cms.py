@@ -1592,7 +1592,7 @@ class CmsCryptoCookPasswords(sql.SQLPlFunction):
 
 
 class PytisCryptoUnlockCurrentUserPasswords(sql.SQLFunction):
-    """This one is to avoid error messages in Apache logs (the function is required by Pytis)."""
+    """Dummy function to avoid error messages in logs (called by Pytis)."""
     name = 'pytis_crypto_unlock_current_user_passwords'
     arguments = (sql.Column('password_', pytis.data.String()),)
     result_type = pytis.data.String()
@@ -1601,3 +1601,18 @@ class PytisCryptoUnlockCurrentUserPasswords(sql.SQLFunction):
 
     def body(self):
         return "select ''::text where false;"
+
+
+class PytisCryptoDbKey(sql.SQLFunction):
+    """Dummy function needed by Pytis initialization when dbpass is set."""
+    name = 'pytis_crypto_db_key'
+    arguments = (
+        sql.Column('key_name_', pytis.data.String()),
+    )
+    result_type = pytis.data.String()
+    multirow = False
+    stability = 'STABLE'
+    security_definer = True
+
+    def body(self):
+        return "select null::text;"
