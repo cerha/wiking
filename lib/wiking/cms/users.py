@@ -1035,6 +1035,11 @@ class Users(UserManagementModule, CachingPytisModule):
                     # account without the information from the mail), so we rather
                     # rollback the insertion by raising an error.
                     raise wiking.DBException(error)
+            else:
+                # Translators: '%(email)s' is replaced by a real e-mail addres.
+                req.message(_("The activation code has been sent to %(email)s.",
+                              email=record['email'].value()))
+
         return result
 
     def _redirect_after_insert(self, req, record):
@@ -1047,9 +1052,6 @@ class Users(UserManagementModule, CachingPytisModule):
         elif req.user() is not None:
             # The registration was done by admin.
             req.message(_("The account has been created."), req.SUCCESS)
-            # Translators: '%(email)s' is replaced by a real e-mail addres.
-            req.message(_("The activation code has been sent to %(email)s.",
-                          email=record['email'].value()))
             raise wiking.Redirect(self._current_record_uri(req, record))
         else:
             # Handled in action_insert() below.
