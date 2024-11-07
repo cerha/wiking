@@ -1026,10 +1026,15 @@ class Users(UserManagementModule, CachingPytisModule):
         if row['state'].value() == Users.AccountState.NEW:
             err = self._send_registration_email(req, record)
             if err:
-                # This is a critical error (the user is not able to use the
-                # account without the information from the mail), so we rather
-                # rollback the insertion by raising an error.
-                raise wiking.DBException(_("Failed sending e-mail:") + ' ' + err)
+                message = _("Failed sending e-mail:") + ' ' + err
+                if req.check_roles(Roles.USER_ADMIN):
+                    # If the new user is inserted by admin, we can continue.
+                    req.message(message, req.ERROR)
+                else:
+                    # This is a critical error (the user is not able to use the
+                    # account without the information from the mail), so we rather
+                    # rollback the insertion by raising an error.
+                    raise wiking.DBException(error)
         return result
 
     def _redirect_after_insert(self, req, record):
