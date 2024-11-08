@@ -1,26 +1,25 @@
-This TODO are just notes which didn't make it to the Issue Tracking System at
-http://its.freebsoft.org yet.  Please use the ITS if you have your own
-suggestions.
+This TODO list contains various developer's reminders and unfinished thoughts
+which didn't make it to the Issue Tracking System at https://its.freebsoft.org
+yet.  Please use the ITS if you have your own suggestions.
 
 Core:
- * Handle Computer exceptions
- * Calling 'constraints' of a virtual field
- * The default check() method in base Specification class
- * Disable table layout per layout spec, not per module
+ * Merge configuration and wsgi app definition into a single Python file.
+ * Handle Computer exceptions.
+ * Calling 'constraints' of a virtual field.
+ * The default check() method in base Specification class.
+ * Disable table layout per layout spec, not per module.
 
 CMS:
- * Force HTTPS also for registration form (see note at PytisModule.action_insert())
- * Create an admin account during site installation
- * Allow extension module management to page roles
- * Delete stray attachment files after deletion triggered in database (cascade)
- * Serve robots.txt
- * Locking
- * Save page changes history
- * Recode HTML attachments (or set the encoding headers properly)
- * Cache exported HTML for structured text content in DB?
+ * Site initialization script with admin account creation.
+ * Allow extension module management to page roles.
+ * Delete stray attachment files after deletion triggered in database (cascade).
+ * Serve robots.txt.
+ * Locking.
+ * Handle encoding of HTML attachments (to set encoding headers properly).
+ * Cache exported HTML for structured text content in DB.
  * Show original page in attachment move form.
+ * Display "Privacy policy" link conditionally.
 
 Cleaning:
- * Remove deprecated method Roles.check().
- * Move RssModule and Panelizable from CMSModule to EmbeddableCMSModule
- * Get rid of config.wiking_dir.
+ * Move RssModule and Panelizable from CMSModule to EmbeddableCMSModule.
+ * Remove force_https.
