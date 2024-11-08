@@ -21,7 +21,7 @@ import glob
 import sqlalchemy
 
 import pytis.data.gensqlalchemy as sql
-import pytis.data
+import pytis.data as pd
 from pytis.data.dbdefs import and_, or_, coalesce, func, ival, null, select, stype, sval
 from .wiking_db import Base_CachingTable, CommonAccesRights
 
@@ -52,15 +52,15 @@ class SQLView(sql.SQLView):
 
 class CmsDatabaseVersion(sql.SQLTable):
     name = 'cms_database_version'
-    fields = (sql.Column('version', pytis.data.Integer()),)
+    fields = (sql.Column('version', pd.Integer()),)
     init_columns = ('version',)
     init_values = ((version,),)
 
 
 class CmsLanguages(CommonAccesRights, Base_CachingTable):
     name = 'cms_languages'
-    fields = (sql.PrimaryColumn('lang_id', pytis.data.Serial()),
-              sql.Column('lang', pytis.data.String(minlen=2, maxlen=2, not_null=True),
+    fields = (sql.PrimaryColumn('lang_id', pd.Serial()),
+              sql.Column('lang', pd.String(minlen=2, maxlen=2, not_null=True),
                          unique=True),
               )
     init_columns = ('lang',)
@@ -69,23 +69,23 @@ class CmsLanguages(CommonAccesRights, Base_CachingTable):
 
 class CmsConfig(CommonAccesRights, Base_CachingTable):
     name = 'cms_config'
-    fields = (sql.PrimaryColumn('site', pytis.data.String()),
-              sql.Column('site_title', pytis.data.String()),
-              sql.Column('site_subtitle', pytis.data.String()),
-              sql.Column('allow_registration', pytis.data.Boolean(not_null=True), default=True),
-              sql.Column('login_is_email', pytis.data.Boolean(not_null=True), default=False),
-              sql.Column('registration_expiration', pytis.data.Integer()),
-              sql.Column('force_https_login', pytis.data.Boolean(not_null=True), default=False),
-              sql.Column('https_port', pytis.data.Integer()),
-              sql.Column('smtp_server', pytis.data.String()),
-              sql.Column('webmaster_address', pytis.data.String()),
-              sql.Column('bug_report_address', pytis.data.String()),
-              sql.Column('default_sender_address', pytis.data.String()),
-              sql.Column('upload_limit', pytis.data.Integer()),
-              sql.Column('session_expiration', pytis.data.Integer()),
-              sql.Column('default_language', pytis.data.String(minlen=2, maxlen=2),
+    fields = (sql.PrimaryColumn('site', pd.String()),
+              sql.Column('site_title', pd.String()),
+              sql.Column('site_subtitle', pd.String()),
+              sql.Column('allow_registration', pd.Boolean(not_null=True), default=True),
+              sql.Column('login_is_email', pd.Boolean(not_null=True), default=False),
+              sql.Column('registration_expiration', pd.Integer()),
+              sql.Column('force_https_login', pd.Boolean(not_null=True), default=False),
+              sql.Column('https_port', pd.Integer()),
+              sql.Column('smtp_server', pd.String()),
+              sql.Column('webmaster_address', pd.String()),
+              sql.Column('bug_report_address', pd.String()),
+              sql.Column('default_sender_address', pd.String()),
+              sql.Column('upload_limit', pd.Integer()),
+              sql.Column('session_expiration', pd.Integer()),
+              sql.Column('default_language', pd.String(minlen=2, maxlen=2),
                          references=sql.a(sql.r.CmsLanguages.lang, onupdate='CASCADE')),
-              sql.Column('theme_id', pytis.data.Integer(),
+              sql.Column('theme_id', pd.Integer(),
                          references=sql.r.CmsThemes),
               )
     init_columns = ('site',)
@@ -94,8 +94,8 @@ class CmsConfig(CommonAccesRights, Base_CachingTable):
 
 class CmsCountries(CommonAccesRights, sql.SQLTable):
     name = 'cms_countries'
-    fields = (sql.PrimaryColumn('country_id', pytis.data.Serial(not_null=True)),
-              sql.Column('country', pytis.data.String(minlen=2, maxlen=2, not_null=True),
+    fields = (sql.PrimaryColumn('country_id', pd.Serial(not_null=True)),
+              sql.Column('country', pd.String(minlen=2, maxlen=2, not_null=True),
                          unique=True),
               )
     init_columns = ('country',)
@@ -126,10 +126,10 @@ class CmsCountries(CommonAccesRights, sql.SQLTable):
 
 class Roles(CommonAccesRights, Base_CachingTable):
     name = 'roles'
-    fields = (sql.PrimaryColumn('role_id', pytis.data.PgName()),
-              sql.Column('name', pytis.data.String()),
-              sql.Column('system', pytis.data.Boolean(not_null=True), default=False),
-              sql.Column('auto', pytis.data.Boolean(not_null=True), default=False),
+    fields = (sql.PrimaryColumn('role_id', pd.PgName()),
+              sql.Column('name', pd.String()),
+              sql.Column('system', pd.Boolean(not_null=True), default=False),
+              sql.Column('auto', pd.Boolean(not_null=True), default=False),
               )
     init_columns = ('role_id', 'system', 'auto',)
     init_values = (
@@ -150,10 +150,10 @@ class Roles(CommonAccesRights, Base_CachingTable):
 
 class RoleSets(CommonAccesRights, Base_CachingTable):
     name = 'role_sets'
-    fields = (sql.PrimaryColumn('role_set_id', pytis.data.Serial(not_null=True)),
-              sql.Column('role_id', pytis.data.PgName(not_null=True),
+    fields = (sql.PrimaryColumn('role_set_id', pd.Serial(not_null=True)),
+              sql.Column('role_id', pd.PgName(not_null=True),
                          references=sql.a(sql.r.Roles, onupdate='CASCADE', ondelete='CASCADE')),
-              sql.Column('member_role_id', pytis.data.PgName(not_null=True),
+              sql.Column('member_role_id', pd.PgName(not_null=True),
                          references=sql.a(sql.r.Roles, onupdate='CASCADE', ondelete='CASCADE')),
               )
     unique = (('role_id', 'member_role_id',),)
@@ -170,15 +170,15 @@ class RoleSets(CommonAccesRights, Base_CachingTable):
 
 class ExpandedRole(sql.SQLPlFunction):
     name = 'expanded_role'
-    arguments = (sql.Column('role_id_', pytis.data.PgName()),)
-    result_type = pytis.data.PgName()
+    arguments = (sql.Column('role_id_', pd.PgName()),)
+    result_type = pd.PgName()
     multirow = True
     stability = 'stable'
 
 
 class UnrelatedRoles(sql.SQLFunction):
     name = 'unrelated_roles'
-    arguments = (sql.Column('role_id', pytis.data.PgName()),)
+    arguments = (sql.Column('role_id', pd.PgName()),)
     result_type = Roles
     multirow = True
     stability = 'stable'
@@ -186,34 +186,34 @@ class UnrelatedRoles(sql.SQLFunction):
 
 class Users(CommonAccesRights, Base_CachingTable):
     name = 'users'
-    fields = (sql.PrimaryColumn('uid', pytis.data.Serial(not_null=True)),
-              sql.Column('login', pytis.data.String(maxlen=64, not_null=True), unique=True),
-              sql.Column('password', pytis.data.String(not_null=True)),
+    fields = (sql.PrimaryColumn('uid', pd.Serial(not_null=True)),
+              sql.Column('login', pd.String(maxlen=64, not_null=True), unique=True),
+              sql.Column('password', pd.String(not_null=True)),
               sql.Column('firstname',
-                         pytis.data.String(not_null=name_is_not_null.value(globals()))),
+                         pd.String(not_null=name_is_not_null.value(globals()))),
               sql.Column('surname',
-                         pytis.data.String(not_null=name_is_not_null.value(globals()))),
-              sql.Column('nickname', pytis.data.String()),
-              sql.Column('user_', pytis.data.String(not_null=True)),
-              sql.Column('email', pytis.data.String(not_null=True)),
-              sql.Column('phone', pytis.data.String()),
-              sql.Column('address', pytis.data.String()),
-              sql.Column('uri', pytis.data.String()),
-              sql.Column('state', pytis.data.String(not_null=True), default='new'),
-              sql.Column('last_password_change', pytis.data.DateTime(not_null=True)),
-              sql.Column('since', pytis.data.DateTime(not_null=True),
+                         pd.String(not_null=name_is_not_null.value(globals()))),
+              sql.Column('nickname', pd.String()),
+              sql.Column('user_', pd.String(not_null=True)),
+              sql.Column('email', pd.String(not_null=True)),
+              sql.Column('phone', pd.String()),
+              sql.Column('address', pd.String()),
+              sql.Column('uri', pd.String()),
+              sql.Column('state', pd.String(not_null=True), default='new'),
+              sql.Column('last_password_change', pd.DateTime(not_null=True)),
+              sql.Column('since', pd.DateTime(not_null=True),
                          default=func.timezone(sval('GMT'), current_timestamp_0)),
-              sql.Column('lang', pytis.data.String(minlen=2, maxlen=2),
+              sql.Column('lang', pd.String(minlen=2, maxlen=2),
                          references=sql.a(sql.r.CmsLanguages.lang, onupdate='CASCADE',
                                           ondelete='SET NULL')),
-              sql.Column('regexpire', pytis.data.DateTime()),
-              sql.Column('regcode', pytis.data.String()),
-              sql.Column('passexpire', pytis.data.DateTime()),
-              sql.Column('passcode', pytis.data.String()),
-              sql.Column('certauth', pytis.data.Boolean(not_null=True), default=False),
-              sql.Column('note', pytis.data.String()),
-              sql.Column('confirm', pytis.data.Boolean(not_null=True), default=False),
-              sql.Column('gender', pytis.data.String(minlen=1, maxlen=1),
+              sql.Column('regexpire', pd.DateTime()),
+              sql.Column('regcode', pd.String()),
+              sql.Column('passexpire', pd.DateTime()),
+              sql.Column('passcode', pd.String()),
+              sql.Column('certauth', pd.Boolean(not_null=True), default=False),
+              sql.Column('note', pd.String()),
+              sql.Column('confirm', pd.Boolean(not_null=True), default=False),
+              sql.Column('gender', pd.String(minlen=1, maxlen=1),
                          doc="[m]ale, [f]emale, NULL=unknown"),
               )
     access_rights = (('ALL', 'www-data',),)
@@ -226,39 +226,39 @@ class Users(CommonAccesRights, Base_CachingTable):
 
 class CmsFInsertOrUpdateUser(sql.SQLPlFunction):
     name = 'cms_f_insert_or_update_user'
-    arguments = (sql.Column('uid_', pytis.data.Integer()),
-                 sql.Column('login_', pytis.data.String(maxlen=64)),
-                 sql.Column('password_', pytis.data.String()),
-                 sql.Column('firstname_', pytis.data.String()),
-                 sql.Column('surname_', pytis.data.String()),
-                 sql.Column('nickname_', pytis.data.String()),
-                 sql.Column('user__', pytis.data.String()),
-                 sql.Column('email_', pytis.data.String()),
-                 sql.Column('phone_', pytis.data.String()),
-                 sql.Column('address_', pytis.data.String()),
-                 sql.Column('uri_', pytis.data.String()),
-                 sql.Column('state_', pytis.data.String()),
-                 sql.Column('last_password_change_', pytis.data.DateTime()),
-                 sql.Column('since_', pytis.data.DateTime()),
-                 sql.Column('lang_', pytis.data.String(minlen=2, maxlen=2)),
-                 sql.Column('regexpire_', pytis.data.DateTime()),
-                 sql.Column('regcode_', pytis.data.String()),
-                 sql.Column('passexpire_', pytis.data.DateTime()),
-                 sql.Column('passcode_', pytis.data.String()),
-                 sql.Column('certauth_', pytis.data.Boolean()),
-                 sql.Column('note_', pytis.data.String()),
-                 sql.Column('confirm_', pytis.data.Boolean()),
-                 sql.Column('gender_', pytis.data.String(minlen=1, maxlen=1)),
+    arguments = (sql.Column('uid_', pd.Integer()),
+                 sql.Column('login_', pd.String(maxlen=64)),
+                 sql.Column('password_', pd.String()),
+                 sql.Column('firstname_', pd.String()),
+                 sql.Column('surname_', pd.String()),
+                 sql.Column('nickname_', pd.String()),
+                 sql.Column('user__', pd.String()),
+                 sql.Column('email_', pd.String()),
+                 sql.Column('phone_', pd.String()),
+                 sql.Column('address_', pd.String()),
+                 sql.Column('uri_', pd.String()),
+                 sql.Column('state_', pd.String()),
+                 sql.Column('last_password_change_', pd.DateTime()),
+                 sql.Column('since_', pd.DateTime()),
+                 sql.Column('lang_', pd.String(minlen=2, maxlen=2)),
+                 sql.Column('regexpire_', pd.DateTime()),
+                 sql.Column('regcode_', pd.String()),
+                 sql.Column('passexpire_', pd.DateTime()),
+                 sql.Column('passcode_', pd.String()),
+                 sql.Column('certauth_', pd.Boolean()),
+                 sql.Column('note_', pd.String()),
+                 sql.Column('confirm_', pd.Boolean()),
+                 sql.Column('gender_', pd.String(minlen=1, maxlen=1)),
                  )
     result_type = None
 
 
 class RoleMembers(CommonAccesRights, Base_CachingTable):
     name = 'role_members'
-    fields = (sql.PrimaryColumn('role_member_id', pytis.data.Serial(not_null=True)),
-              sql.Column('role_id', pytis.data.PgName(not_null=True),
+    fields = (sql.PrimaryColumn('role_member_id', pd.Serial(not_null=True)),
+              sql.Column('role_id', pd.PgName(not_null=True),
                          references=sql.a(sql.r.Roles, onupdate='CASCADE', ondelete='CASCADE')),
-              sql.Column('uid', pytis.data.Integer(not_null=True),
+              sql.Column('uid', pd.Integer(not_null=True),
                          references=sql.a(sql.r.Users, onupdate='CASCADE', ondelete='CASCADE')),
               )
     unique = (('role_id', 'uid',),)
@@ -288,9 +288,9 @@ class CmsVRoleMembers(CommonAccesRights, SQLView):
 
 class AUserRoles(CommonAccesRights, sql.SQLTable):
     name = 'a_user_roles'
-    fields = (sql.Column('uid', pytis.data.Integer(), index=True,
+    fields = (sql.Column('uid', pd.Integer(), index=True,
                          references=sql.a(sql.r.Users, onupdate='CASCADE', ondelete='CASCADE')),
-              sql.Column('role_id', pytis.data.PgName(not_null=True),
+              sql.Column('role_id', pd.PgName(not_null=True),
                          references=sql.a(sql.r.Roles, onupdate='CASCADE', ondelete='CASCADE')),
               )
     access_rights = (('ALL', 'www-data',),)
@@ -322,8 +322,8 @@ class CmsFAllUserRoles(sql.SQLFunction):
     """Return all user's roles and their included roles.
     Both explicitly assigned and implicit roles (such as 'anyone') are considered."""
     name = 'cms_f_all_user_roles'
-    arguments = (sql.Column('uid_', pytis.data.Integer()),)
-    result_type = pytis.data.PgName()
+    arguments = (sql.Column('uid_', pd.Integer()),)
+    result_type = pd.PgName()
     multirow = True
     stability = 'stable'
     depends_on = (AUserRoles,)
@@ -331,16 +331,16 @@ class CmsFAllUserRoles(sql.SQLFunction):
 
 class CmsFRoleMember(sql.SQLPlFunction):
     name = 'cms_f_role_member'
-    arguments = (sql.Column('uid_', pytis.data.Integer()),
-                 sql.Column('role_id_', pytis.data.PgName()),)
-    result_type = pytis.data.Boolean()
+    arguments = (sql.Column('uid_', pd.Integer()),
+                 sql.Column('role_id_', pd.PgName()),)
+    result_type = pd.Boolean()
     stability = 'stable'
 
 
 class RoleSetsCycleCheck(sql.SQLFunction):
     name = 'role_sets_cycle_check'
     arguments = ()
-    result_type = pytis.data.Boolean()
+    result_type = pd.Boolean()
     depends_on = (RoleSets,)
 
 
@@ -355,24 +355,24 @@ class RoleSetsTriggerAfter(sql.SQLPlFunction, sql.SQLTrigger):
 class CmsSessions(CommonAccesRights, sql.SQLTable):
     name = 'cms_sessions'
     fields = (
-        sql.PrimaryColumn('session_id', pytis.data.Serial(not_null=True)),
-        sql.Column('session_key', pytis.data.String(not_null=True)),
-        sql.Column('auth_type', pytis.data.String(not_null=True)),
-        sql.Column('uid', pytis.data.Integer(not_null=True),
+        sql.PrimaryColumn('session_id', pd.Serial(not_null=True)),
+        sql.Column('session_key', pd.String(not_null=True)),
+        sql.Column('auth_type', pd.String(not_null=True)),
+        sql.Column('uid', pd.Integer(not_null=True),
                    references=sql.a(sql.r.Users, ondelete='CASCADE')),
-        sql.Column('last_access', pytis.data.DateTime()),
+        sql.Column('last_access', pd.DateTime()),
     )
     unique = (('uid', 'session_key',),)
 
 class CmsSessionHistory(CommonAccesRights, sql.SQLTable):
     name = 'cms_session_history'
     fields = (
-        sql.PrimaryColumn('session_id', pytis.data.Integer(not_null=True)),
-        sql.Column('auth_type', pytis.data.String(not_null=True)),
-        sql.Column('uid', pytis.data.Integer(not_null=True),
+        sql.PrimaryColumn('session_id', pd.Integer(not_null=True)),
+        sql.Column('auth_type', pd.String(not_null=True)),
+        sql.Column('uid', pd.Integer(not_null=True),
                    references=sql.a(sql.r.Users, ondelete='CASCADE')),
-        sql.Column('start_time', pytis.data.DateTime(not_null=True)),
-        sql.Column('end_time', pytis.data.DateTime()),
+        sql.Column('start_time', pd.DateTime(not_null=True)),
+        sql.Column('end_time', pd.DateTime()),
     )
 
 class CmsUpdateSesionHistory(sql.SQLPlFunction, sql.SQLTrigger):
@@ -404,34 +404,34 @@ class CmsVSessionHistory(CommonAccesRights, SQLView):
 class CmsLoginFailures(CommonAccesRights, sql.SQLTable):
     name = 'cms_login_failures'
     fields = (
-        sql.PrimaryColumn('failure_id', pytis.data.Serial(not_null=True)),
-        sql.Column('timestamp', pytis.data.DateTime(not_null=True)),
-        sql.Column('login', pytis.data.String(not_null=True)),
-        sql.Column('auth_type', pytis.data.String(not_null=True)),
-        sql.Column('ip_address', pytis.data.String(not_null=True)),
-        sql.Column('user_agent', pytis.data.String()),
+        sql.PrimaryColumn('failure_id', pd.Serial(not_null=True)),
+        sql.Column('timestamp', pd.DateTime(not_null=True)),
+        sql.Column('login', pd.String(not_null=True)),
+        sql.Column('auth_type', pd.String(not_null=True)),
+        sql.Column('ip_address', pd.String(not_null=True)),
+        sql.Column('user_agent', pd.String()),
     )
 
 
 
 class CmsPages(CommonAccesRights, Base_CachingTable):
     name = 'cms_pages'
-    fields = (sql.PrimaryColumn('page_id', pytis.data.Serial(not_null=True)),
-              sql.Column('site', pytis.data.String(not_null=True),
+    fields = (sql.PrimaryColumn('page_id', pd.Serial(not_null=True)),
+              sql.Column('site', pd.String(not_null=True),
                          references=sql.a(sql.r.CmsConfig.site,
                                           onupdate='CASCADE', ondelete='CASCADE')),
-              sql.Column('kind', pytis.data.String(not_null=True)),
-              sql.Column('identifier', pytis.data.String(not_null=True)),
-              sql.Column('parent', pytis.data.Integer(), references=sql.r.CmsPages),
-              sql.Column('modname', pytis.data.String()),
-              sql.Column('menu_visibility', pytis.data.String(not_null=True)),
-              sql.Column('foldable', pytis.data.Boolean(not_null=False)),
-              sql.Column('ord', pytis.data.Integer(not_null=True)),
-              sql.Column('tree_order', pytis.data.String()),
-              sql.Column('owner', pytis.data.Integer(), references=sql.r.Users),
-              sql.Column('read_role_id', pytis.data.PgName(not_null=True), default='anyone',
+              sql.Column('kind', pd.String(not_null=True)),
+              sql.Column('identifier', pd.String(not_null=True)),
+              sql.Column('parent', pd.Integer(), references=sql.r.CmsPages),
+              sql.Column('modname', pd.String()),
+              sql.Column('menu_visibility', pd.String(not_null=True)),
+              sql.Column('foldable', pd.Boolean(not_null=False)),
+              sql.Column('ord', pd.Integer(not_null=True)),
+              sql.Column('tree_order', pd.String()),
+              sql.Column('owner', pd.Integer(), references=sql.r.Users),
+              sql.Column('read_role_id', pd.PgName(not_null=True), default='anyone',
                          references=sql.a(sql.r.Roles, onupdate='CASCADE')),
-              sql.Column('write_role_id', pytis.data.PgName(not_null=True),
+              sql.Column('write_role_id', pd.PgName(not_null=True),
                          default='cms-content-admin',
                          references=sql.a(sql.r.Roles, onupdate='CASCADE', ondelete='SET DEFAULT')),
               )
@@ -452,38 +452,38 @@ class CmsPagesUpdateOrder(sql.SQLPlFunction, sql.SQLTrigger):
 
 class CmsPageTexts(CommonAccesRights, Base_CachingTable):
     name = 'cms_page_texts'
-    fields = (sql.Column('page_id', pytis.data.Integer(not_null=True),
+    fields = (sql.Column('page_id', pd.Integer(not_null=True),
                          references=sql.a(sql.r.CmsPages, ondelete='CASCADE')),
-              sql.Column('lang', pytis.data.String(minlen=2, maxlen=2, not_null=True),
+              sql.Column('lang', pd.String(minlen=2, maxlen=2, not_null=True),
                          references=sql.a(sql.r.CmsLanguages.lang, onupdate='CASCADE')),
-              sql.Column('published', pytis.data.Boolean(not_null=True), default=True),
-              sql.Column('parents_published', pytis.data.Boolean(not_null=True)),
-              sql.Column('creator', pytis.data.Integer(not_null=True), references=sql.r.Users),
-              sql.Column('created', pytis.data.DateTime(not_null=True), default=func.now()),
-              sql.Column('published_since', pytis.data.DateTime()),
-              sql.Column('title', pytis.data.String(not_null=True)),
-              sql.Column('description', pytis.data.String()),
-              sql.Column('content', pytis.data.String()),
-              sql.Column('_title', pytis.data.String()),
-              sql.Column('_description', pytis.data.String()),
-              sql.Column('_content', pytis.data.String()),
+              sql.Column('published', pd.Boolean(not_null=True), default=True),
+              sql.Column('parents_published', pd.Boolean(not_null=True)),
+              sql.Column('creator', pd.Integer(not_null=True), references=sql.r.Users),
+              sql.Column('created', pd.DateTime(not_null=True), default=func.now()),
+              sql.Column('published_since', pd.DateTime()),
+              sql.Column('title', pd.String(not_null=True)),
+              sql.Column('description', pd.String()),
+              sql.Column('content', pd.String()),
+              sql.Column('_title', pd.String()),
+              sql.Column('_description', pd.String()),
+              sql.Column('_content', pd.String()),
               )
     unique = (('page_id', 'lang',),)
 
 
 class CmsPageTreeOrder(sql.SQLFunction):
     name = 'cms_page_tree_order'
-    arguments = (sql.Column('page_id', pytis.data.Integer()),)
-    result_type = pytis.data.String()
+    arguments = (sql.Column('page_id', pd.Integer()),)
+    result_type = pd.String()
     depends_on = (CmsPages,)
     stability = 'stable'
 
 
 class CmsPageTreePublished(sql.SQLFunction):
     name = 'cms_page_tree_published'
-    arguments = (sql.Column('page_id', pytis.data.Integer()),
-                 sql.Column('lang', pytis.data.String()),)
-    result_type = pytis.data.Boolean()
+    arguments = (sql.Column('page_id', pd.Integer()),
+                 sql.Column('lang', pd.String()),)
+    result_type = pd.Boolean()
     depends_on = (CmsPages, CmsPageTexts)
     stability = 'stable'
 
@@ -624,16 +624,16 @@ class CmsVPages(CommonAccesRights, SQLView):
 
 class CmsPageHistory(CommonAccesRights, sql.SQLTable):
     name = 'cms_page_history'
-    fields = (sql.PrimaryColumn('history_id', pytis.data.Serial(not_null=True)),
-              sql.Column('page_id', pytis.data.Integer(not_null=True)),
-              sql.Column('lang', pytis.data.String(minlen=2, maxlen=2, not_null=True)),
-              sql.Column('uid', pytis.data.Integer(not_null=True), references=sql.r.Users),
-              sql.Column('timestamp', pytis.data.DateTime(not_null=True)),
-              sql.Column('content', pytis.data.String()),
-              sql.Column('comment', pytis.data.String()),
-              sql.Column('inserted_lines', pytis.data.Integer(not_null=True)),
-              sql.Column('changed_lines', pytis.data.Integer(not_null=True)),
-              sql.Column('deleted_lines', pytis.data.Integer(not_null=True)),
+    fields = (sql.PrimaryColumn('history_id', pd.Serial(not_null=True)),
+              sql.Column('page_id', pd.Integer(not_null=True)),
+              sql.Column('lang', pd.String(minlen=2, maxlen=2, not_null=True)),
+              sql.Column('uid', pd.Integer(not_null=True), references=sql.r.Users),
+              sql.Column('timestamp', pd.DateTime(not_null=True)),
+              sql.Column('content', pd.String()),
+              sql.Column('comment', pd.String()),
+              sql.Column('inserted_lines', pd.Integer(not_null=True)),
+              sql.Column('changed_lines', pd.Integer(not_null=True)),
+              sql.Column('deleted_lines', pd.Integer(not_null=True)),
               )
     foreign_keys = (sql.a(('page_id', 'lang',),
                           (sql.r.CmsPageTexts.page_id, sql.r.CmsPageTexts.lang,),
@@ -663,12 +663,12 @@ class CmsPageExcerpts(sql.SQLTable):
     Currently serving for printing parts of e-books in Braille.
     """
     name = 'cms_page_excerpts'
-    fields = (sql.PrimaryColumn('id', pytis.data.Serial(not_null=True)),
-              sql.Column('page_id', pytis.data.Integer(),
+    fields = (sql.PrimaryColumn('id', pd.Serial(not_null=True)),
+              sql.Column('page_id', pd.Integer(),
                          references=sql.a(sql.r.CmsPages, onupdate='CASCADE', ondelete='CASCADE')),
-              sql.Column('lang', pytis.data.String(not_null=True)),
-              sql.Column('title', pytis.data.String(not_null=True)),
-              sql.Column('content', pytis.data.String(not_null=True)),
+              sql.Column('lang', pd.String(not_null=True)),
+              sql.Column('title', pd.String(not_null=True)),
+              sql.Column('content', pd.String(not_null=True)),
               )
     access_rights = (('ALL', 'www-data',),)
 
@@ -677,47 +677,47 @@ class CmsPageExcerpts(sql.SQLTable):
 
 class CmsPageAttachments(CommonAccesRights, sql.SQLTable):
     name = 'cms_page_attachments'
-    fields = (sql.PrimaryColumn('attachment_id', pytis.data.Serial(not_null=True)),
-              sql.Column('page_id', pytis.data.Integer(not_null=True),
+    fields = (sql.PrimaryColumn('attachment_id', pd.Serial(not_null=True)),
+              sql.Column('page_id', pd.Integer(not_null=True),
                          references=sql.a(sql.r.CmsPages, ondelete='CASCADE')),
-              sql.Column('filename', pytis.data.String(not_null=True)),
-              sql.Column('mime_type', pytis.data.String(not_null=True)),
-              sql.Column('bytesize', pytis.data.Integer(not_null=True)),
-              sql.Column('created', pytis.data.DateTime(not_null=True)),
-              sql.Column('last_modified', pytis.data.DateTime(not_null=True)),
-              sql.Column('image', pytis.data.Binary(),
+              sql.Column('filename', pd.String(not_null=True)),
+              sql.Column('mime_type', pd.String(not_null=True)),
+              sql.Column('bytesize', pd.Integer(not_null=True)),
+              sql.Column('created', pd.DateTime(not_null=True)),
+              sql.Column('last_modified', pd.DateTime(not_null=True)),
+              sql.Column('image', pd.Binary(),
                          doc="Resized image"),
-              sql.Column('image_width', pytis.data.Integer(),
+              sql.Column('image_width', pd.Integer(),
                          doc="Resized image pixel width."),
-              sql.Column('image_height', pytis.data.Integer(),
+              sql.Column('image_height', pd.Integer(),
                          doc="Resized image pixel height."),
-              sql.Column('thumbnail', pytis.data.Binary()),
-              sql.Column('thumbnail_size', pytis.data.String(),
+              sql.Column('thumbnail', pd.Binary()),
+              sql.Column('thumbnail_size', pd.String(),
                          doc="Desired thumbnail size - small/medium/large"),
-              sql.Column('thumbnail_width', pytis.data.Integer(),
+              sql.Column('thumbnail_width', pd.Integer(),
                          doc="Thumbnail pixel width."),
-              sql.Column('thumbnail_height', pytis.data.Integer(),
+              sql.Column('thumbnail_height', pd.Integer(),
                          doc="Thumbnail pixel height."),
-              sql.Column('in_gallery', pytis.data.Boolean(not_null=True), default=False),
-              sql.Column('listed', pytis.data.Boolean(not_null=True), default=False),
-              sql.Column('author', pytis.data.String()),
-              sql.Column('location', pytis.data.String()),
-              sql.Column('width', pytis.data.Integer()),
-              sql.Column('height', pytis.data.Integer()),
+              sql.Column('in_gallery', pd.Boolean(not_null=True), default=False),
+              sql.Column('listed', pd.Boolean(not_null=True), default=False),
+              sql.Column('author', pd.String()),
+              sql.Column('location', pd.String()),
+              sql.Column('width', pd.Integer()),
+              sql.Column('height', pd.Integer()),
               )
     unique = (('filename', 'page_id',),)
 
 
 class CmsPageAttachmentTexts(CommonAccesRights, sql.SQLTable):
     name = 'cms_page_attachment_texts'
-    fields = (sql.Column('attachment_id', pytis.data.Integer(not_null=True),
+    fields = (sql.Column('attachment_id', pd.Integer(not_null=True),
                          references=sql.a(sql.r.CmsPageAttachments, ondelete='CASCADE',
                                           initially='DEFERRED')),
-              sql.Column('lang', pytis.data.String(minlen=2, maxlen=2, not_null=True),
+              sql.Column('lang', pd.String(minlen=2, maxlen=2, not_null=True),
                          references=sql.a(sql.r.CmsLanguages.lang,
                                           onupdate='CASCADE', ondelete='CASCADE')),
-              sql.Column('title', pytis.data.String()),
-              sql.Column('description', pytis.data.String()),
+              sql.Column('title', pd.String()),
+              sql.Column('description', pd.String()),
               )
     unique = (('attachment_id', 'lang',),)
 
@@ -820,44 +820,44 @@ class CmsPublications(CommonAccesRights, sql.SQLTable):
     """bibliographic data of the original (paper) books"""
     name = 'cms_publications'
     fields = (
-        sql.PrimaryColumn('page_id', pytis.data.Integer(not_null=True),
+        sql.PrimaryColumn('page_id', pd.Integer(not_null=True),
                           references=sql.a(sql.r.CmsPages, ondelete='CASCADE')),
-        sql.Column('author', pytis.data.String(not_null=True),
+        sql.Column('author', pd.String(not_null=True),
                    doc="creator(s) of the original work; full name(s), one name per line"),
-        sql.Column('contributor', pytis.data.String(),
+        sql.Column('contributor', pd.String(),
                    doc=("creator(s) of the original work with less significant "
                         "role than author(s); full name(s), one name per line")),
-        sql.Column('illustrator', pytis.data.String(),
+        sql.Column('illustrator', pd.String(),
                    doc=("author(s) of illustrations in the original work; "
                         "full name(s), one name per line")),
-        sql.Column('publisher', pytis.data.String(),
+        sql.Column('publisher', pd.String(),
                    doc="full name of the publisher"),
-        sql.Column('published_year', pytis.data.Integer(),
+        sql.Column('published_year', pd.Integer(),
                    doc="year published"),
-        sql.Column('edition', pytis.data.Integer(),
+        sql.Column('edition', pd.Integer(),
                    doc="first, second, ..."),
-        sql.Column('original_isbn', pytis.data.String(),
+        sql.Column('original_isbn', pd.String(),
                    doc=("ISBN identifier of the original work; if not null, the "
                         "publication is a work derived from it and fields author, "
                         "contributor, illustrator, publisher, published_year and "
                         "edition relate to the original work")),
-        sql.Column('isbn', pytis.data.String(),
+        sql.Column('isbn', pd.String(),
                    'ISBN of this publication if it has one assigned'),
-        sql.Column('uuid', pytis.data.String(),
+        sql.Column('uuid', pd.String(),
                    'Universally Unique Identifier if ISBN is not assigned'),
-        sql.Column('adapted_by', pytis.data.String(),
+        sql.Column('adapted_by', pd.String(),
                    doc=("people or organization(s), who created this digital "
                         "publication if these are not already mentioned in the "
                         "above fields; full name(s), one name per line")),
-        sql.Column('adapted_for', pytis.data.String(),
+        sql.Column('adapted_for', pd.String(),
                    doc=("organization or project for which this adaptation of the original "
                         "work into a digital publication has been done.")),
-        sql.Column('cover_image', pytis.data.Integer(),
+        sql.Column('cover_image', pd.Integer(),
                    references=sql.a(sql.r.CmsPageAttachments, ondelete='SET NULL')),
-        sql.Column('copyright_notice', pytis.data.String()),
-        sql.Column('notes', pytis.data.String(),
+        sql.Column('copyright_notice', pd.String()),
+        sql.Column('notes', pd.String(),
                    doc="any other additional info, such as translator(s), reviewer(s) etc."),
-        sql.Column('download_role_id', pytis.data.PgName(),
+        sql.Column('download_role_id', pd.PgName(),
                    references=sql.a(sql.r.Roles, onupdate='CASCADE'),
                    doc="role allowed to download the offline version of the publication."),
     )
@@ -923,9 +923,9 @@ class CmsVPublications(CommonAccesRights, SQLView):
 class CmsPublicationLanguages(CommonAccesRights, sql.SQLTable):
     """list of content languages available for given publication"""
     name = 'cms_publication_languages'
-    fields = (sql.Column('page_id', pytis.data.Integer(not_null=True),
+    fields = (sql.Column('page_id', pd.Integer(not_null=True),
                          references=sql.a(sql.r.CmsPublications.page_id, ondelete='CASCADE')),
-              sql.Column('lang', pytis.data.String(not_null=True),
+              sql.Column('lang', pd.String(not_null=True),
                          doc="language code"),
               )
     unique = (('page_id', 'lang',),)
@@ -934,10 +934,10 @@ class CmsPublicationLanguages(CommonAccesRights, sql.SQLTable):
 class CmsPublicationIndexes(CommonAccesRights, sql.SQLTable):
     """list of indexes available for given publication"""
     name = 'cms_publication_indexes'
-    fields = (sql.PrimaryColumn('index_id', pytis.data.Serial(not_null=True)),
-              sql.Column('page_id', pytis.data.Integer(not_null=True),
+    fields = (sql.PrimaryColumn('index_id', pd.Serial(not_null=True)),
+              sql.Column('page_id', pd.Integer(not_null=True),
                          references=sql.a(sql.r.CmsPublications.page_id, ondelete='CASCADE')),
-              sql.Column('title', pytis.data.String(not_null=True)),
+              sql.Column('title', pd.String(not_null=True)),
               )
     unique = (('page_id', 'title',),)
 
@@ -946,19 +946,19 @@ class CmsPublicationExports(CommonAccesRights, sql.SQLTable):
     """Exported publication versions."""
     name = 'cms_publication_exports'
     fields = (
-        sql.PrimaryColumn('export_id', pytis.data.Serial()),
-        sql.Column('page_id', pytis.data.Integer(not_null=True),
+        sql.PrimaryColumn('export_id', pd.Serial()),
+        sql.Column('page_id', pd.Integer(not_null=True),
                    references=sql.a(sql.r.CmsPublications.page_id, ondelete='CASCADE')),
-        sql.Column('lang', pytis.data.String(minlen=2, maxlen=2, not_null=True),
+        sql.Column('lang', pd.String(minlen=2, maxlen=2, not_null=True),
                    references=sql.a(sql.r.CmsLanguages.lang,
                                     onupdate='CASCADE', ondelete='CASCADE')),
-        sql.Column('format', pytis.data.String(not_null=True)),
-        sql.Column('version', pytis.data.String(not_null=True)),
-        sql.Column('timestamp', pytis.data.DateTime(not_null=True)),
-        sql.Column('public', pytis.data.Boolean(not_null=True), default=True),
-        sql.Column('bytesize', pytis.data.Integer(not_null=True)),
-        sql.Column('notes', pytis.data.String()),
-        sql.Column('log', pytis.data.String()),
+        sql.Column('format', pd.String(not_null=True)),
+        sql.Column('version', pd.String(not_null=True)),
+        sql.Column('timestamp', pd.DateTime(not_null=True)),
+        sql.Column('public', pd.Boolean(not_null=True), default=True),
+        sql.Column('bytesize', pd.Integer(not_null=True)),
+        sql.Column('notes', pd.String()),
+        sql.Column('log', pd.String()),
     )
     unique = (('page_id', 'lang', 'format', 'version',),)
 
@@ -979,17 +979,17 @@ class CmsVPublicationExports(CommonAccesRights, SQLView):
 
 class CmsNews(CommonAccesRights, Base_CachingTable):
     name = 'cms_news'
-    fields = (sql.PrimaryColumn('news_id', pytis.data.Serial(not_null=True)),
-              sql.Column('page_id', pytis.data.Integer(not_null=True),
+    fields = (sql.PrimaryColumn('news_id', pd.Serial(not_null=True)),
+              sql.Column('page_id', pd.Integer(not_null=True),
                          references=sql.a(sql.r.CmsPages, ondelete='CASCADE')),
-              sql.Column('lang', pytis.data.String(minlen=2, maxlen=2, not_null=True),
+              sql.Column('lang', pd.String(minlen=2, maxlen=2, not_null=True),
                          references=sql.a(sql.r.CmsLanguages.lang, onupdate='CASCADE')),
-              sql.Column('author', pytis.data.Integer(not_null=True),
+              sql.Column('author', pd.Integer(not_null=True),
                          references=sql.r.Users),
-              sql.Column('timestamp', pytis.data.DateTime(not_null=True), default=func.now()),
-              sql.Column('title', pytis.data.String(not_null=True)),
-              sql.Column('content', pytis.data.String(not_null=True)),
-              sql.Column('days_displayed', pytis.data.Integer(not_null=True)),
+              sql.Column('timestamp', pd.DateTime(not_null=True), default=func.now()),
+              sql.Column('title', pd.String(not_null=True)),
+              sql.Column('content', pd.String(not_null=True)),
+              sql.Column('days_displayed', pd.Integer(not_null=True)),
               )
 
 
@@ -1017,9 +1017,9 @@ class CmsRecentTimestamp(sql.SQLFunction):
     this directly).
     """
     name = 'cms_recent_timestamp'
-    arguments = (sql.Column('ts', pytis.data.DateTime()),
-                 sql.Column('max_days', pytis.data.Integer()),)
-    result_type = pytis.data.Boolean()
+    arguments = (sql.Column('ts', pd.DateTime()),
+                 sql.Column('max_days', pd.Integer()),)
+    result_type = pd.Boolean()
     stability = 'stable'
 
     def body(self):
@@ -1032,18 +1032,18 @@ class CmsRecentTimestamp(sql.SQLFunction):
 
 class CmsPlanner(CommonAccesRights, Base_CachingTable):
     name = 'cms_planner'
-    fields = (sql.PrimaryColumn('planner_id', pytis.data.Serial(not_null=True)),
-              sql.Column('page_id', pytis.data.Integer(not_null=True),
+    fields = (sql.PrimaryColumn('planner_id', pd.Serial(not_null=True)),
+              sql.Column('page_id', pd.Integer(not_null=True),
                          references=sql.a(sql.r.CmsPages, ondelete='CASCADE')),
-              sql.Column('lang', pytis.data.String(minlen=2, maxlen=2, not_null=True),
+              sql.Column('lang', pd.String(minlen=2, maxlen=2, not_null=True),
                          references=sql.a(sql.r.CmsLanguages.lang, onupdate='CASCADE')),
-              sql.Column('author', pytis.data.Integer(not_null=True),
+              sql.Column('author', pd.Integer(not_null=True),
                          references=sql.r.Users),
-              sql.Column('timestamp', pytis.data.DateTime(not_null=True), default=func.now()),
-              sql.Column('start_date', pytis.data.Date(not_null=True)),
-              sql.Column('end_date', pytis.data.Date()),
-              sql.Column('title', pytis.data.String(not_null=True)),
-              sql.Column('content', pytis.data.String(not_null=True)),
+              sql.Column('timestamp', pd.DateTime(not_null=True), default=func.now()),
+              sql.Column('start_date', pd.Date(not_null=True)),
+              sql.Column('end_date', pd.Date()),
+              sql.Column('title', pd.String(not_null=True)),
+              sql.Column('content', pd.String(not_null=True)),
               )
 
 
@@ -1068,46 +1068,46 @@ class CmsVPlanner(CommonAccesRights, SQLView):
 class CmsNewsletters(CommonAccesRights, Base_CachingTable):
     name = 'cms_newsletters'
     fields = (
-        sql.PrimaryColumn('newsletter_id', pytis.data.Serial(not_null=True)),
-        sql.Column('page_id', pytis.data.Integer(not_null=True),
+        sql.PrimaryColumn('newsletter_id', pd.Serial(not_null=True)),
+        sql.Column('page_id', pd.Integer(not_null=True),
                    references=sql.a(sql.r.CmsPages, ondelete='CASCADE')),
-        sql.Column('lang', pytis.data.String(minlen=2, maxlen=2, not_null=True),
+        sql.Column('lang', pd.String(minlen=2, maxlen=2, not_null=True),
                    references=sql.a(sql.r.CmsLanguages.lang, onupdate='CASCADE')),
-        sql.Column('title', pytis.data.String(not_null=True)),
-        sql.Column('image', pytis.data.Binary(not_null=True)),
-        sql.Column('image_width', pytis.data.Integer(not_null=True)),
-        sql.Column('image_height', pytis.data.Integer(not_null=True)),
-        sql.Column('description', pytis.data.String(not_null=True)),
-        sql.Column('sender', pytis.data.String(not_null=True)),
-        sql.Column('address', pytis.data.String(not_null=True)),
-        sql.Column('read_role_id', pytis.data.PgName(not_null=True), default='anyone',
+        sql.Column('title', pd.String(not_null=True)),
+        sql.Column('image', pd.Binary(not_null=True)),
+        sql.Column('image_width', pd.Integer(not_null=True)),
+        sql.Column('image_height', pd.Integer(not_null=True)),
+        sql.Column('description', pd.String(not_null=True)),
+        sql.Column('sender', pd.String(not_null=True)),
+        sql.Column('address', pd.String(not_null=True)),
+        sql.Column('read_role_id', pd.PgName(not_null=True), default='anyone',
                    references=sql.a(sql.r.Roles, onupdate='CASCADE')),
-        sql.Column('write_role_id', pytis.data.PgName(not_null=True), default='cms-content-admin',
+        sql.Column('write_role_id', pd.PgName(not_null=True), default='cms-content-admin',
                    references=sql.a(sql.r.Roles, onupdate='CASCADE', ondelete='SET DEFAULT')),
-        sql.Column('bg_color', pytis.data.String(not_null=True)),
-        sql.Column('text_color', pytis.data.String(not_null=True)),
-        sql.Column('link_color', pytis.data.String(not_null=True)),
-        sql.Column('heading_color', pytis.data.String(not_null=True)),
-        sql.Column('top_bg_color', pytis.data.String(not_null=True)),
-        sql.Column('top_text_color', pytis.data.String(not_null=True)),
-        sql.Column('top_link_color', pytis.data.String(not_null=True)),
-        sql.Column('footer_bg_color', pytis.data.String(not_null=True)),
-        sql.Column('footer_text_color', pytis.data.String(not_null=True)),
-        sql.Column('footer_link_color', pytis.data.String(not_null=True)),
-        sql.Column('signature', pytis.data.String()),
+        sql.Column('bg_color', pd.String(not_null=True)),
+        sql.Column('text_color', pd.String(not_null=True)),
+        sql.Column('link_color', pd.String(not_null=True)),
+        sql.Column('heading_color', pd.String(not_null=True)),
+        sql.Column('top_bg_color', pd.String(not_null=True)),
+        sql.Column('top_text_color', pd.String(not_null=True)),
+        sql.Column('top_link_color', pd.String(not_null=True)),
+        sql.Column('footer_bg_color', pd.String(not_null=True)),
+        sql.Column('footer_text_color', pd.String(not_null=True)),
+        sql.Column('footer_link_color', pd.String(not_null=True)),
+        sql.Column('signature', pd.String()),
     )
 
 
 class CmsNewsletterSubscription(CommonAccesRights, Base_CachingTable):
     name = 'cms_newsletter_subscription'
     fields = (
-        sql.PrimaryColumn('subscription_id', pytis.data.Serial(not_null=True)),
-        sql.Column('newsletter_id', pytis.data.Integer(not_null=True),
+        sql.PrimaryColumn('subscription_id', pd.Serial(not_null=True)),
+        sql.Column('newsletter_id', pd.Integer(not_null=True),
                    references=sql.a(sql.r.CmsNewsletters, ondelete='CASCADE')),
-        sql.Column('uid', pytis.data.Integer(), references=sql.r.Users),
-        sql.Column('email', pytis.data.String()),
-        sql.Column('code', pytis.data.String(), doc='Unsubscription code (email only)'),
-        sql.Column('timestamp', pytis.data.DateTime(not_null=True), default=func.now()),
+        sql.Column('uid', pd.Integer(), references=sql.r.Users),
+        sql.Column('email', pd.String()),
+        sql.Column('code', pd.String(), doc='Unsubscription code (email only)'),
+        sql.Column('timestamp', pd.DateTime(not_null=True), default=func.now()),
     )
     check = ('(uid is not null or email is not null and code is not null) '
              'and (uid is null or email is null and code is null)',)
@@ -1140,46 +1140,46 @@ class CmsVNewsletterSubscription(CommonAccesRights, SQLView):
 class CmsNewsletterEditions(CommonAccesRights, Base_CachingTable):
     name = 'cms_newsletter_editions'
     fields = (
-        sql.PrimaryColumn('edition_id', pytis.data.Serial(not_null=True)),
-        sql.Column('newsletter_id', pytis.data.Integer(not_null=True),
+        sql.PrimaryColumn('edition_id', pd.Serial(not_null=True)),
+        sql.Column('newsletter_id', pd.Integer(not_null=True),
                    references=sql.a(sql.r.CmsNewsletters, ondelete='CASCADE')),
-        sql.Column('creator', pytis.data.Integer(not_null=True), references=sql.r.Users),
-        sql.Column('created', pytis.data.DateTime(not_null=True), default=func.now()),
-        sql.Column('sent', pytis.data.DateTime()),
-        sql.Column('access_code', pytis.data.String()),
+        sql.Column('creator', pd.Integer(not_null=True), references=sql.r.Users),
+        sql.Column('created', pd.DateTime(not_null=True), default=func.now()),
+        sql.Column('sent', pd.DateTime()),
+        sql.Column('access_code', pd.String()),
     )
 
 
 class CmsNewsletterPosts(CommonAccesRights, Base_CachingTable):
     name = 'cms_newsletter_posts'
     fields = (
-        sql.PrimaryColumn('post_id', pytis.data.Serial(not_null=True)),
-        sql.Column('edition_id', pytis.data.Integer(not_null=True),
+        sql.PrimaryColumn('post_id', pd.Serial(not_null=True)),
+        sql.Column('edition_id', pd.Integer(not_null=True),
                    references=sql.a(sql.r.CmsNewsletterEditions, ondelete='CASCADE')),
-        sql.Column('ord', pytis.data.Integer()),
-        sql.Column('title', pytis.data.String(not_null=True)),
-        sql.Column('content', pytis.data.String(not_null=True)),
-        sql.Column('image', pytis.data.Binary()),
-        sql.Column('image_position', pytis.data.String()),
-        sql.Column('image_width', pytis.data.Integer()),
-        sql.Column('image_height', pytis.data.Integer()),
+        sql.Column('ord', pd.Integer()),
+        sql.Column('title', pd.String(not_null=True)),
+        sql.Column('content', pd.String(not_null=True)),
+        sql.Column('image', pd.Binary()),
+        sql.Column('image_position', pd.String()),
+        sql.Column('image_width', pd.Integer()),
+        sql.Column('image_height', pd.Integer()),
     )
 
 
 class CmsDiscussions(CommonAccesRights, sql.SQLTable):
     name = 'cms_discussions'
-    fields = (sql.PrimaryColumn('comment_id', pytis.data.Serial(not_null=True)),
-              sql.Column('page_id', pytis.data.Integer(not_null=True),
+    fields = (sql.PrimaryColumn('comment_id', pd.Serial(not_null=True)),
+              sql.Column('page_id', pd.Integer(not_null=True),
                          references=sql.a(sql.r.CmsPages, ondelete='CASCADE')),
-              sql.Column('lang', pytis.data.String(minlen=2, maxlen=2, not_null=True),
+              sql.Column('lang', pd.String(minlen=2, maxlen=2, not_null=True),
                          references=sql.a(sql.r.CmsLanguages.lang, onupdate='CASCADE')),
-              sql.Column('author', pytis.data.Integer(not_null=True),
+              sql.Column('author', pd.Integer(not_null=True),
                          references=sql.r.Users),
-              sql.Column('timestamp', pytis.data.DateTime(not_null=True), default=func.now()),
-              sql.Column('in_reply_to', pytis.data.Integer(),
+              sql.Column('timestamp', pd.DateTime(not_null=True), default=func.now()),
+              sql.Column('in_reply_to', pd.Integer(),
                          references=sql.a(sql.r.CmsDiscussions, ondelete='SET NULL')),
-              sql.Column('tree_order', pytis.data.String(not_null=True), index=True),
-              sql.Column('text', pytis.data.String(not_null=True)),
+              sql.Column('tree_order', pd.String(not_null=True), index=True),
+              sql.Column('text', pd.String(not_null=True)),
               )
 
 
@@ -1193,21 +1193,21 @@ class CmsDiscussionsTriggerBeforeInsert(sql.SQLPlFunction, sql.SQLTrigger):
 
 class CmsPanels(CommonAccesRights, Base_CachingTable):
     name = 'cms_panels'
-    fields = (sql.PrimaryColumn('panel_id', pytis.data.Serial(not_null=True)),
-              sql.Column('site', pytis.data.String(not_null=True),
+    fields = (sql.PrimaryColumn('panel_id', pd.Serial(not_null=True)),
+              sql.Column('site', pd.String(not_null=True),
                          references=sql.a(sql.r.CmsConfig.site,
                                           onupdate='CASCADE', ondelete='CASCADE')),
-              sql.Column('lang', pytis.data.String(minlen=2, maxlen=2, not_null=True),
+              sql.Column('lang', pd.String(minlen=2, maxlen=2, not_null=True),
                          references=sql.a(sql.r.CmsLanguages.lang, onupdate='CASCADE')),
-              sql.Column('identifier', pytis.data.String()),
-              sql.Column('title', pytis.data.String(not_null=True)),
-              sql.Column('ord', pytis.data.Integer()),
-              sql.Column('page_id', pytis.data.Integer(),
+              sql.Column('identifier', pd.String()),
+              sql.Column('title', pd.String(not_null=True)),
+              sql.Column('ord', pd.Integer()),
+              sql.Column('page_id', pd.Integer(),
                          references=sql.a(sql.r.CmsPages, ondelete='SET NULL')),
-              sql.Column('size', pytis.data.Integer()),
-              sql.Column('content', pytis.data.String()),
-              sql.Column('_content', pytis.data.String()),
-              sql.Column('published', pytis.data.Boolean(not_null=True), default=False),
+              sql.Column('size', pd.Integer()),
+              sql.Column('content', pd.String()),
+              sql.Column('_content', pd.String()),
+              sql.Column('published', pd.Boolean(not_null=True), default=False),
               )
     unique = (('identifier', 'site', 'lang',),)
 
@@ -1231,16 +1231,16 @@ class CmsVPanels(CommonAccesRights, SQLView):
 
 class CmsStylesheets(CommonAccesRights, Base_CachingTable):
     name = 'cms_stylesheets'
-    fields = (sql.PrimaryColumn('stylesheet_id', pytis.data.Serial(not_null=True)),
-              sql.Column('site', pytis.data.String(not_null=True),
+    fields = (sql.PrimaryColumn('stylesheet_id', pd.Serial(not_null=True)),
+              sql.Column('site', pd.String(not_null=True),
                          references=sql.a(sql.r.CmsConfig.site,
                                           onupdate='CASCADE', ondelete='CASCADE')),
-              sql.Column('filename', pytis.data.String(maxlen=32, not_null=True)),
-              sql.Column('active', pytis.data.Boolean(not_null=True), default=True),
-              sql.Column('scope', pytis.data.String()),
-              sql.Column('description', pytis.data.String()),
-              sql.Column('content', pytis.data.String()),
-              sql.Column('ord', pytis.data.Integer()),
+              sql.Column('filename', pd.String(maxlen=32, not_null=True)),
+              sql.Column('active', pd.Boolean(not_null=True), default=True),
+              sql.Column('scope', pd.String()),
+              sql.Column('description', pd.String()),
+              sql.Column('content', pd.String()),
+              sql.Column('ord', pd.Integer()),
               )
     unique = (('filename', 'site',),)
     init_columns = ('filename', 'site', 'ord',)
@@ -1251,37 +1251,37 @@ class CmsStylesheets(CommonAccesRights, Base_CachingTable):
 
 class CmsThemes(CommonAccesRights, Base_CachingTable):
     name = 'cms_themes'
-    fields = (sql.PrimaryColumn('theme_id', pytis.data.Serial(not_null=True),
+    fields = (sql.PrimaryColumn('theme_id', pd.Serial(not_null=True),
                                 references=sql.r.CmsThemes),
-              sql.Column('name', pytis.data.String(not_null=True), unique=True),
-              sql.Column('foreground', pytis.data.String(maxlen=7)),
-              sql.Column('background', pytis.data.String(maxlen=7)),
-              sql.Column('border', pytis.data.String(maxlen=7)),
-              sql.Column('heading_fg', pytis.data.String(maxlen=7)),
-              sql.Column('heading_bg', pytis.data.String(maxlen=7)),
-              sql.Column('heading_line', pytis.data.String(maxlen=7)),
-              sql.Column('frame_fg', pytis.data.String(maxlen=7)),
-              sql.Column('frame_bg', pytis.data.String(maxlen=7)),
-              sql.Column('frame_border', pytis.data.String(maxlen=7)),
-              sql.Column('link', pytis.data.String(maxlen=7)),
-              sql.Column('link_visited', pytis.data.String(maxlen=7)),
-              sql.Column('link_hover', pytis.data.String(maxlen=7)),
-              sql.Column('meta_fg', pytis.data.String(maxlen=7)),
-              sql.Column('meta_bg', pytis.data.String(maxlen=7)),
-              sql.Column('help', pytis.data.String(maxlen=7)),
-              sql.Column('error_fg', pytis.data.String(maxlen=7)),
-              sql.Column('error_bg', pytis.data.String(maxlen=7)),
-              sql.Column('error_border', pytis.data.String(maxlen=7)),
-              sql.Column('message_fg', pytis.data.String(maxlen=7)),
-              sql.Column('message_bg', pytis.data.String(maxlen=7)),
-              sql.Column('message_border', pytis.data.String(maxlen=7)),
-              sql.Column('table_cell', pytis.data.String(maxlen=7)),
-              sql.Column('table_cell2', pytis.data.String(maxlen=7)),
-              sql.Column('top_fg', pytis.data.String(maxlen=7)),
-              sql.Column('top_bg', pytis.data.String(maxlen=7)),
-              sql.Column('top_border', pytis.data.String(maxlen=7)),
-              sql.Column('highlight_bg', pytis.data.String(maxlen=7)),
-              sql.Column('inactive_folder', pytis.data.String(maxlen=7)),
+              sql.Column('name', pd.String(not_null=True), unique=True),
+              sql.Column('foreground', pd.String(maxlen=7)),
+              sql.Column('background', pd.String(maxlen=7)),
+              sql.Column('border', pd.String(maxlen=7)),
+              sql.Column('heading_fg', pd.String(maxlen=7)),
+              sql.Column('heading_bg', pd.String(maxlen=7)),
+              sql.Column('heading_line', pd.String(maxlen=7)),
+              sql.Column('frame_fg', pd.String(maxlen=7)),
+              sql.Column('frame_bg', pd.String(maxlen=7)),
+              sql.Column('frame_border', pd.String(maxlen=7)),
+              sql.Column('link', pd.String(maxlen=7)),
+              sql.Column('link_visited', pd.String(maxlen=7)),
+              sql.Column('link_hover', pd.String(maxlen=7)),
+              sql.Column('meta_fg', pd.String(maxlen=7)),
+              sql.Column('meta_bg', pd.String(maxlen=7)),
+              sql.Column('help', pd.String(maxlen=7)),
+              sql.Column('error_fg', pd.String(maxlen=7)),
+              sql.Column('error_bg', pd.String(maxlen=7)),
+              sql.Column('error_border', pd.String(maxlen=7)),
+              sql.Column('message_fg', pd.String(maxlen=7)),
+              sql.Column('message_bg', pd.String(maxlen=7)),
+              sql.Column('message_border', pd.String(maxlen=7)),
+              sql.Column('table_cell', pd.String(maxlen=7)),
+              sql.Column('table_cell2', pd.String(maxlen=7)),
+              sql.Column('top_fg', pd.String(maxlen=7)),
+              sql.Column('top_bg', pd.String(maxlen=7)),
+              sql.Column('top_border', pd.String(maxlen=7)),
+              sql.Column('highlight_bg', pd.String(maxlen=7)),
+              sql.Column('inactive_folder', pd.String(maxlen=7)),
               )
     init_columns = (
         'name', 'foreground', 'background', 'border', 'heading_fg', 'heading_bg',
@@ -1304,8 +1304,8 @@ class CmsThemes(CommonAccesRights, Base_CachingTable):
 
 class CmsSystemTextLabels(CommonAccesRights, Base_CachingTable):
     name = 'cms_system_text_labels'
-    fields = (sql.Column('label', pytis.data.PgName(not_null=True)),
-              sql.Column('site', pytis.data.String(not_null=True),
+    fields = (sql.Column('label', pd.PgName(not_null=True)),
+              sql.Column('site', pd.String(not_null=True),
                          references=sql.a(sql.r.CmsConfig.site,
                                           onupdate='CASCADE', ondelete='CASCADE')),
               )
@@ -1315,20 +1315,20 @@ class CmsSystemTextLabels(CommonAccesRights, Base_CachingTable):
 class CmsAddTextLabel(sql.SQLPlFunction):
     """"""
     name = 'cms_add_text_label'
-    arguments = (sql.Column('_label', pytis.data.PgName()),
-                 sql.Column('_site', pytis.data.String()),)
+    arguments = (sql.Column('_label', pd.PgName()),
+                 sql.Column('_site', pd.String()),)
     result_type = None
 
 
 class CmsSystemTexts(CommonAccesRights, Base_CachingTable):
     name = 'cms_system_texts'
-    fields = (sql.Column('label', pytis.data.PgName(not_null=True)),
-              sql.Column('site', pytis.data.String(not_null=True)),
-              sql.Column('lang', pytis.data.String(minlen=2, maxlen=2, not_null=True),
+    fields = (sql.Column('label', pd.PgName(not_null=True)),
+              sql.Column('site', pd.String(not_null=True)),
+              sql.Column('lang', pd.String(minlen=2, maxlen=2, not_null=True),
                          references=sql.a(sql.r.CmsLanguages.lang,
                                           onupdate='CASCADE', ondelete='CASCADE')),
-              sql.Column('description', pytis.data.String(), default=''),
-              sql.Column('content', pytis.data.String(), default=''),
+              sql.Column('description', pd.String(), default=''),
+              sql.Column('content', pd.String(), default=''),
               )
     unique = (('label', 'site', 'lang',),)
     foreign_keys = (sql.a(('label', 'site',),
@@ -1380,26 +1380,26 @@ class CmsVSystemTexts(CommonAccesRights, SQLView):
 
 class CmsEmailLabels(CommonAccesRights, sql.SQLTable):
     name = 'cms_email_labels'
-    fields = (sql.PrimaryColumn('label', pytis.data.PgName(not_null=True)),)
+    fields = (sql.PrimaryColumn('label', pd.PgName(not_null=True)),)
 
 
 class CmsAddEmailLabel(sql.SQLPlFunction):
     name = 'cms_add_email_label'
-    arguments = (sql.Column('_label', pytis.data.PgName()),)
+    arguments = (sql.Column('_label', pd.PgName()),)
     result_type = None
 
 
 class CmsEmails(CommonAccesRights, sql.SQLTable):
     name = 'cms_emails'
-    fields = (sql.Column('label', pytis.data.PgName(not_null=True),
+    fields = (sql.Column('label', pd.PgName(not_null=True),
                          references=sql.r.CmsEmailLabels),
-              sql.Column('lang', pytis.data.String(minlen=2, maxlen=2, not_null=True),
+              sql.Column('lang', pd.String(minlen=2, maxlen=2, not_null=True),
                          references=sql.a(sql.r.CmsLanguages.lang,
                                           onupdate='CASCADE', ondelete='CASCADE')),
-              sql.Column('description', pytis.data.String()),
-              sql.Column('subject', pytis.data.String()),
-              sql.Column('cc', pytis.data.String()),
-              sql.Column('content', pytis.data.String(), default=''),
+              sql.Column('description', pd.String()),
+              sql.Column('subject', pd.String()),
+              sql.Column('cc', pd.String()),
+              sql.Column('content', pd.String(), default=''),
               )
     unique = (('label', 'lang',),)
 
@@ -1441,28 +1441,28 @@ class CmsVEmails(CommonAccesRights, SQLView):
 
 class CmsEmailAttachments(CommonAccesRights, sql.SQLTable):
     name = 'cms_email_attachments'
-    fields = (sql.PrimaryColumn('attachment_id', pytis.data.Serial(not_null=True)),
-              sql.Column('label', pytis.data.PgName(not_null=True),
+    fields = (sql.PrimaryColumn('attachment_id', pd.Serial(not_null=True)),
+              sql.Column('label', pd.PgName(not_null=True),
                          references=sql.a(sql.r.CmsEmailLabels, ondelete='CASCADE')),
-              sql.Column('filename', pytis.data.String(not_null=True)),
-              sql.Column('mime_type', pytis.data.String(not_null=True)),
+              sql.Column('filename', pd.String(not_null=True)),
+              sql.Column('mime_type', pd.String(not_null=True)),
               )
 
 
 class CmsEmailSpool(CommonAccesRights, sql.SQLTable):
     name = 'cms_email_spool'
-    fields = (sql.PrimaryColumn('id', pytis.data.Serial(not_null=True)),
-              sql.Column('sender_address', pytis.data.String()),
-              sql.Column('role_id', pytis.data.PgName(),
+    fields = (sql.PrimaryColumn('id', pd.Serial(not_null=True)),
+              sql.Column('sender_address', pd.String()),
+              sql.Column('role_id', pd.PgName(),
                          references=sql.a(sql.r.Roles, onupdate='CASCADE', ondelete='CASCADE'),
                          doc="recipient role, if NULL then all users"),
-              sql.Column('subject', pytis.data.String()),
-              sql.Column('content', pytis.data.String(),
+              sql.Column('subject', pd.String()),
+              sql.Column('content', pd.String(),
                          doc="body of the e-mail"),
-              sql.Column('date', pytis.data.DateTime(), default=func.now(),
+              sql.Column('date', pd.DateTime(), default=func.now(),
                          doc="time of insertion"),
-              sql.Column('pid', pytis.data.Integer()),
-              sql.Column('finished', pytis.data.Boolean(not_null=False), default=False,
+              sql.Column('pid', pd.Integer()),
+              sql.Column('finished', pd.Boolean(not_null=False), default=False,
                          doc="set TRUE after the mail was successfully sent"),
               )
 
@@ -1471,8 +1471,8 @@ class CmsEmailSpool(CommonAccesRights, sql.SQLTable):
 
 class CmsCryptoNames(CommonAccesRights, sql.SQLTable):
     name = 'cms_crypto_names'
-    fields = (sql.PrimaryColumn('name', pytis.data.String(not_null=True)),
-              sql.Column('description', pytis.data.String()),
+    fields = (sql.PrimaryColumn('name', pd.String(not_null=True)),
+              sql.Column('description', pd.String()),
               )
     init_columns = ('name', 'description',)
     access_rights = (('ALL', 'www-data',),)
@@ -1480,13 +1480,13 @@ class CmsCryptoNames(CommonAccesRights, sql.SQLTable):
 
 class CmsCryptoKeys(CommonAccesRights, sql.SQLTable):
     name = 'cms_crypto_keys'
-    fields = (sql.PrimaryColumn('key_id', pytis.data.Serial(not_null=True)),
-              sql.Column('name', pytis.data.String(not_null=True),
+    fields = (sql.PrimaryColumn('key_id', pd.Serial(not_null=True)),
+              sql.Column('name', pd.String(not_null=True),
                          references=sql.a(sql.r.CmsCryptoNames,
                                           onupdate='CASCADE', ondelete='CASCADE')),
-              sql.Column('uid', pytis.data.Integer(not_null=True),
+              sql.Column('uid', pd.Integer(not_null=True),
                          references=sql.a(sql.r.Users, onupdate='CASCADE', ondelete='CASCADE')),
-              sql.Column('key', pytis.data.Binary(not_null=True)),
+              sql.Column('key', pd.Binary(not_null=True)),
               )
     unique = (('name', 'uid',),)
     access_rights = (('ALL', 'www-data',),)
@@ -1494,18 +1494,18 @@ class CmsCryptoKeys(CommonAccesRights, sql.SQLTable):
 
 class CmsCryptoExtractKey(sql.SQLPlFunction):
     name = 'cms_crypto_extract_key'
-    arguments = (sql.Column('encrypted', pytis.data.Binary()),
-                 sql.Column('psw', pytis.data.String()),)
-    result_type = pytis.data.String()
+    arguments = (sql.Column('encrypted', pd.Binary()),
+                 sql.Column('psw', pd.String()),)
+    result_type = pd.String()
     stability = 'immutable'
 
 
 class CmsCryptoStoreKey(sql.SQLPlFunction):
     "This is a PL/pgSQL, and not SQL, function in order to prevent direct dependency on pg_crypto."
     name = 'cms_crypto_store_key'
-    arguments = (sql.Column('key', pytis.data.String()),
-                 sql.Column('psw', pytis.data.String()),)
-    result_type = pytis.data.Binary()
+    arguments = (sql.Column('key', pd.String()),
+                 sql.Column('psw', pd.String()),)
+    result_type = pd.Binary()
     stability = 'immutable'
 
     def body(self):
@@ -1514,47 +1514,47 @@ class CmsCryptoStoreKey(sql.SQLPlFunction):
 
 class CmsCryptoInsertKey(sql.SQLPlFunction):
     name = 'cms_crypto_insert_key'
-    arguments = (sql.Column('name_', pytis.data.String()),
-                 sql.Column('uid_', pytis.data.Integer()),
-                 sql.Column('key_', pytis.data.String()),
-                 sql.Column('psw', pytis.data.String()),)
-    result_type = pytis.data.Boolean()
+    arguments = (sql.Column('name_', pd.String()),
+                 sql.Column('uid_', pd.Integer()),
+                 sql.Column('key_', pd.String()),
+                 sql.Column('psw', pd.String()),)
+    result_type = pd.Boolean()
 
 
 class CmsCryptoChangePassword(sql.SQLPlFunction):
     name = 'cms_crypto_change_password'
-    arguments = (sql.Column('id_', pytis.data.Integer()),
-                 sql.Column('old_psw', pytis.data.String()),
-                 sql.Column('new_psw', pytis.data.String()),)
-    result_type = pytis.data.Boolean()
+    arguments = (sql.Column('id_', pd.Integer()),
+                 sql.Column('old_psw', pd.String()),
+                 sql.Column('new_psw', pd.String()),)
+    result_type = pd.Boolean()
 
 
 class CmsCryptoCopyKey(sql.SQLPlFunction):
     name = 'cms_crypto_copy_key'
-    arguments = (sql.Column('name_', pytis.data.String()),
-                 sql.Column('from_uid', pytis.data.Integer()),
-                 sql.Column('to_uid', pytis.data.Integer()),
-                 sql.Column('from_psw', pytis.data.String()),
-                 sql.Column('to_psw', pytis.data.String()),)
-    result_type = pytis.data.Boolean()
+    arguments = (sql.Column('name_', pd.String()),
+                 sql.Column('from_uid', pd.Integer()),
+                 sql.Column('to_uid', pd.Integer()),
+                 sql.Column('from_psw', pd.String()),
+                 sql.Column('to_psw', pd.String()),)
+    result_type = pd.Boolean()
 
 
 class CmsCryptoDeleteKey(sql.SQLPlFunction):
     name = 'cms_crypto_delete_key'
-    arguments = (sql.Column('name_', pytis.data.String()),
-                 sql.Column('uid_', pytis.data.Integer()),
-                 sql.Column('force', pytis.data.Boolean()),)
-    result_type = pytis.data.Boolean()
+    arguments = (sql.Column('name_', pd.String()),
+                 sql.Column('uid_', pd.Integer()),
+                 sql.Column('force', pd.Boolean()),)
+    result_type = pd.Boolean()
 
 #
 
 
 class CmsCryptoUnlockedPasswords(CommonAccesRights, sql.SQLTable):
     name = 'cms_crypto_unlocked_passwords'
-    fields = (sql.Column('key_id', pytis.data.Integer(not_null=True),
+    fields = (sql.Column('key_id', pd.Integer(not_null=True),
                          references=sql.a(sql.r.CmsCryptoKeys,
                                           onupdate='CASCADE', ondelete='CASCADE')),
-              sql.Column('password', pytis.data.Binary()),
+              sql.Column('password', pd.Binary()),
               )
     access_rights = (('ALL', 'www-data',),)
 
@@ -1569,33 +1569,33 @@ class CmsCryptoUnlockedPasswordsInsertTrigger(sql.SQLPlFunction, sql.SQLTrigger)
 
 class CmsCryptoUnlockPasswords(sql.SQLFunction):
     name = 'cms_crypto_unlock_passwords'
-    arguments = (sql.Column('uid_', pytis.data.Integer()),
-                 sql.Column('psw', pytis.data.String()),
-                 sql.Column('cookie', pytis.data.String()),)
+    arguments = (sql.Column('uid_', pd.Integer()),
+                 sql.Column('psw', pd.String()),
+                 sql.Column('cookie', pd.String()),)
     result_type = None
     depends_on = (CmsCryptoUnlockedPasswords,)
 
 
 class CmsCryptoLockPasswords(sql.SQLFunction):
     name = 'cms_crypto_lock_passwords'
-    arguments = (sql.Column('uid_', pytis.data.Integer()),)
+    arguments = (sql.Column('uid_', pd.Integer()),)
     result_type = None
     depends_on = (CmsCryptoUnlockedPasswords,)
 
 
 class CmsCryptoCookPasswords(sql.SQLPlFunction):
     name = 'cms_crypto_cook_passwords'
-    arguments = (sql.Column('uid_', pytis.data.Integer()),
-                 sql.Column('cookie', pytis.data.String()),)
-    result_type = pytis.data.String()
+    arguments = (sql.Column('uid_', pd.Integer()),
+                 sql.Column('cookie', pd.String()),)
+    result_type = pd.String()
     multirow = True
 
 
 class PytisCryptoUnlockCurrentUserPasswords(sql.SQLFunction):
     """Dummy function to avoid error messages in logs (called by Pytis)."""
     name = 'pytis_crypto_unlock_current_user_passwords'
-    arguments = (sql.Column('password_', pytis.data.String()),)
-    result_type = pytis.data.String()
+    arguments = (sql.Column('password_', pd.String()),)
+    result_type = pd.String()
     multirow = True
     stability = 'immutable'
 
@@ -1607,9 +1607,9 @@ class PytisCryptoDbKey(sql.SQLFunction):
     """Dummy function needed by Pytis initialization when dbpass is set."""
     name = 'pytis_crypto_db_key'
     arguments = (
-        sql.Column('key_name_', pytis.data.String()),
+        sql.Column('key_name_', pd.String()),
     )
-    result_type = pytis.data.String()
+    result_type = pd.String()
     multirow = False
     stability = 'STABLE'
     security_definer = True
