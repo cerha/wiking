@@ -126,7 +126,7 @@ class CmsCountries(CommonAccesRights, sql.SQLTable):
 
 class Roles(CommonAccesRights, Base_CachingTable):
     name = 'roles'
-    fields = (sql.PrimaryColumn('role_id', pytis.data.Name()),
+    fields = (sql.PrimaryColumn('role_id', pytis.data.PgName()),
               sql.Column('name', pytis.data.String()),
               sql.Column('system', pytis.data.Boolean(not_null=True), default=False),
               sql.Column('auto', pytis.data.Boolean(not_null=True), default=False),
@@ -151,9 +151,9 @@ class Roles(CommonAccesRights, Base_CachingTable):
 class RoleSets(CommonAccesRights, Base_CachingTable):
     name = 'role_sets'
     fields = (sql.PrimaryColumn('role_set_id', pytis.data.Serial(not_null=True)),
-              sql.Column('role_id', pytis.data.Name(not_null=True),
+              sql.Column('role_id', pytis.data.PgName(not_null=True),
                          references=sql.a(sql.r.Roles, onupdate='CASCADE', ondelete='CASCADE')),
-              sql.Column('member_role_id', pytis.data.Name(not_null=True),
+              sql.Column('member_role_id', pytis.data.PgName(not_null=True),
                          references=sql.a(sql.r.Roles, onupdate='CASCADE', ondelete='CASCADE')),
               )
     unique = (('role_id', 'member_role_id',),)
@@ -170,15 +170,15 @@ class RoleSets(CommonAccesRights, Base_CachingTable):
 
 class ExpandedRole(sql.SQLPlFunction):
     name = 'expanded_role'
-    arguments = (sql.Column('role_id_', pytis.data.Name()),)
-    result_type = pytis.data.Name()
+    arguments = (sql.Column('role_id_', pytis.data.PgName()),)
+    result_type = pytis.data.PgName()
     multirow = True
     stability = 'stable'
 
 
 class UnrelatedRoles(sql.SQLFunction):
     name = 'unrelated_roles'
-    arguments = (sql.Column('role_id', pytis.data.Name()),)
+    arguments = (sql.Column('role_id', pytis.data.PgName()),)
     result_type = Roles
     multirow = True
     stability = 'stable'
@@ -256,7 +256,7 @@ class CmsFInsertOrUpdateUser(sql.SQLPlFunction):
 class RoleMembers(CommonAccesRights, Base_CachingTable):
     name = 'role_members'
     fields = (sql.PrimaryColumn('role_member_id', pytis.data.Serial(not_null=True)),
-              sql.Column('role_id', pytis.data.Name(not_null=True),
+              sql.Column('role_id', pytis.data.PgName(not_null=True),
                          references=sql.a(sql.r.Roles, onupdate='CASCADE', ondelete='CASCADE')),
               sql.Column('uid', pytis.data.Integer(not_null=True),
                          references=sql.a(sql.r.Users, onupdate='CASCADE', ondelete='CASCADE')),
@@ -290,7 +290,7 @@ class AUserRoles(CommonAccesRights, sql.SQLTable):
     name = 'a_user_roles'
     fields = (sql.Column('uid', pytis.data.Integer(), index=True,
                          references=sql.a(sql.r.Users, onupdate='CASCADE', ondelete='CASCADE')),
-              sql.Column('role_id', pytis.data.Name(not_null=True),
+              sql.Column('role_id', pytis.data.PgName(not_null=True),
                          references=sql.a(sql.r.Roles, onupdate='CASCADE', ondelete='CASCADE')),
               )
     access_rights = (('ALL', 'www-data',),)
@@ -323,7 +323,7 @@ class CmsFAllUserRoles(sql.SQLFunction):
     Both explicitly assigned and implicit roles (such as 'anyone') are considered."""
     name = 'cms_f_all_user_roles'
     arguments = (sql.Column('uid_', pytis.data.Integer()),)
-    result_type = pytis.data.Name()
+    result_type = pytis.data.PgName()
     multirow = True
     stability = 'stable'
     depends_on = (AUserRoles,)
@@ -332,7 +332,7 @@ class CmsFAllUserRoles(sql.SQLFunction):
 class CmsFRoleMember(sql.SQLPlFunction):
     name = 'cms_f_role_member'
     arguments = (sql.Column('uid_', pytis.data.Integer()),
-                 sql.Column('role_id_', pytis.data.Name()),)
+                 sql.Column('role_id_', pytis.data.PgName()),)
     result_type = pytis.data.Boolean()
     stability = 'stable'
 
@@ -429,9 +429,9 @@ class CmsPages(CommonAccesRights, Base_CachingTable):
               sql.Column('ord', pytis.data.Integer(not_null=True)),
               sql.Column('tree_order', pytis.data.String()),
               sql.Column('owner', pytis.data.Integer(), references=sql.r.Users),
-              sql.Column('read_role_id', pytis.data.Name(not_null=True), default='anyone',
+              sql.Column('read_role_id', pytis.data.PgName(not_null=True), default='anyone',
                          references=sql.a(sql.r.Roles, onupdate='CASCADE')),
-              sql.Column('write_role_id', pytis.data.Name(not_null=True),
+              sql.Column('write_role_id', pytis.data.PgName(not_null=True),
                          default='cms-content-admin',
                          references=sql.a(sql.r.Roles, onupdate='CASCADE', ondelete='SET DEFAULT')),
               )
@@ -857,7 +857,7 @@ class CmsPublications(CommonAccesRights, sql.SQLTable):
         sql.Column('copyright_notice', pytis.data.String()),
         sql.Column('notes', pytis.data.String(),
                    doc="any other additional info, such as translator(s), reviewer(s) etc."),
-        sql.Column('download_role_id', pytis.data.Name(),
+        sql.Column('download_role_id', pytis.data.PgName(),
                    references=sql.a(sql.r.Roles, onupdate='CASCADE'),
                    doc="role allowed to download the offline version of the publication."),
     )
@@ -1080,9 +1080,9 @@ class CmsNewsletters(CommonAccesRights, Base_CachingTable):
         sql.Column('description', pytis.data.String(not_null=True)),
         sql.Column('sender', pytis.data.String(not_null=True)),
         sql.Column('address', pytis.data.String(not_null=True)),
-        sql.Column('read_role_id', pytis.data.Name(not_null=True), default='anyone',
+        sql.Column('read_role_id', pytis.data.PgName(not_null=True), default='anyone',
                    references=sql.a(sql.r.Roles, onupdate='CASCADE')),
-        sql.Column('write_role_id', pytis.data.Name(not_null=True), default='cms-content-admin',
+        sql.Column('write_role_id', pytis.data.PgName(not_null=True), default='cms-content-admin',
                    references=sql.a(sql.r.Roles, onupdate='CASCADE', ondelete='SET DEFAULT')),
         sql.Column('bg_color', pytis.data.String(not_null=True)),
         sql.Column('text_color', pytis.data.String(not_null=True)),
@@ -1304,7 +1304,7 @@ class CmsThemes(CommonAccesRights, Base_CachingTable):
 
 class CmsSystemTextLabels(CommonAccesRights, Base_CachingTable):
     name = 'cms_system_text_labels'
-    fields = (sql.Column('label', pytis.data.Name(not_null=True)),
+    fields = (sql.Column('label', pytis.data.PgName(not_null=True)),
               sql.Column('site', pytis.data.String(not_null=True),
                          references=sql.a(sql.r.CmsConfig.site,
                                           onupdate='CASCADE', ondelete='CASCADE')),
@@ -1315,14 +1315,14 @@ class CmsSystemTextLabels(CommonAccesRights, Base_CachingTable):
 class CmsAddTextLabel(sql.SQLPlFunction):
     """"""
     name = 'cms_add_text_label'
-    arguments = (sql.Column('_label', pytis.data.Name()),
+    arguments = (sql.Column('_label', pytis.data.PgName()),
                  sql.Column('_site', pytis.data.String()),)
     result_type = None
 
 
 class CmsSystemTexts(CommonAccesRights, Base_CachingTable):
     name = 'cms_system_texts'
-    fields = (sql.Column('label', pytis.data.Name(not_null=True)),
+    fields = (sql.Column('label', pytis.data.PgName(not_null=True)),
               sql.Column('site', pytis.data.String(not_null=True)),
               sql.Column('lang', pytis.data.String(minlen=2, maxlen=2, not_null=True),
                          references=sql.a(sql.r.CmsLanguages.lang,
@@ -1380,18 +1380,18 @@ class CmsVSystemTexts(CommonAccesRights, SQLView):
 
 class CmsEmailLabels(CommonAccesRights, sql.SQLTable):
     name = 'cms_email_labels'
-    fields = (sql.PrimaryColumn('label', pytis.data.Name(not_null=True)),)
+    fields = (sql.PrimaryColumn('label', pytis.data.PgName(not_null=True)),)
 
 
 class CmsAddEmailLabel(sql.SQLPlFunction):
     name = 'cms_add_email_label'
-    arguments = (sql.Column('_label', pytis.data.Name()),)
+    arguments = (sql.Column('_label', pytis.data.PgName()),)
     result_type = None
 
 
 class CmsEmails(CommonAccesRights, sql.SQLTable):
     name = 'cms_emails'
-    fields = (sql.Column('label', pytis.data.Name(not_null=True),
+    fields = (sql.Column('label', pytis.data.PgName(not_null=True),
                          references=sql.r.CmsEmailLabels),
               sql.Column('lang', pytis.data.String(minlen=2, maxlen=2, not_null=True),
                          references=sql.a(sql.r.CmsLanguages.lang,
@@ -1442,7 +1442,7 @@ class CmsVEmails(CommonAccesRights, SQLView):
 class CmsEmailAttachments(CommonAccesRights, sql.SQLTable):
     name = 'cms_email_attachments'
     fields = (sql.PrimaryColumn('attachment_id', pytis.data.Serial(not_null=True)),
-              sql.Column('label', pytis.data.Name(not_null=True),
+              sql.Column('label', pytis.data.PgName(not_null=True),
                          references=sql.a(sql.r.CmsEmailLabels, ondelete='CASCADE')),
               sql.Column('filename', pytis.data.String(not_null=True)),
               sql.Column('mime_type', pytis.data.String(not_null=True)),
@@ -1453,7 +1453,7 @@ class CmsEmailSpool(CommonAccesRights, sql.SQLTable):
     name = 'cms_email_spool'
     fields = (sql.PrimaryColumn('id', pytis.data.Serial(not_null=True)),
               sql.Column('sender_address', pytis.data.String()),
-              sql.Column('role_id', pytis.data.Name(),
+              sql.Column('role_id', pytis.data.PgName(),
                          references=sql.a(sql.r.Roles, onupdate='CASCADE', ondelete='CASCADE'),
                          doc="recipient role, if NULL then all users"),
               sql.Column('subject', pytis.data.String()),
