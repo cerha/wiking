@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2006-2017 OUI Technology Ltd.
-# Copyright (C) 2019-2021 Tomáš Cerha <t.cerha@gmail.com>
+# Copyright (C) 2019-2021, 2024 Tomáš Cerha <t.cerha@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -559,7 +559,7 @@ class Application(wiking.Module):
     def _send_bug_report(self, req, error, info, address):
         """Send traceback of given InternalServerError to given e-mail address."""
         def format_param(param):
-            if param in ('passwd', 'password'):
+            if param in ('passwd', 'password', 'initial_password'):
                 value = '<password hidden>'
             else:
                 try:
