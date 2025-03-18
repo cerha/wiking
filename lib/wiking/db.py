@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2005-2017 OUI Technology Ltd.
-# Copyright (C) 2019-2020, 2022 Tomáš Cerha <t.cerha@gmail.com>
+# Copyright (C) 2019-2020, 2022, 2025 Tomáš Cerha <t.cerha@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -893,7 +893,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
 
     def _layout_instance(self, layout):
         if layout is None:
-            layout = self._view.layout().group()
+            layout = self._view.layout()
         if isinstance(layout, (tuple, list)):
             layout = pp.GroupSpec(layout, orientation=pp.Orientation.VERTICAL)
         return layout
@@ -922,7 +922,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         specification.
 
         """
-        return self._view.layout().group()
+        return self._view.layout()
 
     def _hidden_fields(self, req, action, record=None):
         """Return the hidden form fields for given action and record.
