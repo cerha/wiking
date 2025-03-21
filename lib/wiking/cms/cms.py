@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2006-2018 OUI Technology Ltd.
-# Copyright (C) 2019-2022, 2024 Tomáš Cerha <t.cerha@gmail.com>
+# Copyright (C) 2019-2022, 2024, 2025 Tomáš Cerha <t.cerha@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -3065,7 +3065,7 @@ class PublicationExports(ContentManagementModule):
 
     class Spec(Specification):
         title = _("Exported Publication Versions")
-        table = wiking.dbdefs.CmsVPublicationExports
+        table = wiking.dbdefs.cms_v_publication_exports
 
         def fields(self):
             override = (
@@ -4320,7 +4320,7 @@ class Newsletters(EmbeddableCMSModule):
     """E-mail newsletters with subscription."""
     class Spec(Specification):
         title = _("E-mail Newsletters")
-        table = wiking.dbdefs.CmsNewsletters
+        table = wiking.dbdefs.cms_newsletters
 
         def fields(self):
             override = (
@@ -4447,7 +4447,7 @@ class Newsletters(EmbeddableCMSModule):
 class NewsletterSubscription(CMSModule):
     """E-mail newsletters with subscription."""
     class Spec(Specification):
-        table = wiking.dbdefs.CmsVNewsletterSubscription
+        table = wiking.dbdefs.cms_v_newsletter_subscription
 
         def fields(self):
             override = (
@@ -4569,7 +4569,7 @@ class NewsletterSubscription(CMSModule):
 class NewsletterEditions(CMSModule):
     """E-mail newsletters with subscription."""
     class Spec(Specification):
-        table = wiking.dbdefs.CmsNewsletterEditions
+        table = wiking.dbdefs.cms_newsletter_editions
 
         def fields(self):
             override = (
@@ -4825,7 +4825,7 @@ class NewsletterPosts(CMSModule):
         selection_type = CHOICE
 
     class Spec(Specification):
-        table = wiking.dbdefs.CmsNewsletterPosts
+        table = wiking.dbdefs.cms_newsletter_posts
 
         def fields(self):
             override = (
@@ -5155,7 +5155,7 @@ class StyleSheets(SiteSpecificContentModule, StyleManagementModule,
         # Translators: Section heading and menu item. Meaning the visual appearance. Computer
         # terminology.
         title = _("Style sheets")
-        table = wiking.dbdefs.CmsStylesheets
+        table = wiking.dbdefs.cms_stylesheets
         # Translators: Help string. Cascading Style Sheet (CSS) is computer terminology idiom.
         help = _("Manage available Cascading Style Sheets.")
 

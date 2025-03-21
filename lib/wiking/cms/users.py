@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2006-2017 OUI Technology Ltd.
-# Copyright (C) 2019-2024 Tomáš Cerha <t.cerha@gmail.com>
+# Copyright (C) 2019-2025 Tomáš Cerha <t.cerha@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -554,7 +554,7 @@ class Users(UserManagementModule, CachingPytisModule):
     class Spec(wiking.Specification):
         title = _("User Management")
         help = _("Manage registered users and their privileges.")
-        table = wiking.dbdefs.Users
+        table = wiking.dbdefs.users
 
         def _fullname(self, record, firstname, surname, login):
             if firstname and surname:
@@ -1752,7 +1752,7 @@ class Session(PytisModule, wiking.Session):
 
     """
     class Spec(wiking.Specification):
-        table = wiking.dbdefs.CmsSessions
+        table = wiking.dbdefs.cms_sessions
 
     def _split_key(self, key):
         try:
@@ -1813,7 +1813,7 @@ class SessionHistory(UserManagementModule):
         # Translators: Heading for an overview when and how the user has accessed the application.
         title = _("Login History")
         help = _("History of login sessions.")
-        table = wiking.dbdefs.CmsVSessionHistory
+        table = wiking.dbdefs.cms_v_session_history
 
         def _customize_fields(self, fields):
             field = fields.modify
@@ -1867,7 +1867,7 @@ class LoginFailures(UserManagementModule):
         # Translators: Heading for a listing of unsuccesful login attempts.
         title = _("Login Failures")
         help = _("History of unsuccessful login attempts.")
-        table = wiking.dbdefs.CmsLoginFailures
+        table = wiking.dbdefs.cms_login_failures
         sorting = (('timestamp', DESC),)
 
         def _customize_fields(self, fields):

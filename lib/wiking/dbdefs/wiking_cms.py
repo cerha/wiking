@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2006-2016 OUI Technology Ltd.
-# Copyright (C) 2019-2024 Tomáš Cerha <t.cerha@gmail.com>
+# Copyright (C) 2019-2025 Tomáš Cerha <t.cerha@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -50,14 +50,14 @@ class SQLView(sql.SQLView):
         return Reference(kind)
 
 
-class CmsDatabaseVersion(sql.SQLTable):
+class cms_database_version(sql.SQLTable):
     name = 'cms_database_version'
     fields = (sql.Column('version', pd.Integer()),)
     init_columns = ('version',)
     init_values = ((version,),)
 
 
-class CmsLanguages(CommonAccesRights, Base_CachingTable):
+class cms_languages(CommonAccesRights, Base_CachingTable):
     name = 'cms_languages'
     fields = (sql.PrimaryColumn('lang_id', pd.Serial()),
               sql.Column('lang', pd.String(minlen=2, maxlen=2, not_null=True),
@@ -67,7 +67,7 @@ class CmsLanguages(CommonAccesRights, Base_CachingTable):
     init_values = (('en',),)
 
 
-class CmsConfig(CommonAccesRights, Base_CachingTable):
+class cms_config(CommonAccesRights, Base_CachingTable):
     name = 'cms_config'
     fields = (sql.PrimaryColumn('site', pd.String()),
               sql.Column('site_title', pd.String()),
@@ -84,15 +84,15 @@ class CmsConfig(CommonAccesRights, Base_CachingTable):
               sql.Column('upload_limit', pd.Integer()),
               sql.Column('session_expiration', pd.Integer()),
               sql.Column('default_language', pd.String(minlen=2, maxlen=2),
-                         references=sql.a(sql.r.CmsLanguages.lang, onupdate='CASCADE')),
+                         references=sql.a(sql.r.cms_languages.lang, onupdate='CASCADE')),
               sql.Column('theme_id', pd.Integer(),
-                         references=sql.r.CmsThemes),
+                         references=sql.r.cms_themes),
               )
     init_columns = ('site',)
     init_values = (('*',),)
 
 
-class CmsCountries(CommonAccesRights, sql.SQLTable):
+class cms_countries(CommonAccesRights, sql.SQLTable):
     name = 'cms_countries'
     fields = (sql.PrimaryColumn('country_id', pd.Serial(not_null=True)),
               sql.Column('country', pd.String(minlen=2, maxlen=2, not_null=True),
@@ -124,7 +124,7 @@ class CmsCountries(CommonAccesRights, sql.SQLTable):
     )]
 
 
-class Roles(CommonAccesRights, Base_CachingTable):
+class roles(CommonAccesRights, Base_CachingTable):
     name = 'roles'
     fields = (sql.PrimaryColumn('role_id', pd.PgName()),
               sql.Column('name', pd.String()),
@@ -148,13 +148,13 @@ class Roles(CommonAccesRights, Base_CachingTable):
     )
 
 
-class RoleSets(CommonAccesRights, Base_CachingTable):
+class role_sets(CommonAccesRights, Base_CachingTable):
     name = 'role_sets'
     fields = (sql.PrimaryColumn('role_set_id', pd.Serial(not_null=True)),
               sql.Column('role_id', pd.PgName(not_null=True),
-                         references=sql.a(sql.r.Roles, onupdate='CASCADE', ondelete='CASCADE')),
+                         references=sql.a(sql.r.roles, onupdate='CASCADE', ondelete='CASCADE')),
               sql.Column('member_role_id', pd.PgName(not_null=True),
-                         references=sql.a(sql.r.Roles, onupdate='CASCADE', ondelete='CASCADE')),
+                         references=sql.a(sql.r.roles, onupdate='CASCADE', ondelete='CASCADE')),
               )
     unique = (('role_id', 'member_role_id',),)
     init_columns = ('role_id', 'member_role_id',)
@@ -168,7 +168,7 @@ class RoleSets(CommonAccesRights, Base_CachingTable):
     )
 
 
-class ExpandedRole(sql.SQLPlFunction):
+class expanded_role(sql.SQLPlFunction):
     name = 'expanded_role'
     arguments = (sql.Column('role_id_', pd.PgName()),)
     result_type = pd.PgName()
@@ -176,15 +176,15 @@ class ExpandedRole(sql.SQLPlFunction):
     stability = 'stable'
 
 
-class UnrelatedRoles(sql.SQLFunction):
+class unrelated_roles(sql.SQLFunction):
     name = 'unrelated_roles'
     arguments = (sql.Column('role_id', pd.PgName()),)
-    result_type = Roles
+    result_type = roles
     multirow = True
     stability = 'stable'
 
 
-class Users(CommonAccesRights, Base_CachingTable):
+class users(CommonAccesRights, Base_CachingTable):
     name = 'users'
     fields = (sql.PrimaryColumn('uid', pd.Serial(not_null=True)),
               sql.Column('login', pd.String(maxlen=64, not_null=True), unique=True),
@@ -204,7 +204,7 @@ class Users(CommonAccesRights, Base_CachingTable):
               sql.Column('since', pd.DateTime(not_null=True),
                          default=func.timezone(sval('GMT'), current_timestamp_0)),
               sql.Column('lang', pd.String(minlen=2, maxlen=2),
-                         references=sql.a(sql.r.CmsLanguages.lang, onupdate='CASCADE',
+                         references=sql.a(sql.r.cms_languages.lang, onupdate='CASCADE',
                                           ondelete='SET NULL')),
               sql.Column('regexpire', pd.DateTime()),
               sql.Column('regcode', pd.String()),
@@ -224,7 +224,7 @@ class Users(CommonAccesRights, Base_CachingTable):
                     '-', 'enabled', '2012-01-01 00:00'),)
 
 
-class CmsFInsertOrUpdateUser(sql.SQLPlFunction):
+class cms_f_insert_or_update_user(sql.SQLPlFunction):
     name = 'cms_f_insert_or_update_user'
     arguments = (sql.Column('uid_', pd.Integer()),
                  sql.Column('login_', pd.String(maxlen=64)),
@@ -253,72 +253,72 @@ class CmsFInsertOrUpdateUser(sql.SQLPlFunction):
     result_type = None
 
 
-class RoleMembers(CommonAccesRights, Base_CachingTable):
+class role_members(CommonAccesRights, Base_CachingTable):
     name = 'role_members'
     fields = (sql.PrimaryColumn('role_member_id', pd.Serial(not_null=True)),
               sql.Column('role_id', pd.PgName(not_null=True),
-                         references=sql.a(sql.r.Roles, onupdate='CASCADE', ondelete='CASCADE')),
+                         references=sql.a(sql.r.roles, onupdate='CASCADE', ondelete='CASCADE')),
               sql.Column('uid', pd.Integer(not_null=True),
-                         references=sql.a(sql.r.Users, onupdate='CASCADE', ondelete='CASCADE')),
+                         references=sql.a(sql.r.users, onupdate='CASCADE', ondelete='CASCADE')),
               )
     unique = (('role_id', 'uid',),)
     init_columns = ('role_id', 'uid')
     init_values = (('cms-admin', 1),)
 
 
-class CmsVRoleMembers(CommonAccesRights, SQLView):
+class cms_v_role_members(CommonAccesRights, SQLView):
     name = 'cms_v_role_members'
 
     @classmethod
     def query(cls):
-        m = sql.t.RoleMembers.alias('m')
-        r = sql.t.Roles.alias('r')
-        u = sql.t.Users.alias('u')
+        m = sql.t.role_members.alias('m')
+        r = sql.t.roles.alias('r')
+        u = sql.t.users.alias('u')
         return select([m,
                        r.c.name.label('role_name'),
                        u.c.user_.label('user_name'),
                        u.c.login.label('user_login'),
                        ],
                       from_obj=[m.join(r, r.c.role_id == m.c.role_id).join(u, m.c.uid == u.c.uid)])
-    insert_order = (RoleMembers,)
-    update_order = (RoleMembers,)
-    delete_order = (RoleMembers,)
+    insert_order = (role_members,)
+    update_order = (role_members,)
+    delete_order = (role_members,)
     no_insert_columns = ('role_member_id',)
 
 
-class AUserRoles(CommonAccesRights, sql.SQLTable):
+class a_user_roles(CommonAccesRights, sql.SQLTable):
     name = 'a_user_roles'
     fields = (sql.Column('uid', pd.Integer(), index=True,
-                         references=sql.a(sql.r.Users, onupdate='CASCADE', ondelete='CASCADE')),
+                         references=sql.a(sql.r.users, onupdate='CASCADE', ondelete='CASCADE')),
               sql.Column('role_id', pd.PgName(not_null=True),
-                         references=sql.a(sql.r.Roles, onupdate='CASCADE', ondelete='CASCADE')),
+                         references=sql.a(sql.r.roles, onupdate='CASCADE', ondelete='CASCADE')),
               )
     access_rights = (('ALL', 'www-data',),)
 
 
-class UpdateUserRoles(sql.SQLPlFunction, sql.SQLTrigger):
+class update_user_roles(sql.SQLPlFunction, sql.SQLTrigger):
     name = 'update_user_roles'
     arguments = ()
     events = ()
 
 
-class RoleSetsUpdateUserRolesTrigger(sql.SQLTrigger):
+class role_sets_update_user_roles_trigger(sql.SQLTrigger):
     name = 'role_sets_update_user_roles_trigger'
-    table = RoleSets
+    table = role_sets
     events = ('insert', 'update', 'delete',)
     each_row = False
-    body = UpdateUserRoles
+    body = update_user_roles
 
 
-class RoleMembersUpdateUserRolesTrigger(sql.SQLTrigger):
+class role_members_update_user_roles_trigger(sql.SQLTrigger):
     name = 'role_members_update_user_roles_trigger'
-    table = RoleMembers
+    table = role_members
     events = ('insert', 'update', 'delete',)
     each_row = False
-    body = UpdateUserRoles
+    body = update_user_roles
 
 
-class CmsFAllUserRoles(sql.SQLFunction):
+class cms_f_all_user_roles(sql.SQLFunction):
     """Return all user's roles and their included roles.
     Both explicitly assigned and implicit roles (such as 'anyone') are considered."""
     name = 'cms_f_all_user_roles'
@@ -326,10 +326,10 @@ class CmsFAllUserRoles(sql.SQLFunction):
     result_type = pd.PgName()
     multirow = True
     stability = 'stable'
-    depends_on = (AUserRoles,)
+    depends_on = (a_user_roles,)
 
 
-class CmsFRoleMember(sql.SQLPlFunction):
+class cms_f_role_member(sql.SQLPlFunction):
     name = 'cms_f_role_member'
     arguments = (sql.Column('uid_', pd.Integer()),
                  sql.Column('role_id_', pd.PgName()),)
@@ -337,62 +337,62 @@ class CmsFRoleMember(sql.SQLPlFunction):
     stability = 'stable'
 
 
-class RoleSetsCycleCheck(sql.SQLFunction):
+class role_sets_cycle_check(sql.SQLFunction):
     name = 'role_sets_cycle_check'
     arguments = ()
     result_type = pd.Boolean()
-    depends_on = (RoleSets,)
+    depends_on = (role_sets,)
 
 
-class RoleSetsTriggerAfter(sql.SQLPlFunction, sql.SQLTrigger):
+class role_sets_trigger_after(sql.SQLPlFunction, sql.SQLTrigger):
     name = 'role_sets_trigger_after'
     arguments = ()
-    table = RoleSets
+    table = role_sets
     position = 'after'
     events = ('insert', 'update', 'delete',)
 
 
-class CmsSessions(CommonAccesRights, sql.SQLTable):
+class cms_sessions(CommonAccesRights, sql.SQLTable):
     name = 'cms_sessions'
     fields = (
         sql.PrimaryColumn('session_id', pd.Serial(not_null=True)),
         sql.Column('session_key', pd.String(not_null=True)),
         sql.Column('auth_type', pd.String(not_null=True)),
         sql.Column('uid', pd.Integer(not_null=True),
-                   references=sql.a(sql.r.Users, ondelete='CASCADE')),
+                   references=sql.a(sql.r.users, ondelete='CASCADE')),
         sql.Column('last_access', pd.DateTime()),
     )
     unique = (('uid', 'session_key',),)
 
-class CmsSessionHistory(CommonAccesRights, sql.SQLTable):
+class cms_session_history(CommonAccesRights, sql.SQLTable):
     name = 'cms_session_history'
     fields = (
         sql.PrimaryColumn('session_id', pd.Integer(not_null=True)),
         sql.Column('auth_type', pd.String(not_null=True)),
         sql.Column('uid', pd.Integer(not_null=True),
-                   references=sql.a(sql.r.Users, ondelete='CASCADE')),
+                   references=sql.a(sql.r.users, ondelete='CASCADE')),
         sql.Column('start_time', pd.DateTime(not_null=True)),
         sql.Column('end_time', pd.DateTime()),
     )
 
-class CmsUpdateSesionHistory(sql.SQLPlFunction, sql.SQLTrigger):
+class cms_update_session_history(sql.SQLPlFunction, sql.SQLTrigger):
     name = 'cms_update_session_history'
     arguments = ()
     events = ()
 
-class CmsSessionsTrigger(sql.SQLTrigger):
+class cms_sessions_trigger(sql.SQLTrigger):
     name = 'cms_sessions_trigger'
-    table = CmsSessions
+    table = cms_sessions
     events = ('insert', 'delete',)
     each_row = True
-    body = CmsUpdateSesionHistory
+    body = cms_update_session_history
 
-class CmsVSessionHistory(CommonAccesRights, SQLView):
+class cms_v_session_history(CommonAccesRights, SQLView):
     name = 'cms_v_session_history'
     @classmethod
     def query(cls):
-        h = sql.t.CmsSessionHistory.alias('h')
-        u = sql.t.Users.alias('u')
+        h = sql.t.cms_session_history.alias('h')
+        u = sql.t.users.alias('u')
         return select(list(h.c) + [
             u.c.login,
             u.c.user_.label('user'),
@@ -401,7 +401,7 @@ class CmsVSessionHistory(CommonAccesRights, SQLView):
         ], from_obj=[h.outerjoin(u, u.c.uid == h.c.uid)])
 
 
-class CmsLoginFailures(CommonAccesRights, sql.SQLTable):
+class cms_login_failures(CommonAccesRights, sql.SQLTable):
     name = 'cms_login_failures'
     fields = (
         sql.PrimaryColumn('failure_id', pd.Serial(not_null=True)),
@@ -414,51 +414,51 @@ class CmsLoginFailures(CommonAccesRights, sql.SQLTable):
 
 
 
-class CmsPages(CommonAccesRights, Base_CachingTable):
+class cms_pages(CommonAccesRights, Base_CachingTable):
     name = 'cms_pages'
     fields = (sql.PrimaryColumn('page_id', pd.Serial(not_null=True)),
               sql.Column('site', pd.String(not_null=True),
-                         references=sql.a(sql.r.CmsConfig.site,
+                         references=sql.a(sql.r.cms_config.site,
                                           onupdate='CASCADE', ondelete='CASCADE')),
               sql.Column('kind', pd.String(not_null=True)),
               sql.Column('identifier', pd.String(not_null=True)),
-              sql.Column('parent', pd.Integer(), references=sql.r.CmsPages),
+              sql.Column('parent', pd.Integer(), references=sql.r.cms_pages),
               sql.Column('modname', pd.String()),
               sql.Column('menu_visibility', pd.String(not_null=True)),
               sql.Column('foldable', pd.Boolean(not_null=False)),
               sql.Column('ord', pd.Integer(not_null=True)),
               sql.Column('tree_order', pd.String()),
-              sql.Column('owner', pd.Integer(), references=sql.r.Users),
+              sql.Column('owner', pd.Integer(), references=sql.r.users),
               sql.Column('read_role_id', pd.PgName(not_null=True), default='anyone',
-                         references=sql.a(sql.r.Roles, onupdate='CASCADE')),
+                         references=sql.a(sql.r.roles, onupdate='CASCADE')),
               sql.Column('write_role_id', pd.PgName(not_null=True),
                          default='cms-content-admin',
-                         references=sql.a(sql.r.Roles, onupdate='CASCADE', ondelete='SET DEFAULT')),
+                         references=sql.a(sql.r.roles, onupdate='CASCADE', ondelete='SET DEFAULT')),
               )
     unique = (('identifier', 'site',),)
 
     @property
     def index_columns(self):
-        parent = sqlalchemy.func.coalesce(sql.c.CmsPages.parent, ival(0))
+        parent = sqlalchemy.func.coalesce(sql.c.cms_pages.parent, ival(0))
         return (sql.a('ord', parent, 'site', 'kind', unique=True),)
 
 
-class CmsPagesUpdateOrder(sql.SQLPlFunction, sql.SQLTrigger):
+class cms_pages_update_order(sql.SQLPlFunction, sql.SQLTrigger):
     name = 'cms_pages_update_order'
-    table = CmsPages
+    table = cms_pages
     events = ('insert', 'update',)
     position = 'before'
 
 
-class CmsPageTexts(CommonAccesRights, Base_CachingTable):
+class cms_page_texts(CommonAccesRights, Base_CachingTable):
     name = 'cms_page_texts'
     fields = (sql.Column('page_id', pd.Integer(not_null=True),
-                         references=sql.a(sql.r.CmsPages, ondelete='CASCADE')),
+                         references=sql.a(sql.r.cms_pages, ondelete='CASCADE')),
               sql.Column('lang', pd.String(minlen=2, maxlen=2, not_null=True),
-                         references=sql.a(sql.r.CmsLanguages.lang, onupdate='CASCADE')),
+                         references=sql.a(sql.r.cms_languages.lang, onupdate='CASCADE')),
               sql.Column('published', pd.Boolean(not_null=True), default=True),
               sql.Column('parents_published', pd.Boolean(not_null=True)),
-              sql.Column('creator', pd.Integer(not_null=True), references=sql.r.Users),
+              sql.Column('creator', pd.Integer(not_null=True), references=sql.r.users),
               sql.Column('created', pd.DateTime(not_null=True), default=func.now()),
               sql.Column('published_since', pd.DateTime()),
               sql.Column('title', pd.String(not_null=True)),
@@ -471,34 +471,34 @@ class CmsPageTexts(CommonAccesRights, Base_CachingTable):
     unique = (('page_id', 'lang',),)
 
 
-class CmsPageTreeOrder(sql.SQLFunction):
+class cms_page_tree_order(sql.SQLFunction):
     name = 'cms_page_tree_order'
     arguments = (sql.Column('page_id', pd.Integer()),)
     result_type = pd.String()
-    depends_on = (CmsPages,)
+    depends_on = (cms_pages,)
     stability = 'stable'
 
 
-class CmsPageTreePublished(sql.SQLFunction):
+class cms_page_tree_published(sql.SQLFunction):
     name = 'cms_page_tree_published'
     arguments = (sql.Column('page_id', pd.Integer()),
                  sql.Column('lang', pd.String()),)
     result_type = pd.Boolean()
-    depends_on = (CmsPages, CmsPageTexts)
+    depends_on = (cms_pages, cms_page_texts)
     stability = 'stable'
 
 
-class CmsVPages(CommonAccesRights, SQLView):
+class cms_v_pages(CommonAccesRights, SQLView):
     name = 'cms_v_pages'
     primary_column = 'page_key'
 
     @classmethod
     def query(cls):
-        p = sql.t.CmsPages.alias('p')
-        lang = sql.t.CmsLanguages.alias('l')
-        t = sql.t.CmsPageTexts.alias('t')
-        cu = sql.t.Users.alias('cu')
-        ou = sql.t.Users.alias('ou')
+        p = sql.t.cms_pages.alias('p')
+        lang = sql.t.cms_languages.alias('l')
+        t = sql.t.cms_page_texts.alias('t')
+        cu = sql.t.users.alias('cu')
+        ou = sql.t.users.alias('ou')
         return select([(stype(p.c.page_id) + sval('.') + lang.c.lang).label('page_key'),
                        p.c.site, p.c.kind, lang.c.lang,
                        p.c.page_id, p.c.identifier, p.c.parent, p.c.modname,
@@ -526,8 +526,8 @@ class CmsVPages(CommonAccesRights, SQLView):
                       )
 
     def on_insert(self):
-        pages = sql.t.CmsPages
-        texts = sql.t.CmsPageTexts
+        pages = sql.t.cms_pages
+        texts = sql.t.cms_page_texts
         new = self._reference('new')
         return (
             pages.insert().inline().values(**{c.name: getattr(new, c.name) for c in pages.c
@@ -560,8 +560,8 @@ class CmsVPages(CommonAccesRights, SQLView):
         )
 
     def on_update(self):
-        pages = sql.t.CmsPages
-        texts = sql.t.CmsPageTexts
+        pages = sql.t.cms_pages
+        texts = sql.t.cms_page_texts
         new = self._reference('new')
         old = self._reference('old')
         published = select(
@@ -618,16 +618,16 @@ class CmsVPages(CommonAccesRights, SQLView):
             )),
         )
 
-    delete_order = (CmsPages,)
-    depends_on = (CmsPages, CmsPageTexts, CmsPageTreePublished,)
+    delete_order = (cms_pages,)
+    depends_on = (cms_pages, cms_page_texts, cms_page_tree_published,)
 
 
-class CmsPageHistory(CommonAccesRights, sql.SQLTable):
+class cms_page_history(CommonAccesRights, sql.SQLTable):
     name = 'cms_page_history'
     fields = (sql.PrimaryColumn('history_id', pd.Serial(not_null=True)),
               sql.Column('page_id', pd.Integer(not_null=True)),
               sql.Column('lang', pd.String(minlen=2, maxlen=2, not_null=True)),
-              sql.Column('uid', pd.Integer(not_null=True), references=sql.r.Users),
+              sql.Column('uid', pd.Integer(not_null=True), references=sql.r.users),
               sql.Column('timestamp', pd.DateTime(not_null=True)),
               sql.Column('content', pd.String()),
               sql.Column('comment', pd.String()),
@@ -636,17 +636,17 @@ class CmsPageHistory(CommonAccesRights, sql.SQLTable):
               sql.Column('deleted_lines', pd.Integer(not_null=True)),
               )
     foreign_keys = (sql.a(('page_id', 'lang',),
-                          (sql.r.CmsPageTexts.page_id, sql.r.CmsPageTexts.lang,),
+                          (sql.r.cms_page_texts.page_id, sql.r.cms_page_texts.lang,),
                           ondelete='cascade'),)
 
 
-class CmsVPageHistory(CommonAccesRights, SQLView):
+class cms_v_page_history(CommonAccesRights, SQLView):
     name = 'cms_v_page_history'
 
     @classmethod
     def query(cls):
-        h = sql.t.CmsPageHistory.alias('h')
-        u = sql.t.Users.alias('u')
+        h = sql.t.cms_page_history.alias('h')
+        u = sql.t.users.alias('u')
         return select([h,
                        u.c.user_.label('user'),
                        u.c.login,
@@ -655,17 +655,17 @@ class CmsVPageHistory(CommonAccesRights, SQLView):
                         stype(h.c.changed_lines) + sval(' / ') +
                         stype(h.c.deleted_lines)).label('changes')],
                       from_obj=[h.join(u, h.c.uid == u.c.uid)])
-    insert_order = (CmsPageHistory,)
+    insert_order = (cms_page_history,)
 
 
-class CmsPageExcerpts(sql.SQLTable):
+class cms_page_excerpts(sql.SQLTable):
     """Excerpts from CMS pages.
     Currently serving for printing parts of e-books in Braille.
     """
     name = 'cms_page_excerpts'
     fields = (sql.PrimaryColumn('id', pd.Serial(not_null=True)),
               sql.Column('page_id', pd.Integer(),
-                         references=sql.a(sql.r.CmsPages, onupdate='CASCADE', ondelete='CASCADE')),
+                         references=sql.a(sql.r.cms_pages, onupdate='CASCADE', ondelete='CASCADE')),
               sql.Column('lang', pd.String(not_null=True)),
               sql.Column('title', pd.String(not_null=True)),
               sql.Column('content', pd.String(not_null=True)),
@@ -675,11 +675,11 @@ class CmsPageExcerpts(sql.SQLTable):
 #
 
 
-class CmsPageAttachments(CommonAccesRights, sql.SQLTable):
+class cms_page_attachments(CommonAccesRights, sql.SQLTable):
     name = 'cms_page_attachments'
     fields = (sql.PrimaryColumn('attachment_id', pd.Serial(not_null=True)),
               sql.Column('page_id', pd.Integer(not_null=True),
-                         references=sql.a(sql.r.CmsPages, ondelete='CASCADE')),
+                         references=sql.a(sql.r.cms_pages, ondelete='CASCADE')),
               sql.Column('filename', pd.String(not_null=True)),
               sql.Column('mime_type', pd.String(not_null=True)),
               sql.Column('bytesize', pd.Integer(not_null=True)),
@@ -708,13 +708,13 @@ class CmsPageAttachments(CommonAccesRights, sql.SQLTable):
     unique = (('filename', 'page_id',),)
 
 
-class CmsPageAttachmentTexts(CommonAccesRights, sql.SQLTable):
+class cms_page_attachment_texts(CommonAccesRights, sql.SQLTable):
     name = 'cms_page_attachment_texts'
     fields = (sql.Column('attachment_id', pd.Integer(not_null=True),
-                         references=sql.a(sql.r.CmsPageAttachments, ondelete='CASCADE',
+                         references=sql.a(sql.r.cms_page_attachments, ondelete='CASCADE',
                                           initially='DEFERRED')),
               sql.Column('lang', pd.String(minlen=2, maxlen=2, not_null=True),
-                         references=sql.a(sql.r.CmsLanguages.lang,
+                         references=sql.a(sql.r.cms_languages.lang,
                                           onupdate='CASCADE', ondelete='CASCADE')),
               sql.Column('title', pd.String()),
               sql.Column('description', pd.String()),
@@ -722,14 +722,14 @@ class CmsPageAttachmentTexts(CommonAccesRights, sql.SQLTable):
     unique = (('attachment_id', 'lang',),)
 
 
-class CmsVPageAttachments(CommonAccesRights, SQLView):
+class cms_v_page_attachments(CommonAccesRights, SQLView):
     name = 'cms_v_page_attachments'
 
     @classmethod
     def query(cls):
-        a = sql.t.CmsPageAttachments.alias('a')
-        lang = sql.t.CmsLanguages.alias('l')
-        t = sql.t.CmsPageAttachmentTexts.alias('t')
+        a = sql.t.cms_page_attachments.alias('a')
+        lang = sql.t.cms_languages.alias('l')
+        t = sql.t.cms_page_attachment_texts.alias('t')
         return select([(stype(a.c.attachment_id) + sval('.') + lang.c.lang).label('attachment_key'),
                        lang.c.lang,
                        a.c.attachment_id, a.c.page_id, t.c.title, t.c.description,
@@ -807,21 +807,21 @@ class CmsVPageAttachments(CommonAccesRights, SQLView):
         )""",)
 
 
-class CmsAttachmentsAfterUpdateTrigger(sql.SQLPlFunction, sql.SQLTrigger):
+class cms_attachments_after_update_trigger(sql.SQLPlFunction, sql.SQLTrigger):
     name = 'cms_attachments_after_update_trigger'
-    table = CmsPageAttachments
+    table = cms_page_attachments
     events = ('update',)
     position = 'after'
 
 #
 
 
-class CmsPublications(CommonAccesRights, sql.SQLTable):
+class cms_publications(CommonAccesRights, sql.SQLTable):
     """bibliographic data of the original (paper) books"""
     name = 'cms_publications'
     fields = (
         sql.PrimaryColumn('page_id', pd.Integer(not_null=True),
-                          references=sql.a(sql.r.CmsPages, ondelete='CASCADE')),
+                          references=sql.a(sql.r.cms_pages, ondelete='CASCADE')),
         sql.Column('author', pd.String(not_null=True),
                    doc="creator(s) of the original work; full name(s), one name per line"),
         sql.Column('contributor', pd.String(),
@@ -853,25 +853,25 @@ class CmsPublications(CommonAccesRights, sql.SQLTable):
                    doc=("organization or project for which this adaptation of the original "
                         "work into a digital publication has been done.")),
         sql.Column('cover_image', pd.Integer(),
-                   references=sql.a(sql.r.CmsPageAttachments, ondelete='SET NULL')),
+                   references=sql.a(sql.r.cms_page_attachments, ondelete='SET NULL')),
         sql.Column('copyright_notice', pd.String()),
         sql.Column('notes', pd.String(),
                    doc="any other additional info, such as translator(s), reviewer(s) etc."),
         sql.Column('download_role_id', pd.PgName(),
-                   references=sql.a(sql.r.Roles, onupdate='CASCADE'),
+                   references=sql.a(sql.r.roles, onupdate='CASCADE'),
                    doc="role allowed to download the offline version of the publication."),
     )
 
 
-class CmsVPublications(CommonAccesRights, SQLView):
+class cms_v_publications(CommonAccesRights, SQLView):
     name = 'cms_v_publications'
     primary_column = 'page_key'
 
     @classmethod
     def query(cls):
-        pages = sql.t.CmsVPages.alias('pages')
-        publications = sql.t.CmsPublications.alias('publications')
-        attachments = sql.t.CmsPageAttachments.alias('attachments')
+        pages = sql.t.cms_v_pages.alias('pages')
+        publications = sql.t.cms_publications.alias('publications')
+        attachments = sql.t.cms_page_attachments.alias('attachments')
         return select(
             cls._exclude(pages, pages.c.page_id) +
             cls._exclude(publications) +
@@ -883,10 +883,10 @@ class CmsVPublications(CommonAccesRights, SQLView):
         )
 
     def on_insert(self):
-        pages = sql.t.CmsPages
-        vpages = sql.t.CmsVPages
-        publications = sql.t.CmsPublications
-        texts = sql.t.CmsPageTexts.alias('texts')
+        pages = sql.t.cms_pages
+        vpages = sql.t.cms_v_pages
+        publications = sql.t.cms_publications
+        texts = sql.t.cms_page_texts.alias('texts')
         new = self._reference('new')
         return (
             vpages.insert().values(**{
@@ -915,42 +915,42 @@ class CmsVPublications(CommonAccesRights, SQLView):
             ]),
         )
 
-    update_order = (CmsVPages, CmsPublications)
+    update_order = (cms_v_pages, cms_publications)
     no_update_columns = ('page_id', 'page_key', 'lang')
-    delete_order = (CmsVPages,)
+    delete_order = (cms_v_pages,)
 
 
-class CmsPublicationLanguages(CommonAccesRights, sql.SQLTable):
+class cms_publication_languages(CommonAccesRights, sql.SQLTable):
     """list of content languages available for given publication"""
     name = 'cms_publication_languages'
     fields = (sql.Column('page_id', pd.Integer(not_null=True),
-                         references=sql.a(sql.r.CmsPublications.page_id, ondelete='CASCADE')),
+                         references=sql.a(sql.r.cms_publications.page_id, ondelete='CASCADE')),
               sql.Column('lang', pd.String(not_null=True),
                          doc="language code"),
               )
     unique = (('page_id', 'lang',),)
 
 
-class CmsPublicationIndexes(CommonAccesRights, sql.SQLTable):
+class cms_publication_indexes(CommonAccesRights, sql.SQLTable):
     """list of indexes available for given publication"""
     name = 'cms_publication_indexes'
     fields = (sql.PrimaryColumn('index_id', pd.Serial(not_null=True)),
               sql.Column('page_id', pd.Integer(not_null=True),
-                         references=sql.a(sql.r.CmsPublications.page_id, ondelete='CASCADE')),
+                         references=sql.a(sql.r.cms_publications.page_id, ondelete='CASCADE')),
               sql.Column('title', pd.String(not_null=True)),
               )
     unique = (('page_id', 'title',),)
 
 
-class CmsPublicationExports(CommonAccesRights, sql.SQLTable):
+class cms_publication_exports(CommonAccesRights, sql.SQLTable):
     """Exported publication versions."""
     name = 'cms_publication_exports'
     fields = (
         sql.PrimaryColumn('export_id', pd.Serial()),
         sql.Column('page_id', pd.Integer(not_null=True),
-                   references=sql.a(sql.r.CmsPublications.page_id, ondelete='CASCADE')),
+                   references=sql.a(sql.r.cms_publications.page_id, ondelete='CASCADE')),
         sql.Column('lang', pd.String(minlen=2, maxlen=2, not_null=True),
-                   references=sql.a(sql.r.CmsLanguages.lang,
+                   references=sql.a(sql.r.cms_languages.lang,
                                     onupdate='CASCADE', ondelete='CASCADE')),
         sql.Column('format', pd.String(not_null=True)),
         sql.Column('version', pd.String(not_null=True)),
@@ -963,29 +963,29 @@ class CmsPublicationExports(CommonAccesRights, sql.SQLTable):
     unique = (('page_id', 'lang', 'format', 'version',),)
 
 
-class CmsVPublicationExports(CommonAccesRights, SQLView):
+class cms_v_publication_exports(CommonAccesRights, SQLView):
     name = 'cms_v_publication_exports'
 
     @classmethod
     def query(cls):
-        exports = sql.t.CmsPublicationExports.alias('e')
+        exports = sql.t.cms_publication_exports.alias('e')
         return select(list(exports.c) +
                       [(stype(exports.c.page_id) + sval('.') + exports.c.lang).label('page_key')],
                       from_obj=exports)
-    insert_order = (CmsPublicationExports,)
-    update_order = (CmsPublicationExports,)
-    delete_order = (CmsPublicationExports,)
+    insert_order = (cms_publication_exports,)
+    update_order = (cms_publication_exports,)
+    delete_order = (cms_publication_exports,)
 
 
-class CmsNews(CommonAccesRights, Base_CachingTable):
+class cms_news(CommonAccesRights, Base_CachingTable):
     name = 'cms_news'
     fields = (sql.PrimaryColumn('news_id', pd.Serial(not_null=True)),
               sql.Column('page_id', pd.Integer(not_null=True),
-                         references=sql.a(sql.r.CmsPages, ondelete='CASCADE')),
+                         references=sql.a(sql.r.cms_pages, ondelete='CASCADE')),
               sql.Column('lang', pd.String(minlen=2, maxlen=2, not_null=True),
-                         references=sql.a(sql.r.CmsLanguages.lang, onupdate='CASCADE')),
+                         references=sql.a(sql.r.cms_languages.lang, onupdate='CASCADE')),
               sql.Column('author', pd.Integer(not_null=True),
-                         references=sql.r.Users),
+                         references=sql.r.users),
               sql.Column('timestamp', pd.DateTime(not_null=True), default=func.now()),
               sql.Column('title', pd.String(not_null=True)),
               sql.Column('content', pd.String(not_null=True)),
@@ -993,25 +993,25 @@ class CmsNews(CommonAccesRights, Base_CachingTable):
               )
 
 
-class CmsVNews(CommonAccesRights, SQLView):
+class cms_v_news(CommonAccesRights, SQLView):
     name = 'cms_v_news'
 
     @classmethod
     def query(cls):
-        n = sql.t.CmsNews.alias('n')
-        u = sql.t.Users.alias('u')
+        n = sql.t.cms_news.alias('n')
+        u = sql.t.users.alias('u')
         return select([n,
                        u.c.user_.label('author_name'),
                        u.c.login.label('author_login'),
                        ],
                       from_obj=[n.join(u, n.c.author == u.c.uid)])
-    insert_order = (CmsNews,)
-    update_order = (CmsNews,)
-    delete_order = (CmsNews,)
+    insert_order = (cms_news,)
+    update_order = (cms_news,)
+    delete_order = (cms_news,)
     no_insert_columns = ('news_id',)
 
 
-class CmsRecentTimestamp(sql.SQLFunction):
+class cms_recent_timestamp(sql.SQLFunction):
     """Return true if `ts' is not older than `max_days' days.  Needed for a pytis
     filtering condition (FunctionCondition is currently too simple to express
     this directly).
@@ -1030,15 +1030,15 @@ class CmsRecentTimestamp(sql.SQLFunction):
         return 'select (current_date - $1::date) < $2'
 
 
-class CmsPlanner(CommonAccesRights, Base_CachingTable):
+class cms_planner(CommonAccesRights, Base_CachingTable):
     name = 'cms_planner'
     fields = (sql.PrimaryColumn('planner_id', pd.Serial(not_null=True)),
               sql.Column('page_id', pd.Integer(not_null=True),
-                         references=sql.a(sql.r.CmsPages, ondelete='CASCADE')),
+                         references=sql.a(sql.r.cms_pages, ondelete='CASCADE')),
               sql.Column('lang', pd.String(minlen=2, maxlen=2, not_null=True),
-                         references=sql.a(sql.r.CmsLanguages.lang, onupdate='CASCADE')),
+                         references=sql.a(sql.r.cms_languages.lang, onupdate='CASCADE')),
               sql.Column('author', pd.Integer(not_null=True),
-                         references=sql.r.Users),
+                         references=sql.r.users),
               sql.Column('timestamp', pd.DateTime(not_null=True), default=func.now()),
               sql.Column('start_date', pd.Date(not_null=True)),
               sql.Column('end_date', pd.Date()),
@@ -1047,32 +1047,32 @@ class CmsPlanner(CommonAccesRights, Base_CachingTable):
               )
 
 
-class CmsVPlanner(CommonAccesRights, SQLView):
+class cms_v_planner(CommonAccesRights, SQLView):
     name = 'cms_v_planner'
 
     @classmethod
     def query(cls):
-        p = sql.t.CmsPlanner.alias('p')
-        u = sql.t.Users.alias('u')
+        p = sql.t.cms_planner.alias('p')
+        u = sql.t.users.alias('u')
         return select([p,
                        u.c.user_.label('author_name'),
                        u.c.login.label('author_login'),
                        ],
                       from_obj=[p.join(u, p.c.author == u.c.uid)])
-    insert_order = (CmsPlanner,)
-    update_order = (CmsPlanner,)
-    delete_order = (CmsPlanner,)
+    insert_order = (cms_planner,)
+    update_order = (cms_planner,)
+    delete_order = (cms_planner,)
     no_insert_columns = ('planner_id',)
 
 
-class CmsNewsletters(CommonAccesRights, Base_CachingTable):
+class cms_newsletters(CommonAccesRights, Base_CachingTable):
     name = 'cms_newsletters'
     fields = (
         sql.PrimaryColumn('newsletter_id', pd.Serial(not_null=True)),
         sql.Column('page_id', pd.Integer(not_null=True),
-                   references=sql.a(sql.r.CmsPages, ondelete='CASCADE')),
+                   references=sql.a(sql.r.cms_pages, ondelete='CASCADE')),
         sql.Column('lang', pd.String(minlen=2, maxlen=2, not_null=True),
-                   references=sql.a(sql.r.CmsLanguages.lang, onupdate='CASCADE')),
+                   references=sql.a(sql.r.cms_languages.lang, onupdate='CASCADE')),
         sql.Column('title', pd.String(not_null=True)),
         sql.Column('image', pd.Binary(not_null=True)),
         sql.Column('image_width', pd.Integer(not_null=True)),
@@ -1081,9 +1081,9 @@ class CmsNewsletters(CommonAccesRights, Base_CachingTable):
         sql.Column('sender', pd.String(not_null=True)),
         sql.Column('address', pd.String(not_null=True)),
         sql.Column('read_role_id', pd.PgName(not_null=True), default='anyone',
-                   references=sql.a(sql.r.Roles, onupdate='CASCADE')),
+                   references=sql.a(sql.r.roles, onupdate='CASCADE')),
         sql.Column('write_role_id', pd.PgName(not_null=True), default='cms-content-admin',
-                   references=sql.a(sql.r.Roles, onupdate='CASCADE', ondelete='SET DEFAULT')),
+                   references=sql.a(sql.r.roles, onupdate='CASCADE', ondelete='SET DEFAULT')),
         sql.Column('bg_color', pd.String(not_null=True)),
         sql.Column('text_color', pd.String(not_null=True)),
         sql.Column('link_color', pd.String(not_null=True)),
@@ -1098,13 +1098,13 @@ class CmsNewsletters(CommonAccesRights, Base_CachingTable):
     )
 
 
-class CmsNewsletterSubscription(CommonAccesRights, Base_CachingTable):
+class cms_newsletter_subscription(CommonAccesRights, Base_CachingTable):
     name = 'cms_newsletter_subscription'
     fields = (
         sql.PrimaryColumn('subscription_id', pd.Serial(not_null=True)),
         sql.Column('newsletter_id', pd.Integer(not_null=True),
-                   references=sql.a(sql.r.CmsNewsletters, ondelete='CASCADE')),
-        sql.Column('uid', pd.Integer(), references=sql.r.Users),
+                   references=sql.a(sql.r.cms_newsletters, ondelete='CASCADE')),
+        sql.Column('uid', pd.Integer(), references=sql.r.users),
         sql.Column('email', pd.String()),
         sql.Column('code', pd.String(), doc='Unsubscription code (email only)'),
         sql.Column('timestamp', pd.DateTime(not_null=True), default=func.now()),
@@ -1115,13 +1115,13 @@ class CmsNewsletterSubscription(CommonAccesRights, Base_CachingTable):
               ('newsletter_id', 'email',),)
 
 
-class CmsVNewsletterSubscription(CommonAccesRights, SQLView):
+class cms_v_newsletter_subscription(CommonAccesRights, SQLView):
     name = 'cms_v_newsletter_subscription'
 
     @classmethod
     def query(cls):
-        s = sql.t.CmsNewsletterSubscription.alias('s')
-        u = sql.t.Users.alias('u')
+        s = sql.t.cms_newsletter_subscription.alias('s')
+        u = sql.t.users.alias('u')
         return select(cls._exclude(s, s.c.email) +
                       [coalesce(s.c.email, u.c.email).label('email'),
                        u.c.user_.label('user_name'),
@@ -1133,29 +1133,29 @@ class CmsVNewsletterSubscription(CommonAccesRights, SQLView):
         return ("insert into public.cms_newsletter_subscription "
                 "(newsletter_id, email, uid, code, timestamp) "
                 "VALUES (new.newsletter_id, new.email, new.uid, new.code, new.timestamp);",)
-    delete_order = (CmsNewsletterSubscription,)
+    delete_order = (cms_newsletter_subscription,)
     no_insert_columns = ('subscription_id',)
 
 
-class CmsNewsletterEditions(CommonAccesRights, Base_CachingTable):
+class cms_newsletter_editions(CommonAccesRights, Base_CachingTable):
     name = 'cms_newsletter_editions'
     fields = (
         sql.PrimaryColumn('edition_id', pd.Serial(not_null=True)),
         sql.Column('newsletter_id', pd.Integer(not_null=True),
-                   references=sql.a(sql.r.CmsNewsletters, ondelete='CASCADE')),
-        sql.Column('creator', pd.Integer(not_null=True), references=sql.r.Users),
+                   references=sql.a(sql.r.cms_newsletters, ondelete='CASCADE')),
+        sql.Column('creator', pd.Integer(not_null=True), references=sql.r.users),
         sql.Column('created', pd.DateTime(not_null=True), default=func.now()),
         sql.Column('sent', pd.DateTime()),
         sql.Column('access_code', pd.String()),
     )
 
 
-class CmsNewsletterPosts(CommonAccesRights, Base_CachingTable):
+class cms_newsletter_posts(CommonAccesRights, Base_CachingTable):
     name = 'cms_newsletter_posts'
     fields = (
         sql.PrimaryColumn('post_id', pd.Serial(not_null=True)),
         sql.Column('edition_id', pd.Integer(not_null=True),
-                   references=sql.a(sql.r.CmsNewsletterEditions, ondelete='CASCADE')),
+                   references=sql.a(sql.r.cms_newsletter_editions, ondelete='CASCADE')),
         sql.Column('ord', pd.Integer()),
         sql.Column('title', pd.String(not_null=True)),
         sql.Column('content', pd.String(not_null=True)),
@@ -1166,44 +1166,45 @@ class CmsNewsletterPosts(CommonAccesRights, Base_CachingTable):
     )
 
 
-class CmsDiscussions(CommonAccesRights, sql.SQLTable):
+class cms_discussions(CommonAccesRights, sql.SQLTable):
     name = 'cms_discussions'
-    fields = (sql.PrimaryColumn('comment_id', pd.Serial(not_null=True)),
-              sql.Column('page_id', pd.Integer(not_null=True),
-                         references=sql.a(sql.r.CmsPages, ondelete='CASCADE')),
-              sql.Column('lang', pd.String(minlen=2, maxlen=2, not_null=True),
-                         references=sql.a(sql.r.CmsLanguages.lang, onupdate='CASCADE')),
-              sql.Column('author', pd.Integer(not_null=True),
-                         references=sql.r.Users),
-              sql.Column('timestamp', pd.DateTime(not_null=True), default=func.now()),
-              sql.Column('in_reply_to', pd.Integer(),
-                         references=sql.a(sql.r.CmsDiscussions, ondelete='SET NULL')),
-              sql.Column('tree_order', pd.String(not_null=True), index=True),
-              sql.Column('text', pd.String(not_null=True)),
-              )
+    fields = (
+        sql.PrimaryColumn('comment_id', pd.Serial(not_null=True)),
+        sql.Column('page_id', pd.Integer(not_null=True),
+                   references=sql.a(sql.r.cms_pages, ondelete='CASCADE')),
+        sql.Column('lang', pd.String(minlen=2, maxlen=2, not_null=True),
+                   references=sql.a(sql.r.cms_languages.lang, onupdate='CASCADE')),
+        sql.Column('author', pd.Integer(not_null=True),
+                   references=sql.r.users),
+        sql.Column('timestamp', pd.DateTime(not_null=True), default=func.now()),
+        sql.Column('in_reply_to', pd.Integer(),
+                   references=sql.a(sql.r.cms_discussions, ondelete='SET NULL')),
+        sql.Column('tree_order', pd.String(not_null=True), index=True),
+        sql.Column('text', pd.String(not_null=True)),
+    )
 
 
-class CmsDiscussionsTriggerBeforeInsert(sql.SQLPlFunction, sql.SQLTrigger):
+class cms_discussions_trigger_before_insert(sql.SQLPlFunction, sql.SQLTrigger):
     name = 'cms_discussions_trigger_before_insert'
     arguments = ()
-    table = CmsDiscussions
+    table = cms_discussions
     position = 'before'
     events = ('insert',)
 
 
-class CmsPanels(CommonAccesRights, Base_CachingTable):
+class cms_panels(CommonAccesRights, Base_CachingTable):
     name = 'cms_panels'
     fields = (sql.PrimaryColumn('panel_id', pd.Serial(not_null=True)),
               sql.Column('site', pd.String(not_null=True),
-                         references=sql.a(sql.r.CmsConfig.site,
+                         references=sql.a(sql.r.cms_config.site,
                                           onupdate='CASCADE', ondelete='CASCADE')),
               sql.Column('lang', pd.String(minlen=2, maxlen=2, not_null=True),
-                         references=sql.a(sql.r.CmsLanguages.lang, onupdate='CASCADE')),
+                         references=sql.a(sql.r.cms_languages.lang, onupdate='CASCADE')),
               sql.Column('identifier', pd.String()),
               sql.Column('title', pd.String(not_null=True)),
               sql.Column('ord', pd.Integer()),
               sql.Column('page_id', pd.Integer(),
-                         references=sql.a(sql.r.CmsPages, ondelete='SET NULL')),
+                         references=sql.a(sql.r.cms_pages, ondelete='SET NULL')),
               sql.Column('size', pd.Integer()),
               sql.Column('content', pd.String()),
               sql.Column('_content', pd.String()),
@@ -1212,28 +1213,28 @@ class CmsPanels(CommonAccesRights, Base_CachingTable):
     unique = (('identifier', 'site', 'lang',),)
 
 
-class CmsVPanels(CommonAccesRights, SQLView):
+class cms_v_panels(CommonAccesRights, SQLView):
     name = 'cms_v_panels'
 
     @classmethod
     def query(cls):
-        cms_panels = sql.t.CmsPanels
-        cms_pages = sql.t.CmsPages
+        cms_panels = sql.t.cms_panels
+        cms_pages = sql.t.cms_pages
         return select([cms_panels, cms_pages.c.modname, cms_pages.c.read_role_id],
                       from_obj=[cms_panels.
                                 outerjoin(cms_pages, cms_panels.c.page_id == cms_pages.c.page_id)])
-    insert_order = (CmsPanels,)
-    update_order = (CmsPanels,)
-    delete_order = (CmsPanels,)
+    insert_order = (cms_panels,)
+    update_order = (cms_panels,)
+    delete_order = (cms_panels,)
 
 #
 
 
-class CmsStylesheets(CommonAccesRights, Base_CachingTable):
+class cms_stylesheets(CommonAccesRights, Base_CachingTable):
     name = 'cms_stylesheets'
     fields = (sql.PrimaryColumn('stylesheet_id', pd.Serial(not_null=True)),
               sql.Column('site', pd.String(not_null=True),
-                         references=sql.a(sql.r.CmsConfig.site,
+                         references=sql.a(sql.r.cms_config.site,
                                           onupdate='CASCADE', ondelete='CASCADE')),
               sql.Column('filename', pd.String(maxlen=32, not_null=True)),
               sql.Column('active', pd.Boolean(not_null=True), default=True),
@@ -1249,10 +1250,10 @@ class CmsStylesheets(CommonAccesRights, Base_CachingTable):
     )
 
 
-class CmsThemes(CommonAccesRights, Base_CachingTable):
+class cms_themes(CommonAccesRights, Base_CachingTable):
     name = 'cms_themes'
     fields = (sql.PrimaryColumn('theme_id', pd.Serial(not_null=True),
-                                references=sql.r.CmsThemes),
+                                references=sql.r.cms_themes),
               sql.Column('name', pd.String(not_null=True), unique=True),
               sql.Column('foreground', pd.String(maxlen=7)),
               sql.Column('background', pd.String(maxlen=7)),
@@ -1302,17 +1303,17 @@ class CmsThemes(CommonAccesRights, Base_CachingTable):
     )
 
 
-class CmsSystemTextLabels(CommonAccesRights, Base_CachingTable):
+class cms_system_text_labels(CommonAccesRights, Base_CachingTable):
     name = 'cms_system_text_labels'
     fields = (sql.Column('label', pd.PgName(not_null=True)),
               sql.Column('site', pd.String(not_null=True),
-                         references=sql.a(sql.r.CmsConfig.site,
+                         references=sql.a(sql.r.cms_config.site,
                                           onupdate='CASCADE', ondelete='CASCADE')),
               )
     unique = (('label', 'site',),)
 
 
-class CmsAddTextLabel(sql.SQLPlFunction):
+class cms_add_text_label(sql.SQLPlFunction):
     """"""
     name = 'cms_add_text_label'
     arguments = (sql.Column('_label', pd.PgName()),
@@ -1320,40 +1321,40 @@ class CmsAddTextLabel(sql.SQLPlFunction):
     result_type = None
 
 
-class CmsSystemTexts(CommonAccesRights, Base_CachingTable):
+class cms_system_texts(CommonAccesRights, Base_CachingTable):
     name = 'cms_system_texts'
     fields = (sql.Column('label', pd.PgName(not_null=True)),
               sql.Column('site', pd.String(not_null=True)),
               sql.Column('lang', pd.String(minlen=2, maxlen=2, not_null=True),
-                         references=sql.a(sql.r.CmsLanguages.lang,
+                         references=sql.a(sql.r.cms_languages.lang,
                                           onupdate='CASCADE', ondelete='CASCADE')),
               sql.Column('description', pd.String(), default=''),
               sql.Column('content', pd.String(), default=''),
               )
     unique = (('label', 'site', 'lang',),)
     foreign_keys = (sql.a(('label', 'site',),
-                          (sql.r.CmsSystemTextLabels.label, sql.r.CmsSystemTextLabels.site,),
+                          (sql.r.cms_system_text_labels.label, sql.r.cms_system_text_labels.site,),
                           onupdate='CASCADE', ondelete='CASCADE'),)
 
 
-class CmsVSystemTextLabels(CommonAccesRights, SQLView):
+class cms_v_system_text_labels(CommonAccesRights, SQLView):
     name = 'cms_v_system_text_labels'
 
     @classmethod
     def query(cls):
-        labels = sql.t.CmsSystemTextLabels
-        languages = sql.t.CmsLanguages
+        labels = sql.t.cms_system_text_labels
+        languages = sql.t.cms_languages
         return select([labels.c.label, labels.c.site, languages.c.lang],
                       from_obj=[labels, languages])
 
 
-class CmsVSystemTexts(CommonAccesRights, SQLView):
+class cms_v_system_texts(CommonAccesRights, SQLView):
     name = 'cms_v_system_texts'
 
     @classmethod
     def query(cls):
         labels = sql.t.CmsVSystemTextLabels
-        texts = sql.t.CmsSystemTexts
+        texts = sql.t.cms_system_texts
         return select(
             [(labels.c.label + sval(':') + labels.c.site + sval(':') + labels.c.lang)
              .label('text_id'),
@@ -1370,7 +1371,7 @@ class CmsVSystemTexts(CommonAccesRights, SQLView):
            values (new.label, new.site, new.lang, new.description, new.content);
         )""",)
     # gensqlalchemy doesn't generate a proper where clause here (maybe multicolumn foreign key?)
-    # delete_order = (CmsSystemTextLabels,)
+    # delete_order = (cms_system_text_labels,)
 
     def on_delete(self):
         return ("delete from cms_system_text_labels where label = old.label and site = old.site;",)
@@ -1378,23 +1379,23 @@ class CmsVSystemTexts(CommonAccesRights, SQLView):
 #
 
 
-class CmsEmailLabels(CommonAccesRights, sql.SQLTable):
+class cms_email_labels(CommonAccesRights, sql.SQLTable):
     name = 'cms_email_labels'
     fields = (sql.PrimaryColumn('label', pd.PgName(not_null=True)),)
 
 
-class CmsAddEmailLabel(sql.SQLPlFunction):
+class cms_add_email_label(sql.SQLPlFunction):
     name = 'cms_add_email_label'
     arguments = (sql.Column('_label', pd.PgName()),)
     result_type = None
 
 
-class CmsEmails(CommonAccesRights, sql.SQLTable):
+class cms_emails(CommonAccesRights, sql.SQLTable):
     name = 'cms_emails'
     fields = (sql.Column('label', pd.PgName(not_null=True),
-                         references=sql.r.CmsEmailLabels),
+                         references=sql.r.cms_email_labels),
               sql.Column('lang', pd.String(minlen=2, maxlen=2, not_null=True),
-                         references=sql.a(sql.r.CmsLanguages.lang,
+                         references=sql.a(sql.r.cms_languages.lang,
                                           onupdate='CASCADE', ondelete='CASCADE')),
               sql.Column('description', pd.String()),
               sql.Column('subject', pd.String()),
@@ -1404,18 +1405,18 @@ class CmsEmails(CommonAccesRights, sql.SQLTable):
     unique = (('label', 'lang',),)
 
 
-class CmsVEmails(CommonAccesRights, SQLView):
+class cms_v_emails(CommonAccesRights, SQLView):
     name = 'cms_v_emails'
 
     @classmethod
     def query(cls):
-        el = sql.c.CmsEmailLabels
-        lang = sql.c.CmsLanguages
-        e = sql.c.CmsEmails
+        el = sql.c.cms_email_labels
+        lang = sql.c.cms_languages
+        e = sql.c.cms_emails
         return select([(el.label + sval(':') + lang.lang).label('text_id'),
                        el.label, lang.lang, e.description, e.subject, e.cc, e.content],
-                      from_obj=[sql.t.CmsEmailLabels,
-                                sql.t.CmsLanguages.outerjoin(sql.t.CmsEmails)],
+                      from_obj=[sql.t.cms_email_labels,
+                                sql.t.cms_languages.outerjoin(sql.t.cms_emails)],
                       whereclause=and_(el.label == e.label, lang.lang == e.lang))
 
     def on_insert(self):
@@ -1439,22 +1440,22 @@ class CmsVEmails(CommonAccesRights, SQLView):
         )""",)
 
 
-class CmsEmailAttachments(CommonAccesRights, sql.SQLTable):
+class cms_email_attachments(CommonAccesRights, sql.SQLTable):
     name = 'cms_email_attachments'
     fields = (sql.PrimaryColumn('attachment_id', pd.Serial(not_null=True)),
               sql.Column('label', pd.PgName(not_null=True),
-                         references=sql.a(sql.r.CmsEmailLabels, ondelete='CASCADE')),
+                         references=sql.a(sql.r.cms_email_labels, ondelete='CASCADE')),
               sql.Column('filename', pd.String(not_null=True)),
               sql.Column('mime_type', pd.String(not_null=True)),
               )
 
 
-class CmsEmailSpool(CommonAccesRights, sql.SQLTable):
+class cms_email_spool(CommonAccesRights, sql.SQLTable):
     name = 'cms_email_spool'
     fields = (sql.PrimaryColumn('id', pd.Serial(not_null=True)),
               sql.Column('sender_address', pd.String()),
               sql.Column('role_id', pd.PgName(),
-                         references=sql.a(sql.r.Roles, onupdate='CASCADE', ondelete='CASCADE'),
+                         references=sql.a(sql.r.roles, onupdate='CASCADE', ondelete='CASCADE'),
                          doc="recipient role, if NULL then all users"),
               sql.Column('subject', pd.String()),
               sql.Column('content', pd.String(),
@@ -1466,10 +1467,8 @@ class CmsEmailSpool(CommonAccesRights, sql.SQLTable):
                          doc="set TRUE after the mail was successfully sent"),
               )
 
-#
 
-
-class CmsCryptoNames(CommonAccesRights, sql.SQLTable):
+class cms_crypto_names(CommonAccesRights, sql.SQLTable):
     name = 'cms_crypto_names'
     fields = (sql.PrimaryColumn('name', pd.String(not_null=True)),
               sql.Column('description', pd.String()),
@@ -1478,21 +1477,21 @@ class CmsCryptoNames(CommonAccesRights, sql.SQLTable):
     access_rights = (('ALL', 'www-data',),)
 
 
-class CmsCryptoKeys(CommonAccesRights, sql.SQLTable):
+class cms_crypto_keys(CommonAccesRights, sql.SQLTable):
     name = 'cms_crypto_keys'
     fields = (sql.PrimaryColumn('key_id', pd.Serial(not_null=True)),
               sql.Column('name', pd.String(not_null=True),
                          references=sql.a(sql.r.CmsCryptoNames,
                                           onupdate='CASCADE', ondelete='CASCADE')),
               sql.Column('uid', pd.Integer(not_null=True),
-                         references=sql.a(sql.r.Users, onupdate='CASCADE', ondelete='CASCADE')),
+                         references=sql.a(sql.r.users, onupdate='CASCADE', ondelete='CASCADE')),
               sql.Column('key', pd.Binary(not_null=True)),
               )
     unique = (('name', 'uid',),)
     access_rights = (('ALL', 'www-data',),)
 
 
-class CmsCryptoExtractKey(sql.SQLPlFunction):
+class cms_crypto_extract_key(sql.SQLPlFunction):
     name = 'cms_crypto_extract_key'
     arguments = (sql.Column('encrypted', pd.Binary()),
                  sql.Column('psw', pd.String()),)
@@ -1500,7 +1499,7 @@ class CmsCryptoExtractKey(sql.SQLPlFunction):
     stability = 'immutable'
 
 
-class CmsCryptoStoreKey(sql.SQLPlFunction):
+class cms_crypto_store_key(sql.SQLPlFunction):
     "This is a PL/pgSQL, and not SQL, function in order to prevent direct dependency on pg_crypto."
     name = 'cms_crypto_store_key'
     arguments = (sql.Column('key', pd.String()),
@@ -1512,7 +1511,7 @@ class CmsCryptoStoreKey(sql.SQLPlFunction):
         return "begin return pgp_sym_encrypt('wiking:'||$1, $2); end;"
 
 
-class CmsCryptoInsertKey(sql.SQLPlFunction):
+class cms_crypto_insert_key(sql.SQLPlFunction):
     name = 'cms_crypto_insert_key'
     arguments = (sql.Column('name_', pd.String()),
                  sql.Column('uid_', pd.Integer()),
@@ -1521,7 +1520,7 @@ class CmsCryptoInsertKey(sql.SQLPlFunction):
     result_type = pd.Boolean()
 
 
-class CmsCryptoChangePassword(sql.SQLPlFunction):
+class cms_crypto_change_password(sql.SQLPlFunction):
     name = 'cms_crypto_change_password'
     arguments = (sql.Column('id_', pd.Integer()),
                  sql.Column('old_psw', pd.String()),
@@ -1529,7 +1528,7 @@ class CmsCryptoChangePassword(sql.SQLPlFunction):
     result_type = pd.Boolean()
 
 
-class CmsCryptoCopyKey(sql.SQLPlFunction):
+class cms_crypto_copy_key(sql.SQLPlFunction):
     name = 'cms_crypto_copy_key'
     arguments = (sql.Column('name_', pd.String()),
                  sql.Column('from_uid', pd.Integer()),
@@ -1539,7 +1538,7 @@ class CmsCryptoCopyKey(sql.SQLPlFunction):
     result_type = pd.Boolean()
 
 
-class CmsCryptoDeleteKey(sql.SQLPlFunction):
+class cms_crypto_delete_key(sql.SQLPlFunction):
     name = 'cms_crypto_delete_key'
     arguments = (sql.Column('name_', pd.String()),
                  sql.Column('uid_', pd.Integer()),
@@ -1549,41 +1548,41 @@ class CmsCryptoDeleteKey(sql.SQLPlFunction):
 #
 
 
-class CmsCryptoUnlockedPasswords(CommonAccesRights, sql.SQLTable):
+class cms_crypto_unlocked_passwords(CommonAccesRights, sql.SQLTable):
     name = 'cms_crypto_unlocked_passwords'
     fields = (sql.Column('key_id', pd.Integer(not_null=True),
-                         references=sql.a(sql.r.CmsCryptoKeys,
+                         references=sql.a(sql.r.cms_crypto_keys,
                                           onupdate='CASCADE', ondelete='CASCADE')),
               sql.Column('password', pd.Binary()),
               )
     access_rights = (('ALL', 'www-data',),)
 
 
-class CmsCryptoUnlockedPasswordsInsertTrigger(sql.SQLPlFunction, sql.SQLTrigger):
+class cms_crypto_unlocked_passwords_insert_trigger(sql.SQLPlFunction, sql.SQLTrigger):
     name = 'cms_crypto_unlocked_passwords_insert_trigger'
     arguments = ()
-    table = CmsCryptoUnlockedPasswords
+    table = cms_crypto_unlocked_passwords
     position = 'before'
     events = ('insert',)
 
 
-class CmsCryptoUnlockPasswords(sql.SQLFunction):
+class cms_crypto_unlock_passwords(sql.SQLFunction):
     name = 'cms_crypto_unlock_passwords'
     arguments = (sql.Column('uid_', pd.Integer()),
                  sql.Column('psw', pd.String()),
                  sql.Column('cookie', pd.String()),)
     result_type = None
-    depends_on = (CmsCryptoUnlockedPasswords,)
+    depends_on = (cms_crypto_unlocked_passwords,)
 
 
-class CmsCryptoLockPasswords(sql.SQLFunction):
+class cms_crypto_lock_passwords(sql.SQLFunction):
     name = 'cms_crypto_lock_passwords'
     arguments = (sql.Column('uid_', pd.Integer()),)
     result_type = None
-    depends_on = (CmsCryptoUnlockedPasswords,)
+    depends_on = (cms_crypto_unlocked_passwords,)
 
 
-class CmsCryptoCookPasswords(sql.SQLPlFunction):
+class cms_crypto_cook_passwords(sql.SQLPlFunction):
     name = 'cms_crypto_cook_passwords'
     arguments = (sql.Column('uid_', pd.Integer()),
                  sql.Column('cookie', pd.String()),)
@@ -1591,7 +1590,7 @@ class CmsCryptoCookPasswords(sql.SQLPlFunction):
     multirow = True
 
 
-class PytisCryptoUnlockCurrentUserPasswords(sql.SQLFunction):
+class pytis_crypto_unlock_current_user_passwords(sql.SQLFunction):
     """Dummy function to avoid error messages in logs (called by Pytis)."""
     name = 'pytis_crypto_unlock_current_user_passwords'
     arguments = (sql.Column('password_', pd.String()),)
@@ -1603,7 +1602,7 @@ class PytisCryptoUnlockCurrentUserPasswords(sql.SQLFunction):
         return "select ''::text where false;"
 
 
-class PytisCryptoDbKey(sql.SQLFunction):
+class pytis_crypto_db_key(sql.SQLFunction):
     """Dummy function needed by Pytis initialization when dbpass is set."""
     name = 'pytis_crypto_db_key'
     arguments = (
