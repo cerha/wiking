@@ -1379,7 +1379,7 @@ class cms_v_system_texts(CommonAccesRights, SQLView):
 
     @classmethod
     def query(cls):
-        labels = sql.t.CmsVSystemTextLabels
+        labels = sql.t.cms_v_system_text_labels
         texts = sql.t.cms_system_texts
         return select(
             [(labels.c.label + sval(':') + labels.c.site + sval(':') + labels.c.lang)
@@ -1516,7 +1516,7 @@ class cms_crypto_keys(CommonAccesRights, sql.SQLTable):
     fields = (
         sql.PrimaryColumn('key_id', pd.Serial(not_null=True)),
         sql.Column('name', pd.String(not_null=True),
-                   references=sql.a(sql.r.CmsCryptoNames,
+                   references=sql.a(sql.r.cms_crypto_names,
                                     onupdate='CASCADE', ondelete='CASCADE')),
         sql.Column('uid', pd.Integer(not_null=True),
                    references=sql.a(sql.r.users, onupdate='CASCADE', ondelete='CASCADE')),
