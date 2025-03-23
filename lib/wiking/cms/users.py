@@ -1034,7 +1034,7 @@ class Users(UserManagementModule, CachingPytisModule):
                     # This is a critical error (the user is not able to use the
                     # account without the information from the mail), so we rather
                     # rollback the insertion by raising an error.
-                    raise wiking.DBException(error)
+                    raise wiking.DBException(err)
             else:
                 # Translators: '%(email)s' is replaced by a real e-mail addres.
                 req.message(_("The activation code has been sent to %(email)s.",
