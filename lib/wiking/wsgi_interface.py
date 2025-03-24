@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2010-2016 OUI Technology Ltd.
-# Copyright (C) 2019-2021 Tomáš Cerha <t.cerha@gmail.com>
+# Copyright (C) 2019-2021, 2025 Tomáš Cerha <t.cerha@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -147,7 +147,7 @@ class WsgiRequest(wiking.Request):
         return self._environ.get('REMOTE_HOST', self._environ.get('REMOTE_ADDR'))
 
     def server_hostname(self):
-        return self._environ.get(self.header('Host'), self._environ['SERVER_NAME'])
+        return self.header('Host') or self._environ['SERVER_NAME']
 
     def primary_server_hostname(self):
         # PEP http://www.python.org/dev/peps/pep-3333/ is not very clear on
