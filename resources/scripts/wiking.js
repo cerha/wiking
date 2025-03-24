@@ -1,7 +1,7 @@
 /* -*- coding: utf-8 -*-
  *
  * Copyright (C) 2008-2018 OUI Technology Ltd.
- * Copyright (C) 2019 Tomáš Cerha <t.cerha@gmail.com>
+ * Copyright (C) 2019, 2025 Tomáš Cerha <t.cerha@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,7 +71,7 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
         // as it scrolls the current viewport so that the left side menu column is
         // not visible.
         if (!self.location.hash && !Prototype.Browser.IE && !document.body.down('*[autofocus]')) {
-            this._set_focus($('main-heading'));
+            $('main-heading').up().focus();
         }
 
         // Force initial scroll to respect wiking.scroll_offset.

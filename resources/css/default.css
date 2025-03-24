@@ -252,16 +252,25 @@ button::-moz-focus-inner {
 button:hover:enabled {
     background-image: linear-gradient(#fff, #f0f0f0);
 }
-a:focus,
-td:focus,
-span:focus,
-input:focus,
-button:focus,
-select:focus,
-textarea:focus {
+
+a:focus-visible,
+td:focus-visible,
+span:focus-visible,
+input:focus-visible,
+button:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
     outline: none;
     box-shadow: 0 0 3px 2px cornflowerblue;
 }
+h1:focus-visible {
+    /* Avoid visible focus on the main heading as it is focused
+     * programatically on each page load in order to get AT users
+     * to the main content directly. */
+    outline: none;
+    box-shadow: none;
+}
+
 button[disabled] span {
     opacity: 0.5;
     color: #000;
