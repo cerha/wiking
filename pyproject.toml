@@ -1,0 +1,42 @@
+[build-system]
+requires = ["flit_core>=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "wiking"
+description = "Wiking — Python web application development framework"
+dynamic = ["version"]
+authors = [
+    { name = "Tomas Cerha", email = "cerha@truecode.cz" },
+]
+license = { file = "COPYING" }
+readme = "readme.md"
+requires-python = ">=2.7"
+classifiers = [
+    "Programming Language :: Python :: 2.7",
+    "Programming Language :: Python :: 3.5",
+    "License :: OSI Approved :: GNU General Public License v2 or later (GPLv2+)",
+]
+dependencies = [
+    "pytis",
+    "lcg[all]",
+    "uwsgi",
+]
+
+[project.optional-dependencies]
+cms = [
+    "dnspython",
+    "pbkdf2",
+]
+
+[tool.flit.module]
+module = "wiking"
+
+[tool.flit.sdist]
+include = [
+    "COPYING",
+    "wiking/translations/**/**.mo",
+    "wiking/resources/**",
+    "wiking/**/test.py",  # Include in sdist even if excluded in .flitignore
+]
+

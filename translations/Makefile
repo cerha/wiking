@@ -1,8 +1,10 @@
 # This Makefile is created according to the LCG's Makefile for translations.
 # See the original for comments...
 
+mo_dir := ../wiking/translations
 mo_files := $(foreach d, wiking wiking-cms, \
-              $(patsubst $(d).%.po,%/LC_MESSAGES/$(d).mo, $(wildcard $(d).*.po)))
+              $(patsubst $(d).%.po,$(mo_dir)/%/LC_MESSAGES/$(d).mo, \
+              $(wildcard $(d).*.po)))
 resource_po_files := $(patsubst %.po,../resources/translations/%.po, $(wildcard *.po))
 
 all: $(mo_files) $(resource_po_files)
@@ -23,11 +25,11 @@ $(wildcard *.po):
 
 endif
 
-%/LC_MESSAGES:
-	mkdir -p $*/LC_MESSAGES/
-%/LC_MESSAGES/wiking.mo: wiking.%.po %/LC_MESSAGES
+$(mo_dir)/%/LC_MESSAGES:
+	mkdir -p $(mo_dir)/$*/LC_MESSAGES/
+$(mo_dir)/%/LC_MESSAGES/wiking.mo: wiking.%.po $(mo_dir)/%/LC_MESSAGES
 	msgfmt -v $< -o $@
-%/LC_MESSAGES/wiking-cms.mo: wiking-cms.%.po %/LC_MESSAGES
+$(mo_dir)/%/LC_MESSAGES/wiking-cms.mo: wiking-cms.%.po $(mo_dir)/%/LC_MESSAGES
 	msgfmt -v $< -o $@
 
 ../resources/translations:
@@ -37,4 +39,4 @@ endif
 
 clean:
 	rm -f *.pot
-	rm -rf ../resources/translations/
+	rm -rf $(mo_dir)
