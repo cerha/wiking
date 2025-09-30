@@ -6,3 +6,4 @@
 /resources/translations/*.po
 /wiking/resources/
 /wiking/translations/
+/dist/
