@@ -1,6 +1,6 @@
-.PHONY: translations doc test
+.PHONY: translations doc test resources
 
-all: compile translations
+all: compile translations resources
 
 compile:
 	python -m compileall -d . wiking
@@ -19,17 +19,18 @@ api-doc:
 test:
 	python -m pytest wiking/test.py
 
+resources:
+	git ls-files resources | rsync -av --delete --files-from=- ./ wiking/
+
 # Only for development installs.  Use pip for production/user installs.
 install:
 	flit install --symlink
 
-build: translations
-	git ls-files resources | rsync -av --delete --files-from=- ./ wiking/
+build: translations resources
 	flit build
 
 clean:
-	rm -rf dist/
-	rm -rf wiking/resources
+	rm -rf dist/ wiking/resources
 	make -C translations clean
 
 coverage:
