@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2006-2016 OUI Technology Ltd.
-# Copyright (C) 2019-2022 Tomáš Cerha <t.cerha@gmail.com>
+# Copyright (C) 2019-2025 Tomáš Cerha <t.cerha@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,6 +15,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+__version__ = '2.2.1'
 
 from .util import (  # noqa: F401
     DBG, EVT, OPR,
@@ -54,5 +56,3 @@ from lcg import log as debug  # noqa: F401
 # Initialize the global configuration object 'wiking.cfg'.
 from .configuration import Configuration, ApplicationConfiguration  # noqa: F401
 cfg = Configuration()
-
-__version__ = '2.1.0'
