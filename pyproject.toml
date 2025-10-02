@@ -18,19 +18,18 @@ classifiers = [
     "License :: OSI Approved :: GNU General Public License v2 or later (GPLv2+)",
 ]
 dependencies = [
-    "pytis",
-    "lcg[all]",
-    "uwsgi",
+    #"pytis",
+    "lcg-framework[all]",
+    "pbkdf2",
 ]
 
 [project.optional-dependencies]
 cms = [
     "dnspython",
-    "pbkdf2",
 ]
 
 [tool.flit.module]
-module = "wiking"
+name = "wiking"
 
 [tool.flit.sdist]
 include = [
