@@ -29,12 +29,13 @@ current_timestamp_0 = sqlalchemy.sql.functions.Function('current_timestamp', iva
 
 name_is_not_null = sql.SQLFlexibleValue('name_not_null', default=True)
 
-upgrade_directory = os.path.abspath(os.path.join(os.path.realpath(os.path.dirname(__file__)),
-                                                 '..', '..', '..', 'upgrade'))
+upgrade_directory = os.path.join(os.path.dirname(__file__), 'upgrade')
 upgrade_files = glob.glob(os.path.join(upgrade_directory, 'upgrade.*.sql'))
-assert upgrade_files, 'No upgrade files found in upgrade directory: %s' % upgrade_directory
-last_upgrade_script = max(upgrade_files)
-version = int(last_upgrade_script[len(upgrade_directory) + len(os.sep) + 8:-4])
+if upgrade_files:
+    last_upgrade_script = max(*upgrade_files)
+    version = int(last_upgrade_script[len(upgrade_directory) + len(os.sep) + 8:-4])
+else:
+    raise Exception('No upgrade files found in upgrade directory: %s' % upgrade_directory)
 
 
 class SQLView(sql.SQLView):
