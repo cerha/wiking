@@ -1,7 +1,7 @@
 /* -*- coding: utf-8 -*-
  *
  * Copyright (C) 2014-2016 OUI Technology Ltd.
- * Copyright (C) 2019-2022 Tomáš Cerha <t.cerha@gmail.com>
+ * Copyright (C) 2019-2025 Tomáš Cerha <t.cerha@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,8 +20,7 @@
 "use strict"
 
 wiking.cms = {
-    gettext: new Gettext({domain:'wiking-cms'}),
-    _: msg => wiking.cms.gettext.gettext(msg),
+    _: lcg.gettext('wiking-cms'),
 }
 
 wiking.cms.PublicationExportForm = class extends lcg.Widget {

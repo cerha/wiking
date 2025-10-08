@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2006-2018 OUI Technology Ltd.
-# Copyright (C) 2019-2022 Tomáš Cerha <t.cerha@gmail.com>
+# Copyright (C) 2019-2025 Tomáš Cerha <t.cerha@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -83,11 +83,9 @@ class Exporter(lcg.StyledHtmlExporter, lcg.Html5Exporter):
             self.application = application
             # Make sure that jQuery is always loaded first, so that it is
             # available in any other scripts.
-            scripts = ('jquery.min.js', 'gettext.js', 'lcg.js', 'wiking.js')
+            scripts = ('jquery.min.js', 'jed.min.js', 'lcg.js', 'wiking.js')
             for filename in scripts + tuple(wiking.cfg.extra_scripts):
                 self.resource(filename)
-            if self.lang() != 'en':
-                self.resource('wiking.%s.po' % self.lang())  # Translations for Javascript
 
         def req(self):
             """Return the current request as a 'wiking.Request' instance.
