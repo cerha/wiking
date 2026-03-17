@@ -29,7 +29,7 @@ administrator] and [devel software developer].
   * Wiking project homepage: http://www.freebsoft.org/wiking
   * Mailing-list: wiking@lists.freebsoft.org
     (subscribe at http://lists.freebsoft.org/mailman/listinfo/wiking)
-  * Author: Tomáš Cerha <t.cerha@gmail.com>
+  * Author: Tomáš Cerha <cerha@truecode.cz>
 
 
 == Appendices ==

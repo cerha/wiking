@@ -1,7 +1,7 @@
 # Wiking translations.
 # Copyright (C) 2006-2010 OUI Technology Ltd.
 # This file is distributed under the same license as the Wiking package.
-# Tomáš Cerha <t.cerha@gmail.com>, 2006.
+# Tomáš Cerha <cerha@truecode.cz>, 2006.
 #
 msgid ""
 msgstr ""
