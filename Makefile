@@ -1,4 +1,7 @@
-.PHONY: translations doc test resources
+.PHONY: translations doc test resources javascript
+
+js_src := $(wildcard javascript/*.js)
+js_out := $(js_src:javascript/%.js=wiking/resources/scripts/%.js)
 
 all: compile translations resources
 
@@ -18,6 +21,12 @@ api-doc:
 
 test:
 	python -m pytest wiking/test.py
+
+javascript: $(js_out)
+
+wiking/resources/scripts/%.js: javascript/%.js
+	mkdir -p $(@D)
+	python3 -m rjsmin < $< > $@
 
 resources:
 	git ls-files resources | rsync -av --delete --files-from=- ./ wiking/
