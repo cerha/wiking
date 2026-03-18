@@ -49,10 +49,10 @@ coverage:
 lint: lint-flake8 lint-eslint
 
 lint-flake8:
-	flake8 lcg bin
+	flake8 wiking bin
 
 lint-eslint:
-	npm run eslint resources/scripts/{flash,lcg-exercises,lcg}.js
+	npm run eslint javascript/{wiking,wiking-cms,discussion}.js
 
 lint-csslint:
 	npm run csslint resources/css
