@@ -3,13 +3,17 @@
 
 domains := wiking wiking-cms
 mo_dir := ../wiking/translations
+json_dir := ../wiking/resources/translations
 mo_files := $(foreach d, $(domains), $(patsubst $(d).%.po,\
                                        $(mo_dir)/%/LC_MESSAGES/$(d).mo,\
                                        $(wildcard $(d).*.po)))
+json_files := $(foreach d, $(domains), $(patsubst $(d).%.po,\
+                                       $(json_dir)/$(d).%.po.json,\
+                                       $(wildcard $(d).*.po)))
 pot_files := $(patsubst %,%.pot,$(domains))
 
-all: $(mo_files)
-extract: $(wildcard *.po) $(pot_files) $(mo_files)
+all: $(mo_files) $(json_files)
+extract: $(wildcard *.po) $(pot_files) $(mo_files) $(json_files)
 
 ifeq ($(MAKECMDGOALS),extract)
 
@@ -40,9 +44,11 @@ $(mo_dir)/%/LC_MESSAGES/wiking-cms.mo: wiking-cms.%.po
 	@mkdir -p $(dir $@)
 	msgfmt -v $< -o $@
 
-#../resources/translations/%.po: %.po ../resources/translations
-#	@mkdir -p ../resources/translations/
-#	cp $< $@
+$(json_dir)/%.po.json: %.po
+	@mkdir -p $(dir $@)
+	pojson $< > $@
 
 clean:
 	rm -rf *.pot $(mo_dir)
+
+.PHONY: all extract clean
