@@ -674,10 +674,8 @@ class Users(UserManagementModule, CachingPytisModule):
             state = record['state'].value()
             if state in (Users.AccountState.NEW, Users.AccountState.UNAPPROVED):
                 return pp.Style(foreground='#a20')
-            elif state == Users.AccountState.DISABLED:
-                return pp.Style(overstrike=True)
-            elif state == Users.AccountState.REJECTED:
-                return pp.Style(foreground='#888', overstrike=True)
+            elif state in (Users.AccountState.DISABLED, Users.AccountState.REJECTED):
+                return pp.Style(foreground='#666')
             else:
                 return None
 
