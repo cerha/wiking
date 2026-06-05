@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2006-2017 OUI Technology Ltd.
-# Copyright (C) 2019-2025 Tomáš Cerha <cerha@truecode.cz>
+# Copyright (C) 2019-2026 Tomáš Cerha <cerha@truecode.cz>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -536,12 +536,15 @@ class Users(UserManagementModule, CachingPytisModule):
         """Users with full access to the application."""
         DISABLED = 'disabled'
         """Users explicitly blocked from access to the application by administrator."""
+        REJECTED = 'rejected'
+        """User accounts rejected by administrator during registration (unjustified requests)."""
 
         enumeration = (
             (NEW, _("New account")),
             (UNAPPROVED, _("Unapproved account")),
-            (DISABLED, _("Account disabled")),
+            (DISABLED, _("Disabled account")),
             (ENABLED, _("Active account")),
+            (REJECTED, _("Rejected account")),
         )
         selection_type = pp.SelectionType.CHOICE
 
@@ -668,8 +671,13 @@ class Users(UserManagementModule, CachingPytisModule):
             return computer(lambda r: field in wiking.cms.cfg.registration_fields)
 
         def _state_style(self, record):
-            if record['state'].value() in (Users.AccountState.NEW, Users.AccountState.UNAPPROVED):
+            state = record['state'].value()
+            if state in (Users.AccountState.NEW, Users.AccountState.UNAPPROVED):
                 return pp.Style(foreground='#a20')
+            elif state == Users.AccountState.DISABLED:
+                return pp.Style(overstrike=True)
+            elif state == Users.AccountState.REJECTED:
+                return pp.Style(foreground='#888', overstrike=True)
             else:
                 return None
 
@@ -759,8 +767,10 @@ class Users(UserManagementModule, CachingPytisModule):
                            filter=pd.EQ('state', pd.sval(Users.AccountState.NEW))),
                 # Translators: Name for a group of users whose accounts were blocked.
                 pp.Profile('disabled', _("Disabled users"),
-                           filter=pd.EQ('state', pd.sval(Users.AccountState.DISABLED)),
-                           ),
+                           filter=pd.EQ('state', pd.sval(Users.AccountState.DISABLED))),
+                # Translators: Name for a group of users whose accounts were blocked.
+                pp.Profile('rejected', _("Rejected registration requests"),
+                           filter=pd.EQ('state', pd.sval(Users.AccountState.REJECTED))),
                 # Translators: Accounts as in user accounts (computer terminology).
                 pp.Profile('all', _("All accounts"), None),
                 default='enabled',
@@ -787,7 +797,12 @@ class Users(UserManagementModule, CachingPytisModule):
                    descr=_("Disable this account"),
                    enabled=lambda r: r['state'].value() == Users.AccountState.ENABLED,
                    visible=lambda r: r['state'].value() not in (Users.AccountState.NEW,
-                                                                Users.AccountState.UNAPPROVED)),
+                                                                Users.AccountState.UNAPPROVED,
+                                                                Users.AccountState.REJECTED)),
+            Action('reject', _("Reject"), icon='thumb-down-icon',
+                   descr=_("Reject this registration request"),
+                   visible=lambda r: r['state'].value() in (Users.AccountState.NEW,
+                                                            Users.AccountState.UNAPPROVED)),
             Action('regreminder', _("Resend activation code"), icon='mail-icon',
                    descr=_("Resend registration mail"),
                    visible=lambda r: r['state'].value() == Users.AccountState.NEW),
@@ -888,7 +903,7 @@ class Users(UserManagementModule, CachingPytisModule):
             return True
         elif action in ('update', 'passwd'):
             return req.check_roles(Roles.USER_ADMIN) or self._check_uid(req, record, 'uid')
-        elif action in ('enable', 'disable', 'reinsert', 'export'):
+        elif action in ('enable', 'disable', 'reject', 'reinsert', 'export'):
             return req.check_roles(Roles.USER_ADMIN)
         else:
             return super(Users, self)._authorized(req, action, record=record, **kwargs)
@@ -1000,7 +1015,11 @@ class Users(UserManagementModule, CachingPytisModule):
             if msg == 'duplicate key value violates unique constraint "users_login_key"':
                 login = record['login'].value()
                 # Redirect to reinsert when the user doesn't exist in application specific user
-                # tables but exists in the main CMS user table.
+                # tables but exists in the main CMS user table.  Note: _load_user() returns None
+                # for REJECTED accounts, so a rejected user attempting re-registration will fall
+                # through to the "login already taken" message below.  This is intentional but
+                # not perfectly thought through — if the behavior needs to change (e.g. to show
+                # a more informative message), handle the REJECTED case explicitly here.
                 user = wiking.module('wiking.cms.Users').user(req, login)
                 if user and not wiking.module.Users.user(req, login):
                     if not req.check_roles(Roles.USER_ADMIN):
@@ -1150,6 +1169,9 @@ class Users(UserManagementModule, CachingPytisModule):
             texts = (_("The account is blocked.  The user is able to log in, but has no "
                        "access to protected services until the administrator enables the "
                        "account again."),)
+        elif state == Users.AccountState.REJECTED:
+            texts = (_("The registration request was rejected.  "
+                       "The user is not able to log in."),)
         else:
             texts = ()
         if texts:
@@ -1229,7 +1251,10 @@ class Users(UserManagementModule, CachingPytisModule):
                 else:
                     req.message(_("E-mail notification has been sent to:") + ' ' + email)
             elif state == self.AccountState.DISABLED:
+                # TODO: Consider (optional) e-mail notification to the user on disabling/rejection.
                 req.message(_("The account has been disabled."), req.SUCCESS)
+            elif state == self.AccountState.REJECTED:
+                req.message(_("The registration request has been rejected."), req.SUCCESS)
             return True
 
     def action_enable(self, req, record):
@@ -1252,6 +1277,10 @@ class Users(UserManagementModule, CachingPytisModule):
 
     def action_disable(self, req, record):
         self._change_state(req, record, self.AccountState.DISABLED)
+        raise wiking.Redirect(self._current_record_uri(req, record))
+
+    def action_reject(self, req, record):
+        self._change_state(req, record, self.AccountState.REJECTED)
         raise wiking.Redirect(self._current_record_uri(req, record))
 
     def action_passwd(self, req, record):
@@ -1447,10 +1476,11 @@ class Users(UserManagementModule, CachingPytisModule):
     def _load_user(self, key, transaction=None):
         login, uid, base_uri, registration_uri = key
         # Get the user data from db
+        kwargs = dict(condition=pd.NE('state', pd.sval(self.AccountState.REJECTED)))
         if login is not None and uid is None:
-            kwargs = dict(login=login)
+            kwargs['login'] = login
         elif uid is not None and login is None:
-            kwargs = dict(uid=uid)
+            kwargs['uid'] = uid
         else:
             raise Exception("Invalid 'user()' arguments.", (login, uid))
         row = self._data.get_row(transaction=transaction, **kwargs)
@@ -1532,6 +1562,10 @@ class Users(UserManagementModule, CachingPytisModule):
             kwargs['email'] = email
         if state is not None:
             kwargs['state'] = state
+        else:
+            # Exclude rejected accounts from unfiltered searches, consistent with _load_user().
+            # Callers that explicitly pass state=REJECTED still get them.
+            kwargs['condition'] = pd.NE('state', pd.sval(self.AccountState.REJECTED))
         if confirm is not None:
             kwargs['confirm'] = confirm
         users = [make_user(row) for row in self._data.get_rows(**kwargs)]

@@ -318,7 +318,7 @@ class Application(wiking.Application):
             # that's the case and handle the situation in the login_hook()
             # below.
             u = wiking.module('wiking.cms.Users').user(req, login)
-            if u and u.state() != Users.AccountState.NEW:
+            if u and u.state() not in (Users.AccountState.NEW, Users.AccountState.REJECTED):
                 user = u
         if user:
             stored_password = user.data()['password'].value()
