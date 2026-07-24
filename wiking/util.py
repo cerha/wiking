@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2006-2017 OUI Technology Ltd.
-# Copyright (C) 2019-2024 Tomáš Cerha <cerha@truecode.cz>
+# Copyright (C) 2019-2024, 2026 Tomáš Cerha <cerha@truecode.cz>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -2388,14 +2388,14 @@ wiking.cfg.resolver directly are deprecated.
 class DateTime(pytis.data.DateTime):
     """Deprecated.  Use 'pytis.data.DateTime' directly."""
 
-    def _init(self, show_time=True, exact=False, leading_zeros=True, **kwargs):
+    def __init__(self, show_time=True, exact=False, leading_zeros=True, **kwargs):
         self._exact = exact
         self._show_time = show_time
         self._leading_zeros = leading_zeros
         format = '%Y-%m-%d %H:%M'
         if exact:
             format += ':%S'
-        super(DateTime, self)._init(format=format, **kwargs)
+        super(DateTime, self).__init__(format=format, **kwargs)
 
     def exact(self):
         return self._exact
@@ -2413,9 +2413,9 @@ class DateTime(pytis.data.DateTime):
 class Date(pytis.data.Date):
     """Deprecated.  Use 'pytis.data.Date' directly."""
 
-    def _init(self, leading_zeros=True, **kwargs):
+    def __init__(self, leading_zeros=True, **kwargs):
         self._leading_zeros = leading_zeros
-        super(Date, self)._init(format='%Y-%m-%d', **kwargs)
+        super(Date, self).__init__(format='%Y-%m-%d', **kwargs)
 
     def _export(self, value, show_weekday=False, **kwargs):
         result = super(Date, self)._export(value, **kwargs)
@@ -2426,12 +2426,12 @@ class Date(pytis.data.Date):
 class Time(pytis.data.Time):
     """Deprecated.  Use 'pytis.data.Time' directly."""
 
-    def _init(self, exact=False, **kwargs):
+    def __init__(self, exact=False, **kwargs):
         self._exact = exact
         format = '%H:%M'
         if exact:
             format += ':%S'
-        super(Time, self)._init(format=format, **kwargs)
+        super(Time, self).__init__(format=format, **kwargs)
 
     def exact(self):
         return self._exact
