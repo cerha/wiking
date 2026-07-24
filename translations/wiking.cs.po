@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-10-02 00:29+0200\n"
+"POT-Creation-Date: 2026-07-24 13:05+0200\n"
 "PO-Revision-Date: 2025-03-24 09:13+0100\n"
 "Last-Translator: Hynek Hanke <hanke@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -16,30 +16,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=((n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2);\n"
-
-#: ../resources/scripts/discussion.js:75
-msgid "Reply"
-msgstr "Reagovat"
-
-#: ../resources/scripts/discussion.js:95
-msgid "Your Reply"
-msgstr "Vaše reakce"
-
-#: ../resources/scripts/discussion.js:108
-msgid "Attachment"
-msgstr "Příloha"
-
-#: ../resources/scripts/discussion.js:117
-msgid "Submit"
-msgstr "Odeslat"
-
-#: ../resources/scripts/discussion.js:119
-msgid "Quote"
-msgstr "Citovat"
-
-#: ../resources/scripts/discussion.js:121
-msgid "Cancel"
-msgstr "Zrušit"
 
 #. Website idiom. This is followed by information on the underlying software
 #. tools.  Means: This website runs on [...this and that software...].
@@ -316,49 +292,49 @@ msgstr "RSS kanál „%s“"
 msgid "RSS channels are available for this section"
 msgstr "Pro tuto sekci jsou k dispozici RSS kanály"
 
-#: ../wiking/export.py:136
+#: ../wiking/export.py:135
 msgid "Page heading"
 msgstr "Záhlaví stránky"
 
-#: ../wiking/export.py:143
+#: ../wiking/export.py:142
 msgid "Main navigation"
 msgstr "Hlavní navigace"
 
-#: ../wiking/export.py:153
+#: ../wiking/export.py:152
 msgid "Main content"
 msgstr "Hlavní obsah"
 
-#: ../wiking/export.py:167
+#: ../wiking/export.py:166
 msgid "Page footer"
 msgstr "Zápatí stránky"
 
 #. A label followed by location information in webpage navigation
-#: ../wiking/export.py:281
+#: ../wiking/export.py:280
 msgid "You are here:"
 msgstr "Nacházíte se zde:"
 
-#: ../wiking/export.py:286
+#: ../wiking/export.py:285
 msgid "Menu"
 msgstr "Menu"
 
-#: ../wiking/export.py:294
+#: ../wiking/export.py:293
 #, python-format
 msgid "Local navigation: %s"
 msgstr "Navigace sekce: %s"
 
-#: ../wiking/export.py:295
+#: ../wiking/export.py:294
 msgid "Expand/collapse complete menu hierarchy"
 msgstr "Rozbalit/sbalit kompletní hierarchii menu"
 
 #. ``RSS channel'' is terminology idiom, see Wikipedia.
 #. The placeholder %s is replaced by channel title.
-#: ../wiking/export.py:339
+#: ../wiking/export.py:338
 #, python-format
 msgid "RSS channel %s"
 msgstr "RSS kanál %s"
 
 #. Information about last change of a webpage (when and who)
-#: ../wiking/export.py:359
+#: ../wiking/export.py:358
 #, python-format
 msgid "Last change: %(date)s, %(user)s"
 msgstr "Poslední změna: %(date)s, %(user)s"
@@ -734,6 +710,24 @@ msgstr ""
 "jsou dočasně nedostupné. Problém není na straně této aplikace a proto "
 "nemůžeme udělat nic pro jeho nápravu. Opakujte, prosím, svůj požaqdavek "
 "později."
+
+#~ msgid "Reply"
+#~ msgstr "Reagovat"
+
+#~ msgid "Your Reply"
+#~ msgstr "Vaše reakce"
+
+#~ msgid "Attachment"
+#~ msgstr "Příloha"
+
+#~ msgid "Submit"
+#~ msgstr "Odeslat"
+
+#~ msgid "Quote"
+#~ msgstr "Citovat"
+
+#~ msgid "Cancel"
+#~ msgstr "Zrušit"
 
 #~ msgid "Close"
 #~ msgstr "Uzavřít"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-10-02 00:29+0200\n"
+"POT-Creation-Date: 2026-07-24 13:05+0200\n"
 "PO-Revision-Date: 2019-09-20 11:37+0200\n"
 "Last-Translator: kkkk <kkkkkkkkkkk>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -15,30 +15,6 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-
-#: ../resources/scripts/discussion.js:75
-msgid "Reply"
-msgstr ""
-
-#: ../resources/scripts/discussion.js:95
-msgid "Your Reply"
-msgstr ""
-
-#: ../resources/scripts/discussion.js:108
-msgid "Attachment"
-msgstr ""
-
-#: ../resources/scripts/discussion.js:117
-msgid "Submit"
-msgstr ""
-
-#: ../resources/scripts/discussion.js:119
-msgid "Quote"
-msgstr ""
-
-#: ../resources/scripts/discussion.js:121
-msgid "Cancel"
-msgstr ""
 
 #. Website idiom. This is followed by information on the underlying software
 #. tools.  Means: This website runs on [...this and that software...].
@@ -298,49 +274,49 @@ msgstr "Canale RSS"
 msgid "RSS channels are available for this section"
 msgstr "Per questa sezione è disponibile anche il canale RSS:"
 
-#: ../wiking/export.py:136
+#: ../wiking/export.py:135
 msgid "Page heading"
 msgstr "Intestazione della pagina"
 
-#: ../wiking/export.py:143
+#: ../wiking/export.py:142
 msgid "Main navigation"
 msgstr "Navigazione principale"
 
-#: ../wiking/export.py:153
+#: ../wiking/export.py:152
 msgid "Main content"
 msgstr "Contenuto"
 
-#: ../wiking/export.py:167
+#: ../wiking/export.py:166
 msgid "Page footer"
 msgstr "Fondo della pagina"
 
 #. A label followed by location information in webpage navigation
-#: ../wiking/export.py:281
+#: ../wiking/export.py:280
 msgid "You are here:"
 msgstr "Ti trovi qui:"
 
-#: ../wiking/export.py:286
+#: ../wiking/export.py:285
 msgid "Menu"
 msgstr ""
 
-#: ../wiking/export.py:294
+#: ../wiking/export.py:293
 #, fuzzy, python-format
 msgid "Local navigation: %s"
 msgstr "Navigazione locale"
 
-#: ../wiking/export.py:295
+#: ../wiking/export.py:294
 msgid "Expand/collapse complete menu hierarchy"
 msgstr ""
 
 #. ``RSS channel'' is terminology idiom, see Wikipedia.
 #. The placeholder %s is replaced by channel title.
-#: ../wiking/export.py:339
+#: ../wiking/export.py:338
 #, fuzzy, python-format
 msgid "RSS channel %s"
 msgstr "Canale RSS"
 
 #. Information about last change of a webpage (when and who)
-#: ../wiking/export.py:359
+#: ../wiking/export.py:358
 #, python-format
 msgid "Last change: %(date)s, %(user)s"
 msgstr "Ultima modifica: %(date)s, %(user)s"
