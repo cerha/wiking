@@ -284,12 +284,16 @@ class cms_v_role_members(CommonAccesRights, SQLView):
         m = sql.t.role_members.alias('m')
         r = sql.t.roles.alias('r')
         u = sql.t.users.alias('u')
-        return select([m,
-                       r.c.name.label('role_name'),
-                       u.c.user_.label('user_name'),
-                       u.c.login.label('user_login'),
-                       ],
-                      from_obj=[m.join(r, r.c.role_id == m.c.role_id).join(u, m.c.uid == u.c.uid)])
+        return select([
+            m,
+            r.c.name.label('role_name'),
+            u.c.user_.label('user_name'),
+            u.c.login.label('user_login'),
+        ]).select_from(
+            m
+            .join(r, r.c.role_id == m.c.role_id)
+            .join(u, m.c.uid == u.c.uid)
+        )
     insert_order = (role_members,)
     update_order = (role_members,)
     delete_order = (role_members,)
@@ -409,7 +413,9 @@ class cms_v_session_history(CommonAccesRights, SQLView):
             u.c.user_.label('user'),
             sqlalchemy.cast(h.c.end_time == null, sqlalchemy.Boolean()).label('active'),
             (coalesce(h.c.end_time, func.now()) - h.c.start_time).label('duration'),
-        ], from_obj=[h.outerjoin(u, u.c.uid == h.c.uid)])
+        ]).select_from(
+            h.outerjoin(u, u.c.uid == h.c.uid)
+        )
 
 
 class cms_login_failures(CommonAccesRights, sql.SQLTable):
@@ -511,31 +517,31 @@ class cms_v_pages(CommonAccesRights, SQLView):
         t = sql.t.cms_page_texts.alias('t')
         cu = sql.t.users.alias('cu')
         ou = sql.t.users.alias('ou')
-        return select([(stype(p.c.page_id) + sval('.') + lang.c.lang).label('page_key'),
-                       p.c.site, p.c.kind, lang.c.lang,
-                       p.c.page_id, p.c.identifier, p.c.parent, p.c.modname,
-                       p.c.menu_visibility, p.c.foldable, p.c.ord, p.c.tree_order,
-                       p.c.owner, p.c.read_role_id, p.c.write_role_id,
-                       coalesce(t.c.published, False).label('published'),
-                       coalesce(t.c.parents_published, False).label('parents_published'),
-                       t.c.published_since,
-                       t.c.creator, t.c.created,
-                       coalesce(t.c.title, p.c.identifier).label('title_or_identifier'),
-                       t.c.title, t.c.description, t.c.content, t.c._title,
-                       t.c._description, t.c._content,
-                       cu.c.login.label('creator_login'),
-                       cu.c.user_.label('creator_name'),
-                       ou.c.login.label('owner_login'),
-                       ou.c.user_.label('owner_name'),
-                       ],
-                      from_obj=[p.
-                                join(lang, ival(1) == 1).  # cross join
-                                outerjoin(t, and_(t.c.page_id == p.c.page_id,
-                                                  t.c.lang == lang.c.lang)).
-                                outerjoin(cu, cu.c.uid == t.c.creator).
-                                outerjoin(ou, ou.c.uid == p.c.owner)
-                                ],
-                      )
+        return select([
+            (stype(p.c.page_id) + sval('.') + lang.c.lang).label('page_key'),
+            p.c.site, p.c.kind, lang.c.lang,
+            p.c.page_id, p.c.identifier, p.c.parent, p.c.modname,
+            p.c.menu_visibility, p.c.foldable, p.c.ord, p.c.tree_order,
+            p.c.owner, p.c.read_role_id, p.c.write_role_id,
+            coalesce(t.c.published, False).label('published'),
+            coalesce(t.c.parents_published, False).label('parents_published'),
+            t.c.published_since,
+            t.c.creator, t.c.created,
+            coalesce(t.c.title, p.c.identifier).label('title_or_identifier'),
+            t.c.title, t.c.description, t.c.content, t.c._title,
+            t.c._description, t.c._content,
+            cu.c.login.label('creator_login'),
+            cu.c.user_.label('creator_name'),
+            ou.c.login.label('owner_login'),
+            ou.c.user_.label('owner_name'),
+        ]).select_from(
+            p
+            .join(lang, ival(1) == 1)  # cross join
+            .outerjoin(t, and_(t.c.page_id == p.c.page_id,
+                               t.c.lang == lang.c.lang))
+            .outerjoin(cu, cu.c.uid == t.c.creator)
+            .outerjoin(ou, ou.c.uid == p.c.owner)
+        )
 
     def on_insert(self):
         pages = sql.t.cms_pages
@@ -660,14 +666,17 @@ class cms_v_page_history(CommonAccesRights, SQLView):
     def query(cls):
         h = sql.t.cms_page_history.alias('h')
         u = sql.t.users.alias('u')
-        return select([h,
-                       u.c.user_.label('user'),
-                       u.c.login,
-                       (stype(h.c.page_id) + sval('.') + h.c.lang).label('page_key'),
-                       (stype(h.c.inserted_lines) + sval(' / ') +
-                        stype(h.c.changed_lines) + sval(' / ') +
-                        stype(h.c.deleted_lines)).label('changes')],
-                      from_obj=[h.join(u, h.c.uid == u.c.uid)])
+        return select([
+            h,
+            u.c.user_.label('user'),
+            u.c.login,
+            (stype(h.c.page_id) + sval('.') + h.c.lang).label('page_key'),
+            (stype(h.c.inserted_lines) + sval(' / ') +
+             stype(h.c.changed_lines) + sval(' / ') +
+             stype(h.c.deleted_lines)).label('changes'),
+        ]).select_from(
+            h.join(u, h.c.uid == u.c.uid)
+        )
     insert_order = (cms_page_history,)
 
 
@@ -746,18 +755,21 @@ class cms_v_page_attachments(CommonAccesRights, SQLView):
         a = sql.t.cms_page_attachments.alias('a')
         lang = sql.t.cms_languages.alias('l')
         t = sql.t.cms_page_attachment_texts.alias('t')
-        return select([(stype(a.c.attachment_id) + sval('.') + lang.c.lang).label('attachment_key'),
-                       lang.c.lang,
-                       a.c.attachment_id, a.c.page_id, t.c.title, t.c.description,
-                       a.c.filename, a.c.mime_type, a.c.bytesize,
-                       a.c.image, a.c.image_width, a.c.image_height,
-                       a.c.thumbnail, a.c.thumbnail_size, a.c.thumbnail_width, a.c.thumbnail_height,
-                       a.c.in_gallery, a.c.listed, a.c.author, a.c.location, a.c.width, a.c.height,
-                       a.c.created, a.c.last_modified],
-                      from_obj=[a.join(lang, ival(1) == 1).  # cross join
-                                outerjoin(t, and_(a.c.attachment_id == t.c.attachment_id,
-                                                  lang.c.lang == t.c.lang))]
-                      )
+        return select([
+            (stype(a.c.attachment_id) + sval('.') + lang.c.lang).label('attachment_key'),
+            lang.c.lang,
+            a.c.attachment_id, a.c.page_id, t.c.title, t.c.description,
+            a.c.filename, a.c.mime_type, a.c.bytesize,
+            a.c.image, a.c.image_width, a.c.image_height,
+            a.c.thumbnail, a.c.thumbnail_size, a.c.thumbnail_width, a.c.thumbnail_height,
+            a.c.in_gallery, a.c.listed, a.c.author, a.c.location, a.c.width, a.c.height,
+            a.c.created, a.c.last_modified,
+        ]).select_from(
+            a
+            .join(lang, ival(1) == 1)  # cross join
+            .outerjoin(t, and_(a.c.attachment_id == t.c.attachment_id,
+                               lang.c.lang == t.c.lang))
+        )
 
     def on_insert(self):
         return ("""(
@@ -987,9 +999,12 @@ class cms_v_publication_exports(CommonAccesRights, SQLView):
     @classmethod
     def query(cls):
         exports = sql.t.cms_publication_exports.alias('e')
-        return select(list(exports.c) +
-                      [(stype(exports.c.page_id) + sval('.') + exports.c.lang).label('page_key')],
-                      from_obj=exports)
+        return select(
+            list(exports.c) +
+            [(stype(exports.c.page_id) + sval('.') + exports.c.lang).label('page_key')],
+        ).select_from(
+            exports
+        )
     insert_order = (cms_publication_exports,)
     update_order = (cms_publication_exports,)
     delete_order = (cms_publication_exports,)
@@ -1019,11 +1034,13 @@ class cms_v_news(CommonAccesRights, SQLView):
     def query(cls):
         n = sql.t.cms_news.alias('n')
         u = sql.t.users.alias('u')
-        return select([n,
-                       u.c.user_.label('author_name'),
-                       u.c.login.label('author_login'),
-                       ],
-                      from_obj=[n.join(u, n.c.author == u.c.uid)])
+        return select([
+            n,
+            u.c.user_.label('author_name'),
+            u.c.login.label('author_login'),
+        ]).select_from(
+            n.join(u, n.c.author == u.c.uid)
+        )
     insert_order = (cms_news,)
     update_order = (cms_news,)
     delete_order = (cms_news,)
@@ -1074,11 +1091,13 @@ class cms_v_planner(CommonAccesRights, SQLView):
     def query(cls):
         p = sql.t.cms_planner.alias('p')
         u = sql.t.users.alias('u')
-        return select([p,
-                       u.c.user_.label('author_name'),
-                       u.c.login.label('author_login'),
-                       ],
-                      from_obj=[p.join(u, p.c.author == u.c.uid)])
+        return select([
+            p,
+            u.c.user_.label('author_name'),
+            u.c.login.label('author_login'),
+        ]).select_from(
+            p.join(u, p.c.author == u.c.uid)
+        )
     insert_order = (cms_planner,)
     update_order = (cms_planner,)
     delete_order = (cms_planner,)
@@ -1142,12 +1161,14 @@ class cms_v_newsletter_subscription(CommonAccesRights, SQLView):
     def query(cls):
         s = sql.t.cms_newsletter_subscription.alias('s')
         u = sql.t.users.alias('u')
-        return select(cls._exclude(s, s.c.email) +
-                      [coalesce(s.c.email, u.c.email).label('email'),
-                       u.c.user_.label('user_name'),
-                       u.c.login.label('user_login'),
-                       ],
-                      from_obj=[s.outerjoin(u, s.c.uid == u.c.uid)])
+        return select(
+            cls._exclude(s, s.c.email) +
+            [coalesce(s.c.email, u.c.email).label('email'),
+             u.c.user_.label('user_name'),
+             u.c.login.label('user_login')],
+        ).select_from(
+            s.outerjoin(u, s.c.uid == u.c.uid)
+        )
 
     def on_insert(self):
         return ("insert into public.cms_newsletter_subscription "
@@ -1241,9 +1262,11 @@ class cms_v_panels(CommonAccesRights, SQLView):
     def query(cls):
         cms_panels = sql.t.cms_panels
         cms_pages = sql.t.cms_pages
-        return select([cms_panels, cms_pages.c.modname, cms_pages.c.read_role_id],
-                      from_obj=[cms_panels.
-                                outerjoin(cms_pages, cms_panels.c.page_id == cms_pages.c.page_id)])
+        return select([
+            cms_panels, cms_pages.c.modname, cms_pages.c.read_role_id,
+        ]).select_from(
+            cms_panels.outerjoin(cms_pages, cms_panels.c.page_id == cms_pages.c.page_id)
+        )
     insert_order = (cms_panels,)
     update_order = (cms_panels,)
     delete_order = (cms_panels,)
@@ -1371,8 +1394,11 @@ class cms_v_system_text_labels(CommonAccesRights, SQLView):
     def query(cls):
         labels = sql.t.cms_system_text_labels
         languages = sql.t.cms_languages
-        return select([labels.c.label, labels.c.site, languages.c.lang],
-                      from_obj=[labels, languages])
+        return select([
+            labels.c.label, labels.c.site, languages.c.lang,
+        ]).select_from(
+            labels, languages
+        )
 
 
 class cms_v_system_texts(CommonAccesRights, SQLView):
@@ -1382,13 +1408,14 @@ class cms_v_system_texts(CommonAccesRights, SQLView):
     def query(cls):
         labels = sql.t.cms_v_system_text_labels
         texts = sql.t.cms_system_texts
-        return select(
-            [(labels.c.label + sval(':') + labels.c.site + sval(':') + labels.c.lang)
-             .label('text_id'),
-             labels.c.label, labels.c.site, labels.c.lang, texts.c.description, texts.c.content],
-            from_obj=[labels.outerjoin(texts, and_(labels.c.lang == texts.c.lang,
-                                                   labels.c.label == texts.c.label,
-                                                   labels.c.site == texts.c.site))],
+        return select([
+            (labels.c.label + sval(':') + labels.c.site + sval(':') + labels.c.lang)
+            .label('text_id'),
+            labels.c.label, labels.c.site, labels.c.lang, texts.c.description, texts.c.content,
+        ]).select_from(
+            labels.outerjoin(texts, and_(labels.c.lang == texts.c.lang,
+                                         labels.c.label == texts.c.label,
+                                         labels.c.site == texts.c.site))
         )
 
     def on_update(self):
@@ -1445,11 +1472,15 @@ class cms_v_emails(CommonAccesRights, SQLView):
         el = sql.c.cms_email_labels
         lang = sql.c.cms_languages
         e = sql.c.cms_emails
-        return select([(el.label + sval(':') + lang.lang).label('text_id'),
-                       el.label, lang.lang, e.description, e.subject, e.cc, e.content],
-                      from_obj=[sql.t.cms_email_labels,
-                                sql.t.cms_languages.outerjoin(sql.t.cms_emails)],
-                      whereclause=and_(el.label == e.label, lang.lang == e.lang))
+        return select([
+            (el.label + sval(':') + lang.lang).label('text_id'),
+            el.label, lang.lang, e.description, e.subject, e.cc, e.content,
+        ]).select_from(
+            sql.t.cms_email_labels,
+            sql.t.cms_languages.outerjoin(sql.t.cms_emails)
+        ).where(
+            and_(el.label == e.label, lang.lang == e.lang)
+        )
 
     def on_insert(self):
         return ("""(
