@@ -176,7 +176,13 @@ class WsgiRequest(wiking.Request):
         )
 
     def option(self, name, default=None):
-        return self._environ.get('wiking.' + name, default)
+        key = 'wiking.' + name
+        # The WSGI request environment (set by the server, e.g. uWSGI route-run
+        # addvar or Apache SetEnv) takes precedence; fall back to the process
+        # environment (e.g. under gunicorn, which has no request-env mechanism).
+        if key in self._environ:
+            return self._environ[key]
+        return os.environ.get(key, default)
 
 
 class WsgiEntryPoint:
