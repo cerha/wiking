@@ -51,7 +51,11 @@ class WsgiRequest(wiking.Request):
         self._root = self._environ.get('SCRIPT_NAME')
         self._uri = self._environ['PATH_INFO']
         self._params = {}
-        if self.method() == 'OPTIONS':
+        ctype = environ.get('CONTENT_TYPE', '').split(';')[0].strip()
+        if self.method() == 'OPTIONS' or (
+            ctype and ctype not in ('application/x-www-form-urlencoded',) and
+            not ctype.startswith('multipart/')
+        ):
             self._raw_params = {}
         else:
             self._raw_params = cgi.FieldStorage(fp=environ['wsgi.input'], environ=environ,
