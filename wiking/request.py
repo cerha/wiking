@@ -294,6 +294,7 @@ class Request(ServerInterface):
 
     _MAXIMIZED_MODE_COOKIE = 'wiking_maximized_mode'
     _MESSAGES_COOKIE = 'wiking_messages'
+    _MESSAGES_SEPARATOR = '|'
     _TZ_OFFSETS_COOKIE = 'wiking_tz_offsets'
     _UNDEFINED = object()
 
@@ -353,8 +354,10 @@ class Request(ServerInterface):
         messages = []
         stored = self.cookie(self._MESSAGES_COOKIE)
         if stored:
-            lines = stored.splitlines()
-            uri = urllib.parse.unquote(lines[0])
+            # Cookies written by older versions used a newline as the separator.
+            items = stored.split(self._MESSAGES_SEPARATOR) if self._MESSAGES_SEPARATOR in stored \
+                else stored.splitlines()
+            uri = urllib.parse.unquote(items[0])
             if uri == self.server_uri(current=True) + self.unparsed_uri():
                 # Storing data on client side is always problematic.  In case of
                 # messages there is not much danger in it, but still it may
@@ -362,9 +365,9 @@ class Request(ServerInterface):
                 # database (server side) might be more appropriate, but would be
                 # application dependent.  It might be a good idea to add this
                 # possibility as optional in future.
-                for line in lines[1:]:
+                for item in items[1:]:
                     try:
-                        mtype, formatted, quoted = line.split(':', 2)
+                        mtype, formatted, quoted = item.split(':', 2)
                         if mtype not in self._MESSAGE_TYPES or formatted not in ('t', 'f'):
                             raise ValueError("Invalid values:", mtype, formatted)
                         message = urllib.parse.unquote(quoted)
@@ -714,11 +717,17 @@ class Request(ServerInterface):
             # will not be translatable anymore.  We make the assumption, that the
             # redirected request's locale will be the same as for this request,
             # but that seems quite appropriate assumption.
-            lines = [urllib.parse.quote(uri.encode(self._encoding))] + \
+            items = [urllib.parse.quote(uri.encode(self._encoding))] + \
                 [':'.join((mtype, 't' if formatted else 'f',
                            urllib.parse.quote(self.localize(message).encode(self._encoding))))
                  for message, mtype, formatted in self._messages]
-            self.set_cookie(self._MESSAGES_COOKIE, "\n".join(lines))
+            # The items are separated by '|' (which URL quoting escapes, so it
+            # can not occur inside them).  A newline would be more natural, but
+            # control characters are not allowed in cookie values -- Python
+            # rejects them with 'http.cookies.CookieError' (a check present in
+            # Debian's Python 3.11 and newer upstream versions), which would
+            # turn every redirect carrying a message into an internal error.
+            self.set_cookie(self._MESSAGES_COOKIE, self._MESSAGES_SEPARATOR.join(items))
 
     def make_uri(self, uri, *args, **kwargs):
         """Return a URI constructed from given base URI and arguments.
