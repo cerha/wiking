@@ -2522,7 +2522,7 @@ class InputForm(pytis.web.EditForm):
                     def value(self, *args, **kwargs):
                         return function(*args, **kwargs)
             setattr(Spec, key, value)
-        specification = Spec(wiking.cfg.resolver)
+        specification = Spec()
         view_spec = specification.view_spec()
         data_spec = specification.data_spec()
         data = data_spec.create()
