@@ -16,7 +16,7 @@ will mostly need to update all three components at once.  The script
 =bin/update-src.py= may help you automate such updates with a single command.
 
 Note, when running Wiking CMS (or an application based on it), you will also
-need to run the =migrate= command to upgrade the CMS database.
+need to run the =cms-migrate= command to upgrade the CMS database.
 
 The typical setup puts the git sources into the =src= subdirectory inside the
 site's root direcotry (such as =\/var/www/yoursite/src=.  There you will have

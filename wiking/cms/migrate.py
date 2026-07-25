@@ -56,7 +56,9 @@ def run(args):
     positional = args[1:]
     if len(positional) == 1:
         database = positional[0]
-        directory = os.path.join(os.path.dirname(__file__), 'dbdefs', 'migrate')
+        # Migration scripts live in the wiking package's dbdefs/migrate.
+        directory = os.path.join(os.path.dirname(os.path.dirname(__file__)),
+                                 'dbdefs', 'migrate')
     elif len(positional) == 2:
         database, directory = positional
     else:

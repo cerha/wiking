@@ -29,7 +29,7 @@ cms = [
 ]
 
 [project.scripts]
-migrate = "wiking.migrate:main"
+cms-migrate = "wiking.cms.migrate:main"
 
 [tool.flit.module]
 name = "wiking"

@@ -27,7 +27,7 @@ All sudbirectories, which are git repositories are updated from git by running
 "git pull" and if they contain a makefile, "make" is run as well.  This usually
 compiles Python byte code and generates Gettext translations in repositories
 typically needed for Wiking web applications (LCG, Pytis, Wiking etc).  Note
-that you may need to run the 'migrate' command after this script.
+that you may need to run the 'cms-migrate' command after this script.
 
 """
 import os
