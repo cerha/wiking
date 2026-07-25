@@ -28,6 +28,9 @@ cms = [
     "dnspython",
 ]
 
+[project.scripts]
+migrate = "wiking.migrate:main"
+
 [tool.flit.module]
 name = "wiking"
 

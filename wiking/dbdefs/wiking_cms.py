@@ -29,13 +29,13 @@ current_timestamp_0 = sqlalchemy.sql.functions.Function('current_timestamp', iva
 
 name_is_not_null = sql.SQLFlexibleValue('name_not_null', default=True)
 
-upgrade_directory = os.path.join(os.path.dirname(__file__), 'upgrade')
-upgrade_files = glob.glob(os.path.join(upgrade_directory, 'upgrade.*.sql'))
-if upgrade_files:
-    last_upgrade_script = max(*upgrade_files)
-    version = int(last_upgrade_script[len(upgrade_directory) + len(os.sep) + 8:-4])
+migrate_directory = os.path.join(os.path.dirname(__file__), 'migrate')
+migrate_files = glob.glob(os.path.join(migrate_directory, 'migrate.*.sql'))
+if migrate_files:
+    last_migrate_script = max(*migrate_files)
+    version = int(last_migrate_script[len(migrate_directory) + len(os.sep) + 8:-4])
 else:
-    raise Exception('No upgrade files found in upgrade directory: %s' % upgrade_directory)
+    raise Exception('No migration files found in migrate directory: %s' % migrate_directory)
 
 
 class SQLView(sql.SQLView):
