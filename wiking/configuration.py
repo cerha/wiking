@@ -756,4 +756,10 @@ class ApplicationConfiguration(pytis.util.Configuration):
         if self._delayed_init:
             self._delayed_init()
             self._delayed_init = None
+            # Delayed init may have populated real instance attributes (such as
+            # '_options'); return such an attribute directly rather than letting
+            # the parent's __getattr__ below interpret its name as a
+            # configuration option name (which would raise for '_options').
+            if name in self.__dict__:
+                return self.__dict__[name]
         return super().__getattr__(name)
