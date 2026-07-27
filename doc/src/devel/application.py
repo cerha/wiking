@@ -7,7 +7,7 @@ import re
 class Reader(lcg.Reader):
     """Generate Wiking API documentation out of Python docstrings."""
 
-    _ARG_REGEX = re.compile("^  (\w+) -- ", re.MULTILINE)
+    _ARG_REGEX = re.compile(r"^  (\w+) -- ", re.MULTILINE)
 
     def _title(self):
         return "Wiking Application API"
@@ -28,8 +28,10 @@ class Reader(lcg.Reader):
             if name.startswith('_') or name.startswith('action_') \
                     or not callable(method) or not method.__doc__:
                 continue
-            args, varargs, varkw, defaults = inspect.getargspec(method)
-            title = name + inspect.formatargspec(args[1:], varargs, varkw, defaults)
+            signature = inspect.signature(method)
+            # Drop the leading 'self' argument from the rendered signature.
+            parameters = list(signature.parameters.values())[1:]
+            title = name + str(signature.replace(parameters=parameters))
             doc = self._ARG_REGEX.sub(lambda m: ":" + m.group(1) + ": ", inspect.getdoc(method))
             content.append(lcg.Section(title=title, content=parser.parse(doc), id=name))
         return dict(content=content)
