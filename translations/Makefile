@@ -2,8 +2,8 @@
 # See the original for comments...
 
 domains := wiking wiking-cms
-mo_dir := ../wiking/translations
-json_dir := ../wiking/resources/translations
+mo_dir := ../wiking/assets/translations
+json_dir := ../wiking/assets/resources/translations
 mo_files := $(foreach d, $(domains), $(patsubst $(d).%.po,\
                                        $(mo_dir)/%/LC_MESSAGES/$(d).mo,\
                                        $(wildcard $(d).*.po)))

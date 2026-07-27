@@ -37,8 +37,7 @@ name = "wiking"
 [tool.flit.sdist]
 include = [
     "COPYING",
-    "wiking/translations/**/**.mo",
-    "wiking/resources/**",
+    "wiking/assets/**",
     "wiking/**/test.py",  # Include in sdist even if excluded in .flitignore
 ]
 

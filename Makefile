@@ -1,20 +1,23 @@
-.PHONY: all update resources sync-resources javascript translations extract doc test build install clean coverage lint lint-flake8 lint-eslint
+.PHONY: all update resources sync-resources sync-doc javascript translations extract doc test build install clean coverage lint lint-flake8 lint-eslint
 
 js_src := $(wildcard javascript/*.js)
-js_out := $(js_src:javascript/%.js=wiking/resources/scripts/%.js)
+js_out := $(js_src:javascript/%.js=wiking/assets/resources/scripts/%.js)
 
 all: doc update
 
-update: translations resources
+update: translations resources sync-doc
 
 resources: sync-resources javascript
 
 sync-resources:
-	git ls-files resources | rsync -a --info=name --delete --files-from=- ./ wiking/
+	git ls-files resources | rsync -a --info=name --delete --files-from=- ./ wiking/assets/
+
+sync-doc:
+	git -C doc/src ls-files | rsync -a --info=name --delete --files-from=- doc/src/ wiking/assets/doc/
 
 javascript: $(js_out)
 
-wiking/resources/scripts/%.js: javascript/%.js
+wiking/assets/resources/scripts/%.js: javascript/%.js
 	mkdir -p $(@D)
 	python3 -m rjsmin < $< > $@
 
@@ -41,7 +44,7 @@ install:
 	flit install --symlink
 
 clean:
-	rm -rf dist wiking/resources
+	rm -rf dist wiking/assets
 	make -C translations clean
 
 coverage:
