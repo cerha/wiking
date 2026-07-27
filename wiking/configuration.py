@@ -383,18 +383,40 @@ class Configuration(pytis.util.Configuration):
                 providers.append(wiking.HTTPBasicAuthenticationProvider())
             return providers
 
+    class _Option_extra_translation_path(pc.Option):
+        _DESCR = "Additional translation search path"
+        _DOC = ("A sequence of directory names (strings) to be searched for locale data in "
+                "addition to the automatically derived 'translation_path' (searched before the "
+                "derived directories).  Use this to add application specific translations without "
+                "touching the system defaults.")
+
+        def default(self):
+            return ()
+
     class _Option_translation_path(pc.Option):
         _DESCR = "Translation search path"
         _DOC = ("A sequence of directory names (strings) where locale data are searched.  Each "
                 "directory should contain a subdirectory 'lang/LC_MESSAGES' with a file "
                 "'domain.mo', where lang is the language code and domain is the translation "
                 "domain name.  Derived automatically from the 'assets/translations' "
-                "subdirectories of the application components (see the 'modules' option); set "
-                "explicitly only for a non-standard installation layout.")
+                "subdirectories of the application components (see the 'modules' option) prefixed "
+                "by 'extra_translation_path'.  To add directories, prefer 'extra_translation_path'; "
+                "set this option explicitly only to override the derivation for a non-standard "
+                "installation layout.")
 
         def default(self):
-            return tuple(d for c, d
-                         in _component_dirs(self._configuration.modules, 'assets/translations'))
+            return tuple(self._configuration.extra_translation_path) + tuple(
+                d for c, d in _component_dirs(self._configuration.modules, 'assets/translations'))
+
+    class _Option_extra_resource_path(pc.Option):
+        _DESCR = "Additional resource search path"
+        _DOC = ("A sequence of directory names (strings) to be searched for resource files in "
+                "addition to the automatically derived 'resource_path' (searched before the "
+                "derived directories).  Use this to add application specific resources without "
+                "touching the system defaults.")
+
+        def default(self):
+            return ()
 
     class _Option_resource_path(pc.Option):
         _DESCR = "Resource search path"
@@ -407,22 +429,36 @@ class Configuration(pytis.util.Configuration):
                 "to locate it.  Beware that all files located within the named directories will "
                 "be directly exposed to the Internet!  Derived automatically from the "
                 "'assets/resources' subdirectories of the application components (see the "
-                "'modules' option); set explicitly only for a non-standard installation layout.")
+                "'modules' option) prefixed by 'extra_resource_path'.  To add directories, prefer "
+                "'extra_resource_path'; set this option explicitly only to override the derivation "
+                "for a non-standard installation layout.")
 
         def default(self):
-            return tuple(d for c, d
-                         in _component_dirs(self._configuration.modules, 'assets/resources'))
+            return tuple(self._configuration.extra_resource_path) + tuple(
+                d for c, d in _component_dirs(self._configuration.modules, 'assets/resources'))
+
+    class _Option_extra_doc_dirs(pc.Option):
+        _DESCR = "Additional documentation directories"
+        _DOC = ("A dictionary of documentation source directories keyed by component name, added "
+                "to (and overriding on key collision) the automatically derived 'doc_dirs'.  Use "
+                "this to add application specific documentation without touching the system "
+                "defaults.")
+
+        def default(self):
+            return {}
 
     class _Option_doc_dirs(pc.Option):
         _DESCR = "Documentation search directories"
         _DOC = ("A dictionary of documentation source directories keyed by component name "
                 "(the full package name, such as 'biblio' or 'biblio.catalog').  Derived "
                 "automatically from the 'assets/doc' subdirectories of the application components "
-                "(see the 'modules' option); set explicitly only for a non-standard installation "
-                "layout.")
+                "(see the 'modules' option) merged with 'extra_doc_dirs'.  To add directories, "
+                "prefer 'extra_doc_dirs'; set this option explicitly only to override the "
+                "derivation for a non-standard installation layout.")
 
         def default(self):
-            return {c: d for c, d in _component_dirs(self._configuration.modules, 'assets/doc')}
+            return {**{c: d for c, d in _component_dirs(self._configuration.modules, 'assets/doc')},
+                    **self._configuration.extra_doc_dirs}
 
     class _Option_server_hostname(pc.StringOption):
         _DESCR = "Primary server host name"
