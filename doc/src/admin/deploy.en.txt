@@ -2,127 +2,226 @@
 
 = Deployment =
 
-Wiking apps may run on any WSGI compliant web server.  Although there are other
-options, this documentation concentrates on running through uWSGI on NGINX or
-Apache.
+Wiking applications are WSGI applications and may run on any WSGI compliant web
+server.  This chapter describes the currently recommended setup: the packages
+installed into a Python virtual environment, the application served by
+[https://gunicorn.org/ Gunicorn] under a systemd service and exposed to the
+outside world through a reverse proxy (such as Caddy or NGINX).  Alternative
+setups (such as uWSGI) are outlined in the final Legacy setups section.
 
-== Getting Wiking, Pytis and LCG ==
+@NodeIndex@
 
-The curently recommended method of Wiking app deployment is running all three
-key components (Wiking, Pytis and LCG) directly from directories checked out
-from git repositories.  It allows you to check out newer versions at any time.
-Note, that Wiking, Pytis and LCG versions often depend on each other, so you
-will mostly need to update all three components at once.  The script
-=bin/update-src.py= may help you automate such updates with a single command.
+== Installing the packages ==
 
-Note, when running Wiking CMS (or an application based on it), you will also
-need to run the =cms-migrate= command to upgrade the CMS database.
-
-The typical setup puts the git sources into the =src= subdirectory inside the
-site's root direcotry (such as =\/var/www/yoursite/src=.  There you will have
-the subdirectories =wiking=, =pytis= and =lcg= and possibly also your own apps
-and/or extensions.
+Create a virtual environment and install Wiking into it.  Installing =wiking=
+pulls in LCG (the =lcg-framework= package) automatically:
 
 -----
-mkdir -p /var/www/yoursite/src
-cd /var/www/yoursite/src
-git clone http://github.com/cerha/wiking
-git clone http://github.com/cerha/pytis
-git clone http://github.com/cerha/lcg
-cd ..
+python3 -m venv /srv/yoursite/venv
+/srv/yoursite/venv/bin/pip install wiking
 -----
 
-Then we usually also create a =lib= subdirectory and link the Python libraries
-of all components installed in =src= into this directory to have a single item
-to add to the Python path.
+When deploying Wiking CMS (or an application based on it), install the =cms=
+extra instead, to add the additional dependencies:
 
 -----
-mkdir lib
-cd lib
-ln -s ../src/wiking/lib/wiking .
-ln -s ../src/pytis/lib/pytis .
-ln -s ../src/lcg/lib/lcg .
-cd ..
+/srv/yoursite/venv/bin/pip install 'wiking[cms]'
 -----
 
-== Preparing a Virtual Environment ==
-
-Now we need to create a virtual environment:
+Pytis is not distributed through PyPI, so build its wheel from the sources and
+install it into the same environment:
 
 -----
-python3 -m venv venv
-pip install --upgrade pip
-source venv/bin/activate
-pip install -r src/wiking/requirements.txt
-deactivate
+git clone https://github.com/cerha/pytis
+make -C pytis build
+/srv/yoursite/venv/bin/pip install pytis/dist/pytis-*.whl
 -----
 
-When your app is Wiking CMS, or an app based on it, just use the file
-reqirements-cms.txt in the =pip install= step above.  If you want another app
-or extension, you may need to repeat this step with its requirements file too.
+Install your own application or extension packages the same way.
 
 
 == Creating a configuration file ==
 
-Now we need to create the configuration file =\/var/www/yoursite/config.py= and
-set [config#resource_path resource_path], [config#translation_path
-translation_path] and [config#doc_dirs doc_dirs] to match our directory layout.
+Create the configuration file, such as =\/srv/yoursite/config.py=:
 
-Sample =config.py=:
 -----
-import os
-
 dbname = 'yoursite'
 dbuser = 'www-data'
 smtp_server = 'smtp.yourprovider.com'
-default_sender_address = 'wiking@yousite.com'
-bug_report_address = 'bugs@yourdomain.com'
+default_sender_address = 'wiking@yoursite.com'
+bug_report_address = 'bugs@yoursite.com'
+-----
 
+This example sets only the most important options.  See
+[config Configuration Options] for the full list.
+
+== Application modules == modules
+
+The [config#modules modules] option determines what the site actually runs.  It
+is a sequence of Python module names, searched in the given order for Wiking
+module definitions.  There are three typical cases:
+
+ * *Wiking CMS* -- leave =modules= unset.  It defaults to =('wiking.cms',)=,
+   giving you the bare content management system.
+
+ * *A standalone Wiking application* (not based on the CMS) -- set =modules= to
+   your application's own modules, such as =('myapp.web',)=.
+
+ * *Wiking CMS with custom extensions* -- combine your extension modules with
+   ='wiking.cms'=, such as =('myapp.extension', 'wiking.cms')=.  The order
+   matters: modules listed earlier are searched first, so your extensions may
+   override CMS modules of the same name.
+
+== Setting up the database ==
+
+Wiking CMS (and applications based on it) keep their content in a PostgreSQL
+database.  Create the database and the application's database role, load the
+initial schema (application specific) and then keep the schema up to date with
+the =cms-migrate= command installed together with the =wiking[cms]= package:
+
+-----
+/srv/yoursite/venv/bin/cms-migrate yoursite
+-----
+
+The only argument is the database name.  The command connects through psycopg2
+using the standard PostgreSQL environment (=PGHOST=, =PGPORT=, peer
+authentication, ...), so run it as a user with access to the database (use
+=-p= to select a non-default port).  It applies all migration scripts bundled
+with the installed Wiking version in a single transaction; run it again after
+every package upgrade.
+
+== Running with Gunicorn ==
+
+The WSGI entry point is =wiking.wsgi_interface:application=.  The configuration
+file is passed through the =wiking.config_file= environment variable:
+
+-----
+/srv/yoursite/venv/bin/gunicorn \
+    --env wiking.config_file=/srv/yoursite/config.py \
+    --bind unix:/run/yoursite/gunicorn.socket \
+    --workers 3 \
+    wiking.wsgi_interface:application
+-----
+
+Wiking is currently not thread safe, so always scale by the number of worker
+*processes* (the =--workers= option) and never enable worker threads.
+
+You may bind either to a UNIX socket (as above) or to a local TCP port (such as
+=--bind 127.0.0.1:8000=); the reverse proxy then connects to the same address.
+
+== Running as a systemd service ==
+
+Run Gunicorn as a systemd service.  Create
+=\/etc/systemd/system/yoursite.service=:
+
+-----
+[Unit]
+Description=yoursite Wiking application
+After=network.target postgresql.service
+
+[Service]
+User=www-data
+Group=www-data
+RuntimeDirectory=/srv/yoursite
+ExecStart=/srv/yoursite/venv/bin/gunicorn \
+    --env wiking.config_file=/srv/yoursite/config.py \
+    --bind unix:/run/yoursite/gunicorn.socket \
+    --workers 3 \
+    wiking.wsgi_interface:application
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+-----
+
+The =RuntimeDirectory= directive makes systemd create =\/run/yoursite= owned by
+the service user, which is a convenient place for the socket.
+
+Pass configuration file path through Gunicorn's =--env= option as shown above.
+
+Enable and start the service:
+
+-----
+systemctl enable --now yoursite
+-----
+
+== Reverse proxy ==
+
+The reverse proxy terminates HTTP(S) and forwards the requests to Gunicorn.
+Any reverse proxy will do; the two examples below assume Gunicorn listening on
+the UNIX socket =\/run/yoursite/gunicorn.socket= as configured above.
+
+[https://caddyserver.com/ Caddy] (obtains and renews TLS certificates
+automatically):
+
+-----
+yoursite.com {
+    reverse_proxy unix//run/yoursite/gunicorn.socket
+}
+-----
+
+[https://nginx.org/ NGINX]:
+
+-----
+server {
+    listen 80;
+    server_name yoursite.com;
+    location / {
+        proxy_pass http://unix:/run/yoursite/gunicorn.socket;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+-----
+
+== Legacy setups == legacy
+
+The following describes the older deployment approach based on running the
+components directly from git checkouts (rather than from installed wheels) and
+serving the application through uWSGI.  It is kept here for reference; new
+deployments should prefer the setup described above.
+
+In this approach the git sources are put into the =src= subdirectory of the
+site's root directory (such as =\/var/www/yoursite/src=) and their Python
+libraries are linked into a single =lib= directory added to the Python path:
+
+-----
+mkdir -p /var/www/yoursite/src
+cd /var/www/yoursite/src
+git clone https://github.com/cerha/wiking
+git clone https://github.com/cerha/pytis
+git clone https://github.com/cerha/lcg
+cd ..
+mkdir lib
+ln -s ../src/wiking/lib/wiking lib/wiking
+ln -s ../src/pytis/lib/pytis lib/pytis
+ln -s ../src/lcg/lib/lcg lib/lcg
+-----
+
+Because the data directories are not derived automatically in this layout, the
+configuration file must set the paths explicitly:
+
+-----
+import os
 sitedir = '/var/www/yoursite'
-resource_path = [os.path/join(sitedir, 'src', subdir, 'resources')
+resource_path = [os.path.join(sitedir, 'src', subdir, 'resources')
                  for subdir in ('wiking', 'pytis', 'lcg')]
-translation_path = [os.path/join(sitedir, 'src', subdir, 'translations')
+translation_path = [os.path.join(sitedir, 'src', subdir, 'translations')
                     for subdir in ('wiking', 'pytis', 'lcg')]
-doc_dirs = {subdir: os.path/join(sitedir, 'src', subdir, 'doc', 'src')
+doc_dirs = {subdir: os.path.join(sitedir, 'src', subdir, 'doc', 'src')
             for subdir in ('wiking', 'pytis', 'lcg')}
 -----
 
-This example sets the most important options.  You may want/need to set some
-other options too.   See [config Configuration Options] for the full list.
+[https://uwsgi-docs.readthedocs.io/en/latest/ uWSGI] runs the application in a
+standalone process (or a group of processes) and communicates with the web
+server, which plays the role of a thin HTTP frontend.  Both sides need to use
+the same socket.
 
+=== Running uWSGI manually === uwsgi-manual
 
-== uWSGI ==
-
-[https://uwsgi-docs.readthedocs.io/en/latest/ uWSGI] is the current No. 1
-deployment platform.  Wiking also supports the legacy mod_python and mod_wsgi
-backends, but due to the clear advantages of uWSGI, these options are not
-documented here.
-
-uWSGI runs the application in a standalone process (or a group of processes)
-and communicates with the web server which plays the role of a thin HTTP
-frontend in this setup.  To make the communication work, you need to set up
-both (uWSGI and the web server) to use the same socket (see below).
-
-Wiking is currently not thread safe so you should never run the application in
-multi-threaded mode (just leave the 'threads' option unset).
-
-=== uWSGI Installation ===
-
-When installing uWSGI through pip, you need to have libpcre3 installed on your
-system including development files (such as libpcre3-dev) in order to get
-internal routing support compiled.
-
-When installing from your system's package management system, you usually need
-the package uwsgi itself and the Python 3 plugin (such as
-uwsgi-plugin-python3 on Debian based systems).
-
-
-=== Running uWSGI manually ===
-
-It may be useful to run uWSGI manually for simple testing and debugging.  The
-advantage is that you see most problems immediately on its output, which is
-sometimes harder in emperor mode (described below) when unsure how logging is
-precisely configured.
+It may be useful to run uWSGI manually for simple testing and debugging, as you
+see most problems immediately on its output:
 
 -----
 uwsgi --plugin=python3 \
@@ -135,22 +234,13 @@ uwsgi --plugin=python3 \
       --master --processes 3
 -----
 
-This will create the web server communication socket in
-=\/var/www/yoursite/yoursite.socket=.  Make sure the current user has sufficient
-access rights to create it or choose a different location.  Then you will need
-to configure the web server to communicate with the app through this socket and
-make sure that the web server user has read/write access to it.
+This creates the communication socket in =\/var/www/yoursite/yoursite.socket=.
+Make sure the web server user has read/write access to it.
 
-=== Emperor mode ===
+=== Emperor mode === uwsgi-emperor
 
-uWSGI's Emperor mode is best suited for production as well as for development
-deployment of Wiking applications.  In this mode you create one uWSGI
-configuration file for each app (known as vassal in uWSGI's terminology).
-These files are created in =\/etc/uwsgi/apps-enabled= on Debian and Ubuntu based
-systems (other systems or distributions may use a different location).  The
-Emperor will automatically take care of running and managing uwsgi processes
-for each file found in this directory and will reload them whenever the
-configuration file's modification time changes.
+For production, uWSGI's Emperor mode runs one configuration file (vassal) per
+app, typically in =\/etc/uwsgi/apps-enabled= on Debian and Ubuntu based systems.
 
 Example =\/etc/uwsgi/apps-available/yoursite.ini=:
 -----
@@ -163,23 +253,14 @@ virtualenv = venv
 route-run = addvar:wiking.config_file=config.py
 -----
 
-To activate this app, link this file to =\/etc/uwsgi/apps-enabled=:
+Activate it by linking the file into =\/etc/uwsgi/apps-enabled=:
 -----
 ln -s /etc/uwsgi/apps-available/yoursite.ini /etc/uwsgi/apps-enabled/
 -----
 
-The default Debian/Ubuntu uWSGI setup will create the socket in
-=\/run/uwsgi/app/yoursite/socket= and set the rights and ownership correctly to
-make it work with the web server.  You only need to configure the web server to
-use the correct socket in further steps.
-
-The default log file location on Debian/Ubuntu is
-=\/var/log/uwsgi/app/yoursite.log=.  It is a good idea to observe it while
-setting the web server up (and of course in all further development/deployment
-activities).
-
-If your system doesn't have working defaults or you want more control, the
-following uWSGI options might become handy:
+On Debian/Ubuntu the socket is created in =\/run/uwsgi/app/yoursite/socket= and
+the log in =\/var/log/uwsgi/app/yoursite.log=.  The following options give more
+control when needed:
 
 -----
 # User and group of the uWSGI processes of your app.
@@ -198,23 +279,14 @@ socket = /var/www/yoursite/yoursite.socket
 
 # Socket privileges.  Its uid/gid matches uid/gid set above.
 # The web server user needs read-write access to the socket.
-chmod-socket=660
+chmod-socket = 660
 
 # Auto-reload the app on each modification of config.py.
 touch-reload = /var/www/yoursite/config.py
 -----
 
-See [https://uwsgi-docs.readthedocs.io/en/latest uWSGI documentation] for
-further details.
-
-
-== NGINX web server == nginx
-
-Generally you only need to include the =uwsgi_params= file (included in nginx
-distribution), and set the location of the uWSGI socket with =uwsgi_pass=
-directive.
-
-NGINX virtual server configuration file may look like:
+The web server is then configured to pass requests to the uWSGI socket, e.g.
+NGINX:
 -----
 server {
     listen 80;
@@ -226,25 +298,10 @@ server {
 }
 -----
 
-As explained above, the socket location =\/run/uwsgi/app/yoursite/socket= is the
-default for uWSGI Emperor mode on Debian and Ubuntu systems.  If your system
-uses another location, you will need to find out.  The NGINX error log
-(=\/var/log/nginx/error.log= in default Debian/Ubuntu setup) will tell you more
-in case of troubles.
-
-
-== Apache web server == apache
-
-First you need to install =mod_proxy= and enable it in Apache's configuration.
-Then configuring a virtual host to pass request handling to your uwsgi app is
-as simple as:
-
+or Apache with =mod_proxy= enabled:
 -----
 <VirtualHost *>
   ServerName www.yoursite.com
   ProxyPass / unix:/run/uwsgi/app/yoursite/socket;
 </VirtualHost>
 -----
-
-
-

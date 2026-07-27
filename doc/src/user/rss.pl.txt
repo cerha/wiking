@@ -5,7 +5,7 @@
 Technologia odczytywania nagłÂówków wiadomości (Web Feeds) pozwala użytkownikom
 internetu na zapisywanie się do specyficznych źródeł zwanych kanały RSS, aby
 otrzymać szybki przegląd wiadomości, artykułÂów czy innych informacji. Odwiedź
-http://pl.wikipedia.org/wiki/RSS po więcej informacji o RSS.
+https://pl.wikipedia.org/wiki/RSS po więcej informacji o RSS.
 
 Niektóre przeglądarki mają wbudowane wspomaganie dla RSS, inne wymagają
 zainstalowania czytników RSS jako zewnętrznych aplikacji bądź używania serwisów

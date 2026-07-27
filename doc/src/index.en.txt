@@ -26,9 +26,7 @@ administrator] and [devel software developer].
 
 == Contact == contact
 
-  * Wiking project homepage: http://www.freebsoft.org/wiking
-  * Mailing-list: wiking@lists.freebsoft.org
-    (subscribe at http://lists.freebsoft.org/mailman/listinfo/wiking)
+  * Wiking project homepage: https://www.freebsoft.org/wiking
   * Author: Tomáš Cerha <cerha@truecode.cz>
 
 

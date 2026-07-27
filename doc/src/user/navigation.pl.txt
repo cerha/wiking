@@ -85,7 +85,7 @@ chierarchii.
 Wiking wspóÂłpracuje z wieloma językami.
 
 Wybór języka dla danego użytkownika dokonywany jest automatycznie na bazie
-techniki [http://en.wikipedia.org/wiki/Content_negotiation Content
+techniki [https://en.wikipedia.org/wiki/Content_negotiation Content
 Negotiation]. Technika opiera sie na wyborze języka używanej przeglądarki. Dla
 przykładu, anglojęzyczny użytkownik powinien wybrać angielski jako języ
 podstawowy przeglądarki plus dodatkową ilośÂć języków, którymi posłuje się

@@ -235,5 +235,5 @@ initialized.
 
 === How to make visible resources/ from another tree? ===
 
-Either link it into the Wiking tree or set the `resource_path' configuration
-variable.
+Add its location to the `extra_resource_path' configuration option (this adds
+it to the automatically derived `resource_path' without overriding it).
