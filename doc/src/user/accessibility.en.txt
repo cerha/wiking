@@ -9,10 +9,10 @@ should be well usable with all common types of devices, screen sizes, operating
 systems, browsers, font types and sizes, assistive technologies etc.
 
 The development considered formal accessibility standards, such as
-[http://www.w3.org/TR/WCAG20/ Web Content Accessibility Guidelines 2.0] or
+[https://www.w3.org/TR/WCAG20/ Web Content Accessibility Guidelines 2.0] or
 [https://www.section508.gov Section 508] as well as real end user experience.
 Accessibility and usability was tested with different combinations of assistive
-technologies, especially screeen readers.
+technologies, especially screen readers.
 
 You will find information about navigation and accessibility related features
 in the chapter [navigation Navigation] of the User's Manual.
