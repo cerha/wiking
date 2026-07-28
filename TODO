@@ -8,6 +8,17 @@ Core:
  * Calling 'constraints' of a virtual field.
  * The default check() method in base Specification class.
  * Disable table layout per layout spec, not per module.
+ * Log LCG export warnings of interactive page rendering.  LCG collects export
+   messages in the context ('context.messages()') rather than writing them to
+   STDERR, so that the caller can present them to the user (localized).  Wiking
+   does so for publication exports (Braille/PDF/EPUB), where they are reported
+   by the test export and stored in the export record log.  Nothing reads them
+   for ordinary page rendering, however, so warnings which concern the
+   installation rather than the user are silently discarded -- such as a
+   missing translation catalog of a gettext domain used by the page scripts.
+   Pass 'log' writing to the server log when creating the context in
+   Handler._build() and friends, but keep the collecting for publication
+   exports, where the messages belong to the user, not to the log.
 
 CMS:
  * Site initialization script with admin account creation.
