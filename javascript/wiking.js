@@ -362,11 +362,8 @@ wiking.MainMenu = class extends lcg.FoldableTree {
         item.closest('li').removeClass('script-expanded')
     }
 
-}
-
-wiking.MainMenuOrig = class extends lcg.Menu {
-
     _cmd_quit(event, item) {
+        // Leave the menu to the main content of the page.
         this._set_focus($('#main-heading'))
     }
 
