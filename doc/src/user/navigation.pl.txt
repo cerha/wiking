@@ -2,129 +2,180 @@
 
 = Nawigacja =
 
-Spis Treści: @TOC@
+Ten rozdział zawiera ogólne informacje o układzie okna aplikacji, o nawigacji
+pomiędzy jego poszczególnymi częściami oraz wskazówki dotyczące efektywnego
+korzystania z interfejsu użytkownika. Jest istotny przede wszystkim dla
+użytkowników technologii wspomagających, ponieważ wyjaśnia znaczenie i wzajemne
+relacje poszczególnych części strony oraz sposób poruszania się między nimi.
+
+Spis treści: @TOC@
+
+== Podstawowy układ strony ==
+
+Okno aplikacji składa się z treści głównej, która jest inna na każdej stronie
+czy ekranie witryny lub aplikacji, oraz z części otaczających, które zwykle
+powtarzają się w niezmienionej postaci na wszystkich stronach i ekranach.
+
+Treść główna jest zawsze oznaczona nagłówkiem pierwszego poziomu. Dzięki temu
+użytkownicy czytników ekranu mogą w każdej chwili wrócić na jej początek za
+pomocą skrótu do tego nagłówka. Na stronie nie ma innego nagłówka pierwszego
+poziomu.
+
+Po wczytaniu strony kursor jest zawsze przenoszony na początek treści głównej.
+To właśnie jest punkt wyjścia nawigacji. Przesuwając kursor do przodu,
+użytkownik dotrze do treści głównej bieżącej strony, a przesuwając go do tyłu
+-- do elementów sterujących, takich jak [#sec-menu menu] czy [#sec-top-bar
+górny pasek].
+
+Poza wykorzystaniem nagłówków do rozróżnienia poszczególnych części strony
+niektóre obszary są też oznaczone tzw. /punktami orientacyjnymi ARIA/ (ARIA
+landmarks), dzięki czemu nowoczesne technologie wspomagające umożliwiają
+wygodniejszą nawigację również według tych punktów.
 
 
-== GłÂówne menu nawigacyjne == menus
+== Górny pasek == sec-top-bar
 
-GłÂówne menu nawigacyjne znajduje się na górze strony jako szereg łÂączy. W
-przypadku zmodyfikowanego stylu moze to wyglądać zupełnie inaczej, ale cel
-pozostaje ten sam. Jest to lista łÂączy do naistotniejszych sekcji
-witryny. Aktywny obiekt jest wizualnie zaznaczony. W przeglądarce tekstowej
-gdzie wizualne zaznaczenie może być pominięte taki aktywny obiekt zaznaczony
-jest gwiazdką. Zapewnia to użytkownikowi orientacje w położeniu w danej
-chwili. Ponieważ menu jest powtarzane na każdej stronie, można je przeskoczyć
--- spojrz na [#skip].
+Górny pasek to wąski pas przy górnej krawędzi strony. Po lewej stronie zawiera
+tytuł witryny, a po prawej kilka ważnych elementów sterujących.
 
+Dostępne elementy po prawej stronie mogą zależeć od aktualnie zalogowanego
+użytkownika i jego uprawnień lub od innego stanu aplikacji. Zwykle jednak
+znajdują się tam:
 
-== Skróty kluczami == shortcuts
+* [#sec-login-control], jeśli bieżąca witryna pozwala na logowanie,
+* [#sec-language-selection], jeśli strona jest dostępna w wielu językach.
 
-Uwzględniono kilka skrótów kluczami (klucze dostępu) ułatwiające nawigacje:
+Użytkownicy czytników ekranu dotrą do górnego paska najłatwiej, przechodząc na
+samą górę ekranu i poruszając się po jego elementach klawiszem TAB. Ponieważ
+wszystkie elementy sterujące górnego paska są przyciskami (zwykle z menu
+rozwijanym), można też skorzystać ze skrótu czytnika ekranu do nawigacji po
+przyciskach (zazwyczaj „b”).
 
-  * *1* ... przejdź do strony domowej
-  * *2* ... przeskocz powtarzającą się treśc (przejdź do właściwej treści)
-  * *3* ... przeskocz do menu głÂównego
-  * *9* ... wejdź do/opuśÂć zarządzający interfejs Wikinga
-  * *0* ... pokaż Oświadczenie o Dostępności
+Istnieje również skrót klawiszowy pozwalający przejść do pierwszego elementu
+górnego paska (zwykle do elementu logowania) z dowolnego miejsca strony. Jest
+to /Ctrl-Shift-strzałka w górę/, ale nie działa on chyba we wszystkich
+systemach ze względu na konflikty z innymi skrótami przeglądarki czy czytnika
+ekranu. Potwierdzono jednak, że działa dobrze w połączeniach Firefox/Orca oraz
+Safari/VoiceOver. Jeśli działa w Twoim przypadku, może być szybszym sposobem
+dostępu do górnego paska.
 
-Użycie w róÂżnych przeglądarkach:
-
-  * Internet Explorer -- Alt + numer Enter
-  * Firefox 1.x, Mozilla, Netscape 7+  -- Alt + numer
-  * Konqueror -- naciśnij i uwolnij Ctrl, numer
-  * Opera -- Shift + Esc + numer
-  * Safari, Firefox, Mozilla, Netscape, Omniweb (on Mac OS X) -- Ctrl +
-    numer
-
-Skróty kluczami nie powinny być uważane za zasadniczą formę nawigacji. Ich
-użycie zmienia się w zależności od przeglądarki, a niektóre z nich wogóle ich
-nie uwzględniają. Dodatkowo, jesli powiazanie kluczy jest niestandardowe to
-zachowanie tych skrótów może być inne na róÂżnych stronach.
-
-Wiele technologii specjalistycznych stosuje swoje własne funkcje nawigacyjne i
-one winny być zawsze preferowane. Jeśli na przykład treśÂć strony rozpoczyna
-się od nagłÂówka to funkcja odnalezienia nagłÂówka stosowana przez
-specjalistyczna technologie winna być użyta.
+Kolejne sekcje opisują poszczególne elementy sterujące górnego paska.
 
 
-== Przeskocz powtarzającą się treśÂć == skip
+=== Element logowania === sec-login-control
 
-Pewne częÂści strony powtarzają się -- pojawiają sie na każdej stronie witryny
-i z reguły nie zmieniają się. Te powtarzające się częÂści to:
+Jeśli witryna pozwala użytkownikom na logowanie, górny pasek zawiera element
+logowania. Wizualnie jest on oznaczony ikoną ludzkiej głowy.
 
-  * [#menus]
-  * [#languages]
-  * [#panels]
+Jeśli użytkownik jest zalogowany, na prawo od ikony wyświetlana jest jego nazwa
+logowania. Jeśli nie jest zalogowany, znajduje się tam przycisk „Zaloguj”.
 
-Wiking wprowadza kilka funkcji upraszczających nawigacje strony z
-uwzględnieniem powtarzającej się treści.  "Przeskocz" łÂącza może być użyte w
-przeglądarka tekstowych. Piersze łÂącze umieszczone na początku strony
-umożliwia przeskoczenie wszelkiej powtarzającej się treści. Następnie każdy z
-powtarzających się fragmentów może być przeskakiwany indiwidualnie.
+W obu przypadkach dostępny jest element menu rozwijanego, oznaczony ikoną małej
+trójkątnej strzałki skierowanej w dół. Czytniki ekranu odczytają go jako „Akcje
+użytkownika”, gdy użytkownik jest zalogowany, lub „Logowanie i rejestracja” w
+przeciwnym razie. Naciśnięcie przycisku otworzy menu rozwijane. Gdy użytkownik
+jest zalogowany, menu zawiera pozycje do aktualizacji profilu, zmiany hasła i
+wylogowania. Gdy nie jest zalogowany, są tam pozycje do zalogowania się na
+istniejące konto, rejestracji nowego użytkownika oraz odnowienia zapomnianego
+hasła.
 
-Również [#shortcuts] pozwalają na przeskakiwanie powtarzającej się treści.
-
-
-== Spisy Treści ==
-
-Bardziej złożone strony o kilkunastu sekcjach (takie jak ta) zwykle używają
-spisu treści. Spis treści oddaje strukture chierachiczną sekcji jako grupy
-łÂączy pozwalając na bezpośrednie przemieszczenie się do rządanej sekcji.
-NagłÂówek każdej sekcji stanowi łÂącze umieszczane w spisie treści. Taka funkcja
-może znacząco ułatwić poruszanie się szczególnie w dłuższym tekście. Można to
-wypróbować na tej sronie.
-
-Niektóre strony mogą używac wielokrotnych spisów treści zależnie od poziomu w
-chierachii danej strony. W takich razach, back-reference łÂącze od nagłÂówka
-danej sekcji prowadzi do najbliższego, wyżej położonego spisu treści w
-chierarchii. 
+Na mniejszych ekranach przycisk „Zaloguj” może być ukryty dla oszczędności
+miejsca -- tę samą akcję można wtedy wywołać z menu rozwijanego. To samo
+dotyczy nazwy logowania wyświetlanej przy tym elemencie: jeśli jest ukryta,
+można ją znaleźć po otwarciu menu rozwijanego.
 
 
-== Wybór Języków == languages
+=== Wybór języka === sec-language-selection
 
-Wiking wspóÂłpracuje z wieloma językami.
+Jeśli istnieje kilka wariantów językowych bieżącej strony, przy prawej krawędzi
+górnego paska znajduje się także element wyboru języka. Pozwala on przełączać
+się między wersjami językowymi bieżącej strony. Element ten również jest
+przyciskiem z menu rozwijanym. Bieżący język stanowi etykietę przycisku, a jego
+uaktywnienie otworzy menu rozwijane ze wszystkimi dostępnymi wariantami
+językowymi, gdzie każda pozycja przełącza na dany język.
 
-Wybór języka dla danego użytkownika dokonywany jest automatycznie na bazie
-techniki [https://en.wikipedia.org/wiki/Content_negotiation Content
-Negotiation]. Technika opiera sie na wyborze języka używanej przeglądarki. Dla
-przykładu, anglojęzyczny użytkownik powinien wybrać angielski jako języ
-podstawowy przeglądarki plus dodatkową ilośÂć języków, którymi posłuje się
-tenże użytkownik.
-
-Wybór języka dokonywany jest na tej bazie. Jeśli żÂądana strona jest
-udostepniana w jednym z wybranym przez użytkownika przeglądarki języków,
-pierszy wariant językowy jest wyświetlany użytkownikowi. Jeśli żaden z językow
-nie może być zaoferowany, błÂędna strona 406 (Not Acceptable) jest wyświetlana
-użytkownikowi i może on dokonać samodzielnego wyboru z pośród oferowanych
-języków.
-
-Poza automatycznym wyborem opisanym powyżej, użytkownik może dokonać wyboru
-języka z menu językowego. To menu wyświetlone jest w prawym górnym rogu strony
-(przy nie zmienionym stylu), kiedy występuje kilka wariantów językowych danej
-witryny. Jeśli występuje tylko jeden wariant językowy to menu językowe nie
-pojawia się. Menu to jest umieszczone za raz pod głÂównym menu nawigacyjnym w
-przeglądarkach tekstowych. Ponieważ grupa języków może być róÂżna dla każdej ze
-stron to i menu wyboru języka będzie się róÂżnić. BieżÂący język jak również
-aktywny obiekt z menu są zaznaczone wizualnie bądź przy pomocy gwiazdki dla
-przeglądarek tekstowych.
-
-Jesli ciastka są aktywne to ręcznie wybrany język będzie preferowanym językiem
-nawet bardziej niż preferencje zawarte w przeglądarce. Taka funkcja pozwala na
-nadpisanie ustawień przeglądarki co może być korzystne w sytuacjach jak
-korzystanie z kawiarenek internetowych czy publicznych terminalii. Jednakże,
-ustawienia przeglądarki powinny być preferowaną metodą.
+Przy pierwszej wizycie na wielojęzycznej stronie język wybierany jest
+automatycznie na podstawie ustawień przeglądarki użytkownika. Po ręcznym
+przełączeniu preferowany język jest jednak zapamiętywany przez przeglądarkę (w
+tzw. ciasteczkach).
 
 
-== Panele == panels
+== Menu główne == sec-menu
 
-Panele są oknami krótkich informacji, które są wyświetlane na prawej cześci
-strony przy niezmienionym stylu. Okna te zwykle przedstawiają najistotniejsze
-informacje dla danej witryny. Panele są niezmienione na każdej stronie witryny
-internetowej. Na przykład panel wiadomości może wyświetlać wiadomośÂć z
-łÂączani do bardziej szczegóÂłowego omówienia w sekcji wiadomości.
+Podstawowym sposobem nawigacji w witrynie lub aplikacji są menu hierarchiczne.
+Pozycje najwyższego poziomu hierarchii przedstawione są jako zestaw poziomych
+zakładek. Każda zakładka może mieć podrzędną hierarchię pozycji, prezentowaną
+jako menu rozwijane. Zakładki z podmenu można rozpoznać po ikonie małej
+trójkątnej strzałki skierowanej w dół. Naciśnięcie takiej zakładki otwiera
+podmenu.
 
-Panele mogą być ukrywane przy użyciu łÂącza "ukryj panele" znajdującego się nad
-nimi. To ustawienie pozostaje tak dlugo do puki panele nie zostana przywrócone
-co może być zrobione poprzez łÂącze "pokaż panele" o ile ciastka w przeglądarce
-są aktywne. Naturalnie, jeśli panele nie są używane to nie są wyświetlane na
-stronie.
+Podmenu aktywnej zakładki wyświetlane jest po lewej stronie strony, dzięki
+czemu jest widoczne i dostępne bezpośrednio, bez korzystania z menu
+rozwijanego. Nie jest to jednak możliwe na małych ekranach, gdzie po lewej
+stronie brakuje miejsca. Urządzenia przenośne nie wyświetlają więc podmenu w
+ten sposób i pokazują je jako menu rozwijane także dla bieżącej zakładki menu
+głównego.
+
+Skrót klawiszowy Ctrl-Shift-m przenosi kursor do menu, na pozycję odpowiadającą
+aktualnie wyświetlanej stronie. Menu można też odnaleźć, przechodząc na górę
+strony i poruszając się klawiszem TAB przez górny pasek aż do menu. Dalej po
+menu można sprawnie poruszać się samymi klawiszami strzałek.
+
+Po zakładkach menu najwyższego poziomu porusza się strzałkami w lewo i w prawo.
+Jeśli pozycja ma podmenu, można w nie wejść strzałką w dół i poruszać się w nim
+w górę oraz w dół. Jeśli podmenu zawiera pozycje niższych poziomów hierarchii,
+te podrzędne poziomy mogą być ułożone w rozwijane drzewo. Rozwijaną pozycję
+rozwija się strzałką w prawo, a zwija strzałką w lewo. Enter wywołuje bieżącą
+pozycję menu.
+
+Pełny przegląd skrótów klawiszowych menu:
+
+  * *strzałka w dół* - Przejście do następnej widocznej pozycji.
+  * *strzałka w górę* - Przejście do poprzedniej widocznej pozycji.
+  * *strzałka w prawo* - Jeśli istnieje zwinięte podmenu, rozwija je. Jeśli
+    jest już rozwinięte, przechodzi do jego pierwszej pozycji.
+  * *strzałka w lewo* - Jeśli istnieje rozwinięte podmenu, zwija je (ukrywa).
+    Jeśli jest już zwinięte, przechodzi do pozycji nadrzędnej w hierarchii.
+
+  * *Shift + strzałka w dół* - Przejście do następnej pozycji tego samego
+    poziomu (bez zagłębiania się w podmenu, nawet rozwinięte).
+  * *Shift + strzałka w górę* - Przejście do poprzedniej pozycji tego samego
+    poziomu (bez zagłębiania się w podmenu, nawet rozwinięte).
+  * *Enter* - Wywołanie bieżącej pozycji.
+  * *Escape* - Wyjście z menu do treści głównej strony.
+
+/Uwaga dla użytkowników VoiceOver:/ Skróty te działają w VoiceOverze poprawnie
+tylko przy wyłączonym trybie szybkiej nawigacji. Szybką nawigację włącza się i
+wyłącza jednoczesnym naciśnięciem strzałek w lewo i w prawo.
+
+/Uwaga dla użytkowników JAWS:/ Przed naciśnięciem Ctrl-Shift-m trzeba użyć tzw.
+skrótu Pass Key Through -- klawisz JAWS + 3 (klawiszem JAWS jest zwykle Insert
+lub CapsLock).
+
+Jeśli Twój system obsługuje standardy dostępności ARIA, automatycznie
+zapowiadana będzie pozycja w hierarchii oraz dostępne polecenia klawiszowe.
+Przy starszych technologiach zwijanie i rozwijanie menu może nie działać
+poprawnie. W takim przypadku po menu można poruszać się klawiszem TAB. Aby
+dostać się do zwiniętych obszarów, można użyć przycisku „Zwiń/rozwiń całą
+hierarchię menu”, który udostępni wszystkie pozycje dla nawigacji klawiszem
+TAB. Nawigacja jest wtedy mniej wygodna, ale przynajmniej możliwa. Przycisk ten
+znajduje się jako ostatni element w kolejności TAB, na samym końcu menu.
+
+
+== Panele ==
+
+Niektóre witryny mogą zawierać kilka uzupełniających „okien” z dodatkowymi
+informacjami, wyświetlanych na stałe na każdej stronie w postaci tzw. paneli.
+Na komputerach stacjonarnych (z większymi ekranami) panele wyświetlane są
+zwykle po prawej stronie okna, obok treści głównej, a na urządzeniach mobilnych
+z mniejszymi ekranami -- na dole każdej strony, pod treścią główną.
+
+W obu przypadkach w kolejności nawigacji dla użytkowników czytników ekranu
+panele następują po treści głównej. Każdy panel jest oznaczony nagłówkiem
+trzeciego poziomu. Przejście na koniec ekranu i poruszanie się wstecz po
+nagłówkach trzeciego poziomu to zatem łatwy sposób, aby dotrzeć bezpośrednio do
+paneli.
+
+Panele są też oznaczone /punktami orientacyjnymi ARIA/ jako tzw. „treść
+uzupełniająca”. Tych punktów również można używać do sprawnej nawigacji w
+niektórych czytnikach ekranu.
