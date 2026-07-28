@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2006-2018 OUI Technology Ltd.
-# Copyright (C) 2019-2025 Tomáš Cerha <cerha@truecode.cz>
+# Copyright (C) 2019-2026 Tomáš Cerha <cerha@truecode.cz>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,10 +23,10 @@ import pytis
 import wiking
 
 _ = lcg.TranslatableTextFactory('wiking')
-Part = lcg.Html5Exporter.Part
+Part = lcg.HtmlExporter.Part
 
 
-class MinimalExporter(lcg.Html5Exporter):
+class MinimalExporter(lcg.HtmlExporter):
     _PAGE_STRUCTURE = (
         Part('main'),
         Part('bottom-bar'),
@@ -39,7 +39,7 @@ class MinimalExporter(lcg.Html5Exporter):
         except Exception:
             uri = '_resources'
         return super(MinimalExporter, self)._head(context) + \
-            [g.link(rel='stylesheet', type='text/css', href='/%s/default.css' % uri)]
+            [g.link(rel='stylesheet', href='/%s/default.css' % uri)]
 
     def _meta(self, context):
         import wiking
@@ -59,9 +59,9 @@ class MinimalExporter(lcg.Html5Exporter):
                        wiking.__version__))
 
 
-class Exporter(lcg.StyledHtmlExporter, lcg.Html5Exporter):
+class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
 
-    class Context(lcg.Html5Exporter.Context):
+    class Context(lcg.HtmlExporter.Context):
 
         def _init_kwargs(self, req=None, layout='default', **kwargs):
             super(Exporter.Context, self)._init_kwargs(timezone=req.timezone(), **kwargs)
@@ -313,8 +313,11 @@ class Exporter(lcg.StyledHtmlExporter, lcg.Html5Exporter):
 
     def _heading(self, context):
         g = self._generator
-        return g.h1(g.a(context.node().heading().export(context), tabindex=0,
-                        name='main-heading', id='main-heading'))
+        # The heading text is wrapped in an anchor to make the heading focusable
+        # (see wiking.js), which is not possible for the H1 element itself
+        # without breaking its semantics.  The anchor has no 'href', so it is not
+        # presented as a link -- assistive technologies announce the heading.
+        return g.h1(g.a(context.node().heading().export(context), tabindex=0, id='main-heading'))
 
     def _panels(self, context):
         if not context.panels():
@@ -326,7 +329,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.Html5Exporter):
             return None
         result = []
         for panel in panels:
-            title = g.a(panel.title(), name='panel-' + panel.id() + '-anchor', tabindex=0,
+            title = g.a(panel.title(), id='panel-' + panel.id() + '-anchor', tabindex=0,
                         cls='panel-anchor')
             titlebar_content = panel.titlebar_content()
             if titlebar_content:

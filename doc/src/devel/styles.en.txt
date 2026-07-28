@@ -101,7 +101,8 @@ following goals:
          below.
 
          * h1 -- Main heading (related to the current content).  The heading
-           text is further wrapped in an anchor named *main-heading*.
+           text is further wrapped in an anchor with the id *main-heading*,
+           which makes the heading focusable.
 
          * The actual content specific for the current page follows.
 
