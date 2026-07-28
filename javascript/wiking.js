@@ -161,6 +161,11 @@ wiking.MainMenu = class extends lcg.FoldableTree {
      * appear as dropdowns with separate foldable trees inside them).
      */
 
+    // The top level items are plain links presented as a horizontal menu bar, so
+    // they are left in the tab order as they are (the items of their dropdowns are
+    // not displayed until the dropdown is open).
+    static _MANAGE_TABINDEX = false
+
     constructor(element_id, toggle_button_tooltip) {
         super(element_id, toggle_button_tooltip)
         this._menu_button = this.element.parent().find('.menu-button')
@@ -169,7 +174,6 @@ wiking.MainMenu = class extends lcg.FoldableTree {
             .on('click', this._on_toggle_main_menu.bind(this))
         this.element.addClass('collapsed')
             .attr('role', 'presentation')
-        this._MANAGE_TABINDEX = false
     }
 
     _init_item(item, prev, parent) {
