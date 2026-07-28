@@ -61,13 +61,24 @@ wiking.Handler = class extends lcg.KeyHandler {
         // do it when the URL points to an anchor within the page or when the page
         // wants to focus another element itself.
         //
-        // The heading doesn't appear focused until the user actually starts using
-        // the keyboard: ':focus-visible' doesn't match a focus set by a script, so
-        // the focus indication only shows up after the user returns to the heading
-        // by Shift-Tab (which is what we want -- an outlined heading on a freshly
-        // opened page would look odd to the users who don't navigate by keyboard).
+        // Neither is it done when the browser restored a scroll position (on
+        // reload or when returning back to the page), because the user continues
+        // where they left off rather than starting to read the page.
+        //
+        // The heading should not appear focused until the user actually starts
+        // navigating by keyboard, as an outlined heading on a freshly opened page
+        // looks odd to everyone else.  ':focus-visible' alone doesn't ensure that
+        // -- browsers also take the last user interaction into account, so opening
+        // the page from the keyboard (such as by Ctrl-R) makes even this scripted
+        // focus count as keyboard induced.  Hence the class suppressing the
+        // indication explicitly, until the first interaction of the user.
         let heading = document.getElementById('main-heading')
-        if (heading && !self.location.hash && !document.querySelector('[autofocus]')) {
+        if (heading && window.scrollY === 0 && !self.location.hash
+            && !document.querySelector('[autofocus]')) {
+            let reveal = () => heading.classList.remove('initial-focus')
+            heading.classList.add('initial-focus')
+            heading.addEventListener('blur', reveal, {once: true})
+            document.addEventListener('keydown', reveal, {once: true})
             // Note: The native focus() is used here rather than the jQuery method,
             // which doesn't accept the options.
             heading.focus({preventScroll: true})

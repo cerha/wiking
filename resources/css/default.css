@@ -266,6 +266,13 @@ button:hover:enabled {
     outline: 2px solid currentColor;
     outline-offset: 2px;
 }
+#main-heading.initial-focus:focus-visible {
+    /* The main heading is focused on page load to get the screen reader users
+     * directly to the content (see wiking.js).  The class is removed as soon as
+     * the user interacts with the page, so the indication appears normally when
+     * the user returns to the heading by keyboard. */
+    outline: none;
+}
 
 button[disabled] span {
     opacity: 0.5;
