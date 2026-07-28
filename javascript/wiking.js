@@ -54,6 +54,25 @@ wiking.Handler = class extends lcg.KeyHandler {
         let winter_offset = -winter_date.getTimezoneOffset()
         lcg.cookies.set('wiking_tz_offsets', summer_offset + ';' + winter_offset)
 
+        // Move the focus to the main heading, so that screen reader users start at
+        // the page content instead of having to pass the parts repeated on every
+        // page (see the Navigation chapter of the user documentation).  Messages
+        // follow right after the heading, so they are not skipped by this.  Don't
+        // do it when the URL points to an anchor within the page or when the page
+        // wants to focus another element itself.
+        //
+        // The heading doesn't appear focused until the user actually starts using
+        // the keyboard: ':focus-visible' doesn't match a focus set by a script, so
+        // the focus indication only shows up after the user returns to the heading
+        // by Shift-Tab (which is what we want -- an outlined heading on a freshly
+        // opened page would look odd to the users who don't navigate by keyboard).
+        let heading = document.getElementById('main-heading')
+        if (heading && !self.location.hash && !document.querySelector('[autofocus]')) {
+            // Note: The native focus() is used here rather than the jQuery method,
+            // which doesn't accept the options.
+            heading.focus({preventScroll: true})
+        }
+
         // Use smooth scrolling for in-page links.
         $('a[href*="#"]').each((i, element) => {
             let link = $(element)
