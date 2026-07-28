@@ -253,22 +253,18 @@ button:hover:enabled {
     background-image: linear-gradient(#fff, #f0f0f0);
 }
 
-a:focus-visible,
-td:focus-visible,
-span:focus-visible,
-input:focus-visible,
-button:focus-visible,
-select:focus-visible,
-textarea:focus-visible {
-    outline: none;
-    box-shadow: 0 0 3px 2px cornflowerblue;
-}
-h1:focus-visible {
-    /* Avoid visible focus on the main heading as it is focused
-     * programatically on each page load in order to get AT users
-     * to the main content directly. */
-    outline: none;
-    box-shadow: none;
+/* Keyboard focus indication for the whole page.
+ *
+ * Applies to any focusable element, so that nothing can be left out.  We use
+ * 'outline' rather than 'box-shadow', because box shadows are dropped in the
+ * forced colors mode (Windows High Contrast), where the indication matters the
+ * most.  Modern browsers follow the element's border radius, so the outline has
+ * no drawback here anymore.  The color is taken from the element itself, so that
+ * the indication doesn't introduce any foreign color into the page style and
+ * works on light and dark backgrounds alike. */
+:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
 }
 
 button[disabled] span {
@@ -562,8 +558,6 @@ h5,h6,h7,h8,h9 { font-size: 1.2em; }
 a:link    { color: $color.link; }
 a:visited { color: $color.link-visited; }
 a:link:hover, a:visited:hover { color: $color.link-hover; }
-
-h1 a { outline: none; }
 
 #top-bar {
     white-space: nowrap;
