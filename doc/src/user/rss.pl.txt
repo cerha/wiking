@@ -2,18 +2,17 @@
 
 == Kanały (RSS) ==
 
-Technologia odczytywania nagłÂówków wiadomości (Web Feeds) pozwala użytkownikom
+Technologia odczytywania nagłówków wiadomości (Web Feeds) pozwala użytkownikom
 internetu na zapisywanie się do specyficznych źródeł zwanych kanały RSS, aby
-otrzymać szybki przegląd wiadomości, artykułÂów czy innych informacji. Odwiedź
+otrzymać szybki przegląd wiadomości, artykułów czy innych informacji. Odwiedź
 https://pl.wikipedia.org/wiki/RSS po więcej informacji o RSS.
 
-Niektóre przeglądarki mają wbudowane wspomaganie dla RSS, inne wymagają
-zainstalowania czytników RSS jako zewnętrznych aplikacji bądź używania serwisów
-internetowych jak na przykład: >>[http://my.yahoo.com My Yahoo!]<<,
->>[http://reader.google.com/ Google Reader]<< lub >>[http://www.bloglines.com/
-Bloglines]<<.
+Do czytania kanałów potrzebny jest czytnik kanałów. Może to być samodzielna
+aplikacja (kanały potrafią czytać także niektóre programy pocztowe, na przykład
+[https://www.thunderbird.net Thunderbird]), rozszerzenie przeglądarki lub
+serwis internetowy. Obecne przeglądarki zwykle nie mają wbudowanej obsługi RSS.
 
-Wiking umożliwia odczytywanie obiektów z róÂżnych sekcji witryny internetowej
-używając protokołu RSS. ŁÂącze RSS znajduje się ponad każdą sekscją
-wspomagającą ten protokoł. Można użyć tego adresu dla ustawienia swojego
-czytnika RSS.
+Wiking umożliwia odczytywanie obiektów z różnych sekcji witryny internetowej
+używając protokołu RSS. Łącze RSS znajduje się na dole każdej sekcji
+obsługującej ten protokół. Można użyć adresu tego łącza do skonfigurowania
+swojego czytnika RSS.

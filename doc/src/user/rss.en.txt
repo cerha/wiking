@@ -4,13 +4,13 @@
 
 The technology of web feeds allows Internet users to subscribe to certain
 resource (called RSS feed or RSS channel) to get a quick overview of provided
-news, articles or other items.  See [http://en.wikipedia.org/wiki/RSS
+news, articles or other items.  See [https://en.wikipedia.org/wiki/RSS
 Wikipedia] for more info about RSS.
 
-Some browsers have built-in RSS support.  With other browsers you will need to
-install an RSS reader as an external application or use a web service such as
-[http://my.yahoo.com My Yahoo!], [http://reader.google.com/ Google Reader] or
-[http://www.bloglines.com/ Bloglines].
+To read feeds, you need a feed reader.  It may be a standalone application
+(some e-mail clients, such as [https://www.thunderbird.net Thunderbird], can
+read feeds too), a browser extension or a web service.  Current browsers
+mostly have no built-in RSS support.
 
 Wiking makes it possible to read items from different sections of a website
 using the RSS protocol.  You will find an RSS link at the bottom of each
