@@ -1,4 +1,4 @@
-.PHONY: all update resources sync-resources sync-doc clean-obsolete javascript translations extract doc test build publish publish-test install clean coverage lint lint-flake8 lint-eslint
+.PHONY: all update resources sync-resources sync-doc clean-obsolete javascript translations extract doc test build check-release publish publish-test install clean coverage lint lint-flake8 lint-eslint
 
 js_src := $(wildcard javascript/*.js)
 js_out := $(js_src:javascript/%.js=wiking/assets/resources/scripts/%.js)
@@ -46,11 +46,36 @@ test:
 build: update
 	flit build
 
-publish:
-	python -m twine upload --repository pypi dist/*.whl
+# The files uploaded by the publishing targets below -- the wheel and the
+# source distribution, both created by the build.
+published := dist/*
+
+# Refuse to publish anything but a committed release, as the upload can not be
+# taken back.  Release commits are titled 'Release <version>' by convention.
+check-release:
+	@git diff --quiet && git diff --cached --quiet || \
+	    { echo "The working tree has uncommitted changes."; exit 1; }
+	@git log -1 --format=%s | grep -q '^Release ' || \
+	    { echo "The last commit is not a release."; exit 1; }
+
+# Both publishing targets rebuild from scratch, so that only the files of the
+# current version are in 'dist' and thus uploaded.  Uploading to PyPI is
+# irreversible (the same version can never be uploaded again), so it asks
+# before it proceeds.
+publish: check-release
+	rm -rf dist
+	$(MAKE) build
+	@echo
+	@echo "The following files will be uploaded to PyPI:"
+	@ls $(published)
+	@echo
+	@read -p "Proceed? [y/N] " answer && [ "$$answer" = y ]
+	python -m twine upload --repository pypi $(published)
 
 publish-test:
-	python -m twine upload --repository testpypi dist/*.whl
+	rm -rf dist
+	$(MAKE) build
+	python -m twine upload --repository testpypi $(published)
 
 install:
 	# Only for development installs.  Use pip for production/user installs.
