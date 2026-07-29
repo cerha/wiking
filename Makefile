@@ -1,4 +1,4 @@
-.PHONY: all update resources sync-resources sync-doc clean-obsolete javascript translations extract doc test build install clean coverage lint lint-flake8 lint-eslint
+.PHONY: all update resources sync-resources sync-doc clean-obsolete javascript translations extract doc test build publish publish-test install clean coverage lint lint-flake8 lint-eslint
 
 js_src := $(wildcard javascript/*.js)
 js_out := $(js_src:javascript/%.js=wiking/assets/resources/scripts/%.js)
@@ -45,6 +45,12 @@ test:
 
 build: update
 	flit build
+
+publish:
+	python -m twine upload --repository pypi dist/*.whl
+
+publish-test:
+	python -m twine upload --repository testpypi dist/*.whl
 
 install:
 	# Only for development installs.  Use pip for production/user installs.
