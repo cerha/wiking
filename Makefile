@@ -1,11 +1,18 @@
-.PHONY: all update resources sync-resources sync-doc javascript translations extract doc test build install clean coverage lint lint-flake8 lint-eslint
+.PHONY: all update resources sync-resources sync-doc clean-obsolete javascript translations extract doc test build install clean coverage lint lint-flake8 lint-eslint
 
 js_src := $(wildcard javascript/*.js)
 js_out := $(js_src:javascript/%.js=wiking/assets/resources/scripts/%.js)
 
 all: doc update
 
-update: translations resources sync-doc
+update: clean-obsolete translations resources sync-doc
+
+# The generated data directories moved under 'assets'.  Working copies created
+# before that still contain them in their former locations, where they are no
+# longer ignored by git, so they break the sdist build.  This target may be
+# removed once all the working copies around are rebuilt.
+clean-obsolete:
+	rm -rf wiking/resources wiking/translations wiking/doc
 
 resources: sync-resources javascript
 
@@ -43,7 +50,7 @@ install:
 	# Only for development installs.  Use pip for production/user installs.
 	flit install --symlink
 
-clean:
+clean: clean-obsolete
 	rm -rf dist wiking/assets
 	make -C translations clean
 
