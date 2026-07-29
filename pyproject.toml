@@ -28,6 +28,23 @@ cms = [
     "dnspython",
 ]
 
+[dependency-groups]
+# Development dependencies, installed by 'pip install -e . --group dev' (or by
+# naming the particular groups, such as '--group build --group test').
+
+# Everything needed by 'make build' -- the tools generating the package data
+# (see the Makefile) and the build backend itself.
+build = ["babel", "pojson", "rjsmin", "flit"]
+test = ["pytest", "coverage"]
+lint = ["flake8"]
+release = ["twine"]
+dev = [
+    {include-group = "build"},
+    {include-group = "test"},
+    {include-group = "lint"},
+    {include-group = "release"},
+]
+
 [project.scripts]
 cms-migrate = "wiking.cms.migrate:main"
 

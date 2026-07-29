@@ -1,5 +1,0 @@
-pojson
-babel
-flit
-pytest
-rjsmin
