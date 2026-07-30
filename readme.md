@@ -1,5 +1,7 @@
 # Wiking
 
+[![PyPI](https://img.shields.io/pypi/v/wiking.svg)](https://pypi.org/project/wiking/)
+
 Wiking is a Python web application development framework.
 
 Wiking comes together with Wiking CMS -- an extensible content management
