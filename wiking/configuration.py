@@ -263,6 +263,29 @@ class Configuration(pytis.util.Configuration):
         _DOC = ("SMTP server port")
         _DEFAULT = 25
 
+    class _Option_smtp_login(pc.StringOption):
+        _DESCR = "Login name for SMTP authentication"
+        _DOC = ("When set, Wiking authenticates to the SMTP server given by 'smtp_server' "
+                "using this login name and 'smtp_password'.  This is necessary when the "
+                "messages are sent through a smarthost (such as the provider's submission "
+                "service, typically on port 587), which only accepts authenticated senders. "
+                "Such a smarthost usually also signs the outgoing messages by DKIM, which "
+                "is essential for their successful delivery.  Authentication should only be "
+                "used together with 'smtp_tls' to avoid sending the password unencrypted.")
+        _DEFAULT = None
+
+    class _Option_smtp_password(pc.StringOption):
+        _DESCR = "Password for SMTP authentication"
+        _DOC = ("Only relevant when 'smtp_login' is set.  Make sure that the configuration "
+                "file is not readable by other users when this option is used.")
+        _DEFAULT = None
+
+    class _Option_smtp_tls(pc.BooleanOption):
+        _DESCR = "Use TLS encryption for the SMTP connection"
+        _DOC = ("If enabled, the connection to the SMTP server is encrypted using STARTTLS. "
+                "Required by most smarthosts and necessary whenever 'smtp_login' is used.")
+        _DEFAULT = False
+
     class _Option_allow_smtp_email_validation(pc.BooleanOption):
         _DESCR = "Allow SMTP e-mail validation"
         _DOC = ("Wiking email validation functions may use SMTP to verify the existence of an "

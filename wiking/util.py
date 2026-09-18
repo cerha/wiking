@@ -2878,6 +2878,10 @@ def send_mail(addr, subject, text, sender=None, sender_name=None, html=None,
         import smtplib
         server = smtplib.SMTP(smtp_server, smtp_port)
         try:
+            if wiking.cfg.smtp_tls:
+                server.starttls()
+            if wiking.cfg.smtp_login:
+                server.login(wiking.cfg.smtp_login, wiking.cfg.smtp_password)
             server.sendmail(sender, addr_list, msg.as_string())
         finally:
             server.quit()
