@@ -36,12 +36,10 @@ cms = [
 # (see the Makefile) and the build backend itself.
 build = ["babel", "pojson", "rjsmin", "flit"]
 test = ["pytest", "coverage"]
-lint = ["flake8"]
 release = ["twine"]
 dev = [
     {include-group = "build"},
     {include-group = "test"},
-    {include-group = "lint"},
     {include-group = "release"},
 ]
 

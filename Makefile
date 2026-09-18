@@ -1,4 +1,4 @@
-.PHONY: all update resources sync-resources sync-doc clean-obsolete javascript translations extract doc test build check-release publish publish-test install clean coverage lint lint-flake8 lint-eslint
+.PHONY: all update resources sync-resources sync-doc clean-obsolete javascript translations extract doc test build check-release publish publish-test install clean coverage
 
 js_src := $(wildcard javascript/*.js)
 js_out := $(js_src:javascript/%.js=wiking/assets/resources/scripts/%.js)
@@ -88,14 +88,3 @@ clean: clean-obsolete
 coverage:
 	coverage run --source=wiking -m pytest wiking/test.py
 	coverage report
-
-lint: lint-flake8 lint-eslint
-
-lint-flake8:
-	flake8 wiking bin
-
-lint-eslint:
-	npm run eslint javascript/{wiking,wiking-cms,discussion}.js
-
-lint-csslint:
-	npm run csslint resources/css
