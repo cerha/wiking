@@ -571,7 +571,7 @@ class Application(wiking.Module):
                 else:
                     if isinstance(value, wiking.FileUpload):
                         value = '%s; mime_type="%s"' % (value.filename(), value.mime_type())
-                    elif isinstance(value, tuple):
+                    elif not isinstance(value, str):
                         value = repr(value)
                     else:
                         lines = value.splitlines()
