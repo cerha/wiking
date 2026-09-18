@@ -1201,8 +1201,7 @@ class RssWriter:
         if value is not None:
             if escape:
                 value = saxutils.escape(value)
-            data = '<%s>%s</%s>\n' % (tag, value, tag)
-            self._stream.write(data.encode('utf-8'))
+            self._stream.write('<%s>%s</%s>\n' % (tag, value, tag))
 
     def start(self, link, title, description, language=None, webmaster=None, generator=None,
               ttl=60):
