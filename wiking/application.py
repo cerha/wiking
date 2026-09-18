@@ -579,11 +579,13 @@ class Application(wiking.Module):
                             value = lines[0][:40] + '... (trimmed; total %d lines)' % len(lines)
                     if len(value) > 40:
                         value = value[:40] + '... (trimmed; total %d chars)' % len(value)
-            return "   %s = %s" % (saxutils.escape(param), saxutils.escape(value))
-        def maybe_link(value):
-            if value and (value.startswith('http://') or value.startswith('https://')):
-                value = '<a href="%s">%s</a>' % (value, value)
-            return value
+            return "   %s = %s" % (param, value)
+        def html_value(value):
+            if not isinstance(value, str):
+                return str(value)
+            if value.startswith(('http://', 'https://')):
+                return '<a href=%s>%s</a>' % (saxutils.quoteattr(value), saxutils.escape(value))
+            return saxutils.escape(value)
         header = (
             ("URI", info['abs_uri']),
             ("HTTP referer", info['referer']),
@@ -597,14 +599,15 @@ class Application(wiking.Module):
             error.traceback(detailed=True, format='text'),
         ))
         html = "<html><pre>%s</pre>%s</html>" % (
-            "\n".join(["%s: %s" % (label, maybe_link(value)) for label, value in header]),
+            "\n".join(["%s: %s" % (label, html_value(value)) for label, value in header]),
             error.traceback(detailed=True, format='html'),
         )
+        # Reply-To is not passed intentionally.  It would be identical to the To
+        # header, which spam filters penalize.
         return wiking.send_mail(address, subject='Wiking Error: ' + error.signature(),
                                 text=text, html=html,
-                                headers=(('Reply-To', address),
-                                         ('X-Wiking-Bug-Report-From',
-                                          wiking.cfg.server_hostname)))
+                                headers=(('X-Wiking-Bug-Report-From',
+                                          wiking.cfg.server_hostname),))
 
     def report_error(self, req, error):
         """Invoked for all errors to record their occurance for later review.

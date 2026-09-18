@@ -444,7 +444,15 @@ class InternalServerError(RequestError):
             self._basic_traceback = ''.join(traceback.format_exception(cls, value, tb))
             try:
                 # cgitb returns str with undocumented encoding (seems to be latin1).
-                self._html_traceback = cgitb.html((cls, value, tb))
+                # The 'file://' links which cgitb creates for the source files of
+                # all stack frames are stripped.  They are useless anywhere else
+                # than on the server machine (the traceback is typically sent by
+                # e-mail) and spam filters treat them as obfuscated links, because
+                # the link target doesn't match the displayed text, which is a
+                # typical sign of phishing (the displayed file name is understood
+                # as a link by the filter's HTML parser).
+                self._html_traceback = re.sub(r'<a href="file://[^"]*">([^<]*)</a>', r'\1',
+                                              cgitb.html((cls, value, tb)))
                 self._text_traceback = cgitb.text((cls, value, tb))
             except Exception as e:
                 # cgitb sometimes fails when the introspection touches
