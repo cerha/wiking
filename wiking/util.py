@@ -2805,11 +2805,24 @@ def send_mail(addr, subject, text, sender=None, sender_name=None, html=None,
         msg['Cc'] = ', '.join(cc)
     msg['Subject'] = localizer.localize(subject)
     msg['Date'] = time.strftime("%a, %d %b %Y %H:%M:%S %z")
+    # Message-ID is required by RFC 5322 and spam filters penalize its absence.
+    # The domain is taken from the sender address ('parseaddr' also handles the
+    # '"Name" <address>' form).  When it can not be determined, 'make_msgid'
+    # falls back to the local host name.
+    from email.utils import make_msgid, parseaddr
+    msg['Message-ID'] = make_msgid(domain=parseaddr(sender)[1].split('@')[-1] or None)
     for header, value in headers:
         msg[header] = value
     # The plain text section.
     from email.mime.text import MIMEText
-    msg.attach(MIMEText(text, 'plain', 'utf-8'))
+    from email.charset import Charset, QP
+    # Encode the message body as quoted printable rather than base64 (which is
+    # the default for the 'utf-8' charset).  Base64 encoded text parts are
+    # suspicious for spam filters and the text remains readable even in raw
+    # form when quoted printable is used.
+    charset = Charset('utf-8')
+    charset.body_encoding = QP
+    msg.attach(MIMEText(text, 'plain', charset))
     # The html section.
     if export:
         assert html is None
@@ -2819,7 +2832,7 @@ def send_mail(addr, subject, text, sender=None, sender_name=None, html=None,
         context = exporter.context(node, lang)
         html = "<html>\n" + content.export(context) + "\n</html>\n"
     if html:
-        msg.attach(MIMEText(html, 'html', 'utf-8'))
+        msg.attach(MIMEText(html, 'html', charset))
     # The attachment section.
     from email.mime.audio import MIMEAudio
     from email.mime.base import MIMEBase
@@ -2834,7 +2847,7 @@ def send_mail(addr, subject, text, sender=None, sender_name=None, html=None,
                 ctype = 'application/octet-stream'
         maintype, subtype = ctype.split('/', 1)
         if maintype == 'text':
-            submsg = MIMEText(attin.read(), subtype, 'utf-8')
+            submsg = MIMEText(attin.read(), subtype, charset)
         elif maintype == 'image':
             submsg = MIMEImage(attin.read(), subtype)
         elif maintype == 'audio':
