@@ -558,7 +558,12 @@ class cms_v_pages(CommonAccesRights, SQLView):
             texts.insert().from_select(
                 texts.c,
                 select(*[
-                    pages.c.page_id if c.name == 'page_id' else getattr(new, c.name)
+                    pages.c.page_id if c.name == 'page_id' else
+                    # The application doesn't pass 'parents_published' (it is a
+                    # read only field), so it must be derived from the parent
+                    # pages here, the same way as in 'on_update()' below.
+                    func.cms_page_tree_published(new.parent, new.lang)
+                    if c.name == 'parents_published' else getattr(new, c.name)
                     for c in texts.c
                 ]).select_from(
                     pages
