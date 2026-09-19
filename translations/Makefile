@@ -17,18 +17,23 @@ extract: $(wildcard *.po) $(pot_files) $(mo_files) $(json_files)
 
 ifeq ($(MAKECMDGOALS),extract)
 
+# Babel's default keywords include 'gettext', which would extract the domain
+# name from JavaScript 'lcg.gettext(domain)' calls as a translatable string, so
+# we define the recognized keywords explicitly.
+keywords := --no-default-keywords -k _ -k N_ -k ngettext:1,2 -k pgettext:1c,2
+
 # Get a list of matching source files for given domain (to be used as dependencies).
 # This allows avoiding duplication of the filename patterns defined in *.cfg.
 define sources
 $(shell pybabel extract -F $1.cfg -s .. -o /dev/null 2>&1
   | grep '^extracting messages from '
-  | sed 's/^extracting messages from //')
+  | sed -e 's/^extracting messages from //' -e 's/ (.*)$$//')
 endef
 
 wiking.pot: $(call sources, wiking)
 wiking-cms.pot: $(call sources, wiking-cms)
 %.pot: %.cfg
-	pybabel extract -F $< --add-comments=Translators: -s .. -o $@
+	pybabel extract -F $< --add-comments=Translators: $(keywords) -s .. -o $@
 
 $(wildcard wiking.*.po): wiking.%.po: wiking.pot
 $(wildcard wiking-cms.*.po): wiking-cms.%.po: wiking-cms.pot
