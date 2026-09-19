@@ -239,6 +239,9 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
     _DB_FUNCTIONS = {}
     """Specification of available DB functions and their arguments.
 
+    Deprecated: Only used by the deprecated '_call_db_function()' and
+    '_call_rows_db_function()' methods.
+
     Dictionary keyed by function name, where values are sequences of pairs (NAME, TYPE) describing
     function arguments and their pytis data types.
 
@@ -1385,8 +1388,36 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                     raise Forbidden()
         raise NotFound()
 
+    def _dbfunction(self, spec, *args, **kwargs):
+        """Call the database function given by its specification and return the result.
+
+        Arguments:
+          spec -- the function's database specification, a
+            'pytis.data.gensqlalchemy.SQLFunctional' subclass.
+          args -- function arguments as Python values corresponding to the
+            argument types defined by 'spec'.
+          kwargs -- function arguments passed by name as defined by 'spec'.
+            Note, that arguments are not optional -- all arguments defined by
+            'spec' must be passed, either positionally or by name.  The keyword
+            argument 'transaction' is reserved for passing a database
+            transaction as a 'pd.DBTransactionDefault' instance.
+
+        Returns a sequence of 'pd.Row' instances for functions with 'multirow'
+        set in their specification, None for functions with no result type and
+        the Python value of the result otherwise.
+
+        The function is always called through the module's database connection
+        (see the 'connection' specification option).
+
+        """
+        return pd.dbfunction(spec, *args, connection_data=self._dbconnection,
+                             connection_name=self.Spec.connection, **kwargs)
+
     def _call_rows_db_function(self, name, *args, **kwargs):
         """Call database function NAME with given arguments and return the result.
+
+        Deprecated: Use '_dbfunction()' which derives the argument and result
+        types from the function's database specification.
 
         'args' are Python values wich will be automatically wrapped into
         'pd.Value' instances.  'kwargs' may contain 'transaction'
@@ -1408,6 +1439,9 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
 
     def _call_db_function(self, name, *args, **kwargs):
         """Call database function NAME with given arguments and return the first result.
+
+        Deprecated: Use '_dbfunction()' which derives the argument and result
+        types from the function's database specification.
 
         If the result and its first row are non-empty, return the first value
         of the first row; otherwise return 'None'.

@@ -18,6 +18,7 @@
 
 import lcg
 import wiking
+import wiking.dbdefs
 from wiking.cms import CMSExtensionModule, Roles
 import pytis.data as pd
 from pytis.presentation import Editable, Field, Action, SelectionType, computer
@@ -113,24 +114,6 @@ class CryptoKeys(CMSExtensionModule):
             Action('adduser', _("Copy to user"), descr=_("Add another user of the key")),
         )
 
-    _DB_FUNCTIONS = dict(CMSExtensionModule._DB_FUNCTIONS,
-                         cms_crypto_delete_key=(('name_', pd.String(),),
-                                                ('uid_', pd.Integer(),),
-                                                ('force', pd.Boolean(),),),
-                         cms_crypto_insert_key=(('name_', pd.String(),),
-                                                ('uid_', pd.Integer(),),
-                                                ('key_', pd.String(),),
-                                                ('psw', pd.String(),),),
-                         cms_crypto_copy_key=(('name_', pd.String(),),
-                                              ('from_uid', pd.Integer(),),
-                                              ('to_uid', pd.Integer(),),
-                                              ('from_psw', pd.String(),),
-                                              ('to_psw', pd.String(),),),
-                         cms_crypto_change_password=(('id_', pd.Integer(),),
-                                                     ('old_psw', pd.String(),),
-                                                     ('new_psw', pd.String(),),),
-                         )
-
     _TITLE_COLUMN = 'uid'
     _INSERT_LABEL = _("Create key")
 
@@ -199,41 +182,41 @@ class CryptoKeys(CMSExtensionModule):
 
     def _insert(self, req, record, transaction):
         key = wiking.generate_random_string(256)
-        if not self._call_db_function('cms_crypto_insert_key',
-                                      record['name'].value(),
-                                      record['uid'].value(),
-                                      key,
-                                      record['new_password'].value(),
-                                      transaction=transaction):
+        if not self._dbfunction(wiking.dbdefs.cms_crypto_insert_key,
+                                record['name'].value(),
+                                record['uid'].value(),
+                                key,
+                                record['new_password'].value(),
+                                transaction=transaction):
             raise pd.DBException(_("New key not created. Maybe it already exists?"))
 
     def _update(self, req, record, transaction):
         action = req.param('action')
         if action == 'password':
-            if not self._call_db_function('cms_crypto_change_password',
-                                          record['key_id'].value(),
-                                          record['old_password'].value(),
-                                          record['new_password'].value(),
-                                          transaction=transaction):
+            if not self._dbfunction(wiking.dbdefs.cms_crypto_change_password,
+                                    record['key_id'].value(),
+                                    record['old_password'].value(),
+                                    record['new_password'].value(),
+                                    transaction=transaction):
                 raise pd.DBException(_("Password not changed. Maybe invalid old password?"))
         elif action == 'adduser':
-            if not self._call_db_function('cms_crypto_copy_key',
-                                          record['name'].value(),
-                                          record['uid'].value(),
-                                          record['new_uid'].value(),
-                                          record['old_password'].value(),
-                                          record['new_password'].value(),
-                                          transaction=transaction):
+            if not self._dbfunction(wiking.dbdefs.cms_crypto_copy_key,
+                                    record['name'].value(),
+                                    record['uid'].value(),
+                                    record['new_uid'].value(),
+                                    record['old_password'].value(),
+                                    record['new_password'].value(),
+                                    transaction=transaction):
                 raise pd.DBException(_("User not added. Maybe invalid old password?"))
         else:
             raise Exception('Unexpected action', action)
 
     def _delete(self, req, record, transaction):
-        if not self._call_db_function('cms_crypto_delete_key',
-                                      record['name'].value(),
-                                      record['uid'].value(),
-                                      False,
-                                      transaction=transaction):
+        if not self._dbfunction(wiking.dbdefs.cms_crypto_delete_key,
+                                record['name'].value(),
+                                record['uid'].value(),
+                                False,
+                                transaction=transaction):
             raise pd.DBException(_("The user couldn't be deleted. "
                                    "Maybe he is the last key holder?"))
 
@@ -260,4 +243,4 @@ class CryptoKeys(CMSExtensionModule):
     def clear_crypto_passwords(self, req, user):
         # Just a hack to allow clearing passwords on logout
         req.set_cookie(self._CRYPTO_COOKIE, None, secure=True)
-        self._call_db_function('cms_crypto_lock_passwords', user.uid())
+        self._dbfunction(wiking.dbdefs.cms_crypto_lock_passwords, user.uid())

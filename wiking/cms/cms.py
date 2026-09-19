@@ -299,14 +299,6 @@ class Roles(wiking.Roles):
 class CMSModule(wiking.PytisModule, wiking.RssModule):
     """Base class for all CMS modules."""
 
-    _DB_FUNCTIONS = dict(wiking.PytisModule._DB_FUNCTIONS,
-                         cms_crypto_lock_passwords=(('uid', pd.Integer(),),),
-                         cms_crypto_unlock_passwords=(('uid', pd.Integer(),),
-                                                      ('password', pd.String(),),
-                                                      ('cookie', pd.String(),),),
-                         cms_crypto_cook_passwords=(('uid', pd.Integer(),),
-                                                    ('cookie', pd.String(),),),
-                         )
     _PANEL_DEFAULT_COUNT = 3
     _PANEL_FIELDS = None
     _CRYPTO_COOKIE = 'wiking_cms_crypto'
@@ -351,10 +343,12 @@ class CMSModule(wiking.PytisModule, wiking.RssModule):
             req.set_cookie(self._CRYPTO_COOKIE, crypto_cookie, secure=True)
         password = req.decryption_password()
         if password is not None:
-            self._call_db_function('cms_crypto_unlock_passwords', uid, password, crypto_cookie)
-        available_names = set([row[0].value()
-                               for row in self._call_rows_db_function('cms_crypto_cook_passwords',
-                                                                      uid, crypto_cookie)])
+            self._dbfunction(wiking.dbdefs.cms_crypto_unlock_passwords,
+                             uid, password, crypto_cookie)
+        available_names = set([
+            row[0].value() for row in
+            self._dbfunction(wiking.dbdefs.cms_crypto_cook_passwords, uid, crypto_cookie)
+        ])
         unavailable_names = (set(crypto_names) - available_names -
                              set(wiking.cfg.ignored_crypto_names))
         if unavailable_names:
@@ -5458,8 +5452,6 @@ class Texts(CommonTexts, wiking.CachingPytisModule):
             else:
                 return None
 
-    _DB_FUNCTIONS = dict(CommonTexts._DB_FUNCTIONS,
-                         cms_add_text_label=(('label', pd.String()), ('site', pd.String())))
     _ROW_EXPANSION = True
     _ASYNC_ROW_EXPANSION = True
 
@@ -5491,7 +5483,7 @@ class Texts(CommonTexts, wiking.CachingPytisModule):
         for identifier, text in self.Spec._texts.items():
             if isinstance(text, Text):
                 site = wiking.cfg.server_hostname
-                self._call_db_function('cms_add_text_label', text.label(), site)
+                self._dbfunction(wiking.dbdefs.cms_add_text_label, text.label(), site)
 
     def _load_value(self, key, transaction=None):
         label, site = key
@@ -5628,8 +5620,6 @@ class Emails(CommonTexts):
     underscore prefix prepended to custom e-mail labels.
 
     """
-    _DB_FUNCTIONS = dict(CommonTexts._DB_FUNCTIONS,
-                         cms_add_email_label=(('label', pd.String()),))
 
     class LabelType(pytis.data.String):
 
@@ -5662,7 +5652,7 @@ class Emails(CommonTexts):
     def _register_texts(self):
         for identifier, text in self.Spec._texts.items():
             if isinstance(text, EmailText):
-                self._call_db_function('cms_add_email_label', text.label())
+                self._dbfunction(wiking.dbdefs.cms_add_email_label, text.label())
 
     def _actions(self, req, record):
         actions = super(Emails, self)._actions(req, record)

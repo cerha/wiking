@@ -185,8 +185,10 @@ instance is available.  The easiest way to do this is as follows:
 
 === How do I call a database function? ===
 
-Specify the function in module's `_DB_FUNCTIONS' dictionary and then use the
-module's `_call_db_function()' method to call it.
+Pass the function's database specification (a `pytis.data.gensqlalchemy.SQLFunctional'
+subclass, such as the specifications in `wiking.dbdefs') to the module's
+`_dbfunction()' method together with the function arguments.  The argument
+and result types are derived from the specification.
 
 === Is it possible to perform a muti-stage database operation atomically? ===
 
