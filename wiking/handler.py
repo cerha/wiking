@@ -234,7 +234,7 @@ class Handler:
         # Translators: Meaning that the system (webpage) does not work now
         # because we are updating/fixing something but will work again after
         # the maintaince is finished.
-        node = lcg.ContentNode(req.uri().encode('utf-8'), title=_("Maintenance Mode"),
+        node = lcg.ContentNode(req.uri(), title=_("Maintenance Mode"),
                                content=lcg.p(_("The system is temporarily down for maintenance.")))
         exporter = wiking.MinimalExporter(translations=wiking.cfg.translation_path)
         try:

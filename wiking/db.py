@@ -2184,7 +2184,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                     value = req.localize(record.display(cid) or
                                          record[cid].export(**export_kwargs[cid]))
                     coldata.append(';'.join(value.splitlines()).replace('\t', '\\t'))
-                data += '\t'.join(coldata).encode('utf-8') + '\n'
+                data += '\t'.join(coldata) + '\n'
                 if len(data) >= buffer_size:
                     yield data
                     data = ''
