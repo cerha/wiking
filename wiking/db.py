@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2005-2017 OUI Technology Ltd.
-# Copyright (C) 2019-2020, 2022, 2025 Tomáš Cerha <cerha@truecode.cz>
+# Copyright (C) 2019-2026 Tomáš Cerha <cerha@truecode.cz>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -1279,30 +1279,43 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
             lang_condition = None
         return pd.AND(self._condition(req), condition, lang_condition)
 
-    def _rows_generator(self, req, condition=None, lang=None, limit=None, offset=0, sorting=None):
-        count = 0
-        self._data.select(
+    def _selection(self, req, condition=None, lang=None, limit=None, offset=None, sorting=None):
+        """Return a 'Selection' iterator over the rows matching given arguments.
+
+        The iterator's 'len()' is the total number of rows matching the
+        condition ('limit' and 'offset' only restrict the iteration).  The
+        caller is responsible for closing the selection, which is most
+        conveniently done using the 'with' statement.
+
+        """
+        return self._data.rows(
             condition=self._make_condition(req, condition, lang=lang),
             arguments=self._arguments(req),
             sort=sorting or self._sorting,
+            limit=limit,
+            offset=offset,
         )
-        if offset:
-            self._data.skip(offset)
-        while limit is None or count < limit:
-            count += 1
-            row = self._data.fetchone()
-            if row is not None:
-                yield row
 
-    def _rows(self, req, condition=None, lang=None, limit=None, offset=0, sorting=None):
-        return list(self._rows_generator(req, condition=condition, lang=lang,
-                                         limit=limit, offset=offset, sorting=sorting))
+    def _record_iterator(self, req, rows):
+        """Return an iterator over module's records for given data rows.
 
-    def _records(self, req, condition=None, lang=None, limit=None, offset=0, sorting=None):
-        for row in self._rows_generator(req, condition=condition, lang=lang, limit=limit, offset=offset,
-                                        sorting=sorting):
-            self._record.set_row(row)
-            yield self._record
+        Note that all the iterations share one 'PresentedRow' instance, so the
+        records must be processed within the iteration (they can not be stored
+        for later use).
+
+        """
+        record = self._record(req, None)
+        for row in rows:
+            record.set_row(row)
+            yield record
+
+    def _rows(self, req, **kwargs):
+        with self._selection(req, **kwargs) as selection:
+            return list(selection)
+
+    def _records(self, req, **kwargs):
+        with self._selection(req, **kwargs) as selection:
+            yield from self._record_iterator(req, selection)
 
     def _handle(self, req, action, **kwargs):
         record = kwargs.get('record')
@@ -2438,11 +2451,12 @@ class APIProvider:
             raise wiking.BadRequest()
         if limit is not None and (limit <= 0 or limit > self._API_LIST_MAX_LIMIT) or offset < 0:
             raise wiking.BadRequest()
-        records = self._records(req, condition=self._api_list_condition(req),
-                                sorting=self._api_list_sorting(req), limit=limit, offset=offset)
-        rows = [dict([(cid, serializer(req, record, cid)) for cid, serializer in serializers])
-                for record in records]
-        data = dict(rows=rows, total=len(records))
+        with self._selection(req, condition=self._api_list_condition(req),
+                             sorting=self._api_list_sorting(req),
+                             limit=limit, offset=offset) as selection:
+            rows = [dict([(cid, serializer(req, record, cid)) for cid, serializer in serializers])
+                    for record in self._record_iterator(req, selection)]
+            data = dict(rows=rows, total=len(selection))
         return wiking.Response(json.dumps(data), content_type='application/json')
 
     def action_list(self, req, record=None):

@@ -3861,16 +3861,11 @@ class Attachments(ContentManagementModule):
                                   page_id=page_id, lang=lang, filename=filename)
 
     def storage_api_rows(self, req, page_id, lang):
-        self._data.select(columns=self._non_binary_columns,
-                          condition=pd.AND(pd.EQ('page_id', pd.ival(page_id)),
-                                           pd.EQ('lang', pd.sval(lang))),
-                          sort=self._sorting)
-        while True:
-            row = self._data.fetchone()
-            if row is None:
-                break
-            yield row
-        self._data.close()
+        with self._data.rows(columns=self._non_binary_columns,
+                             condition=pd.AND(pd.EQ('page_id', pd.ival(page_id)),
+                                              pd.EQ('lang', pd.sval(lang))),
+                             sort=self._sorting) as rows:
+            yield from rows
 
     def storage_api_insert(self, req, page_id, lang, filename, data, values):
         prefill = dict(page_id=page_id, lang=lang, listed=False)
