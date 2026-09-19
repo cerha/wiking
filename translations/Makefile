@@ -49,9 +49,13 @@ $(mo_dir)/%/LC_MESSAGES/wiking-cms.mo: wiking-cms.%.po
 	@mkdir -p $(dir $@)
 	msgfmt -v $< -o $@
 
+# The JSON catalogs are embedded in each HTML page which uses the JavaScript
+# code of given domain (see LCG's HtmlExporter._head), so they only contain the
+# messages which actually appear in the JavaScript sources.
 $(json_dir)/%.po.json: %.po
 	@mkdir -p $(dir $@)
-	pojson $< > $@
+	msggrep -N '../javascript/*' $< > $@.po
+	pojson $@.po > $@ && rm $@.po
 
 clean:
 	rm -rf *.pot $(mo_dir)
