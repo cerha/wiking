@@ -1,6 +1,12 @@
 # This Makefile is created according to the LCG's Makefile for translations.
 # See the original for comments...
 
+# Don't leave a truncated output file behind when a recipe fails.  The shell
+# redirections used below create the target before the command which should
+# produce its contents even runs, so a failure would result in an empty file
+# which make would consider up to date on the next run.
+.DELETE_ON_ERROR:
+
 domains := wiking wiking-cms
 mo_dir := ../wiking/assets/translations
 json_dir := ../wiking/assets/resources/translations
