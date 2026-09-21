@@ -2392,7 +2392,11 @@ class APIProvider:
         return record[cid].value()
 
     def _api_datetime_serializer(self, req, record, cid):
-        return record[cid].export()
+        # The API returns one machine readable format regardless of the client's
+        # language, unlike the user interface, where 'Value.export()' localizes
+        # the value according to the current locale.
+        value = record[cid].value()
+        return value.isoformat() if value is not None else None
 
     def _api_float_serializer(self, req, record, cid):
         # Avoid "TypeError: Decimal('0') is not JSON serializable"
