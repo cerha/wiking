@@ -285,13 +285,22 @@ class TestRegistration(_SiteTest):
 
     def test_approval(self):
         self._get_follow(self._register())
+        # A confirmed, but unapproved account has no rights beyond the
+        # anonymous ones, so it can not read a page restricted to the users.
+        page = self.PAGE_IDENTIFIER_PREFIX + 'restricted'
+        self.create_page(page, self.PAGE_CONTENT, read_role_id='user')
+        self._login(self.NEW_LOGIN, self.NEW_PASSWORD)
+        self._get('/' + page, status=403)
+        self._get_follow('/?command=logout')
+        # The administrator approves the account.
         self._login(self.LOGIN, self.PASSWORD)
         self._get_follow('/_wmi/users/Users/%s?action=enable' % self.NEW_LOGIN)
         self.assertEqual('enabled', self._state())
         self.assertEqual(self.NEW_EMAIL, self.mail[-1].addr)
-        # Now the user can log in.
+        # Now the user can log in and the rights take effect immediately.
         self._get_follow('/?command=logout')
         self.assertTrue(self._logged_in(self._login(self.NEW_LOGIN, self.NEW_PASSWORD)))
+        self.assertIn(self.PAGE_CONTENT, self._get_follow('/' + page))
 
     def test_rejection(self):
         self._get_follow(self._register())
@@ -307,7 +316,7 @@ class TestUserRoles(_SiteTest):
     ASSIGNED_ROLE = 'cms-style-admin'
 
     def test_assign_role(self):
-        self._login(self.LOGIN, self.PASSWORD)
+        self.assertTrue(self._logged_in(self._login(self.LOGIN, self.PASSWORD)))
         uri = '/_wmi/users/Users/%s/roles' % self.LOGIN
         form = self._find_form(self._get_follow(uri + '?action=insert'), fields=('role_id',))
         self._set_select_field(form, 'role_id', value=self.ASSIGNED_ROLE)

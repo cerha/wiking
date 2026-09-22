@@ -355,10 +355,16 @@ class Test(_TestBase):
         global _configured
         if _configured != self._config_file:
             wiking.cfg = wiking.Configuration()
-            # The resolver caches the modules in its class, so the cache is
-            # shared even by its new instances.
+            # The caches below live in classes, so they would survive into the
+            # new application if they were not reset here.  The cached tables
+            # module matters the most -- the data caches of all modules are
+            # invalidated according to the table versions it keeps, so the
+            # modules of the new application would keep consulting the version
+            # information of the old one, which is never reloaded again, and
+            # would thus never notice a change of the data.
             wiking.WikingResolver._wiking_module_class_cache.clear()
             wiking.WikingResolver._wiking_module_instance_cache.clear()
+            wiking.CachingPytisModule._cached_tables_module = None
             wiking.wsgi_interface.application._handler = None
             _configured = self._config_file
 
