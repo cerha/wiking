@@ -35,10 +35,10 @@ applications may be run within a single test session.
 
 == Running the tests ==
 
-Install Wiking with the CMS extra and the test dependency group:
+Install Wiking with the CMS and test extras and the test dependency group:
 
 -----
-pip install -e '.[cms]' --group test
+pip install -e '.[cms,test]' --group test
 -----
 
 The framework tests need nothing more.  The tests of Wiking CMS need its

@@ -51,7 +51,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install ./.deps/lcg ./.deps/pytis
-          pip install -e '.[cms]' --group test
+          pip install -e '.[cms,test]' --group test
 
       - name: Create the database schema
         run: make db pytis=.deps/pytis

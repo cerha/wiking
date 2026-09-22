@@ -27,6 +27,11 @@ dependencies = [
 cms = [
     "dnspython",
 ]
+# Needed by the module 'wiking.test', which the applications built on Wiking
+# use to write their own tests.
+test = [
+    "webtest",
+]
 
 [dependency-groups]
 # Development dependencies, installed by 'pip install -e . --group dev' (or by
@@ -35,7 +40,7 @@ cms = [
 # Everything needed by 'make build' -- the tools generating the package data
 # (see the Makefile) and the build backend itself.
 build = ["babel", "pojson", "rjsmin", "flit"]
-test = ["pytest", "coverage", "webtest"]
+test = ["pytest", "coverage"]
 release = ["twine"]
 dev = [
     {include-group = "build"},
