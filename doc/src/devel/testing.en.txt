@@ -1,0 +1,120 @@
+# -*- coding: utf-8; mode: structured-text -*-
+
+= Testing =
+
+@TOC@
+
+== Overview ==
+
+Applications are tested through their WSGI interface within the test process
+(using [webtest http://docs.pylonsproject.org/projects/webtest/]), so no web
+server is involved.  The tests submit forms and follow links the same way a
+browser does, so they excercise the whole request handling chain including
+authentication, authorization and form processing.
+
+The tests follow the same division as the code itself:
+
+ * =wiking.test= tests *the framework*.  The framework knows nothing about any
+   particular database, so these tests need none.  They run against the
+   minimal application defined in the same module, which makes it possible to
+   test request handling, error handling or the API of =wiking.Request= in
+   isolation from any application logic.
+
+ * =wiking.cms.test= tests *Wiking CMS*, which is an application built on top
+   of the framework.  Everything which needs a database belongs here --
+   users, pages, sessions and the fixtures which create them.
+
+The class =wiking.cms.test.CMSTest= is also the base class for the tests of
+applications built on top of Wiking CMS, as they share its database schema.
+Such applications only define their own configuration and add their own tests.
+
+Because the Wiking configuration is a process global, only one application can
+be initialized at a time.  The base class takes care of throwing the current
+one away when a test needs another configuration, so tests of different
+applications may be run within a single test session.
+
+== Running the tests ==
+
+The framework tests need nothing but the installed dependencies.  The tests of
+Wiking CMS need its database, so create it first:
+
+-----
+make db
+-----
+
+This creates the database (named =wiking-test= by default), its schema and the
+=www-data= role.  The =gsql= tool from Pytis is used to generate the schema, so
+the =pytis= variable must point to a Pytis source checkout (=../pytis= by
+default):
+
+-----
+make db pytis=/path/to/pytis
+-----
+
+Then run the tests:
+
+-----
+make test
+-----
+
+Both commands connect to the database through the standard PostgreSQL
+environment variables (=PGHOST=, =PGUSER=, ...).  The database name may be
+changed through the variable =test_db= (for =make db=) or the environment
+variable =WIKING_TEST_DB= (for the tests themselves).
+
+The tests also run on every push through GitHub Actions (see
+=.github/workflows/test.yml=).
+
+== Writing tests ==
+
+A test case defines the tested application by the class attributes
+=config_file= (the Wiking configuration file) and =host= (the HTTP host name).
+When =config_file= is left undefined, a temporary configuration file is created
+from the dictionary =config_options= (=wiking.cms.test.CMSTest= adds the
+database given by its attribute =database= to these options).
+
+=CMSTest= creates a user account with the roles given by the attribute =ROLES=
+and deletes it, with everything it created in the database, when the test case
+is done.  The tests must clean up after themselves this way, because
+applications are often tested against a copy of their production database.  The
+credentials of the account are available as =LOGIN= and =PASSWORD= and the
+method =query()= may be used to access the database directly.
+
+The most useful methods of the base classes are =_get()= and =_get_follow()= to
+request a page, =_login()= to authenticate, =_find_form()=, =_set_field()= and
+=_submit_form()= to work with forms and =_find_link()= and =_click()= to
+navigate.  An example:
+
+-----
+class TestGreeting(wiking.cms.test.CMSTest):
+
+    ROLES = ('cms-admin',)
+
+    def test_greeting(self):
+        self._login(self.LOGIN, self.PASSWORD)
+        form = self._find_form(self._get_follow('/?action=insert'),
+                               fields=('title', 'identifier', '_content'))
+        self._set_field(form, 'title', 'Greeting')
+        self._set_field(form, 'identifier', 'greeting')
+        self._set_field(form, '_content', 'Hello world!')
+        self.assertIn('Hello world!', self._submit_form(form))
+-----
+
+The tests of the framework itself may reach the request instance directly
+through the method =_probe()=, which returns the value of a function called
+within a real request:
+
+-----
+def test_param(self):
+    self.assertEqual('x', self._probe(lambda req: req.param('a'), '/?a=x'))
+-----
+
+The e-mails sent by the application during a test don't leave the process.
+They are collected in the list =self.mail=, where each item is a
+=wiking.test.Mail= instance with the arguments of =wiking.send_mail()= (such as
+=addr=, =subject= and =text=) available as its attributes.
+
+Tests may also be run through a real web browser (using
+[splinter https://splinter.readthedocs.io/]) by deriving them from
+=wiking.test.BrowserTest= instead.  This is only needed for the parts of the
+user interface which depend on JavaScript.

@@ -5,4 +5,5 @@ application
 ui-design
 styles
 localization
+testing
 devel-faq

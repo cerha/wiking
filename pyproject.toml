@@ -35,7 +35,7 @@ cms = [
 # Everything needed by 'make build' -- the tools generating the package data
 # (see the Makefile) and the build backend itself.
 build = ["babel", "pojson", "rjsmin", "flit"]
-test = ["pytest", "coverage"]
+test = ["pytest", "coverage", "webtest"]
 release = ["twine"]
 dev = [
     {include-group = "build"},
@@ -45,6 +45,10 @@ dev = [
 
 [project.scripts]
 cms-migrate = "wiking.cms.migrate:main"
+
+[tool.pytest.ini_options]
+# The test modules are named 'test.py' inside the tested packages.
+python_files = ["test.py", "test_*.py"]
 
 [tool.flit.module]
 name = "wiking"

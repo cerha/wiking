@@ -1,4 +1,4 @@
-.PHONY: all update resources sync-resources sync-doc clean-obsolete javascript translations extract doc test build check-release publish publish-test install clean coverage
+.PHONY: all update db resources sync-resources sync-doc clean-obsolete javascript translations extract doc test build check-release publish publish-test install clean coverage
 
 js_src := $(wildcard javascript/*.js)
 js_out := $(js_src:javascript/%.js=wiking/assets/resources/scripts/%.js)
@@ -40,8 +40,22 @@ doc:
 api-doc:
 	epydoc -o doc/html/api --name Wiking --inheritance=included --graph classtree wiking
 
+# Name of the database used by the tests (see 'db' below).
+test_db := wiking-test
+
+# Create the database schema for running the tests.  Requires the 'gsql' tool
+# from Pytis in PATH or in the directory given by the 'pytis' variable.
+pytis ?= ../pytis
+
+db:
+	psql -qAt -d postgres -c "select 1 from pg_roles where rolname = 'www-data'" | grep -q 1 || \
+	    createuser --login www-data
+	dropdb --if-exists $(test_db)
+	createdb $(test_db)
+	python $(pytis)/tools/gsql.py wiking.dbdefs | psql -q -v ON_ERROR_STOP=1 $(test_db) -1f -
+
 test:
-	python -m pytest wiking/test.py
+	WIKING_TEST_DB=$(test_db) python -m pytest wiking
 
 build: update
 	flit build
@@ -86,5 +100,5 @@ clean: clean-obsolete
 	make -C translations clean
 
 coverage:
-	coverage run --source=wiking -m pytest wiking/test.py
+	WIKING_TEST_DB=$(test_db) coverage run --source=wiking -m pytest wiking
 	coverage report
