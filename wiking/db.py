@@ -772,7 +772,14 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
             referer = record.original_row()[self._referer].export()
             if uri.endswith('/' + referer):
                 uri = uri[:-(len(referer) + 1)]
-        return req.make_uri(uri)
+        # Only prepend the application root here.  The URI must not be encoded
+        # by 'make_uri()' -- it is encoded when the final URI is constructed
+        # (such as in 'Request.redirect()'), so encoding it here would lead to
+        # encoding the escape sequences again.
+        root = req.root()
+        if root and not uri.startswith(root + '/'):
+            uri = root + uri
+        return uri
 
     def _current_record_uri(self, req, record):
         # Return the URI of given record in the context of the current request.

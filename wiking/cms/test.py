@@ -311,9 +311,7 @@ class TestUserRoles(_SiteTest):
         uri = '/_wmi/users/Users/%s/roles' % self.LOGIN
         form = self._find_form(self._get_follow(uri + '?action=insert'), fields=('role_id',))
         self._set_select_field(form, 'role_id', value=self.ASSIGNED_ROLE)
-        # The redirect is not followed -- Wiking redirects to a double encoded
-        # URI when the login contains an '@' sign.
-        self._submit_form(form, follow=False)
+        self._submit_form(form)
         self.assertEqual([(self.ASSIGNED_ROLE,)],
                          self.query("select role_id from role_members "
                                     "where uid = %s and role_id = %s",
