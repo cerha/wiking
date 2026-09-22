@@ -54,7 +54,7 @@ jobs:
           pip install -e '.[cms]' --group test
 
       - name: Create the database schema
-        run: make schema pytis=.deps/pytis
+        run: make db pytis=.deps/pytis
 
       - name: Run the tests
         run: make test
