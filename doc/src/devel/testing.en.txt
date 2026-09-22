@@ -35,8 +35,14 @@ applications may be run within a single test session.
 
 == Running the tests ==
 
-The framework tests need nothing but the installed dependencies.  The tests of
-Wiking CMS need its database, so create it first:
+Install Wiking with the CMS extra and the test dependency group:
+
+-----
+pip install -e '.[cms]' --group test
+-----
+
+The framework tests need nothing more.  The tests of Wiking CMS need its
+database, so create it first:
 
 -----
 make db

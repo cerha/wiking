@@ -19,7 +19,7 @@ classifiers = [
 ]
 dependencies = [
     #"pytis",
-    "lcg-framework[all]",
+    "lcg-framework[pdf]",
     "pbkdf2",
 ]
 
