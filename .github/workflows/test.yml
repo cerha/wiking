@@ -1,0 +1,60 @@
+name: Tests
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    env:
+      # Used by the PostgreSQL client tools and by psycopg2 in the tests.
+      PGHOST: localhost
+      PGUSER: postgres
+      PGPASSWORD: postgres
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # LCG and Pytis are not released on PyPI often enough to test against
+      # them, so their current sources are used.  Pytis is also needed for the
+      # 'gsql' tool, which generates the database schema.
+      - uses: actions/checkout@v4
+        with:
+          repository: cerha/lcg
+          path: .deps/lcg
+      - uses: actions/checkout@v4
+        with:
+          repository: cerha/pytis
+          path: .deps/pytis
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install ./.deps/lcg ./.deps/pytis
+          pip install -e . --group test
+
+      - name: Create the database schema
+        run: make schema pytis=.deps/pytis
+
+      - name: Run the tests
+        run: make test
