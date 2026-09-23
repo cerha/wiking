@@ -836,12 +836,9 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
             # forms.  That's why we test binding_uri here (not very nice...).
             heading_info = form.heading_info()
             if heading_info:
-                # TODO: Am I the only one who thinks that passing the heading
-                # info through req.message() is an ugly hack?  What about
-                # creating a generic mechanism to pass internal processing data
-                # through request instance (since it is available everywhere).
-                # Some other hacks to achieve the same exist, such as passing
-                # data through req.set_param().
+                # TODO: Passing the heading info through req.message() is an
+                # ugly hack.  Internal processing data should be passed through
+                # 'req.vars'.
                 req.message(heading_info, req.HEADING)
         return form
 

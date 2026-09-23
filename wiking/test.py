@@ -745,6 +745,21 @@ class TestRequest(Test):
             return req.param('a'), req.param('b')
         assert self._probe(probe, '/?a=x') == ('y', 'z')
 
+    def test_pop_param(self):
+        def probe(req):
+            return (req.pop_param('a'), req.pop_param('a'), req.pop_param('c', 'default'),
+                    req.has_param('a'), req.param('a'), sorted(req.params()))
+        assert self._probe(probe, '/?a=x&b=y') == ('x', None, 'default', False, None, ['b'])
+        assert self._probe(probe, '/?b=q', 'POST', params={'a': 'p'}) == \
+            ('p', None, 'default', False, None, ['b'])
+
+    def test_vars(self):
+        def probe(req):
+            assert not hasattr(req.vars, 'a')
+            req.vars.a = 5
+            return req.vars.a, req.has_param('a')
+        assert self._probe(probe, '/?a=x') == (5, True)
+
     def test_method(self):
         assert self._probe(lambda req: req.method()) == 'GET'
         assert self._probe(lambda req: req.method(), method='POST') == 'POST'

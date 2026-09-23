@@ -138,12 +138,26 @@ class ServerInterface(pytis.web.Request):
         """Return true if the parameter 'name' was sent with the request."""
         return name in self.params()
 
+    def pop_param(self, name, default=None):
+        """Remove request parameter 'name' and return its value or 'default' if not present.
+
+        Use this method to consume parameters which should not be seen by
+        further processing, such as passwords or one-shot commands, which must
+        not be propagated to forms, redirection URIs or error reports built
+        from the current request parameters.
+
+        """
+        pass
+
     def set_param(self, name, value):
-        """Set the value of given request parameter as if it was passed.
+        """Deprecated: Set the value of given request parameter as if it was passed.
 
         Arguments:
           name -- parameter name as a string.
           value -- string value to set or None to remove the parameter.
+
+        Use 'pop_param()' to remove a parameter and 'Request.vars' to store
+        request processing data for later use.
 
         """
         pass
@@ -327,9 +341,18 @@ class Request(ServerInterface):
         self._preferred_languages = None
         self._timezone = self._UNDEFINED
         self._localizer = {}
-        self._decryption_password = self._init_decryption_password()
+        self._decryption_password = self.pop_param('__decryption_password')
         self._messages = self._init_messages()
         self._is_api_request = None
+        self.vars = types.SimpleNamespace()
+        """Namespace for arbitrary data stored for later use within request processing.
+
+        Assign attributes to pass data between different parts of the
+        application processing the same request, such as 'req.vars.x = 5'.
+        Unlike request parameters, these values can't collide with (or be
+        spoofed by) parameters sent by the client.
+
+        """
         if self.has_param('maximize'):
             self._maximized = self.param('maximize') == '1'
             self.set_cookie(self._MAXIMIZED_MODE_COOKIE, self._maximized and 'yes' or 'no')
@@ -340,13 +363,6 @@ class Request(ServerInterface):
             # Prevent directory traversal attacs globally (no need to handle them all around).
             raise wiking.Forbidden()
         self.unresolved_path = list(self.path)
-
-    def _init_decryption_password(self):
-        password = None
-        if self.has_param('__decryption_password'):
-            password = self.param('__decryption_password')
-            self.set_param('__decryption_password', None)
-        return password
 
     def _init_messages(self):
         # Attempt to unpack the messages previously stored before request

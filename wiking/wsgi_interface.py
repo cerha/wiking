@@ -107,6 +107,13 @@ class WsgiRequest(wiking.Request):
     def params(self):
         return tuple(set(self._raw_params).union(set(self._params)) - set(self._unset_params))
 
+    def pop_param(self, name, default=None):
+        value = self.param(name, default)
+        self._params.pop(name, None)
+        if name not in self._unset_params:
+            self._unset_params.append(name)
+        return value
+
     def set_param(self, name, value):
         if value is None:
             if name in self._params:

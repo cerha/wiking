@@ -72,6 +72,9 @@ class ModPythonRequest(wiking.Request):
     def has_param(self, name):
         return name in self._params
 
+    def pop_param(self, name, default=None):
+        return self._params.pop(name, default)
+
     def set_param(self, name, value):
         if value is None:
             if name in self._params:
