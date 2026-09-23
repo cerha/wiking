@@ -46,7 +46,7 @@ class AdminControl(wiking.TopBarControl):
         req = context.req()
         items = []
         if wiking.module.WikingManagementInterface.authorized(req):
-            if not req.wmi:
+            if not req.vars.wmi:
                 items.append(lcg.PopupMenuItem(_("Enter the Management Interface"), uri='/_wmi/',
                                                icon='gear-icon'))
             else:
@@ -68,8 +68,8 @@ class AdminControl(wiking.TopBarControl):
             param = wiking.module.Application._PREVIEW_MODE_PARAM
             items.append(lcg.PopupMenuItem(label, uri='%s?%s=%s' % (req.uri(), param, value),
                                            icon='refresh-icon'))
-        if not req.wmi:
-            if hasattr(req, 'page_write_access') and req.page_write_access:
+        if not req.vars.wmi:
+            if getattr(req.vars, 'page_write_access', False):
                 items.append(lcg.PopupMenuItem(_("Edit the Current Page"),
                                                uri=req.uri() + '?action=update',
                                                icon='edit-icon'))
@@ -118,7 +118,7 @@ class Application(wiking.Application):
         Doesn't depend on the current mode, just indicates the possibility.
 
         """
-        return req.check_roles(Roles.CONTENT_ADMIN) or req.__dict__.get('page_write_access', False)
+        return req.check_roles(Roles.CONTENT_ADMIN) or getattr(req.vars, 'page_write_access', False)
 
     def set_preview_mode(self, req, value):
         """Change the current state of preview mode.
@@ -165,7 +165,7 @@ class Application(wiking.Application):
             return None
 
     def handle(self, req):
-        req.wmi = False  # Will be set to True by `WikingManagementInterface' if needed.
+        req.vars.wmi = False  # Will be set to True by `WikingManagementInterface' if needed.
         preview_mode_param = req.param(self._PREVIEW_MODE_PARAM)
         if preview_mode_param is not None:
             req.set_cookie(self._PREVIEW_MODE_COOKIE, preview_mode_param == '1' and '1' or None)
@@ -284,13 +284,13 @@ class Application(wiking.Application):
         return uri
 
     def site_subtitle(self, req):
-        if req.wmi:
+        if req.vars.wmi:
             return _("Management Interface")
         else:
             return wiking.cfg.site_subtitle
 
     def menu(self, req):
-        modname = req.wmi and 'WikingManagementInterface' or 'Pages'
+        modname = req.vars.wmi and 'WikingManagementInterface' or 'Pages'
         return wiking.module(modname).menu(req)
 
     def panels(self, req, lang):

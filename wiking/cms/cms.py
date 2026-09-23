@@ -164,7 +164,7 @@ class WikingManagementInterface(wiking.Module, wiking.RequestHandler):
     )
 
     def _handle(self, req):
-        req.wmi = True  # Switch to WMI only after successful authorization!
+        req.vars.wmi = True  # Switch to WMI only after successful authorization!
         if not req.unresolved_path:
             raise Redirect('/_wmi/users/Users')
         for section, title, descr, modnames in self._MENU:
@@ -505,7 +505,7 @@ class EmbeddableCMSModule(CMSModule, Embeddable):
                        condition=cls._embed_binding_condition)
 
     def embed(self, req):
-        content = [self.related(req, self.binding(), req.page_record, req.uri())]
+        content = [self.related(req, self.binding(), req.vars.page_record, req.uri())]
         rss_info = self._rss_info(req)
         if rss_info:
             content.append(rss_info)
@@ -1608,19 +1608,19 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
     def _handle(self, req, action, **kwargs):
         """Setup specific environment when processing a request for a CMS page.
 
-        Attaching the attributes 'page_record', 'page_read_access' and
-        'page_write_access' to the request is a quick hack.  It allows us to
-        quickly determine the current page within further request processing.
-        As we also save the access rights of the current page, we can also
-        quickly determine access to related subcontent, such as attachments or
-        records of embedded modules.  Some modules may override the access
-        attributes when we dive into content with specific access settings.
-        For example the module 'Publications' will owerwrite the attributes
-        'req.page_read_access' and 'req.page_write_access' according to the
-        access settings of the current publication when we dive into a
-        publication (the request leads to some content within it).  Thus the
-        Attachments module will automatically respect theese attributes when
-        accessing attachments of a publication.
+        Storing 'page_record', 'page_read_access' and 'page_write_access' in
+        'req.vars' is a quick hack.  It allows us to quickly determine the
+        current page within further request processing.  As we also save the
+        access rights of the current page, we can also quickly determine access
+        to related subcontent, such as attachments or records of embedded
+        modules.  Some modules may override the access attributes when we dive
+        into content with specific access settings.  For example the module
+        'Publications' will owerwrite 'req.vars.page_read_access' and
+        'req.vars.page_write_access' according to the access settings of the
+        current publication when we dive into a publication (the request leads
+        to some content within it).  Thus the Attachments module will
+        automatically respect theese attributes when accessing attachments of a
+        publication.
 
         A cleaner approach would be to store these properties within the
         request forwarding information (see 'req.forward()') and having some
@@ -1630,11 +1630,11 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
         """
         # Check hasattr to avoid overwriting page_record in derived classes,
         # such as in Publications, which are processed inside pages.
-        if not hasattr(req, 'page_record'):
+        if not hasattr(req.vars, 'page_record'):
             record = kwargs.get('record')
-            req.page_record = record
-            req.page_read_access = self._check_page_access(req, record, readonly=True)
-            req.page_write_access = self._check_page_access(req, record)
+            req.vars.page_record = record
+            req.vars.page_read_access = self._check_page_access(req, record, readonly=True)
+            req.vars.page_write_access = self._check_page_access(req, record)
         return super(Pages, self)._handle(req, action, **kwargs)
 
     def _authorization_error(self, req, record=None, **kwargs):
@@ -2061,7 +2061,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                         break
                     else:
                         raise Redirect('/' + row['identifier'].value())
-        if req.page_write_access or self.name() != 'Pages':
+        if req.vars.page_write_access or self.name() != 'Pages':
             # The above condition is just to avoid unnecessary slowdown in the simplest case...
             actions = self._page_actions_content(req, record)
             if actions:
@@ -2069,7 +2069,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                 if record['kind'].value() != 'page':
                     name.append('cms-%s-actions' % record['kind'].value())
                 content.append(lcg.Container(actions, name=name))
-        if req.page_write_access:
+        if req.vars.page_write_access:
             content.extend(self._related_content(req, record))
         return self._document(req, content, record)
 
@@ -2155,8 +2155,8 @@ class NavigablePages(Pages):
             super(NavigablePages.Navigation, self).__init__()
 
         def _navigation_links(self, req, node):
-            publication_id = '/%s/data/%s' % (req.page_record['identifier'].value(),
-                                              req.publication_record['identifier'].value())
+            publication_id = '/%s/data/%s' % (req.vars.page_record['identifier'].value(),
+                                              req.vars.publication_record['identifier'].value())
             top = [n for n in node.path() if n.id() == publication_id][0]
 
             def target(tnode):
@@ -2353,7 +2353,7 @@ class CmsPageExcerpts(EmbeddableCMSModule, BrailleExporter):
 
     def _authorized(self, req, action, record=None, **kwargs):
         if action == 'list' or record and action in ('view', 'delete', 'export_braille'):
-            return req.page_read_access
+            return req.vars.page_read_access
         else:
             return False
 
@@ -2419,7 +2419,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter, PDFExpo
                 Field('kind', default='publication'),
                 Field('description', _("Subtitle")),
                 Field('parent',
-                      computer=computer(lambda r: r.req().page_record['page_id'].value())),
+                      computer=computer(lambda r: r.req().vars.page_record['page_id'].value())),
                 # Avoid default ord=1 to work around slow insertion!
                 Field('ord', enumerator=None, default=None, computer=None),
                 Field('menu_visibility', default='never'),
@@ -2506,7 +2506,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter, PDFExpo
                           pd.WM('mime_type', pd.WMValue(pd.String(), 'image/*')))
 
         def _attachment_storage_uri(self, record):
-            return '/%s/data/%s/attachments' % (record.req().page_record['identifier'].value(),
+            return '/%s/data/%s/attachments' % (record.req().vars.page_record['identifier'].value(),
                                                 record['identifier'].value())
 
         def _uuid(self, record, isbn):
@@ -2572,16 +2572,16 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter, PDFExpo
         )
 
     def _handle(self, req, action, **kwargs):
-        if not hasattr(req, 'publication_record'):
+        if not hasattr(req.vars, 'publication_record'):
             record = kwargs.get('record')
-            req.publication_record = kwargs.get('record')
+            req.vars.publication_record = kwargs.get('record')
             if record:
                 # Overwrite the following variables when we dive into a publication.
                 # This will make Attachments and other nested modules respect
                 # the rights of the current publication instead of the page
                 # where the publication belongs.
-                req.page_read_access = self._check_page_access(req, record, readonly=True)
-                req.page_write_access = self._check_page_access(req, record)
+                req.vars.page_read_access = self._check_page_access(req, record, readonly=True)
+                req.vars.page_write_access = self._check_page_access(req, record)
         return super(Publications, self)._handle(req, action, **kwargs)
 
     def _layout(self, req, action, record=None):
@@ -2608,7 +2608,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter, PDFExpo
 
     def _authorized(self, req, action, record=None, **kwargs):
         if action in ('insert',):
-            return req.page_write_access
+            return req.vars.page_write_access
         elif record and action in ('view', 'rss'):
             return self._check_page_access(req, record, readonly=True)
         elif record and action in ('update', 'options', 'new_chapter',
@@ -2641,7 +2641,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter, PDFExpo
         return super(Pages, self)._current_base_uri(req, record=record)
 
     def _redirect_after_delete_uri(self, req, record, **kwargs):
-        return '/' + req.page_record['identifier'].value(), kwargs
+        return '/' + req.vars.page_record['identifier'].value(), kwargs
 
     def _link_provider(self, req, uri, record, cid, **kwargs):
         if cid == 'lang':
@@ -2872,13 +2872,13 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter, PDFExpo
 
     def submenu(self, req):
         # TODO: This partially duplicates Pages.menu() - refactor?
-        if not hasattr(req, 'publication_record') or req.publication_record is None:
+        if getattr(req.vars, 'publication_record', None) is None:
             return []
-        record = req.publication_record
+        record = req.vars.publication_record
 
         children = self._child_rows(req, record,
                                     preview=wiking.module.Application.preview_mode(req))
-        base_uri = '/%s/data/%s' % (req.page_record['identifier'].value(),
+        base_uri = '/%s/data/%s' % (req.vars.page_record['identifier'].value(),
                                     record['identifier'].value())
 
         def item(row):
@@ -2933,7 +2933,8 @@ class PublicationChapters(NavigablePages):
                 Field('kind', default='chapter'),
                 Field('parent', not_null=True, editable=ALWAYS,
                       runtime_filter=computer(self._parent_filter),
-                      computer=computer(lambda r: r.req().publication_record['page_id'].value()),
+                      computer=computer(lambda r: r.req().vars.publication_record['page_id']
+                                        .value()),
                       descr=_("Select the superordinate chapter in hierarchy.")),
                 Field('published', default=True),
             )
@@ -2953,7 +2954,7 @@ class PublicationChapters(NavigablePages):
             return identifier
 
         def _parent_filter(self, record, site):
-            publication = record.req().publication_record
+            publication = record.req().vars.publication_record
             return pd.AND(pd.EQ('site', pd.sval(site)),
                           pd.OR(pd.EQ('page_id', publication['page_id']),
                                 pd.WM('tree_order',
@@ -2964,17 +2965,18 @@ class PublicationChapters(NavigablePages):
         def _attachment_storage(self, record):
             req = record.req()
             return Attachments.AttachmentStorage(req,
-                                                 req.publication_record['page_id'].value(),
+                                                 req.vars.publication_record['page_id'].value(),
                                                  record['lang'].value(),
                                                  '/%s/data/%s/attachments' %
-                                                 (req.page_record['identifier'].value(),
-                                                  req.publication_record['identifier'].value()))
+                                                 (req.vars.page_record['identifier'].value(),
+                                                  req.vars.publication_record['identifier'].value()))
         bindings = (
             Binding('attachments', _("Attachments"), 'Attachments',
                     condition=(lambda r:
-                               pd.EQ('page_id', pd.ival(r.req().publication_record['page_id']
+                               pd.EQ('page_id', pd.ival(r.req().vars.publication_record['page_id']
                                                         .value()))),
-                    prefill=lambda r: dict(page_id=r.req().publication_record['page_id'].value())),
+                    prefill=lambda r: dict(page_id=r.req().vars.publication_record['page_id']
+                                           .value())),
         ) + tuple([_b for _b in Pages.Spec.bindings if _b.id() != 'attachments']) + (
             Binding('excerpts', _("Excerpts"), 'CmsPageExcerpts', 'page_id'),
         )
@@ -2991,9 +2993,9 @@ class PublicationChapters(NavigablePages):
 
     def _authorized(self, req, action, record=None, **kwargs):
         if action in ('view',):
-            return req.page_read_access
+            return req.vars.page_read_access
         elif action in ('insert', 'update', 'options', 'commit', 'revert', 'delete', 'excerpt',):
-            return req.page_write_access
+            return req.vars.page_write_access
         else:
             return False  # raise NotFound or BadRequest?
 
@@ -3115,15 +3117,15 @@ class PublicationExports(ContentManagementModule):
         if action == 'download' and record['public'].value():
             return self._check_publication_download_access(req)
         if action in ('list', 'view', 'insert', 'update', 'delete', 'download'):
-            return req.page_write_access
+            return req.vars.page_write_access
         else:
             return False
 
     def _check_publication_download_access(self, req):
-        if req.page_write_access:
+        if req.vars.page_write_access:
             return True
         else:
-            role_id = req.publication_record['download_role_id'].value()
+            role_id = req.vars.publication_record['download_role_id'].value()
             if role_id:
                 return req.check_roles(wiking.module.Users.Roles()[role_id])
             else:
@@ -3181,7 +3183,7 @@ class PublicationExports(ContentManagementModule):
         return self._transaction()
 
     def _insert(self, req, record, transaction):
-        publication_record = req.publication_record
+        publication_record = req.vars.publication_record
         data, messages = wiking.module.Publications.export_publication(req, publication_record,
                                                                        record['format'].value())
         children = wiking.module.PublicationChapters.child_rows(
@@ -3216,7 +3218,7 @@ class PublicationExports(ContentManagementModule):
         if req.cached_since(record['timestamp'].value()):
             raise wiking.NotModified()
         export_format = record['format'].value()
-        identifier = req.publication_record['identifier'].value()
+        identifier = req.vars.publication_record['identifier'].value()
         filename_template = '%s-%s.%%s' % (identifier, record['version'].value())
         path = self._file_path(req, record)
         if export_format == 'epub':
@@ -3283,7 +3285,7 @@ class PublicationExports(ContentManagementModule):
                        for row in rows]),
             ), cls='publication-exports')
         if self._check_publication_download_access(req):
-            rows = self._data.get_rows(page_id=req.publication_record['page_id'].value(),
+            rows = self._data.get_rows(page_id=req.vars.publication_record['page_id'].value(),
                                        public=True, sorting=(('timestamp', pd.DESCENDANT),))
             if rows:
                 return lcg.HtmlContent(export, rows)
@@ -3329,7 +3331,7 @@ class PageHistory(ContentManagementModule):
 
     def _authorized(self, req, action, **kwargs):
         if action in ('list', 'view'):
-            return req.page_write_access
+            return req.vars.page_write_access
         else:
             return False
 
@@ -3753,12 +3755,12 @@ class Attachments(ContentManagementModule):
 
     def _authorized(self, req, action, record=None, **kwargs):
         if action in ('image', 'download', 'thumbnail'):
-            return req.page_read_access
+            return req.vars.page_read_access
         elif self._current_base_uri(req, record).endswith('/attachments-management'):
             # See Pages.Spec.bindings for diferences in access through /<page_id>/attachments/
             # and /<page_id>/attachments-management/
             if action in ('list', 'view', 'insert', 'upload_archive', 'update', 'delete', 'move'):
-                return req.page_write_access
+                return req.vars.page_write_access
         return False
 
     def _cell_editable(self, req, record, cid):
@@ -4157,9 +4159,9 @@ class _News(ContentManagementModule, EmbeddableCMSModule, wiking.CachingPytisMod
 
     def _authorized(self, req, action, record=None, **kwargs):
         if action == 'list':
-            return req.page_read_access
+            return req.vars.page_read_access
         elif action in ('insert', 'update', 'delete', 'copy'):
-            return req.page_write_access
+            return req.vars.page_write_access
         else:
             return False
 
@@ -4364,7 +4366,7 @@ class Newsletters(EmbeddableCMSModule):
             wiking.Binding('editions', _("Editions"), 'NewsletterEditions', 'newsletter_id',
                            form=pw.ItemizedView),
             Binding('subscribers', _("Subscribers"), 'NewsletterSubscription', 'newsletter_id',
-                    enabled=lambda r: r.req().newsletter_write_access),
+                    enabled=lambda r: r.req().vars.newsletter_write_access),
         )
         actions = (
             Action('colors', _("Colors")),
@@ -4377,19 +4379,21 @@ class Newsletters(EmbeddableCMSModule):
     def _authorized(self, req, action, record=None, **kwargs):
         roles = wiking.module.Users.Roles()
         if record:
-            req.newsletter_read_access = req.check_roles(roles[record['read_role_id'].value()])
-            req.newsletter_write_access = req.check_roles(roles[record['write_role_id'].value()])
+            req.vars.newsletter_read_access = req.check_roles(
+                roles[record['read_role_id'].value()])
+            req.vars.newsletter_write_access = req.check_roles(
+                roles[record['write_role_id'].value()])
         # TODO: Isn't it posible to hack around this by URI manipulation?
         if action == 'list':
-            return req.page_read_access
+            return req.vars.page_read_access
         elif action == 'insert':
-            return req.page_write_access
+            return req.vars.page_write_access
         elif action in ('view', 'image'):
-            return req.newsletter_read_access
+            return req.vars.newsletter_read_access
         elif action in ('subscribe', 'unsubscribe'):
-            return req.newsletter_read_access and not req.newsletter_write_access
+            return req.vars.newsletter_read_access and not req.vars.newsletter_write_access
         elif action in ('update', 'delete', 'colors'):
-            return req.newsletter_write_access
+            return req.vars.newsletter_write_access
         else:
             return False
 
@@ -4458,7 +4462,7 @@ class NewsletterSubscription(CMSModule):
     def _authorized(self, req, action, record=None, **kwargs):
         # TODO: Isn't it posible to hack around this by URI manipulation?
         if action in ('view', 'list', 'insert', 'delete'):
-            return req.newsletter_write_access
+            return req.vars.newsletter_write_access
         else:
             return False
 
@@ -4570,7 +4574,7 @@ class NewsletterEditions(CMSModule):
                 Field('newsletter_id', codebook='Newsletters', selection_type=CHOICE),
                 Field('creator', _("Creator"), codebook='Users', selection_type=CHOICE),
                 Field('created', _("Created"), editable=pp.Editable.NEVER, default=now,
-                      visible=computer(lambda r: r.req().newsletter_write_access)),
+                      visible=computer(lambda r: r.req().vars.newsletter_write_access)),
                 Field('sent', _("Sent"), editable=pp.Editable.NEVER),
                 Field('access_code',),
             )
@@ -4611,18 +4615,18 @@ class NewsletterEditions(CMSModule):
 
     def _authorized(self, req, action, record=None, **kwargs):
         if action == 'list':
-            return req.newsletter_read_access
+            return req.vars.newsletter_read_access
         elif action == 'view':
-            return (req.newsletter_write_access or
-                    req.newsletter_read_access and record['sent'].value() is not None)
+            return (req.vars.newsletter_write_access or
+                    req.vars.newsletter_read_access and record['sent'].value() is not None)
         elif action in ('insert', 'update', 'delete', 'send', 'test', 'preview'):
-            return req.newsletter_write_access
+            return req.vars.newsletter_write_access
         else:
             return False
 
     def _condition(self, req):
         condition = super(NewsletterEditions, self)._condition(req)
-        if not req.newsletter_write_access:
+        if not req.vars.newsletter_write_access:
             condition = pd.AND(condition, pd.NE('sent', pd.dtval(None)))
         return condition
 
@@ -4877,9 +4881,9 @@ class NewsletterPosts(CMSModule):
 
     def _authorized(self, req, action, **kwargs):
         if action in ('view', 'list', 'image'):
-            return req.newsletter_read_access
+            return req.vars.newsletter_read_access
         elif action in ('insert', 'update', 'delete'):
-            return req.newsletter_write_access
+            return req.vars.newsletter_write_access
         else:
             return False
 
@@ -4966,7 +4970,7 @@ class Discussions(ContentManagementModule, EmbeddableCMSModule):
 
     def _authorized(self, req, action, record=None):
         if action in ('list', 'insert', 'reply'):
-            return req.page_read_access
+            return req.vars.page_read_access
         else:
             return False
 
@@ -4978,8 +4982,8 @@ class Discussions(ContentManagementModule, EmbeddableCMSModule):
         return dict(super(Discussions, self)._prefill(req),
                     timestamp=now(),
                     author=req.user().uid(),
-                    page_id=req.page_record['page_id'].value(),
-                    lang=req.page_record['lang'].value())
+                    page_id=req.vars.page_record['page_id'].value(),
+                    lang=req.vars.page_record['lang'].value())
 
     def action_reply(self, req, record):
         prefill = dict(self._prefill(req),
@@ -5184,7 +5188,7 @@ class StyleSheets(SiteSpecificContentModule, StyleManagementModule,
     _cache_ids = ('default', 'single',)
 
     def stylesheets(self, req):
-        return self._get_value((None, req.wmi))
+        return self._get_value((None, req.vars.wmi))
 
     def stylesheet(self, req, filename):
         return self._get_value((filename, None), cache_id='single')
