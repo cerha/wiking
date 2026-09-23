@@ -1540,9 +1540,9 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                    descr=_("Replace the current concept with the production version."),
                    enabled=lambda r: (r['parents_published'].value() and r['published'].value() and
                                       r['_content'].value() != r['content'].value())),
-            # Action('translate', _("Translate"),
-            #      descr=_("Create the content by translating another language variant"),
-            #       enabled=lambda r: r['_content'].value() is None),
+            Action('translate', _("Translate"), icon='copy-icon',
+                   descr=_("Create the content by translating another language variant"),
+                   enabled=lambda r: r['_content'].value() is None),
             Action('new_page', _("New Page"), icon='create-icon',
                    descr=_("Create a new page")),
             # The action seems inadequate in row context menu and the help page
@@ -1652,7 +1652,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
             return req.check_roles(Roles.CONTENT_ADMIN,)
         elif record and action in ('view', 'rss'):
             return self._check_page_access(req, record, readonly=True)
-        elif record and action in ('update', 'commit', 'revert',):
+        elif record and action in ('update', 'commit', 'revert', 'translate'):
             return self._check_page_access(req, record)
         else:
             return False  # raise NotFound or BadRequest?
@@ -2106,7 +2106,10 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
             d = pw.SelectionDialog('src_lang', _("Choose source language"),
                                    [(l, lcg.language_name(l) or l) for l in langs],
                                    action='translate',
-                                   hidden=[(id, record[id].value()) for id in ('page_id', 'lang')])
+                                   hidden=[(id, record[id].value()) for id in ('page_id', 'lang')],
+                                   # The default handler '#' would repeat the
+                                   # query arguments of the current request.
+                                   handler=self._current_record_uri(req, record))
             return self._document(req, d, record, subtitle=_("Translate"))
         else:
             row = self._data.get_row(page_id=record['page_id'].value(),
