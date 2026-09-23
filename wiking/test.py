@@ -27,16 +27,14 @@ Applications are tested through their WSGI interface within the test process
 
 """
 
-import argparse
 import copy
 import os
+import pytest
 import random
 import re
 import sys
-import tempfile
 import time
 import types
-import unittest
 import webtest
 
 import lcg
@@ -56,12 +54,13 @@ import http.cookiejar
 import urllib.parse
 
 
-class _TestBase(unittest.TestCase):
+class _TestBase:
     """Base class of Wiking application tests.
 
-    Derived classes must define the tested application by 'config_file' and
-    'host' class attributes (or by calling 'set_options()', which is what the
-    command line runner in 'main()' does).
+    Derived classes define the tested application by the class attributes
+    below -- 'config_file' (or 'config_options') and 'host' at least.  The
+    setup is done by autouse fixtures, so the test cases only define their
+    tests.
 
     """
     config_file = None
@@ -87,8 +86,13 @@ class _TestBase(unittest.TestCase):
     profile = None
     verbose = False
 
-    _OPTIONS = ('language', 'profile', 'user', 'password', 'verbose')
-    """Names of the options which may be overriden from the command line."""
+    _OPTIONS = ('language', 'profile', 'user', 'password')
+    """Names of the options which may be overriden from the command line.
+
+    The remaining attributes above may only be set by the derived classes
+    ('verbose' can not be a command line option, because pytest has its own).
+
+    """
 
     class _Visited(set):
 
@@ -130,48 +134,51 @@ class _TestBase(unittest.TestCase):
         _numeric_suffix_regexp = re.compile('^(.*/)[0-9]+$')
 
         @classmethod
-        def numeric_suffix_transformer(class_, url):
-            match = class_._numeric_suffix_regexp.match(url)
+        def numeric_suffix_transformer(cls, url):
+            match = cls._numeric_suffix_regexp.match(url)
             if match is not None:
                 url = url[:match.end(1)] + '*'
             return url
 
-    _options = None
+    @pytest.fixture(scope='class', autouse=True)
+    def configuration(self, request, tmp_path_factory):
+        """Create the configuration file of the tested application when needed.
 
-    @classmethod
-    def setUpClass(class_):
-        super(_TestBase, class_).setUpClass()
-        if not class_.config_file:
-            class_._config_directory = tempfile.TemporaryDirectory()
-            class_.config_file = os.path.join(class_._config_directory.name, 'config.py')
-            with open(class_.config_file, 'w') as f:
-                f.write(''.join('%s = %r\n' % item for item in class_._config_options().items()))
+        The file is not removed when the test case is done -- the
+        configuration objects of the application re-read their file whenever
+        it changes, so it must exist as long as the process runs.
 
-    @classmethod
-    def _config_options(class_):
-        """Return the configuration of the tested application as a dictionary."""
-        return dict(class_.config_options, server_hostname=class_.host)
+        """
+        cls = request.cls
+        if not cls.config_file:
+            path = tmp_path_factory.mktemp('wiking') / 'config.py'
+            path.write_text(''.join('%s = %r\n' % item
+                                    for item in cls._config_options().items()))
+            cls.config_file = str(path)
+        return cls.config_file
 
-    @classmethod
-    def set_options(class_, config_file, host, options=None):
-        class_.config_file = config_file
-        class_.host = host
-        class_._options = options
+    @pytest.fixture(autouse=True)
+    def options(self, request, configuration):
+        """Make the test options available as 'self._options'.
 
-    def setUp(self):
-        assert self.config_file, "Tested application not defined by 'config_file'."
-        self._config_file = self.config_file
-        self._host = self.host
-        self._options = self._process_options(self.__class__._options)
+        The command line options (see 'conftest.py' in the root directory of
+        the source tree) take precedence over the class attributes of the same
+        names.
 
-    def _process_options(self, options):
-        # Command line options take precedence over the class attributes.
-        if options is None:
-            options = types.SimpleNamespace()
+        """
+        options = types.SimpleNamespace()
         for name in self._OPTIONS:
-            if getattr(options, name, None) is None:
-                setattr(options, name, getattr(self, name))
+            value = request.config.getoption(name, default=None)
+            setattr(options, name, getattr(self, name) if value is None else value)
+        self._options = options
+        self._config_file = configuration
+        self._host = self.host
         return options
+
+    @classmethod
+    def _config_options(cls):
+        """Return the configuration of the tested application as a dictionary."""
+        return dict(cls.config_options, server_hostname=cls.host)
 
     def _credentials(self, index=0):
         user_string = self._options.user
@@ -221,7 +228,7 @@ class _TestBase(unittest.TestCase):
             links.append(url)
 
         def exception_args():
-            return (description, browser,) if self._options.verbose else ()
+            return (description, browser,) if self.verbose else ()
         if not links:
             raise IndexError("No matching link found", *exception_args())
         if index is None:
@@ -294,7 +301,7 @@ class _TestBase(unittest.TestCase):
         return all_responses
 
     def _info(self, message):
-        if self._options.verbose:
+        if self.verbose:
             sys.stdout.write('%s\n' % (message,))
 
     def _warning(self, message):
@@ -331,8 +338,9 @@ class Test(_TestBase):
 
     """
 
-    def setUp(self):
-        super(Test, self).setUp()
+    @pytest.fixture(autouse=True)
+    def application(self, options):
+        """Set up the tested application and the client used by this test."""
         self._reset_application()
         self._headers = self._make_headers()
         self._environment = self._make_environment()
@@ -341,6 +349,9 @@ class Test(_TestBase):
                                             cookiejar=self._cookies)
         self._set_language()
         self._capture_mail()
+        yield self._application
+        for module in self._mail_patched_modules:
+            module.send_mail = wiking.send_mail
 
     def _reset_application(self):
         """Make the WSGI entry point use the configuration of this test.
@@ -368,10 +379,6 @@ class Test(_TestBase):
             wiking.wsgi_interface.application._handler = None
             _configured = self._config_file
 
-    def tearDown(self):
-        for module in self._mail_patched_modules:
-            module.send_mail = wiking.send_mail
-        super(Test, self).tearDown()
 
     def _capture_mail(self):
         self.mail = []
@@ -442,7 +449,7 @@ class Test(_TestBase):
         return response.request.url
 
     def _get(self, path, status=None):
-        if self._options.verbose:
+        if self.verbose:
             self._info('GET: %s' % (path,))
         return self._application.get(path, status=status, **self._default_request_kwargs())
 
@@ -459,7 +466,7 @@ class Test(_TestBase):
             (FIELD, FILENAME, CONTENT) tuples) or 'content_type'.
 
         """
-        if self._options.verbose:
+        if self.verbose:
             self._info('POST: %s' % (path,))
         return self._application.post(path, params or {}, status=status,
                                       **dict(self._default_request_kwargs(), **kwargs))
@@ -493,7 +500,7 @@ class Test(_TestBase):
                     break
             else:
                 return form
-        self.assertFalse(check_found)
+        assert not check_found, ("No form found", fields)
         return None
 
     def _find_elements(self, response, tag, attributes=None):
@@ -540,8 +547,9 @@ class Test(_TestBase):
 
 class BrowserTest(_TestBase):
 
-    def setUp(self):
-        super(BrowserTest, self).setUp()
+    @pytest.fixture(autouse=True)
+    def browser(self, options):
+        """Set up the web browser used by this test."""
         profile = self._options.profile
         kwargs = {}
         if profile:
@@ -559,10 +567,8 @@ class BrowserTest(_TestBase):
         self._set_language()
         self._ajax_delay_seconds = 1
         self._ajax_timeout_seconds = 10
-
-    def tearDown(self):
+        yield self._browser
         self._browser.quit()
-        super(BrowserTest, self).tearDown()
 
     def _set_language(self):
         # Not possible in a general way
@@ -580,9 +586,9 @@ class BrowserTest(_TestBase):
         browser.visit(url)
         status_code = browser.status_code
         if status is None:
-            self.assertTrue(status_code.is_success())
+            assert status_code.is_success(), status_code
         else:
-            self.assertEqual(status_code, status)
+            assert status_code == status
         return browser
 
     def _get_follow(self, path):
@@ -615,7 +621,7 @@ class BrowserTest(_TestBase):
                     break
             else:
                 return form
-        self.assertFalse(check_found)
+        assert not check_found, ("No form found", fields)
         return None
 
     def _attribute(self, element, name):
@@ -707,84 +713,90 @@ class TestRequest(Test):
     the tests excercise the same code path as the applications do.
 
     """
-    def test_param(self):
-        self.assertEqual('x', self._probe(lambda req: req.param('a'), '/?a=x'))
-        self.assertEqual('', self._probe(lambda req: req.param('a'), '/?a='))
-        self.assertIsNone(self._probe(lambda req: req.param('a'), '/?b=x'))
-        self.assertEqual('dflt', self._probe(lambda req: req.param('a', 'dflt'), '/?b=x'))
+    @pytest.mark.parametrize('path, value', (
+        ('/?a=x', 'x'),
+        ('/?a=', ''),
+        ('/?b=x', None),
         # Repeated parameters are returned as a tuple.
-        self.assertEqual(('1', '2'), self._probe(lambda req: req.param('a'), '/?a=1&a=2'))
+        ('/?a=1&a=2', ('1', '2')),
+    ))
+    def test_param(self, path, value):
+        assert self._probe(lambda req: req.param('a'), path) == value
 
-    def test_has_param(self):
-        self.assertTrue(self._probe(lambda req: req.has_param('a'), '/?a=x'))
-        self.assertTrue(self._probe(lambda req: req.has_param('a'), '/?a='))
-        self.assertFalse(self._probe(lambda req: req.has_param('a'), '/?b=x'))
+    def test_param_default(self):
+        assert self._probe(lambda req: req.param('a', 'dflt'), '/?b=x') == 'dflt'
+
+    @pytest.mark.parametrize('path, value', (
+        ('/?a=x', True),
+        ('/?a=', True),
+        ('/?b=x', False),
+    ))
+    def test_has_param(self, path, value):
+        assert self._probe(lambda req: req.has_param('a'), path) is value
 
     def test_params(self):
-        self.assertEqual(['a', 'b'], sorted(self._probe(lambda req: req.params(), '/?a=x&b=y')))
-        self.assertEqual([], list(self._probe(lambda req: req.params(), '/')))
+        assert sorted(self._probe(lambda req: req.params(), '/?a=x&b=y')) == ['a', 'b']
+        assert list(self._probe(lambda req: req.params(), '/')) == []
 
     def test_set_param(self):
         def probe(req):
             req.set_param('a', 'y')
             req.set_param('b', 'z')
             return req.param('a'), req.param('b')
-        self.assertEqual(('y', 'z'), self._probe(probe, '/?a=x'))
+        assert self._probe(probe, '/?a=x') == ('y', 'z')
 
     def test_method(self):
-        self.assertEqual('GET', self._probe(lambda req: req.method()))
-        self.assertEqual('POST', self._probe(lambda req: req.method(), method='POST'))
+        assert self._probe(lambda req: req.method()) == 'GET'
+        assert self._probe(lambda req: req.method(), method='POST') == 'POST'
 
     def test_post_param(self):
-        self.assertEqual('x', self._probe(lambda req: req.param('a'), method='POST',
-                                          params={'a': 'x'}))
+        assert self._probe(lambda req: req.param('a'), method='POST',
+                           params={'a': 'x'}) == 'x'
         # Repeated parameters are returned as a tuple, the same as in the query.
-        self.assertEqual(('1', '2'), self._probe(lambda req: req.param('a'), method='POST',
-                                                 params=[('a', '1'), ('a', '2')]))
+        assert self._probe(lambda req: req.param('a'), method='POST',
+                           params=[('a', '1'), ('a', '2')]) == ('1', '2')
         # The query parameters are available in a POST request as well.
-        self.assertEqual(['a', 'b'], sorted(self._probe(lambda req: req.params(), '/?b=q',
-                                                        'POST', params={'a': 'p'})))
+        assert sorted(self._probe(lambda req: req.params(), '/?b=q', 'POST',
+                                  params={'a': 'p'})) == ['a', 'b']
         # The values of the same name are combined, the posted one first.
-        self.assertEqual(('p', 'q'), self._probe(lambda req: req.param('a'), '/?a=q',
-                                                 'POST', params={'a': 'p'}))
+        assert self._probe(lambda req: req.param('a'), '/?a=q', 'POST',
+                           params={'a': 'p'}) == ('p', 'q')
 
     def test_file_upload(self):
         def probe(req):
             upload = req.param('f')
             return upload.filename(), upload.mime_type(), upload.file().read()
-        self.assertEqual(('note.txt', 'text/plain', b'file content'),
-                         self._probe(probe, method='POST',
-                                     upload_files=[('f', 'note.txt', b'file content')]))
+        assert self._probe(probe, method='POST',
+                           upload_files=[('f', 'note.txt', b'file content')]) == (
+            'note.txt', 'text/plain', b'file content')
 
     def test_header(self):
         self._headers['X-Wiking-Test'] = 'value'
-        self.assertEqual('value', self._probe(lambda req: req.header('X-Wiking-Test')))
-        self.assertIsNone(self._probe(lambda req: req.header('X-Nonexistent')))
-        self.assertEqual('dflt', self._probe(lambda req: req.header('X-Nonexistent', 'dflt')))
+        assert self._probe(lambda req: req.header('X-Wiking-Test')) == 'value'
+        assert self._probe(lambda req: req.header('X-Nonexistent')) is None
+        assert self._probe(lambda req: req.header('X-Nonexistent', 'dflt')) == 'dflt'
 
     def test_uri(self):
-        self.assertEqual('/x/y', self._probe(lambda req: req.uri(), '/x/y?a=1'))
-        self.assertEqual(['x', 'y'], self._probe(lambda req: req.unresolved_path, '/x/y'))
+        assert self._probe(lambda req: req.uri(), '/x/y?a=1') == '/x/y'
+        assert self._probe(lambda req: req.unresolved_path, '/x/y') == ['x', 'y']
         # The URI is decoded, unlike the unparsed one, which also has the query.
-        self.assertEqual('/a b', self._probe(lambda req: req.uri(), '/a%20b?x=1'))
-        self.assertEqual('/a%20b?x=1', self._probe(lambda req: req.unparsed_uri(), '/a%20b?x=1'))
+        assert self._probe(lambda req: req.uri(), '/a%20b?x=1') == '/a b'
+        assert self._probe(lambda req: req.unparsed_uri(), '/a%20b?x=1') == '/a%20b?x=1'
 
     def test_make_uri(self):
-        self.assertEqual('/x?a=1&b=2',
-                         self._probe(lambda req: req.make_uri('/x', a=1, b=2)))
+        assert self._probe(lambda req: req.make_uri('/x', a=1, b=2)) == '/x?a=1&b=2'
         # The URI is encoded, the arguments with None values are omitted.
-        self.assertEqual('/x%20y', self._probe(lambda req: req.make_uri('/x y')))
-        self.assertEqual('/x?a=a+b', self._probe(lambda req: req.make_uri('/x', a='a b', b=None)))
+        assert self._probe(lambda req: req.make_uri('/x y')) == '/x%20y'
+        assert self._probe(lambda req: req.make_uri('/x', a='a b', b=None)) == '/x?a=a+b'
         # The first positional argument may be an anchor.
-        self.assertEqual('/x?a=1#anchor',
-                         self._probe(lambda req: req.make_uri('/x', 'anchor', ('a', 1))))
+        assert self._probe(lambda req: req.make_uri('/x', 'anchor', ('a', 1))) == '/x?a=1#anchor'
 
     def test_server_uri(self):
         # The test requests pretend HTTPS on the standard port, see
         # '_make_environment()'.  The scheme of the returned URI is derived
         # from the port, not from the scheme of the request.
-        self.assertEqual((True, 443), self._probe(lambda req: (req.https(), req.port())))
-        self.assertEqual('https://localhost', self._probe(lambda req: req.server_uri()))
+        assert self._probe(lambda req: (req.https(), req.port())) == (True, 443)
+        assert self._probe(lambda req: req.server_uri()) == 'https://localhost'
 
 
 class TestApplication(Test):
@@ -798,44 +810,16 @@ class TestApplication(Test):
     """
     def test_document(self):
         response = self._get('/hello')
-        self.assertIn('Hello, world!', response)
-        self.assertIn('<title>Hello', response)
+        assert 'Hello, world!' in response
+        assert '<title>Hello' in response
 
     def test_request_parameters(self):
-        self.assertIn('Hello, Wiking!', self._get('/hello?name=Wiking'))
+        assert 'Hello, Wiking!' in self._get('/hello?name=Wiking')
 
     def test_not_found(self):
         response = self._get('/nonexistent', status=404)
-        self.assertIn('Item Not Found', response)
-        self.assertIn("The item '/nonexistent' does not exist on this server", response)
+        assert 'Item Not Found' in response
+        assert "The item '/nonexistent' does not exist on this server" in response
 
     def test_forbidden(self):
-        self.assertIn('Access Denied', self._get('/secret', status=403))
-
-
-def parse_options():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-l', '--language', dest='language', metavar='LANGUAGE',
-                        help="try to use given LANGUAGE")
-    parser.add_argument('--profile', dest='profile', metavar='PROFILE',
-                        help="use given web browser PROFILE")
-    parser.add_argument('-u', '--user', dest='user', metavar='USER[:USER...]',
-                        help="use given USER(s) in login forms")
-    parser.add_argument('-p', '--password', dest='password', metavar='PASSWORD[:PASSWORD...]',
-                        help="use given PASSWORD(s) in login forms")
-    parser.add_argument('-v', '--verbose', dest='verbose', action='store_true', default=False,
-                        help="be verbose about some actions")
-    parser.add_argument('config_file', metavar='CONFIG-FILE',
-                        help="Wiking application configuration file")
-    parser.add_argument('host', metavar='HOST',
-                        help="HTTP host name")
-    parser.add_argument('unittest_options', metavar='UNITTEST-OPTIONS', nargs='*')
-    args = parser.parse_args()
-    return args
-
-
-def main():
-    args = parse_options()
-    _TestBase.set_options(args.config_file, args.host, options=args)
-    argv = [sys.argv[0]] + args.unittest_options
-    unittest.main(argv=argv)
+        assert 'Access Denied' in self._get('/secret', status=403)

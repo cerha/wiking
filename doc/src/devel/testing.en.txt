@@ -64,7 +64,10 @@ make test
 -----
 
 Both commands connect to the database through the standard PostgreSQL
-environment variables (=PGHOST=, =PGUSER=, ...).  The database name may be
+environment variables (=PGHOST=, =PGUSER=, ...).  The options defined in
+=conftest.py= in the root directory of the source tree (such as =--language=
+or =--user=) may be passed to pytest to override the corresponding attributes
+of the test cases.  The database name may be
 changed through the variable =test_db= (for =make db=) or the environment
 variable =WIKING_TEST_DB= (for the tests themselves).
 
@@ -78,6 +81,11 @@ A test case defines the tested application by the class attributes
 When =config_file= is left undefined, a temporary configuration file is created
 from the dictionary =config_options= (=wiking.cms.test.CMSTest= adds the
 database given by its attribute =database= to these options).
+
+The tests are written in the pytest style -- plain classes with no base of the
+standard library's =unittest=, plain =assert= statements and pytest fixtures
+for the setup.  The base classes define their fixtures as =autouse=, so the
+derived test cases don't have to ask for them.
 
 =CMSTest= creates a user account with the roles given by the attribute =ROLES=
 and deletes it, with everything it created in the database, when the test case
@@ -103,7 +111,7 @@ class TestGreeting(wiking.cms.test.CMSTest):
         self._set_field(form, 'title', 'Greeting')
         self._set_field(form, 'identifier', 'greeting')
         self._set_field(form, '_content', 'Hello world!')
-        self.assertIn('Hello world!', self._submit_form(form))
+        assert 'Hello world!' in self._submit_form(form)
 -----
 
 The tests of the framework itself may reach the request instance directly
@@ -112,7 +120,7 @@ within a real request:
 
 -----
 def test_param(self):
-    self.assertEqual('x', self._probe(lambda req: req.param('a'), '/?a=x'))
+    assert self._probe(lambda req: req.param('a'), '/?a=x') == 'x'
 -----
 
 The e-mails sent by the application during a test don't leave the process.
