@@ -1021,7 +1021,7 @@ class Request(ServerInterface):
         return self.check_user_roles(self.user(), *args)
 
     @classmethod
-    def check_user_roles(class_, user, *args):
+    def check_user_roles(cls, user, *args):
         """Return true, iff the given user belongs to at least one of given roles.
 
         Arguments may be roles or nested sequences of roles, which will be
@@ -1044,11 +1044,11 @@ class Request(ServerInterface):
             return True
         if user is None:
             try:
-                user_roles = class_._anonymous_roles
+                user_roles = cls._anonymous_roles
             except AttributeError:
                 # Determine the roles just once per request (may be used many times).
                 application = wiking.module.Application
-                user_roles = class_._anonymous_roles = application.contained_roles(Roles.ANYONE)
+                user_roles = cls._anonymous_roles = application.contained_roles(Roles.ANYONE)
         else:
             user_roles = user.roles()
         for role in roles:

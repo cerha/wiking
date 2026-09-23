@@ -5234,7 +5234,7 @@ class Text(Structure):
                    Attribute('text_format', str),)
 
     @classmethod
-    def _module_class(class_):
+    def _module_class(cls):
         return Texts
 
     def __init__(self, label, description, text, text_format=None):
@@ -5314,7 +5314,7 @@ class CommonTexts(SettingsManagementModule):
                        " Do you want to remove it?")
 
     @classmethod
-    def register_text(class_, text):
+    def register_text(cls, text):
         """Register 'text' into the texts.
 
         This method is intended to be called only from the constructor of
@@ -5325,7 +5325,7 @@ class CommonTexts(SettingsManagementModule):
         management classes, otherwise they are unknown to them.
 
         """
-        texts = class_.Spec._texts
+        texts = cls.Spec._texts
         label = text.label()
         if label not in texts:
             texts[label] = text
@@ -5600,7 +5600,7 @@ class EmailText(Structure):
                    Attribute('text_format', str),)
 
     @classmethod
-    def _module_class(class_):
+    def _module_class(cls):
         return Emails
 
     def __init__(self, label, description, subject, text, **kwargs):
