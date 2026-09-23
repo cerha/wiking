@@ -1319,8 +1319,7 @@ class Themes(StyleManagementModule, wiking.CachingPytisModule):
                             req.WARNING)
         else:
             req.message(err, req.ERROR)
-        req.set_param('search', theme_id)
-        raise Redirect(self._current_base_uri(req, record))
+        raise Redirect(self._current_base_uri(req, record), form_name=self.name(), search=theme_id)
 
 
 # ==============================================================================
