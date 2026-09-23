@@ -2138,8 +2138,8 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                        action='insert', copy=record[self._key].export(),
                        **{p: req.param(p) for p in req.params() if p != 'action'})
 
-    def action_update(self, req, record, action='update'):
-        form = self._form(pw.EditForm, req, record=record, action=action,
+    def action_update(self, req, record, action='update', prefill=None):
+        form = self._form(pw.EditForm, req, record=record, action=action, prefill=prefill,
                           layout=self._layout(req, action, record=record),
                           submit_buttons=self._submit_buttons(req, action, record),
                           show_cancel_button=True)

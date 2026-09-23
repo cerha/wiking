@@ -2069,14 +2069,14 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
             content.extend(self._related_content(req, record))
         return self._document(req, content, record)
 
-    def action_update(self, req, record, action='update'):
+    def action_update(self, req, record, action='update', **kwargs):
         application = wiking.module.Application
         if action == 'update' and not application.preview_mode(req) \
                 and record['content'].value() != record['_content'].value():
             req.message(_("There are unpublished changes which are not visible "
                           "in production mode."), req.WARNING)
             application.set_preview_mode(req, True)
-        return super(Pages, self).action_update(req, record, action=action)
+        return super(Pages, self).action_update(req, record, action=action, **kwargs)
 
     def action_rss(self, req, record):
         modname = record['modname'].value()
@@ -2112,9 +2112,8 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
         else:
             row = self._data.get_row(page_id=record['page_id'].value(),
                                      lang=str(req.param('src_lang')))
-            for k in ('_content', 'title'):
-                req.set_param(k, row[k].value())
-            return self.action_update(req, record)
+            return self.action_update(req, record, prefill={'_content': row['_content'].value(),
+                                                            'title': row['title'].value()})
 
     def action_commit(self, req, record):
         try:
