@@ -393,6 +393,25 @@ class TestAuthorization(_SiteTest):
         assert 'setlang' not in form.fields
 
 
+class TestPageRss(_SiteTest):
+    """Test the RSS channel of a page embedding a module."""
+
+    IDENTIFIER = _SiteTest.PAGE_IDENTIFIER_PREFIX + 'news'
+
+    @pytest.fixture(scope='class', autouse=True)
+    def news_page(self, request, test_pages):
+        """Create a page embedding the 'News' module."""
+        cls = request.cls
+        cls.create_page(cls.IDENTIFIER, cls.PAGE_CONTENT)
+        cls.query("update cms_pages set modname = 'News' where identifier = %s",
+                     (cls.IDENTIFIER,))
+
+    def test_rss(self):
+        response = self._get('/%s.%s.rss' % (self.IDENTIFIER, self.language))
+        assert response.content_type == 'application/xml'
+        assert '<rss' in response
+
+
 class TestAttachments(_SiteTest):
     """Test managing page attachments."""
 
@@ -478,3 +497,36 @@ class TestThemes(_SiteTest):
         # The activated theme is highlighted in the listing.
         found = self._find_elements(response, 'div', dict(id='found-record'))
         assert len(found) == 1 and name in found[0].get_text()
+
+
+class TestCryptoKeys(_SiteTest):
+    """Test managing the keys of an encryption area."""
+
+    ROLES = ('cms-crypto-admin', 'cms-user-admin')
+    NAME = 'wiking-test'
+    """Name of the encryption area created by the tests."""
+
+    @pytest.fixture(scope='class', autouse=True)
+    def crypto_name(self, request, test_user):
+        """Create the encryption area and remove it (with its keys) when done."""
+        cls = request.cls
+        cls.query("delete from cms_crypto_names where name = %s", (cls.NAME,))
+        cls.query("insert into cms_crypto_names (name, description) values (%s, 'Test')",
+                     (cls.NAME,))
+        yield
+        cls.query("delete from cms_crypto_names where name = %s", (cls.NAME,))
+
+    def test_keys(self):
+        self._login(self.LOGIN, self.PASSWORD)
+        uri = '/_wmi/users/CryptoNames/' + self.NAME
+        response = self._get_follow(uri)
+        assert 'Create key' in response
+        assert 'Remove' not in response
+        # The initial key may only be created once.  The keys (encrypted by
+        # the users' passwords) are not inspected by the listing, so any value
+        # will do here.
+        self.query("insert into cms_crypto_keys (name, uid, key) values (%s, %s, 'x')",
+                   (self.NAME, self.uid))
+        response = self._get_follow(uri)
+        assert 'Create key' not in response
+        assert 'Remove' in response

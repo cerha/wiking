@@ -144,7 +144,7 @@ class CryptoKeys(CMSExtensionModule):
 
     def _columns(self, req):
         columns = super(CryptoKeys, self)._columns(req)
-        if not req.has_param('_crypto_name'):
+        if not hasattr(req.vars, 'crypto_name'):
             columns = [c for c in columns if c != 'delete']
         return columns
 
@@ -162,13 +162,13 @@ class CryptoKeys(CMSExtensionModule):
 
     def related(self, req, binding, record, uri):
         if 'name' in record:
-            req.set_param('_crypto_name', record['name'])
+            req.vars.crypto_name = record['name']
         return super(CryptoKeys, self).related(req, binding, record, uri)
 
     def _actions(self, req, record):
         actions = super(CryptoKeys, self)._actions(req, record)
-        if record is None and req.has_param('_crypto_name'):
-            condition = pd.EQ('name', req.param('_crypto_name'))
+        if record is None and hasattr(req.vars, 'crypto_name'):
+            condition = pd.EQ('name', req.vars.crypto_name)
             try:
                 count = self._data.select(condition)
             finally:

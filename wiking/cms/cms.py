@@ -1725,7 +1725,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
             row = self._data.get_row(site=wiking.cfg.server_hostname,
                                      identifier=identifier[:-7], lang=str(identifier[-6:-4]))
             if row:
-                req.set_param('action', 'rss')
+                req.vars.pages_rss = True
                 del req.unresolved_path[0]
                 return row
         # Resolve the unpublished language variants when the preview mode is on
@@ -1749,6 +1749,11 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
             return rows[variants.index(lang)]
         else:
             raise NotFound()
+
+    def _action(self, req, **kwargs):
+        if hasattr(req.vars, 'pages_rss'):
+            return 'rss'
+        return super(Pages, self)._action(req, **kwargs)
 
     def _link_provider(self, req, uri, record, cid, **kwargs):
         if cid == 'parent':
