@@ -384,6 +384,50 @@ class TestAuthorization(_SiteTest):
         self._get('/' + self.page, status=403)
 
 
+class TestPageTranslation(_SiteTest):
+    """Test translating a page from another language through the CMS user interface."""
+
+    ROLES = ('cms-admin',)
+    LANGUAGE = 'cs'
+    """The language the page is translated to (the page exists in 'language')."""
+    TITLE = 'Translated Page'
+    CONTENT = 'The translated content of the page.'
+
+    @pytest.fixture(scope='class', autouse=True)
+    def target_language(self, request, test_pages):
+        """Add the target language of the translation to the site languages."""
+        cls = request.cls
+        cls.query("delete from cms_languages where lang = %s", (cls.LANGUAGE,))
+        cls.query("insert into cms_languages (lang) values (%s)", (cls.LANGUAGE,))
+        yield
+        # The page texts of the language must be removed before the language.
+        cls._delete_pages()
+        cls.query("delete from cms_languages where lang = %s", (cls.LANGUAGE,))
+
+    def test_translate(self):
+        self._login(self.LOGIN, self.PASSWORD)
+        uri = '/' + self.PAGE_IDENTIFIER_PREFIX + 'home'
+        # The untranslated language variant is only accessible in the preview mode.
+        self._get_follow(uri + '?_wiking_cms_preview_mode=1')
+        response = self._get_follow(uri + '?setlang=' + self.LANGUAGE)
+        response = self._submit_form(self._find_form(response, fields=(('action', 'translate'),)))
+        form = self._find_form(response, fields=('src_lang',))
+        self._set_select_field(form, 'src_lang', value=self.language)
+        response = self._submit_form(form)
+        # The edit form of the new language variant is prefilled by the texts
+        # of the source language.
+        form = self._find_form(response, fields=('title', '_content'))
+        assert form['title'].value == 'Wiking Test Page'
+        assert form['_content'].value == self.PAGE_CONTENT
+        self._set_field(form, 'title', self.TITLE)
+        self._set_field(form, '_content', self.CONTENT)
+        self._submit_form(form)
+        assert self.query("select title, _content from cms_page_texts join cms_pages "
+                          "using (page_id) where identifier = %s and lang = %s",
+                          (self.PAGE_IDENTIFIER_PREFIX + 'home', self.LANGUAGE)) == \
+            [(self.TITLE, self.CONTENT)]
+
+
 class TestThemes(_SiteTest):
     """Test activating a color theme."""
 
