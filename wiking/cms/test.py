@@ -182,13 +182,20 @@ class _SiteTest(CMSTest):
     @classmethod
     def setUpClass(class_):
         super(_SiteTest, class_).setUpClass()
+        # The pages are also deleted here, not just when done, so that the
+        # tests are not blocked by what a previous interrupted run left behind.
+        class_._delete_pages()
         class_.create_page(class_.PAGE_IDENTIFIER_PREFIX + 'home', class_.PAGE_CONTENT)
 
     @classmethod
     def tearDownClass(class_):
+        class_._delete_pages()
+        super(_SiteTest, class_).tearDownClass()
+
+    @classmethod
+    def _delete_pages(class_):
         class_.query("delete from cms_pages where identifier like %s",
                      (class_.PAGE_IDENTIFIER_PREFIX + '%',))
-        super(_SiteTest, class_).tearDownClass()
 
 
 class TestLogin(_SiteTest):
@@ -242,6 +249,11 @@ class TestRegistration(_SiteTest):
     NEW_LOGIN = 'wiking-test-new'
     NEW_EMAIL = 'wiking-test-new@example.com'
     NEW_PASSWORD = 'W1king-n3w'
+
+    @classmethod
+    def setUpClass(class_):
+        super(TestRegistration, class_).setUpClass()
+        class_.delete_user(class_.NEW_LOGIN)
 
     @classmethod
     def tearDownClass(class_):
@@ -363,6 +375,7 @@ class TestAuthorization(_SiteTest):
     @classmethod
     def setUpClass(class_):
         super(TestAuthorization, class_).setUpClass()
+        class_.delete_user(class_.UNAPPROVED_LOGIN)
         class_.create_user(class_.UNAPPROVED_LOGIN, class_.UNAPPROVED_PASSWORD,
                            state='unapproved')
         class_.page = class_.PAGE_IDENTIFIER_PREFIX + 'restricted'

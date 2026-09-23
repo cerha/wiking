@@ -387,14 +387,15 @@ class Test(_TestBase):
         for module in self._mail_patched_modules:
             module.send_mail = send_mail
 
-    def _probe(self, probe, path='/', **kwargs):
+    def _probe(self, probe, path='/', method='GET', **kwargs):
         """Return the value returned by 'probe(req)' called while handling a request.
 
         Arguments:
           probe -- callable of one argument, the 'wiking.Request' instance of
             the request performed by this method.
           path -- path of the request as a string.
-          kwargs -- passed to '_get()'.
+          method -- HTTP method of the request, 'GET' or 'POST'.
+          kwargs -- passed to '_get()' or '_post()' according to 'method'.
 
         This gives the tests direct access to the request instance of a real
         request, so that the API of 'wiking.Request' can be tested as the
@@ -405,7 +406,11 @@ class Test(_TestBase):
         _probe_state.function = probe
         _probe_state.result = _probe_state.exception = None
         try:
-            self._get(path, status='*', **kwargs)
+            if method == 'POST':
+                self._post(path, status='*', **kwargs)
+            else:
+                assert method == 'GET', method
+                self._get(path, status='*', **kwargs)
             if _probe_state.exception:
                 raise _probe_state.exception
             return _probe_state.result
@@ -440,6 +445,24 @@ class Test(_TestBase):
         if self._options.verbose:
             self._info('GET: %s' % (path,))
         return self._application.get(path, status=status, **self._default_request_kwargs())
+
+    def _post(self, path, params=None, status=None, **kwargs):
+        """Perform a POST request and return the response.
+
+        Arguments:
+          path -- path of the request as a string.
+          params -- request parameters as a dictionary or a sequence of
+            (NAME, VALUE) pairs.
+          status -- expected response status (see '_get()').
+          kwargs -- passed to the underlying webtest call, such as
+            'upload_files' to send multipart file uploads (a sequence of
+            (FIELD, FILENAME, CONTENT) tuples) or 'content_type'.
+
+        """
+        if self._options.verbose:
+            self._info('POST: %s' % (path,))
+        return self._application.post(path, params or {}, status=status,
+                                      **dict(self._default_request_kwargs(), **kwargs))
 
     def _get_follow(self, path):
         response = self._get(path)
@@ -708,16 +731,59 @@ class TestRequest(Test):
             return req.param('a'), req.param('b')
         self.assertEqual(('y', 'z'), self._probe(probe, '/?a=x'))
 
+    def test_method(self):
+        self.assertEqual('GET', self._probe(lambda req: req.method()))
+        self.assertEqual('POST', self._probe(lambda req: req.method(), method='POST'))
+
+    def test_post_param(self):
+        self.assertEqual('x', self._probe(lambda req: req.param('a'), method='POST',
+                                          params={'a': 'x'}))
+        # Repeated parameters are returned as a tuple, the same as in the query.
+        self.assertEqual(('1', '2'), self._probe(lambda req: req.param('a'), method='POST',
+                                                 params=[('a', '1'), ('a', '2')]))
+        # The query parameters are available in a POST request as well.
+        self.assertEqual(['a', 'b'], sorted(self._probe(lambda req: req.params(), '/?b=q',
+                                                        'POST', params={'a': 'p'})))
+        # The values of the same name are combined, the posted one first.
+        self.assertEqual(('p', 'q'), self._probe(lambda req: req.param('a'), '/?a=q',
+                                                 'POST', params={'a': 'p'}))
+
+    def test_file_upload(self):
+        def probe(req):
+            upload = req.param('f')
+            return upload.filename(), upload.mime_type(), upload.file().read()
+        self.assertEqual(('note.txt', 'text/plain', b'file content'),
+                         self._probe(probe, method='POST',
+                                     upload_files=[('f', 'note.txt', b'file content')]))
+
+    def test_header(self):
+        self._headers['X-Wiking-Test'] = 'value'
+        self.assertEqual('value', self._probe(lambda req: req.header('X-Wiking-Test')))
+        self.assertIsNone(self._probe(lambda req: req.header('X-Nonexistent')))
+        self.assertEqual('dflt', self._probe(lambda req: req.header('X-Nonexistent', 'dflt')))
+
     def test_uri(self):
         self.assertEqual('/x/y', self._probe(lambda req: req.uri(), '/x/y?a=1'))
         self.assertEqual(['x', 'y'], self._probe(lambda req: req.unresolved_path, '/x/y'))
+        # The URI is decoded, unlike the unparsed one, which also has the query.
+        self.assertEqual('/a b', self._probe(lambda req: req.uri(), '/a%20b?x=1'))
+        self.assertEqual('/a%20b?x=1', self._probe(lambda req: req.unparsed_uri(), '/a%20b?x=1'))
 
     def test_make_uri(self):
         self.assertEqual('/x?a=1&b=2',
                          self._probe(lambda req: req.make_uri('/x', a=1, b=2)))
+        # The URI is encoded, the arguments with None values are omitted.
+        self.assertEqual('/x%20y', self._probe(lambda req: req.make_uri('/x y')))
+        self.assertEqual('/x?a=a+b', self._probe(lambda req: req.make_uri('/x', a='a b', b=None)))
+        # The first positional argument may be an anchor.
+        self.assertEqual('/x?a=1#anchor',
+                         self._probe(lambda req: req.make_uri('/x', 'anchor', ('a', 1))))
 
     def test_server_uri(self):
-        # The scheme is derived from the port, not from the request scheme.
+        # The test requests pretend HTTPS on the standard port, see
+        # '_make_environment()'.  The scheme of the returned URI is derived
+        # from the port, not from the scheme of the request.
+        self.assertEqual((True, 443), self._probe(lambda req: (req.https(), req.port())))
         self.assertEqual('https://localhost', self._probe(lambda req: req.server_uri()))
 
 
