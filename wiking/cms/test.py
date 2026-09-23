@@ -382,3 +382,28 @@ class TestAuthorization(_SiteTest):
         response = self._login(self.UNAPPROVED_LOGIN, self.UNAPPROVED_PASSWORD)
         assert self._logged_in(response)
         self._get('/' + self.page, status=403)
+
+
+class TestThemes(_SiteTest):
+    """Test activating a color theme."""
+
+    ROLES = ('cms-style-admin',)
+
+    @pytest.fixture(autouse=True)
+    def active_theme(self, test_pages):
+        """Restore the originally active theme when done."""
+        theme_id = self.query("select theme_id from cms_config where site = %s", (self.host,))
+        yield
+        self.query("update cms_config set theme_id = %s where site = %s",
+                   (theme_id[0][0], self.host))
+
+    def test_activate(self):
+        theme_id, name = self.query("select theme_id, name from cms_themes order by theme_id")[-1]
+        self._login(self.LOGIN, self.PASSWORD)
+        response = self._get_follow('/_wmi/style/Themes/%d?action=activate' % theme_id)
+        assert 'The color theme "%s" has been activated.' % name in response
+        assert self.query("select theme_id from cms_config where site = %s",
+                          (self.host,)) == [(theme_id,)]
+        # The activated theme is highlighted in the listing.
+        found = self._find_elements(response, 'div', dict(id='found-record'))
+        assert len(found) == 1 and name in found[0].get_text()
