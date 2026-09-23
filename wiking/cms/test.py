@@ -35,6 +35,7 @@ import re
 import urllib.parse
 
 import psycopg2
+import webtest
 
 import wiking
 import wiking.test
@@ -382,6 +383,32 @@ class TestAuthorization(_SiteTest):
         response = self._login(self.UNAPPROVED_LOGIN, self.UNAPPROVED_PASSWORD)
         assert self._logged_in(response)
         self._get('/' + self.page, status=403)
+
+    def test_login_form_parameters(self):
+        # The login form passes the request parameters on, except for those
+        # consumed by the current request, such as the language selection.
+        response = self._get('/%s?setlang=%s&x=y' % (self.page, self.language), status=401)
+        form = self._find_form(response, fields=('login',))
+        assert form['x'].value == 'y'
+        assert 'setlang' not in form.fields
+
+
+class TestAttachments(_SiteTest):
+    """Test managing page attachments."""
+
+    ROLES = ('cms-admin',)
+
+    def test_upload_archive_of_unknown_type(self):
+        self._login(self.LOGIN, self.PASSWORD)
+        uri = '/%shome/attachments-management?action=upload_archive' % self.PAGE_IDENTIFIER_PREFIX
+        form = self._find_form(self._get_follow(uri), fields=('archive',))
+        form['archive'] = webtest.Upload('attachments.rar', b'Not an archive.')
+        response = self._submit_form(form)
+        assert 'Unknown archive file type: attachments.rar' in response
+        # The form is displayed again for another attempt without trying to
+        # process it as a regular insertion.
+        assert self._find_form(response, fields=('archive',))
+        assert not self._find_elements(response, 'div', {'class': 'errors'})
 
 
 class TestPageTranslation(_SiteTest):

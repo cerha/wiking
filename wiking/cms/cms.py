@@ -4053,7 +4053,8 @@ class Attachments(ContentManagementModule):
 
         def failure(error):
             req.message(error, req.ERROR)
-            req.set_param('submit', None)
+            # Consume the submission to only display the form again.
+            req.pop_param('submit')
             return self.action_insert(req, action='upload_archive')
         try:
             filename = upload.filename()

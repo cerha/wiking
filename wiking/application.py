@@ -385,8 +385,7 @@ class Application(wiking.Module):
         """
         if req.has_param('setlang'):
             # Use the language selected explicitly by the user in this request.
-            selected = str(req.param('setlang'))
-            req.set_param('setlang', None)
+            selected = str(req.pop_param('setlang'))
             req.set_cookie(self._PREFERRED_LANGUAGE_COOKIE, selected)
         elif req.has_param('fb_locale'):
             # This parameter is used by Facebook's link sharing robot, which

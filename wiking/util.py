@@ -1596,10 +1596,9 @@ class CookieAuthenticationProvider(AuthenticationProvider):
             login = req.param('login')
             if not login:
                 raise AuthenticationError(_("Enter your login name, please!"))
-            password = req.param('password')
+            password = req.pop_param('password')
             if not password:
                 raise AuthenticationError(_("Enter your password, please!"))
-            req.set_param('password', None)
             user = application.authenticate(req, login, password, self._AUTH_TYPE)
             if not user:
                 raise AuthenticationError(_("Invalid login!"))
