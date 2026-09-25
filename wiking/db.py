@@ -845,9 +845,18 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
     def _uri_provider(self, req, form_cls, uri):
         """Return the uri_provider function to pass the pytis form."""
         def uri_provider(record, kind, target):
-            if record is None:
-                assert kind == UriType.LINK
-                result = uri
+            if kind == UriType.RECORD:
+                # Don't use '_link_provider()' here as it may be overridden to
+                # link the record elsewhere.
+                if record is None:
+                    # TODO: The URI of the form is returned unencoded (as
+                    # pytis encodes it when appending the request parameters),
+                    # while all the other URIs (including the record URI
+                    # below) are encoded by 'req.make_uri()'.  This
+                    # inconsistency should be resolved (together with pytis).
+                    result = uri
+                else:
+                    result = req.make_uri(uri.rstrip('/') + '/' + record[self._referer].export())
             elif kind == UriType.ACTION:
                 result = self._action_uri_provider(req, uri, record, form_cls, target)
             else:
