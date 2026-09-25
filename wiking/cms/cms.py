@@ -4701,8 +4701,9 @@ class NewsletterEditions(CMSModule):
                 edition_uri=edition_uri + '?action=preview',
                 resources_uri=abs_uri(req.module_uri('Resources')),
                 server_uri=server_uri,
-                unsubscribe_uri=newsletter_uri + ('?action=unsubscribe;email=%(email)s;'
-                                                  'code=%(code)s'),
+                # The URI is inserted into an HTML attribute, thus '&amp;'.
+                unsubscribe_uri=newsletter_uri + ('?action=unsubscribe&amp;email=%(email)s'
+                                                  '&amp;code=%(code)s'),
                 image_uri=newsletter_uri + '?action=image',
                 like_uri=req.make_uri('https://www.facebook.com/sharer/sharer.php', u=edition_uri),
                 tweet_uri=req.make_uri('https://twitter.com/share',
