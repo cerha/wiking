@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2006-2018 OUI Technology Ltd.
-# Copyright (C) 2019-2020 Tomáš Cerha <cerha@truecode.cz>
+# Copyright (C) 2019-2026 Tomáš Cerha <cerha@truecode.cz>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 The CMS application is defined as an implementation of Wiking Application Interface.
 
 """
+import datetime
 import lcg
 import wiking
 from wiking.cms import CMSExtension, CMSExtensionModule, Roles, Users, text2content
@@ -415,7 +416,8 @@ class Application(wiking.Application):
 
     def footer_content(self, req):
         text = self._text_content(req, wiking.cms.texts.footer)
-        return text2content(req, text.replace('$webmaster_address', wiking.cfg.webmaster_address))
+        return text2content(req, text.replace('$webmaster_address', wiking.cfg.webmaster_address)
+                            .replace('$year', str(datetime.date.today().year)))
 
     def login_dialog_top_content(self, req):
         return text2content(req, self._text_content(req, wiking.cms.texts.login_dialog_top_text))
