@@ -1059,7 +1059,15 @@ form.login-form label {
 
     .language-selection .language-name { display: none; }
     .language-selection .language-abbr { display: inline; }
-    .login-control .displayed-user-name { display: none; }
+    .login-control .displayed-user-name {
+        /* Hide visually, but keep in the accessible name of the menu button. */
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+    }
     .login-control .popup-menu-ctrl-widget { background: none; }
     .login-control .login-button { display: none }
     #top-controls .login-control .invoke-menu.labeled { padding-left: 0; }
