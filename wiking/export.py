@@ -338,7 +338,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             if channel:
                 # Translators: ``RSS channel'' is terminology idiom, see Wikipedia.
                 # The placeholder %s is replaced by channel title.
-                channel_title = _("RSS channel %s") + ' ' + panel.title()
+                channel_title = _("RSS channel %s", panel.title())
                 title += g.a(g.span('', cls='feed-icon'),
                              href=channel, aria_label=channel_title, title=channel_title,
                              type='application/rss+xml', cls='feed-link')
