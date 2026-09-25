@@ -306,7 +306,11 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
     def _messages(self, context):
         messages = context.req().messages()
         if messages:
-            return [wiking.Message(message, kind=kind, formatted=formatted).export(context)
+            # The roles make screen readers announce the message regardless of
+            # where the focus is moved on page load.
+            return [wiking.Message(message, kind=kind, formatted=formatted,
+                                   role='alert' if kind == wiking.Message.ERROR else 'status',
+                                   ).export(context)
                     for message, kind, formatted in messages]
         else:
             return None
