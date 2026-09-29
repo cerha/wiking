@@ -1177,6 +1177,10 @@ body .pytis-form .paging-controls {
     background-color: $color.frame-bg;
     border-color: $color.frame-border;
 }
+body .list-form-controls .index-search-controls.dropdown .index-search-dropdown {
+    background-color: $color.background;
+    border-color: $color.frame-border;
+}
 body .pytis-form.query-fields-form .submit-buttons {
     background: none;
 }
