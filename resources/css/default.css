@@ -219,6 +219,7 @@ button, input, select, textarea {
     border: 1px solid $color.border;
     border-radius: 3px;
     margin: 2px 0;
+    max-width: 100%; /* Don't overflow the available width on narrow screens. */
 }
 input[type="search"] {
   -webkit-appearance: textfield;
@@ -300,6 +301,7 @@ input[type=checkbox] + .help {
 textarea {
     padding: 4px;
     line-height: 1.2em;
+    box-sizing: border-box;
 }
 select {
     padding: 2px 0;
