@@ -946,6 +946,14 @@ body.non-maximized #root-wrap {
     background-color: $color.background;
     margin-bottom: 16px;
 }
+@media only screen and (max-width: 767px) {
+    /* The submenu and panels are never displayed side by side with the page
+       here.  As a table cell, the page would grow with wide content instead
+       of letting it adapt to the screen width. */
+    #page {
+        display: block;
+    }
+}
 #heading {
     position: relative;
 }
