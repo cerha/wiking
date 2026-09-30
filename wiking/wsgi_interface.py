@@ -48,8 +48,8 @@ class WsgiRequest(wiking.Request):
         # are called.
         self._environ = environ
         self._start_response = start_response
-        self._root = self._environ.get('SCRIPT_NAME')
-        self._uri = self._environ['PATH_INFO']
+        self._root = self._wsgi_str(self._environ.get('SCRIPT_NAME'))
+        self._uri = self._wsgi_str(self._environ['PATH_INFO'])
         host = self.header('Host')
         if host:
             # Behind a reverse proxy, SERVER_NAME and SERVER_PORT belong to the WSGI
@@ -77,6 +77,17 @@ class WsgiRequest(wiking.Request):
         self._response_headers_storage = []
         self._response_headers = wsgiref.headers.Headers(self._response_headers_storage)
         super(WsgiRequest, self).__init__(encoding=encoding)
+
+    def _wsgi_str(self, value):
+        # PEP 3333 passes the URI path components as bytes decoded as latin-1.
+        # Keep the value as is if it is not valid UTF-8 (or if the server
+        # decoded it already).
+        if value:
+            try:
+                return value.encode('latin-1').decode('utf-8')
+            except UnicodeError:
+                pass
+        return value
 
     def root(self):
         return self._root
