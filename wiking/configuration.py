@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2006-2016 OUI Technology Ltd.
-# Copyright (C) 2019-2021 Tomáš Cerha <cerha@truecode.cz>
+# Copyright (C) 2019-2026 Tomáš Cerha <cerha@truecode.cz>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -618,10 +618,6 @@ class Configuration(pytis.util.Configuration):
                 "overriding the default exporter.  See LCG documentation for more information "
                 "about the export mechanism.")
         _DEFAULT = Exporter
-
-    class _Option_immediate_filters(pc.BooleanOption, pc.HiddenOption):
-        _DESCR = ("Whether to apply filtering combobox selection immediately.")
-        _DEFAULT = True
 
     class _Option_ignored_crypto_names(pc.Option):
         _DESCR = "Sequence of ignored crypto names"

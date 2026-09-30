@@ -253,6 +253,10 @@ button::-moz-focus-inner {
 button:hover:enabled {
     background-image: linear-gradient(#fff, #f0f0f0);
 }
+body .dropdown-widget.expanded > .dropdown-panel {
+    /* Continue the color of the button invoking the dropdown. */
+    background-color: #f0f0f0;
+}
 
 /* Keyboard focus indication for the whole page.
  *
@@ -1134,6 +1138,9 @@ form.list-form-controls .paging-controls {
 body .foldable-tree-widget .current .label {
     background-color: $color.heading-bg
 }
+body .dropdown-widget.expanded > .dropdown-panel a[aria-current="true"] {
+    background-color: $color.heading-bg;
+}
 body .notebook-widget ul.notebook-switcher {
     border-bottom-color: $color.top-border;
 }
@@ -1154,13 +1161,6 @@ body .notebook-widget li.notebook-tab a.current {
     background-color: $color.background;
     border-bottom-color: $color.background;
 }
-body .dropdown-selection-widget .dropdown-selection {
-    background-color: $color.background;
-    border-color: $color.top-border;
-}
-body .dropdown-selection-widget .dropdown-selection li.active a {
-    color: $color.foreground;
-}
 
 /* Override default Pytis form colors by current Wiking color theme colors. */
 
@@ -1175,10 +1175,6 @@ body .pytis-form .group,
 body .pytis-form .submit-buttons,
 body .pytis-form .paging-controls {
     background-color: $color.frame-bg;
-    border-color: $color.frame-border;
-}
-body .list-form-controls .index-search-controls.dropdown .index-search-dropdown {
-    background-color: $color.background;
     border-color: $color.frame-border;
 }
 body .pytis-form.query-fields-form .submit-buttons {

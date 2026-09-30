@@ -1495,7 +1495,6 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
             bottom_actions=self._BOTTOM_ACTIONS,
             row_actions=self._ROW_ACTIONS,
             async_load=self._ASYNC_LOAD,
-            immediate_filters=wiking.cfg.immediate_filters,
             actions=(),  # Display no actions by default, rather than just spec actions.
             cell_editable=lambda *args: self._cell_editable(req, *args),
             expand_row=((lambda *args: self._expand_row(req, *args))
