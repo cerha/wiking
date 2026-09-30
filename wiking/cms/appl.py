@@ -165,13 +165,15 @@ class Application(wiking.Application):
         else:
             return None
 
-    def handle(self, req):
+    def init_request(self, req):
         req.vars.wmi = False  # Will be set to True by `WikingManagementInterface' if needed.
+        wiking.module.CachedTables.reload_info(req)
+        wiking.module.Config.configure(req)
+
+    def handle(self, req):
         preview_mode_param = req.param(self._PREVIEW_MODE_PARAM)
         if preview_mode_param is not None:
             req.set_cookie(self._PREVIEW_MODE_COOKIE, preview_mode_param == '1' and '1' or None)
-        wiking.module.CachedTables.reload_info(req)
-        wiking.module.Config.configure(req)
         modname = self._resolve_modname(req)
         if modname:
             return req.forward(wiking.module(modname))

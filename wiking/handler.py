@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2006-2017 OUI Technology Ltd.
-# Copyright (C) 2019-2024 Tomáš Cerha <cerha@truecode.cz>
+# Copyright (C) 2019-2026 Tomáš Cerha <cerha@truecode.cz>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -229,13 +229,11 @@ class Handler:
         context = self._exporter.context(node, lang=req.preferred_language(), req=req)
         return req.send_response(context.localize(content.export(context)))
 
-    def _handle_maintenance_mode(self, req):
-        import http.client
-        # Translators: Meaning that the system (webpage) does not work now
-        # because we are updating/fixing something but will work again after
-        # the maintaince is finished.
-        node = lcg.ContentNode(req.uri(), title=_("Maintenance Mode"),
-                               content=lcg.p(_("The system is temporarily down for maintenance.")))
+    def _serve_minimal_page(self, req, title, content, status_code):
+        # Serve a page which doesn't depend on the application (its menu,
+        # stylesheets etc.), for situations when the application can not or
+        # must not process the request.
+        node = lcg.ContentNode(req.uri(), title=title, content=content)
         exporter = wiking.MinimalExporter(translations=wiking.cfg.translation_path)
         try:
             lang = req.preferred_language()
@@ -244,8 +242,19 @@ class Handler:
                                                              wiking.cfg.default_language) or 'en'
         context = exporter.context(node, lang=lang)
         exported = exporter.export(context)
-        return req.send_response(context.localize(exported),
-                                 status_code=http.client.SERVICE_UNAVAILABLE)
+        return req.send_response(context.localize(exported), status_code=status_code)
+
+    def _handle_maintenance_mode(self, req):
+        import http.client
+        return self._serve_minimal_page(
+            req,
+            # Translators: Meaning that the system (webpage) does not work now
+            # because we are updating/fixing something but will work again after
+            # the maintaince is finished.
+            _("Maintenance Mode"),
+            lcg.p(_("The system is temporarily down for maintenance.")),
+            status_code=http.client.SERVICE_UNAVAILABLE,
+        )
 
     def _handle_request_error(self, req, error):
         self._application.report_error(req, error)
@@ -269,6 +278,11 @@ class Handler:
                     # it).  Better would most likely be including some basic styles
                     # directly in MinimalExporter.
                     return self._handle_maintenance_mode(req)
+                self._application.init_request(req)
+                if '..' in req.path:
+                    # Prevent directory traversal attacs globally (no need to handle them
+                    # all around).
+                    raise wiking.Forbidden()
                 # Very basic CSRF prevention
                 if req.param('submit') and req.header('Referer'):
                     referer = urllib.parse.urlparse(req.header('Referer'))

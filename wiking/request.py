@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2006-2016 OUI Technology Ltd.
-# Copyright (C) 2019-2024 Tomáš Cerha <cerha@truecode.cz>
+# Copyright (C) 2019-2026 Tomáš Cerha <cerha@truecode.cz>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -359,9 +359,6 @@ class Request(ServerInterface):
         else:
             self._maximized = self.cookie(self._MAXIMIZED_MODE_COOKIE) == 'yes'
         self.path = [item for item in self.uri().split('/')[1:] if item]
-        if '..' in self.path:
-            # Prevent directory traversal attacs globally (no need to handle them all around).
-            raise wiking.Forbidden()
         self.unresolved_path = list(self.path)
 
     def _init_messages(self):

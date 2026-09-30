@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2006-2017 OUI Technology Ltd.
-# Copyright (C) 2019-2021, 2024 Tomáš Cerha <cerha@truecode.cz>
+# Copyright (C) 2019-2026 Tomáš Cerha <cerha@truecode.cz>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -83,6 +83,21 @@ class Application(wiking.Module):
         the application, but the application will live much longer and serve a
         number of other requests which follow.  But this method is called only
         once for the first request.
+
+        The default implementation does nothing.
+
+        """
+        pass
+
+    def init_request(self, req):
+        """Initialize the application specific request state.
+
+        This method is called by the handler for every request before the
+        request is passed to 'handle()'.  Unlike 'handle()', it is also called
+        for requests which are rejected by the handler before reaching the
+        application.  It is supposed to initialize the request state which
+        the application relies on not only in 'handle()', but also when
+        rendering pages (such as error pages) for the request.
 
         The default implementation does nothing.
 
