@@ -50,6 +50,19 @@ class WsgiRequest(wiking.Request):
         self._start_response = start_response
         self._root = self._environ.get('SCRIPT_NAME')
         self._uri = self._environ['PATH_INFO']
+        host = self.header('Host')
+        if host:
+            # Behind a reverse proxy, SERVER_NAME and SERVER_PORT belong to the WSGI
+            # server, not to the address the client connected to.
+            hostname, sep, port = host.rpartition(':')
+            if sep and port.isdigit():
+                self._server_hostname, self._port = hostname, int(port)
+            else:
+                self._server_hostname, self._port = host, 443 if self.https() else 80
+        else:
+            port = environ['SERVER_PORT']
+            self._server_hostname = environ['SERVER_NAME']
+            self._port = int(port) if port.isdigit() else None
         self._params = {}
         ctype = environ.get('CONTENT_TYPE', '').split(';')[0].strip()
         if self.method() == 'OPTIONS' or (
@@ -146,10 +159,7 @@ class WsgiRequest(wiking.Request):
         self._response_headers.add_header(name, encode(value), **{k: encode(v) for k, v in params.items()})
 
     def port(self):
-        port = self._environ['SERVER_PORT']
-        if not port:
-            return None
-        return int(port)
+        return self._port
 
     def https(self):
         return self._environ['wsgi.url_scheme'] == 'https'
@@ -158,12 +168,7 @@ class WsgiRequest(wiking.Request):
         return self._environ.get('REMOTE_HOST', self._environ.get('REMOTE_ADDR'))
 
     def server_hostname(self):
-        host = self.header('Host')
-        if not host:
-            host = self._environ['SERVER_NAME']
-        elif ':' in host:
-            host = host.split(':')[0]
-        return host
+        return self._server_hostname
 
     def primary_server_hostname(self):
         # PEP http://www.python.org/dev/peps/pep-3333/ is not very clear on
