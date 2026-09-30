@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2006-2017 OUI Technology Ltd.
-# Copyright (C) 2019-2024, 2026 Tomáš Cerha <cerha@truecode.cz>
+# Copyright (C) 2019-2026 Tomáš Cerha <cerha@truecode.cz>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -39,6 +39,7 @@ import wiking
 from pytis.data.dbapi import DBAPIData
 
 import http.client
+import urllib.parse
 
 _ = lcg.TranslatableTextFactory('wiking')
 
@@ -2602,7 +2603,7 @@ def serve_file(req, path, content_type=None, filename=None, lock=False, headers=
         for prefix, base_uri in wiking.cfg.xaccel_paths:
             if path.startswith(prefix):
                 rel_uri = '/'.join(path[len(prefix.rstrip(os.sep)):].split(os.sep))
-                uri = base_uri.rstrip('/') + rel_uri
+                uri = base_uri.rstrip('/') + urllib.parse.quote(rel_uri)
                 return wiking.Response('', content_type=content_type, filename=filename,
                                        headers=headers + (('X-Accel-Redirect', uri),))
     offset = limit = None
