@@ -2575,8 +2575,8 @@ def serve_file(req, path, content_type=None, filename=None, lock=False, headers=
 
     Internal rediredtion (as described in 'allow_redirect') is only performed,
     when the server is actually configured for it on given file path (see the
-    configuration options 'xaccel' and 'xsendfile_paths').  Otherwise the file
-    will be served using the native python implementation.
+    configuration options 'xaccel' and 'xaccel_paths').  Otherwise the file will
+    be served using the native python implementation.
 
     Byte range requests are supported by the native implementation, so if the
     request contains the 'Range' header, the response will contain only the
@@ -2595,10 +2595,6 @@ def serve_file(req, path, content_type=None, filename=None, lock=False, headers=
         mime_type, encoding = mimetypes.guess_type(path)
         content_type = mime_type or 'application/octet-stream'
     if allow_redirect:
-        for prefix in wiking.cfg.xsendfile_paths:
-            if path.startswith(prefix):
-                return wiking.Response('', content_type=content_type, filename=filename,
-                                       headers=headers + (('X-Sendfile', path),))
         if wiking.cfg.xaccel:
             abspath = os.path.abspath(path)
             if any(abspath.startswith(os.path.join(os.path.abspath(d), ''))

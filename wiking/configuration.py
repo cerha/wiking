@@ -661,17 +661,6 @@ class Configuration(pytis.util.Configuration):
         _DESCR = "Directory of output specifications."
         _DEFAULT = './output'
 
-    class _Option_xsendfile_paths(pc.Option):
-        _DESCR = "Sequence of filesystem directories enabled for X-SendFile downloads."
-        _DOC = ("Each item is a string representing absolute path to a directory "
-                "where server assisted file downloads using X-SendFile may be used.  "
-                "The paths configured here must be also set up in server's "
-                "configuration and the server must support this feature.  "
-                "X-SendFile is supported by Apache with mod_xsendfile and "
-                "lighttpd.  See 'xaccel' for alternative feature supported "
-                "by the Nginx and Caddy servers.")
-        _DEFAULT = ()
-
     class _Option_xaccel(pc.BooleanOption):
         _DESCR = "Enable X-Accel downloads"
         _DOC = ("When enabled, files are sent to the client by the frontend server "
@@ -682,9 +671,7 @@ class Configuration(pytis.util.Configuration):
                 "applies to all files within the 'resource_path' directories and "
                 "within the directories given by 'xaccel_paths'.  X-Accel redirection "
                 "is supported by the Nginx server and it can be set up in the Caddy "
-                "server through 'handle_response' of its 'reverse_proxy' directive.  "
-                "See 'xsendfile_paths' for alternative feature supported by Apache and "
-                "lighttpd servers.")
+                "server through 'handle_response' of its 'reverse_proxy' directive.")
         _DEFAULT = False
 
     class _Option_xaccel_paths(pc.Option):
