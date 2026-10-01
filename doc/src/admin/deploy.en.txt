@@ -175,6 +175,90 @@ server {
 }
 -----
 
+== Accelerated file downloads ==
+
+By default, all files (such as resources or files stored by the application)
+are read and sent by the Python process, which blocks a Gunicorn worker for the
+whole duration of the download.  The reverse proxy can serve the files instead:
+the application only responds with the =X-Accel-Redirect= header containing the
+internal URI =\/_xaccel= followed by the file's absolute path and the proxy sends
+the file itself.
+
+Enable this through the [config#xaccel] option:
+
+-----
+xaccel = True
+-----
+
+This applies to all resource files (all directories of [config#resource_path])
+automatically.  Other files served by the application (such as its data files)
+are only served by the proxy when located in one of the directories given by
+[config#xaccel_paths], otherwise they are still sent by Python.  The proxy
+configuration below doesn't depend on these directories, but the proxy's user
+must have read access to the files.  The proxy only serves the files which the
+application decides to serve, since the internal URI is never accepted from a
+client.
+
+Caddy:
+
+-----
+yoursite.com {
+    reverse_proxy unix//run/yoursite/gunicorn.socket {
+        @accel header X-Accel-Redirect *
+        handle_response @accel {
+            root * /
+            rewrite * {rp.header.X-Accel-Redirect}
+            uri strip_prefix /_xaccel
+            method * GET
+            copy_response_headers {
+                exclude X-Accel-Redirect Content-Length Server
+            }
+            file_server
+        }
+    }
+}
+-----
+
+The =copy_response_headers= subdirective passes the headers set by the
+application (such as =Content-Type= or =Content-Disposition=) to the client.
+
+NGINX:
+
+-----
+location /_xaccel/ {
+    internal;
+    alias /;
+}
+-----
+
+The configurations above let the proxy serve any file readable by the proxy's
+user, as the proxy relies on the application to decide which files may be
+served.  This is fine as long as the application is trusted, but if it was
+compromised (so that an attacker could set arbitrary response headers), it
+could be used to read files which the application's user can not read itself,
+but the proxy's user can (such as the private keys of the proxy's TLS
+certificates).  To limit the proxy to files under a certain directory
+containing all the served files (such as =\/srv=, where the virtual
+environment and the application's data files reside), restrict the internal
+location in NGINX:
+
+-----
+location /_xaccel/srv/ {
+    internal;
+    alias /srv/;
+}
+-----
+
+Other paths under =\/_xaccel/= are then passed to the application, which
+responds by 404 (Not Found).  In Caddy, add the following lines before
+=file_server= into the =handle_response= block (the paths are matched after
+the =\/_xaccel= prefix is stripped):
+
+-----
+@outside not path /srv/*
+error @outside 403
+-----
+
 == Legacy setups == legacy
 
 The following describes the older deployment approach based on running the
