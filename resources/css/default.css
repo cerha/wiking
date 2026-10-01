@@ -135,6 +135,16 @@ table.lcg-table caption {
     margin: 0;
 }
 
+/* Don't let the media overflow the page content.  The zero specificity of
+   ':where()' lets any other rule override it. */
+:where(#content) :where(img, video, iframe, embed, object) {
+    max-width: 100%;
+    box-sizing: border-box; /* Include the borders (such as of iframes) in the limit. */
+}
+:where(#content) :where(img, video) {
+    height: auto;
+}
+
 img.lcg-image {
     max-width: 100%;
     height: auto !important;
