@@ -326,8 +326,6 @@ select {
 .pytis-form button.reset .icon,
 .list-form-controls button.cancel-search .icon,
 .list-form-controls button.search .icon,
-.list-form-controls button.prev-page .icon,
-.list-form-controls button.next-page .icon,
 .pytis-form.query-fields-form button.apply-filters .icon {
     display: inline-block;
     width: 16px;
@@ -363,9 +361,7 @@ select {
 .search-icon          { background-position: -96px -20px; }
 .cart-icon            { background-position: -112px -20px; position: relative; left: -1px; }
 .reply-icon           { background-position: -128px -20px; }
-.list-form-controls button.prev-page .icon,
 .arrow-left-icon      { background-position: -2px -36px; width: 13px; }
-.list-form-controls button.next-page .icon,
 .arrow-right-icon     { background-position: -16px -36px; width: 13px; }
 .arrow-up-icon        { background-position: -32px -36px; }
 .arrow-down-icon      { background-position: -48px -36px; }
@@ -1033,15 +1029,11 @@ form.login-form label {
 
     #site-title .separator, #site-title .subtitle { display: none; }
 
-    .list-form-controls button.prev-page .label,
-    .list-form-controls button.next-page .label,
     .list-form-controls button.cancel-search .label,
     .list-form-controls button.search .label {
         width: 0;
         overflow: hidden;
     }
-    .list-form-controls button.prev-page .icon,
-    .list-form-controls button.next-page .icon,
     .list-form-controls button.cancel-search .icon,
     .list-form-controls button.search .icon {
         margin-right: 0;
