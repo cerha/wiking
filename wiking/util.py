@@ -1739,6 +1739,15 @@ class TopBarControl(lcg.Content):
         """
         return None
 
+    def _cls(self, context):
+        """Return additional CSS class name(s) of the control as a string or None.
+
+        May be used to distinguish the current state of the control in style
+        sheets.
+
+        """
+        return None
+
     def _menu_title(self, context):
         """Return a short and descriptive title of the control's popup menu.
 
@@ -1767,7 +1776,9 @@ class TopBarControl(lcg.Content):
             icon = self._icon(context)
             if icon:
                 result.insert(0, g.span('', cls='ctrl-icon %s-icon' % icon))
-            return g.span(result, cls=pytis.util.camel_case_to_lower(self.__class__.__name__, '-'))
+            cls = pytis.util.camel_case_to_lower(self.__class__.__name__, '-')
+            extra_cls = self._cls(context)
+            return g.span(result, cls=cls + ' ' + extra_cls if extra_cls else cls)
         else:
             return ''
 
@@ -1783,7 +1794,7 @@ class LoginControl(TopBarControl):
     """
 
     def _icon(self, context):
-        return 'user-larger'
+        return 'user'
 
     def _menu_title(self, context):
         if context.req().user():
@@ -1813,13 +1824,13 @@ class LoginControl(TopBarControl):
                 items.append(lcg.PopupMenuItem(_("Change my password"), icon='key-icon',
                                                uri=password_change_uri))
             # Translators: Menu item label (verb in imperative).
-            items.append(lcg.PopupMenuItem(_("Log out"), icon='circle-out-icon',
+            items.append(lcg.PopupMenuItem(_("Log out"), icon='logout-icon',
                                            uri=req.make_uri(req.uri(), command='logout')))
         elif wiking.cfg.show_login_control:
             items.extend([
                 lcg.PopupMenuItem(title, icon=icon, tooltip=tooltip, uri=uri)
                 for title, tooltip, icon, uri in (
-                    (_("Log in"), _("Log in to an existing user account"), 'circle-in-icon',
+                    (_("Log in"), _("Log in to an existing user account"), 'login-icon',
                      req.make_uri(req.uri(), command='login')),
                     # Translators: Link/menu item to create a new
                     # user account to access the website/application.
@@ -1871,7 +1882,7 @@ class LoginControl(TopBarControl):
             if uri.endswith('_registration'):
                 uri = '/'  # Redirect logins from the registration forms to site root
             # Translators: Login button label (verb in imperative).
-            return g.a(g.span('', cls='ctrl-icon circle-in-icon') + _("Log in"),
+            return g.a(g.span('', cls='ctrl-icon login-icon') + _("Log in"),
                        href=g.uri(uri, command='login'), cls='login-button', role='button',
                        # Translators: Login status info.
                        title=_("User not logged in"))

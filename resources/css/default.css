@@ -11,7 +11,8 @@
     position: absolute;
     top: 50%;
     left: 8px;
-    margin-top: -10px;
+    transform: translateY(-50%);
+    line-height: 0;
 }
 .message .content {
     margin-left: 30px;
@@ -32,9 +33,6 @@
     color: $color.error-fg;
     border-color: $color.error-border;
     background-color: $color.error-bg;
-}
-.message.warning .icon {
-    left: 7px;
 }
 .message.error {
     color: $color.error-fg;
@@ -312,93 +310,6 @@ select {
     line-height: 1.5em;
 }
 
-/* Wiking icons sprite */
-.user-larger-icon, .gear-larger-icon, .gear-larger-red-icon, .maximize-icon, .unmaximize-icon,
-.cart-larger-icon, .info-icon, .success-icon, .error-icon, .warning-icon, .user-icon, .gear-icon,
-.ok-icon, .remove-icon, .refresh-icon, .undo-icon, .search-icon, .cart-icon, .key-icon, .list-icon,
-.key-larger-icon, .menu-icon, .arrow-left-icon, .arrow-right-icon, .arrow-down-icon,
-.arrow-up-icon, .plus-icon, .ellipsis-icon, .users-icon, .new-user-icon, .attachment-icon,
-.feed-icon, .thumb-up-icon, .thumb-down-icon, .view-icon, .edit-icon, .create-icon,
-.circle-in-icon, .circle-out-icon, .circle-down-icon, .circle-up-icon, .circle-in-down-icon,
-.circle-in-up-icon, .reply-icon, .quote-icon, .tag-icon, .disable-icon, .mail-icon, .copy-icon,
-.pytis-form button.submit .default-submit-icon,
-.pytis-form button.cancel .icon,
-.pytis-form button.reset .icon,
-.list-form-controls button.cancel-search .icon,
-.list-form-controls button.search .icon,
-.pytis-form.query-fields-form button.apply-filters .icon {
-    display: inline-block;
-    width: 16px;
-    height: 16px;
-    background-image: url(wiking-icons.png);
-    background-repeat: no-repeat;
-    vertical-align: middle;
-}
-.user-larger-icon     { background-position: 0 0; width: 20px; height: 20px; }
-.gear-larger-icon     { background-position: -20px 0; width: 20px; height: 20px; }
-.gear-larger-red-icon { background-position: -40px 0; width: 20px; height: 20px; }
-.maximize-icon        { background-position: -60px 0; width: 20px; height: 20px; }
-.unmaximize-icon      { background-position: -80px 0; width: 20px; height: 20px; }
-.cart-larger-icon     { background-position: -100px 0; width: 20px; height: 20px; }
-.info-icon            { background-position: -120px 0; width: 20px; height: 20px; }
-.success-icon         { background-position: -140px 0; width: 20px; height: 20px; }
-.error-icon           { background-position: -160px 0; width: 20px; height: 20px; }
-.warning-icon         { background-position: -157px -20px; width: 23px; height: 20px; }
-.menu-icon            { background-position: -158px -41px; width: 23px; height: 25px; }
-.key-larger-icon      { background-position: -160px -66px; width: 18px; height: 18px; }
-.user-icon            { background-position: -0 -20px; }
-.gear-icon            { background-position: -16px -20px; }
-.pytis-form button.submit .default-submit-icon,
-.ok-icon              { background-position: -32px -20px; }
-.pytis-form button.cancel .icon,
-.list-form-controls button.cancel-search .icon,
-.remove-icon          { background-position: -48px -20px; }
-.pytis-form.query-fields-form button.apply-filters .icon,
-.refresh-icon         { background-position: -64px -20px; }
-.pytis-form button.reset .icon,
-.undo-icon            { background-position: -80px -20px; }
-.list-form-controls button.search .icon,
-.search-icon          { background-position: -96px -20px; }
-.cart-icon            { background-position: -112px -20px; position: relative; left: -1px; }
-.reply-icon           { background-position: -128px -20px; }
-.arrow-left-icon      { background-position: -2px -36px; width: 13px; }
-.arrow-right-icon     { background-position: -16px -36px; width: 13px; }
-.arrow-up-icon        { background-position: -32px -36px; }
-.arrow-down-icon      { background-position: -48px -36px; }
-.plus-icon            { background-position: -64px -36px; }
-.ellipsis-icon        { background-position: -80px -36px; }
-.key-icon             { background-position: -96px -36px; }
-.list-icon            { background-position: -112px -36px; }
-.quote-icon           { background-position: -128px -36px; }
-.attachment-icon      { background-position: -0 -52px; }
-.feed-icon            { background-position: -16px -52px; }
-.thumb-up-icon        { background-position: -32px -52px; }
-.thumb-down-icon      { background-position: -48px -52px; }
-.view-icon            { background-position: -64px -52px; }
-.edit-icon            { background-position: -81px -52px; width: 17px; }
-.create-icon          { background-position: -99px -52px; width: 17px; }
-.users-icon           { background-position: -117px -52px; width: 18px; }
-.new-user-icon        { background-position: -135px -52px; width: 18px; }
-.circle-in-icon       { background-position: 0 -69px; height: 14px; }
-.circle-out-icon      { background-position: -16px -69px; height: 14px; }
-.circle-down-icon     { background-position: -33px -68px; width: 14px; }
-.circle-up-icon       { background-position: -49px -68px; width: 14px; }
-.circle-in-down-icon  { background-position: -65px -68px; width: 14px; }
-.circle-in-up-icon    { background-position: -81px -68px; width: 14px; }
-.tag-icon             { background-position: -96px -68px; }
-.disable-icon         { background-position: -112px -68px; }
-.mail-icon            { background-position: -128px -68px; }
-.copy-icon            { background-position: -144px -68px; }
-
-body .collapsible-section-widget .collapsible-section-heading .icon {
-    width: 16px;
-    height: 16px;
-    background: url(wiking-icons.png) -16px -36px no-repeat;
-}
-body .collapsible-section-widget.expanded > div > div > div > .collapsible-section-heading .icon {
-    background-position: -48px -36px;
-}
-
 /* Wiking CMS specific styles */
 
 .cms-page-actions {
@@ -427,10 +338,6 @@ div.item span.panel-field-date {
 .panel .feed-link {
     float: right;
 }
-.panel .feed-link .feed-icon {
-    position: relative;
-    top: -1px;
-}
 .pytis-form.itemized-view.user-roles div.summary,
 .pytis-form.itemized-view.role-members div.summary,
 .pytis-form.itemized-view.contained-roles div.summary,
@@ -458,8 +365,6 @@ div.item span.panel-field-date {
 }
 .page-navigation .navigation-ctrl .icon {
     margin-right: 2px;
-    position: relative;
-    top: -1px;
 }
 .page-navigation .navigation-ctrl .icon.arrow-right-icon {
     margin-left: 1px;
@@ -607,16 +512,27 @@ a:link:hover, a:visited:hover { color: $color.link-hover; }
 #top-controls {
     float: right;
 }
+#top-controls > span,
+#top-controls .ctrl-content {
+    /* Center the icons and the buttons vertically. */
+    display: inline-flex;
+    align-items: center;
+}
 #top-controls > span {
-    display: inline-block;
+    vertical-align: top;
     margin-left: 17px;
     line-height: 26px;
 }
 #top-controls .ctrl-icon {
     margin-right: 0.2em;
 }
-#top-controls .ctrl-content .ctrl-icon {
-    margin-bottom: 3px;
+#top-controls .ctrl-icon.user-icon,
+#top-controls .ctrl-icon.gear-icon,
+.maximized-mode-control a > span {
+    font-size: 1.25em;
+}
+#top-controls .admin-control.preview-mode .ctrl-icon {
+    background-color: #d00;
 }
 #top-controls .ctrl-label {
     line-height: 26px;
@@ -643,11 +559,11 @@ a:link:hover, a:visited:hover { color: $color.link-hover; }
     height: 26px;
 }
 .maximized-mode-control a {
-    display: inline-block;
-    padding: 3px;
-    position: relative;
-    top: -1px;
-    line-height: 20px;
+    display: inline-flex;
+    align-items: center;
+    box-sizing: border-box;
+    height: 26px;
+    padding: 0 3px;
 }
 .login-control .ctrl-content {
     position: relative;
@@ -686,6 +602,8 @@ a:link:hover, a:visited:hover { color: $color.link-hover; }
     margin: 0 .4rem .2rem 0;
 }
 .login-control .login-button {
+    display: inline-flex;
+    align-items: center;
     color: $color.foreground;
     text-decoration: none;
     padding: 0 5px;
@@ -798,16 +716,16 @@ body.non-maximized #root-wrap {
     border-radius: 5px 5px 0 0;
 }
 #menu ul.level-1 > li.foldable > .item:after {
+    /* Down pointing arrow (the same as of the LCG dropdown widgets). */
     content: "";
-    display: inline-block;
     position: absolute;
-    width: 10px;
-    height: 10px;
     z-index: 3;
-    background: url(lcg-icons.png) -25px -30px no-repeat;
-    margin: .7em 12px .3em 0;
-    top: 0;
-    right: 0;
+    top: 50%;
+    right: 11px;
+    margin-top: -4.5px;
+    border: 5px solid transparent;
+    border-top-color: currentColor;
+    border-bottom: none;
 }
 #menu ul.level-1 > li > .item .label {
     background-color: transparent;
@@ -1029,22 +947,14 @@ form.login-form label {
 
     #site-title .separator, #site-title .subtitle { display: none; }
 
-    .list-form-controls button.cancel-search .label,
-    .list-form-controls button.search .label {
-        width: 0;
-        overflow: hidden;
-    }
-    .list-form-controls button.cancel-search .icon,
-    .list-form-controls button.search .icon {
-        margin-right: 0;
-        margin-left: 0;
-    }
-
 } /* End of bigger mobile phone screen layout */
 
 /* Smaller mobile phone screen layout */
 @media only screen and (max-width: 600px) {
 
+    #menu .menu-button .menu-icon {
+        font-size: 1.5em;
+    }
     #menu .menu-button {
         position: absolute;
         display: inline-block;
@@ -1101,9 +1011,6 @@ a.backref, a:link.backref, h1 a {
     color: #000 !important; /* important needed for MSIE */
     text-decoration: none;
 }
-form.browse-form table td, form.browse-form table th {
-    border-color: #000;
-}
 
 h1 { font-size: 1.6em; }
 h2 { font-size: 1.4em; }
@@ -1113,8 +1020,7 @@ h5 { font-size: 1.1em; }
 h6 { font-size: 1.1em; }
 h7 { font-size: 1.1em; }
 
-#top, #menu, #submenu, #panels, #bottom,
-form.list-form-controls .paging-controls {
+#top, #menu, #submenu, #panels, #bottom {
     display: none;
 }
 

@@ -32,10 +32,13 @@ _ = lcg.TranslatableTextFactory('wiking-cms')
 class AdminControl(wiking.TopBarControl):
 
     def _icon(self, context):
+        return 'gear'
+
+    def _cls(self, context):
         if wiking.module.Application.preview_mode(context.req()):
-            return 'gear-larger-red'
+            return 'preview-mode'
         else:
-            return 'gear-larger'
+            return None
 
     def _menu_title(self, context):
         if wiking.module.WikingManagementInterface.authorized(context.req()):
@@ -52,7 +55,7 @@ class AdminControl(wiking.TopBarControl):
                                                icon='gear-icon'))
             else:
                 items.append(lcg.PopupMenuItem(_("Leave the Management Interface"), uri='/',
-                                               icon='circle-out-icon'))
+                                               icon='logout-icon'))
         if wiking.module.Application.preview_mode_possible(req):
             # Translators: There are two modes of operation in the CMS
             # management.  The "Production Mode" displays only the content
@@ -79,7 +82,7 @@ class AdminControl(wiking.TopBarControl):
                                                icon='create-icon'))
         if not items and wiking.cms.cfg.always_show_admin_control:
             items.append(lcg.PopupMenuItem(_("Log in for site administration"),
-                                           uri='/?command=login', icon='circle-in-icon'))
+                                           uri='/?command=login', icon='login-icon'))
         return items
 
 
@@ -384,7 +387,7 @@ class Application(wiking.Application):
         if req.check_roles(Roles.CONTENT_ADMIN):
             def content(context, element):
                 g = context.generator()
-                return g.form((g.button(g.span('', cls='icon plus-icon') +
+                return g.form((g.button(g.span('', cls='icon create-icon') +
                                         g.span(_("New Panel"), cls='label'), type='submit'),
                                g.hidden('action', 'insert'),
                                g.hidden('_manage_cms_panels', '1')),

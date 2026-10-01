@@ -969,7 +969,7 @@ class Panels(SiteSpecificContentModule, wiking.CachingPytisModule):
         columns = ('title', 'identifier', 'ord', 'modtitle', 'size', 'published', 'content')
         layout = ('title', 'identifier', 'ord', 'page_id', 'size', 'content', 'published')
         actions = (
-            Action('publish', _("Publish"), icon='circle-up-icon',
+            Action('publish', _("Publish"), icon='publish-icon',
                    enabled=lambda r: not r['published'].value(),
                    descr=_("Make the panel visible in production mode")),
             Action('unpublish', _("Unpublish"), icon='undo-icon',
@@ -1271,11 +1271,11 @@ class Themes(StyleManagementModule, wiking.CachingPytisModule):
         cb = CodebookSpec(display='name', prefer_display=True)
         actions = (
             # Translators: Button label
-            Action('activate', _("Activate"), icon='circle-up-icon',
+            Action('activate', _("Activate"), icon='publish-icon',
                    descr=_("Activate this color theme"),
                    enabled=lambda r: not r['active'].value()),
             # Translators: Button label
-            Action('activate', _("Activate default"), icon='circle-up-icon',
+            Action('activate', _("Activate default"), icon='publish-icon',
                    context=pp.ActionContext.GLOBAL,
                    descr=_("Activate the default color theme"),
                    enabled=lambda r: wiking.module.Config.theme_id() is not None),
@@ -1532,7 +1532,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
             Action('options', _("Options"), icon='ellipsis-icon',
                    descr=_("Edit global options, such as visibility, "
                            "menu position and access rights.")),
-            Action('commit', _("Commit"), icon='circle-up-icon',
+            Action('commit', _("Commit"), icon='publish-icon',
                    descr=_("Publish the current concept in production mode."),
                    enabled=lambda r: (r['parents_published'].value() and r['published'].value() and
                                       r['_content'].value() != r['content'].value())),
@@ -1773,7 +1773,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                 return ((None, _("Save as Concept")),)
             else:
                 return ((None, _("Save as Concept")),
-                        ('commit', _("Save as Production Version"), 'circle-up-icon'))
+                        ('commit', _("Save as Production Version"), 'publish-icon'))
         else:
             return super(Pages, self)._submit_buttons(req, action, record=record)
 
@@ -2688,7 +2688,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter, PDFExpo
             name='PublicationExportForm',
             action='export_publication',
             submit_buttons=(('test', _("Export"), 'gear-icon'),
-                            (None, _("Download"), 'circle-down-icon'),),
+                            (None, _("Download"), 'download-icon'),),
             show_reset_button=False,
             show_footer=False,
         )
@@ -3106,7 +3106,7 @@ class PublicationExports(ContentManagementModule):
         layout = ('format', 'version', 'timestamp', 'bytesize', 'public', 'notes')
         columns = ('format', 'version', 'timestamp', 'bytesize', 'public')
         actions = (
-            Action('download', _("Download"), icon='circle-down-icon'),
+            Action('download', _("Download"), icon='download-icon'),
         )
 
     # See note in Publications._publication_info() where these spans are created.
@@ -3657,9 +3657,9 @@ class Attachments(ContentManagementModule):
             # Action('insert_image', _("New image"), descr=_("Insert a new image attachment"),
             #        context=pp.ActionContext.GLOBAL),
             # Translators: Button label
-            Action('move', _("Move"), icon='circle-out-icon',
+            Action('move', _("Move"), icon='arrow-right-icon',
                    descr=_("Move the attachment to another page.")),
-            Action('upload_archive', _("Upload Archive"), icon='circle-in-up-icon',
+            Action('upload_archive', _("Upload Archive"), icon='upload-icon',
                    context=pp.ActionContext.GLOBAL,
                    descr=_("Upload multiple attachments at once as a ZIP, TAR or TAR.GZ archive.")),
         )
