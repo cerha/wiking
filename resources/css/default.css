@@ -760,15 +760,15 @@ body.non-maximized #root-wrap {
 
 @media only screen and (min-width: 768px) {
     body.non-maximized #submenu {
-        display: table-cell;
+        display: block;
     }
 }
 #submenu {
     display: none;
     position: relative;
     z-index: 1;
+    grid-column: 1;
     width: 220px;
-    min-width: 220px;
     box-sizing: border-box;
     padding-right: 18px;
 }
@@ -809,11 +809,15 @@ body.non-maximized #root-wrap {
 
 /* Panels */
 
+#panels {
+    /* A separate row below the page content unless overridden below. */
+    grid-column: 1 / -1;
+}
+
 @media only screen and (min-width: 992px) {
     body.non-maximized #panels {
-        display: table-cell;
-        vertical-align: top;
         z-index: 1;
+        grid-column: 3;
         width: 220px;
         box-sizing: border-box;
         padding-left: 18px;
@@ -855,22 +859,20 @@ body.non-maximized #root-wrap {
 
 /* The actual page content */
 
+#main-wrap {
+    /* The submenu and panels columns collapse when they are not displayed.
+       The page column takes the remaining space and the zero minimum prevents
+       wide content from growing it beyond that space. */
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: start;
+}
 #page {
-    display: table-cell;
-    vertical-align: top;
-    width: 100%;
+    grid-column: 2;
     position: relative;
     color: $color.foreground;
     background-color: $color.background;
     margin-bottom: 16px;
-}
-@media only screen and (max-width: 767px) {
-    /* The submenu and panels are never displayed side by side with the page
-       here.  As a table cell, the page would grow with wide content instead
-       of letting it adapt to the screen width. */
-    #page {
-        display: block;
-    }
 }
 #heading {
     position: relative;
