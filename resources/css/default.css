@@ -104,11 +104,12 @@ table.lcg-fieldset td.label {
     font-weight: bold;
 }
 
-table.lcg-table {
-    border-collapse: collapse;
+.lcg-table-wrapper {
+    overflow-x: auto;
+    margin: 0.5em 0;
 }
 table.lcg-table {
-    margin: 0.5em 0;
+    border-collapse: collapse;
 }
 table.lcg-table td, table.lcg-table th {
     padding: 2pt;
@@ -129,6 +130,7 @@ table.lcg-table caption {
     color: $color.foreground;
     margin: 1em 0;
     padding: 4px;
+    overflow-x: auto;
 }
 .lcg-preformatted-text pre {
     white-space: pre;
