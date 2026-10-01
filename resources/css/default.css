@@ -886,6 +886,13 @@ body.non-maximized #root-wrap {
     background-color: $color.background;
     margin-bottom: 16px;
 }
+@media only screen and (min-width: 1024px) {
+    /* The page has its full width here, so the browse form tables, which
+       don't fit, are rather scrolled than stacked (see pytis.js). */
+    #page {
+        --pytis-table-stacking: none;
+    }
+}
 #heading {
     position: relative;
 }
