@@ -2573,10 +2573,11 @@ def serve_file(req, path, content_type=None, filename=None, lock=False, headers=
     Important note: The file size is read in advance to determine the Content-Lenght header.
     If the file is changed before it gets sent, the result may be incorrect.
 
-    Internal rediredtion (as described in 'allow_redirect') is only performed,
-    when the server is actually configured for it on given file path (see the
-    configuration options 'xaccel' and 'xaccel_paths').  Otherwise the file will
-    be served using the native python implementation.
+    Internal rediredtion (as described in 'allow_redirect') is only performed
+    when the frontend server announces its support by the request header
+    'X-Sendfile-Type: X-Accel-Redirect' and the file is located within the
+    'resource_path' or 'xaccel_paths' directories.  Otherwise the file will be
+    served using the native python implementation.
 
     Byte range requests are supported by the native implementation, so if the
     request contains the 'Range' header, the response will contain only the
@@ -2594,14 +2595,13 @@ def serve_file(req, path, content_type=None, filename=None, lock=False, headers=
     if content_type is None:
         mime_type, encoding = mimetypes.guess_type(path)
         content_type = mime_type or 'application/octet-stream'
-    if allow_redirect:
-        if wiking.cfg.xaccel:
-            abspath = os.path.abspath(path)
-            if any(abspath.startswith(os.path.join(os.path.abspath(d), ''))
-                   for d in tuple(wiking.cfg.resource_path) + tuple(wiking.cfg.xaccel_paths)):
-                uri = '/_xaccel' + urllib.parse.quote(abspath)
-                return wiking.Response('', content_type=content_type, filename=filename,
-                                       headers=headers + (('X-Accel-Redirect', uri),))
+    if allow_redirect and req.header('X-Sendfile-Type') == 'X-Accel-Redirect':
+        abspath = os.path.abspath(path)
+        if any(abspath.startswith(os.path.join(os.path.abspath(d), ''))
+               for d in tuple(wiking.cfg.resource_path) + tuple(wiking.cfg.xaccel_paths)):
+            uri = '/_xaccel' + urllib.parse.quote(abspath)
+            return wiking.Response('', content_type=content_type, filename=filename,
+                                   headers=headers + (('X-Accel-Redirect', uri),))
     offset = limit = None
     status_code = http.client.OK
     content_length = info.st_size

@@ -661,24 +661,20 @@ class Configuration(pytis.util.Configuration):
         _DESCR = "Directory of output specifications."
         _DEFAULT = './output'
 
-    class _Option_xaccel(pc.BooleanOption):
-        _DESCR = "Enable X-Accel downloads"
-        _DOC = ("When enabled, files are sent to the client by the frontend server "
-                "(reverse proxy) instead of the application process.  The application "
-                "only responds with the 'X-Accel-Redirect' header containing '/_xaccel' "
-                "followed by the absolute path of the file (URL encoded).  The server "
-                "must be configured to serve the files for this internal URI.  This "
-                "applies to all files within the 'resource_path' directories and "
-                "within the directories given by 'xaccel_paths'.  X-Accel redirection "
-                "is supported by the Nginx server and it can be set up in the Caddy "
-                "server through 'handle_response' of its 'reverse_proxy' directive.")
-        _DEFAULT = False
-
     class _Option_xaccel_paths(pc.Option):
         _DESCR = "Additional directories enabled for X-Accel downloads."
-        _DOC = ("Sequence of directories (strings) containing files which should be "
-                "served through X-Accel redirection (see 'xaccel') in addition to the "
-                "'resource_path' directories, such as the application's data files.")
+        _DOC = ("Files may be sent to the client by the frontend server (reverse proxy) "
+                "instead of the application process.  This is used when the frontend "
+                "server announces its support by sending the request header "
+                "'X-Sendfile-Type: X-Accel-Redirect'.  The application then only responds "
+                "with the 'X-Accel-Redirect' header containing '/_xaccel' followed by the "
+                "absolute path of the file (URL encoded) and the server must serve the "
+                "file for this internal URI.  This applies to all files within the "
+                "'resource_path' directories and within the directories given by this "
+                "option (a sequence of directory names as strings), such as the "
+                "application's data files.  X-Accel redirection is supported by the "
+                "Nginx server and it can be set up in the Caddy server through "
+                "'handle_response' of its 'reverse_proxy' directive.")
         _DEFAULT = ()
 
     class _Option_resources_version(pc.StringOption):

@@ -184,11 +184,10 @@ the application only responds with the =X-Accel-Redirect= header containing the
 internal URI =\/_xaccel= followed by the file's absolute path and the proxy sends
 the file itself.
 
-Enable this through the [config#xaccel] option:
-
------
-xaccel = True
------
+The proxy announces this ability by the request header
+=X-Sendfile-Type: X-Accel-Redirect= (see the configurations below).  Without
+it, such as when Gunicorn is accessed directly, the files are sent by Python, so
+no configuration of the application is needed.
 
 This applies to all resource files (all directories of [config#resource_path])
 automatically.  Other files served by the application (such as its data files)
@@ -204,6 +203,7 @@ Caddy:
 -----
 yoursite.com {
     reverse_proxy unix//run/yoursite/gunicorn.socket {
+        header_up X-Sendfile-Type X-Accel-Redirect
         @accel header X-Accel-Redirect *
         handle_response @accel {
             root * /
@@ -222,14 +222,21 @@ yoursite.com {
 The =copy_response_headers= subdirective passes the headers set by the
 application (such as =Content-Type= or =Content-Disposition=) to the client.
 
-NGINX:
+NGINX (add the header to the location proxying to Gunicorn, see the
+Reverse proxy section above):
 
 -----
+location / {
+    ...
+    proxy_set_header X-Sendfile-Type X-Accel-Redirect;
+}
 location /_xaccel/ {
     internal;
     alias /;
 }
 -----
+
+Both servers replace the =X-Sendfile-Type= header possibly sent by the client.
 
 The configurations above let the proxy serve any file readable by the proxy's
 user, as the proxy relies on the application to decide which files may be
