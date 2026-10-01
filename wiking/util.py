@@ -2574,10 +2574,9 @@ def serve_file(req, path, content_type=None, filename=None, lock=False, headers=
     If the file is changed before it gets sent, the result may be incorrect.
 
     Internal rediredtion (as described in 'allow_redirect') is only performed,
-    when the server is actually configured for it on given file path.  If the
-    file path doesn't match one of the directories configured in
-    'xsendfile_paths' or 'xaccel_paths' the file will be served using the
-    native python implementation.
+    when the server is actually configured for it on given file path (see the
+    configuration options 'xaccel' and 'xsendfile_paths').  Otherwise the file
+    will be served using the native python implementation.
 
     Byte range requests are supported by the native implementation, so if the
     request contains the 'Range' header, the response will contain only the
@@ -2600,10 +2599,11 @@ def serve_file(req, path, content_type=None, filename=None, lock=False, headers=
             if path.startswith(prefix):
                 return wiking.Response('', content_type=content_type, filename=filename,
                                        headers=headers + (('X-Sendfile', path),))
-        for prefix, base_uri in wiking.cfg.xaccel_paths:
-            if path.startswith(prefix):
-                rel_uri = '/'.join(path[len(prefix.rstrip(os.sep)):].split(os.sep))
-                uri = base_uri.rstrip('/') + urllib.parse.quote(rel_uri)
+        if wiking.cfg.xaccel:
+            abspath = os.path.abspath(path)
+            if any(abspath.startswith(os.path.join(os.path.abspath(d), ''))
+                   for d in tuple(wiking.cfg.resource_path) + tuple(wiking.cfg.xaccel_paths)):
+                uri = '/_xaccel' + urllib.parse.quote(abspath)
                 return wiking.Response('', content_type=content_type, filename=filename,
                                        headers=headers + (('X-Accel-Redirect', uri),))
     offset = limit = None

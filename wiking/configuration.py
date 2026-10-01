@@ -668,19 +668,30 @@ class Configuration(pytis.util.Configuration):
                 "The paths configured here must be also set up in server's "
                 "configuration and the server must support this feature.  "
                 "X-SendFile is supported by Apache with mod_xsendfile and "
-                "lighttpd.  See 'xaccel_paths' for alternative feature supported "
-                "by the Nginx server.")
+                "lighttpd.  See 'xaccel' for alternative feature supported "
+                "by the Nginx and Caddy servers.")
         _DEFAULT = ()
 
+    class _Option_xaccel(pc.BooleanOption):
+        _DESCR = "Enable X-Accel downloads"
+        _DOC = ("When enabled, files are sent to the client by the frontend server "
+                "(reverse proxy) instead of the application process.  The application "
+                "only responds with the 'X-Accel-Redirect' header containing '/_xaccel' "
+                "followed by the absolute path of the file (URL encoded).  The server "
+                "must be configured to serve the files for this internal URI.  This "
+                "applies to all files within the 'resource_path' directories and "
+                "within the directories given by 'xaccel_paths'.  X-Accel redirection "
+                "is supported by the Nginx server and it can be set up in the Caddy "
+                "server through 'handle_response' of its 'reverse_proxy' directive.  "
+                "See 'xsendfile_paths' for alternative feature supported by Apache and "
+                "lighttpd servers.")
+        _DEFAULT = False
+
     class _Option_xaccel_paths(pc.Option):
-        _DESCR = "Mapping of filesystem directories to redirection URLs for X-Accel downloads."
-        _DOC = ("Each item of the sequence is a pair of strings, where the "
-                "first string is a directory path and the second string is "
-                "the corresponding URI.  These pairs must match the locations "
-                "configured for internal redirection in server's configuration. "
-                "X-Accel redirection is supported by the Nginx server.  See "
-                "'xsendfile_path' for alternative feature supported "
-                "by Apache and lighttpd servers.")
+        _DESCR = "Additional directories enabled for X-Accel downloads."
+        _DOC = ("Sequence of directories (strings) containing files which should be "
+                "served through X-Accel redirection (see 'xaccel') in addition to the "
+                "'resource_path' directories, such as the application's data files.")
         _DEFAULT = ()
 
     class _Option_resources_version(pc.StringOption):
