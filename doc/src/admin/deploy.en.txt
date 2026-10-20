@@ -98,7 +98,7 @@ file is passed through the =wiking.config_file= environment variable:
 -----
 /srv/yoursite/venv/bin/gunicorn \
     --env wiking.config_file=/srv/yoursite/config.py \
-    --bind unix:/run/yoursite/gunicorn.socket \
+    --bind unix:/run/wiking-yoursite/gunicorn.sock \
     --workers 3 \
     wiking.wsgi_interface:application
 -----
@@ -108,6 +108,8 @@ Wiking is currently not thread safe, so always scale by the number of worker
 
 You may bind either to a UNIX socket (as above) or to a local TCP port (such as
 =--bind 127.0.0.1:8000=); the reverse proxy then connects to the same address.
+The socket path =\/run/wiking-<name>\/gunicorn.sock= is a convention expected by
+the Caddy configuration below, where =<name>= is a short name of the site.
 
 == Running as a systemd service ==
 
@@ -122,10 +124,11 @@ After=network.target postgresql.service
 [Service]
 User=www-data
 Group=www-data
-RuntimeDirectory=/srv/yoursite
+RuntimeDirectory=wiking-yoursite
 ExecStart=/srv/yoursite/venv/bin/gunicorn \
     --env wiking.config_file=/srv/yoursite/config.py \
-    --bind unix:/run/yoursite/gunicorn.socket \
+    --bind unix:/run/wiking-yoursite/gunicorn.sock \
+    --worker-tmp-dir /run/wiking-yoursite \
     --workers 3 \
     wiking.wsgi_interface:application
 Restart=on-failure
@@ -134,8 +137,9 @@ Restart=on-failure
 WantedBy=multi-user.target
 -----
 
-The =RuntimeDirectory= directive makes systemd create =\/run/yoursite= owned by
-the service user, which is a convenient place for the socket.
+The =RuntimeDirectory= directive makes systemd create
+=\/run/wiking-yoursite= owned by the service user, which is a convenient place
+for the socket (and for Gunicorn's temporary files).
 
 Pass configuration file path through Gunicorn's =--env= option as shown above.
 
@@ -149,67 +153,25 @@ systemctl enable --now yoursite
 
 The reverse proxy terminates HTTP(S) and forwards the requests to Gunicorn.
 Any reverse proxy will do; the two examples below assume Gunicorn listening on
-the UNIX socket =\/run/yoursite/gunicorn.socket= as configured above.
+the UNIX socket =\/run/wiking-yoursite/gunicorn.sock= as configured above.
 
 [https://caddyserver.com/ Caddy] (obtains and renews TLS certificates
-automatically):
+automatically) can be configured by a snippet shared by all Wiking sites on the
+server.  Put it into =\/etc/caddy/wiking.caddy=:
 
 -----
-yoursite.com {
-    reverse_proxy unix//run/yoursite/gunicorn.socket
-}
------
-
-[https://nginx.org/ NGINX]:
-
------
-server {
-    listen 80;
-    server_name yoursite.com;
-    location / {
-        proxy_pass http://unix:/run/yoursite/gunicorn.socket;
-        proxy_set_header Host $host;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-}
------
-
-== Accelerated file downloads ==
-
-By default, all files (such as resources or files stored by the application)
-are read and sent by the Python process, which blocks a Gunicorn worker for the
-whole duration of the download.  The reverse proxy can serve the files instead:
-the application only responds with the =X-Accel-Redirect= header containing the
-internal URI =\/_xaccel= followed by the file's absolute path and the proxy sends
-the file itself.
-
-The proxy announces this ability by the request header
-=X-Sendfile-Type: X-Accel-Redirect= (see the configurations below).  Without
-it, such as when Gunicorn is accessed directly, the files are sent by Python, so
-no configuration of the application is needed.
-
-This applies to all resource files (all directories of [config#resource_path])
-automatically.  Other files served by the application (such as its data files)
-are only served by the proxy when located in one of the directories given by
-[config#xaccel_paths], otherwise they are still sent by Python.  The proxy
-configuration below doesn't depend on these directories, but the proxy's user
-must have read access to the files.  The proxy only serves the files which the
-application decides to serve, since the internal URI is never accepted from a
-client.
-
-Caddy:
-
------
-yoursite.com {
-    reverse_proxy unix//run/yoursite/gunicorn.socket {
+(wiking) {
+    encode zstd gzip
+    reverse_proxy unix//run/wiking-{args[0]}/gunicorn.sock {
         header_up X-Sendfile-Type X-Accel-Redirect
-        @accel header X-Accel-Redirect *
-        handle_response @accel {
+        @xaccel header X-Accel-Redirect *
+        handle_response @xaccel {
             root * /
             rewrite * {rp.header.X-Accel-Redirect}
             uri strip_prefix /_xaccel
             method * GET
+            @outside not path {args[1:]}
+            error @outside 403
             copy_response_headers {
                 exclude X-Accel-Redirect Content-Length Server
             }
@@ -219,52 +181,95 @@ yoursite.com {
 }
 -----
 
-The =copy_response_headers= subdirective passes the headers set by the
-application (such as =Content-Type= or =Content-Disposition=) to the client.
-
-NGINX (add the header to the location proxying to Gunicorn, see the
-Reverse proxy section above):
+Import the snippet at the beginning of =\/etc/caddy/Caddyfile= and use it in
+the block of each site, giving the site name (the =<name>= of its socket path)
+and the patterns of the paths of files which Caddy may send for the
+application (see Accelerated file downloads below):
 
 -----
-location / {
-    ...
-    proxy_set_header X-Sendfile-Type X-Accel-Redirect;
-}
-location /_xaccel/ {
-    internal;
-    alias /;
+import /etc/caddy/wiking.caddy
+
+yoursite.com {
+    import wiking yoursite /srv/yoursite/*
 }
 -----
 
-Both servers replace the =X-Sendfile-Type= header possibly sent by the client.
+The snippet doesn't work with Caddy 2.6 and older, which don't support its
+argument placeholders (Caddy 2.6 is shipped for example in Debian 13, where a
+newer version is available in backports).
 
-The configurations above let the proxy serve any file readable by the proxy's
-user, as the proxy relies on the application to decide which files may be
-served.  This is fine as long as the application is trusted, but if it was
-compromised (so that an attacker could set arbitrary response headers), it
-could be used to read files which the application's user can not read itself,
-but the proxy's user can (such as the private keys of the proxy's TLS
-certificates).  To limit the proxy to files under a certain directory
-containing all the served files (such as =\/srv=, where the virtual
-environment and the application's data files reside), restrict the internal
-location in NGINX:
+[https://nginx.org/ NGINX]:
 
 -----
-location /_xaccel/srv/ {
-    internal;
-    alias /srv/;
+server {
+    listen 80;
+    server_name yoursite.com;
+    location / {
+        proxy_pass http://unix:/run/wiking-yoursite/gunicorn.sock;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Sendfile-Type X-Accel-Redirect;
+    }
+    location /_xaccel/srv/yoursite/ {
+        internal;
+        alias /srv/yoursite/;
+    }
 }
 -----
 
-Other paths under =\/_xaccel/= are then passed to the application, which
-responds by 404 (Not Found).  In Caddy, add the following lines before
-=file_server= into the =handle_response= block (the paths are matched after
-the =\/_xaccel= prefix is stripped):
+The =Host= header must include the port, so use =$http_host= rather than
+=$host=, as the application uses it to construct its URIs (such as
+redirections).  The last two directives set up accelerated file downloads.
+
+== Accelerated file downloads ==
+
+By default, all files (such as resources or files stored by the application)
+are read and sent by the Python process, which blocks a Gunicorn worker for the
+whole duration of the download.  The reverse proxy can serve the files instead:
+the application only responds with the =X-Accel-Redirect= header containing the
+internal URI =\/\_xaccel= followed by the file's absolute path and the proxy sends
+the file itself (including support for partial downloads through the =Range=
+header and caching through =ETag= and =Last-Modified=).
+
+The proxy announces this ability by the request header
+=X-Sendfile-Type: X-Accel-Redirect= (both configurations above set it and
+replace the header possibly sent by the client).  Without it, such as when
+Gunicorn is accessed directly, the files are sent by Python, so no
+configuration of the application is needed.
+
+This applies to all resource files (all directories of [config#resource_path])
+automatically.  Other files served by the application (such as its data files)
+are only served by the proxy when located in one of the directories given by
+[config#xaccel_paths], otherwise they are still sent by Python.  The proxy's
+user must have read access to the files.  The proxy only serves the files which
+the application decides to serve, since the internal URI is never accepted from
+a client.
+
+The proxy also relies on the application to decide which files may be served.
+If the application was compromised (so that an attacker could set arbitrary
+response headers), it could be used to read any file which the proxy's user can
+read, including other sites' files or the private keys of the proxy's TLS
+certificates.  Thus the proxy is restricted to the directories containing the
+application's files: the virtual environment (with the resources of all the
+installed components) and the site's own data.  These are the path patterns
+given to the Caddy snippet, such as =\/srv/yoursite/*= above, or for sites
+sharing one virtual environment:
 
 -----
-@outside not path /srv/*
-error @outside 403
+example.org {
+    import wiking example.org /srv/www/wiking/venv/* /srv/www/example.org/*
+}
 -----
+
+Caddy responds by 403 (Forbidden) for other files.  In NGINX, add an internal
+location for each directory (the paths under =\/\_xaccel/= not matching any of
+them are passed to the application, which responds by 404).  Don't give
+different sites access to each other's directories.
+
+The =copy_response_headers= subdirective of the Caddy snippet passes the
+headers set by the application (such as =Content-Type= or
+=Content-Disposition=) to the client.  NGINX does that by default.
 
 == Legacy setups == legacy
 
