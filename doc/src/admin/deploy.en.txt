@@ -199,6 +199,22 @@ yoursite.com {
 }
 -----
 
+The snippet must be imported at the top level of the site block, not within
+=handle=, because =handle_errors= (see Accelerated file downloads below) can't
+be used there.  Other files served by Caddy itself are given by =handle= (or
+=handle_path=) blocks next to the import.  They take precedence over the
+application, which gets all other requests:
+
+-----
+yoursite.com {
+    import wiking yoursite /srv/yoursite/*
+    handle /pub/* {
+        root * /srv/yoursite/files
+        file_server
+    }
+}
+-----
+
 The snippet doesn't work with Caddy 2.6 and older, which don't support its
 argument placeholders (Caddy 2.6 is shipped for example in Debian 13, where a
 newer version is available in backports).
