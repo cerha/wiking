@@ -436,6 +436,19 @@ class Application(wiking.Module):
         """
         return [lcg.Stylesheet('default.css')]
 
+    def xaccel_paths(self):
+        """Return the sequence of directories enabled for X-Accel downloads.
+
+        Files within these directories are sent by the frontend server (reverse
+        proxy) when it announces its support (see 'wiking.serve_file()').
+
+        The default implementation returns the directories configured by the
+        options 'resource_path' and 'xaccel_paths'.  Applications may add the
+        directories where they store their files.
+
+        """
+        return tuple(wiking.cfg.resource_path) + tuple(wiking.cfg.xaccel_paths)
+
     def registration_uri(self, req):
         """Return the URI for new user registration or None if registration is not allowed."""
         return None

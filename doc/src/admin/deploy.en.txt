@@ -162,16 +162,21 @@ server.  Put it into =\/etc/caddy/wiking.caddy=:
 -----
 (wiking) {
     encode zstd gzip
+    handle_errors {
+        @log expression `vars({"xaccel": "1"}) || {err.status_code} >= 500`
+        error @log "{err.message}" {err.status_code}
+    }
     reverse_proxy unix//run/wiking-{args[0]}/gunicorn.sock {
         header_up X-Sendfile-Type X-Accel-Redirect
         @xaccel header X-Accel-Redirect *
         handle_response @xaccel {
+            vars xaccel 1
             root * /
             rewrite * {rp.header.X-Accel-Redirect}
             uri strip_prefix /_xaccel
             method * GET
             @outside not path {args[1:]}
-            error @outside 403
+            error @outside "X-Accel path not allowed: {http.request.uri.path}" 403
             copy_response_headers {
                 exclude X-Accel-Redirect Content-Length Server
             }
@@ -239,12 +244,15 @@ Gunicorn is accessed directly, the files are sent by Python, so no
 configuration of the application is needed.
 
 This applies to all resource files (all directories of [config#resource_path])
-automatically.  Other files served by the application (such as its data files)
-are only served by the proxy when located in one of the directories given by
-[config#xaccel_paths], otherwise they are still sent by Python.  The proxy's
-user must have read access to the files.  The proxy only serves the files which
-the application decides to serve, since the internal URI is never accepted from
-a client.
+automatically.  Wiking CMS also automatically includes the directory where it
+stores page attachments and publication exports (the subdirectory of the CMS
+option =storage= named by [config#dbname], such as
+=\/var/lib/wiking/yoursite/=).  Other files served by the application (such as
+its data files) are only served by the proxy when located in one of the
+directories given by [config#xaccel_paths], otherwise they are still sent by
+Python.  The proxy's user must have read access to the files.  The proxy only
+serves the files which the application decides to serve, since the internal URI
+is never accepted from a client.
 
 The proxy also relies on the application to decide which files may be served.
 If the application was compromised (so that an attacker could set arbitrary
@@ -252,20 +260,53 @@ response headers), it could be used to read any file which the proxy's user can
 read, including other sites' files or the private keys of the proxy's TLS
 certificates.  Thus the proxy is restricted to the directories containing the
 application's files: the virtual environment (with the resources of all the
-installed components) and the site's own data.  These are the path patterns
-given to the Caddy snippet, such as =\/srv/yoursite/*= above, or for sites
-sharing one virtual environment:
+installed components) and the site's own data (including the CMS storage
+directory, if it is not within the site's directory).  These are the path
+patterns given to the Caddy snippet, such as =\/srv/yoursite/*= above, or for
+sites sharing one virtual environment:
 
 -----
 example.org {
-    import wiking example.org /srv/www/wiking/venv/* /srv/www/example.org/*
+    import wiking example.org /srv/www/wiking/venv/* /srv/www/example.org/* /var/lib/wiking/example/*
 }
 -----
 
-Caddy responds by 403 (Forbidden) for other files.  In NGINX, add an internal
-location for each directory (the paths under =\/\_xaccel/= not matching any of
-them are passed to the application, which responds by 404).  Don't give
-different sites access to each other's directories.
+All directories in which the application lets the proxy serve files must be
+allowed, otherwise the proxy refuses to send them (there is no fallback to
+Python).  So when upgrading Wiking CMS from a version which didn't accelerate
+the attachments, allow its storage directory first.  Caddy responds by 403
+(Forbidden) for other files and logs the error message
+=X-Accel path not allowed:= followed by the file's path.  In NGINX, add an
+internal location for each directory (the paths under =\/\_xaccel/= not
+matching any of them are passed to the application, which responds by 404).
+Don't give different sites access to each other's directories.
+
+To find out which file the application lets the proxy send for a given URI,
+send the request to Gunicorn directly with the =X-Sendfile-Type= header and
+look at the =X-Accel-Redirect= header of the response, such as:
+
+-----
+curl -sI --unix-socket /run/wiking-yoursite/gunicorn.sock \
+     -H 'X-Sendfile-Type: X-Accel-Redirect' http://yoursite.com/some/file.pdf
+-----
+
+If the path is allowed but the file can't be read by the proxy's user (such as
+due to file permissions), Caddy responds by 403 and logs the reason (such as
+=open ...: permission denied=).  Caddy normally logs the errors of status 4xx
+only when debug logging is enabled, so the =handle_errors= directive of the
+snippet raises the errors of accelerated downloads (marked by the variable
+=xaccel=) again (keeping their status) to log them at the level ERROR.  Errors
+of status 5xx (such as 502 when Gunicorn is not running) are raised again too,
+since Caddy doesn't log the errors handled by =handle_errors= otherwise.  Other
+errors (such as 404 of other =file_server= directives of the site) and the
+responses of the application are not affected.
+
+A site may define its own =handle_errors= next to the snippet.  Caddy combines
+them: a =handle_errors= limited to certain status codes (such as
+=handle_errors 404=) takes precedence for these codes, so such errors of
+accelerated downloads are then handled by the site and not logged.  A
+=handle_errors= without status codes only gets the errors not raised by the
+snippet, so custom error pages of status 5xx are not displayed.
 
 The =copy_response_headers= subdirective of the Caddy snippet passes the
 headers set by the application (such as =Content-Type= or

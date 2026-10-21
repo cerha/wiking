@@ -672,7 +672,10 @@ class Configuration(pytis.util.Configuration):
                 "file for this internal URI.  This applies to all files within the "
                 "'resource_path' directories and within the directories given by this "
                 "option (a sequence of directory names as strings), such as the "
-                "application's data files.  X-Accel redirection is supported by the "
+                "application's data files.  Applications may enable their storage "
+                "directories automatically (Wiking CMS enables the subdirectory of its "
+                "'storage' option named by 'dbname', where it stores page attachments "
+                "and publication exports).  X-Accel redirection is supported by the "
                 "Nginx server and it can be set up in the Caddy server through "
                 "'handle_response' of its 'reverse_proxy' directive.")
         _DEFAULT = ()

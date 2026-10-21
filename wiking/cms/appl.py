@@ -23,6 +23,7 @@ The CMS application is defined as an implementation of Wiking Application Interf
 """
 import datetime
 import lcg
+import os
 import wiking
 from wiking.cms import CMSExtension, CMSExtensionModule, Roles, Users, text2content
 
@@ -307,6 +308,10 @@ class Application(wiking.Application):
 
     def stylesheets(self, req):
         return wiking.module.StyleSheets.stylesheets(req)
+
+    def xaccel_paths(self):
+        # Attachments and publication exports are stored in this directory.
+        return super().xaccel_paths() + (os.path.join(wiking.cms.cfg.storage, wiking.cfg.dbname),)
 
     def body_class_names(self, req):
         if self.preview_mode(req):
